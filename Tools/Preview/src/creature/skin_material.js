@@ -124,14 +124,14 @@ export const DEFAULT_REGION_PARAMS = {
 const DEFAULTS = {
   physical: false, sheen: 0.25, sheenColor: '#b9ab98', sheenRoughness: 0.8, envMapIntensity: 1,
   seed: 0, baseScale: 0.018, jitter: 0.85, sizeVar: 0.35, mortar: 0.035, domeRadius: 0.45, scaleHeight: 0.11, softness: 0.06,
-  bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.085, hotspots: [], hotspotBoost: 0.6,
+  bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.1, hotspots: [], hotspotBoost: 0.6,
   midlineBoost: 1.6, midlineWidth: 0.12, scuteSize: [0.05, 0.22, 0.3], scuteHeight: 0.16,
   metaAxis: [0.32, -0.95, 0], toeAxis: [1, 0, 0], toeHeight: 0.22,
-  foldDepth: 0.016, foldBase: 0.15, foldDirs: [[1, 0, 0, 9], [0, 1, 0, 10], [0.8, 0.6, 0, 14]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.09, netDepth: 0.0025, netWidth: 0.07,
-  dorsalColor: '#463e37', ventralColor: '#968e80', counterShade: [-0.8, 0.1], mottle: 0.42, mottleScale: 1.6,
+  foldDepth: 0.016, foldBase: 0.15, foldDirs: [[1, 0, 0, 9], [0, 1, 0, 10], [0.8, 0.6, 0, 14]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.1, netDepth: 0.0022, netWidth: 0.07,
+  dorsalColor: '#48413b', ventralColor: '#a0988a', counterShade: [-0.8, 0.1], mottle: 0.42, mottleScale: 1.6,
   scaleTint: 0.12, topLight: 0.08, crackDark: 0.28, cavityDark: 0.35, cavityAO: 0.7,
   roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
-  scatterColor: [1.0, 0.6, 0.45], sss: 0.3, sssNormalBlur: 0.45, translucency: 0.0,
+  scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.8, sssNormalBlur: 0.45, translucency: 0.0,
   dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, worldScale: 1.0,
   eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.35,
 };
@@ -221,7 +221,7 @@ uniform vec2 uCounterShade;
 uniform float uMottle, uMottleScale, uScaleTint, uTopLight, uCrackDark, uCavityDark, uCavityAO;
 uniform float uRoughness, uRoughVar, uCrackRough, uTopRough, uFadeRough;
 uniform vec3 uScatterColor;
-uniform float uSSS, uSSSNormalBlur, uTranslucency;
+uniform float uSSS, uSSSNormalBlur, uTranslucency, uSpecular;
 uniform vec3 uDustColor;
 uniform float uDust, uDustHeight, uDetailFade, uWorldScale;
 uniform vec3 uEyeColor, uClawColor;
@@ -370,13 +370,15 @@ void skTubercles( vec3 p, float size, float density, inout float h, inout vec3 g
 	float x = d / radius;
 	if ( x > 1.2 ) return;
 	float amp = uFeatureHeight * ( 0.6 + 0.6 * cr.z ) * size;
-	// bell profile (1 - x^2)^2: a boss that swells out of the pebbles, no hard rim
-	float b1 = max( 1.0 - x * x, 0.0 );
-	float hf = amp * b1 * b1;
-	vec3 gf = amp * 4.0 * x * b1 / ( radius * size ) * dir;
-	float mask = 1.0 - smoothstep( 0.55, 1.0, x );      // the pebbles flatten on the boss
-	h = h * ( 1.0 - 0.65 * mask ) + hf;
-	g = g * ( 1.0 - 0.65 * mask ) + gf;
+	// flat-topped dome 1 - x^4 with a defined foot; the pebbles stay half-visible on top so it
+	// reads as a rugose boss, not a droplet
+	float x2 = x * x;
+	float b1 = max( 1.0 - x2 * x2, 0.0 );
+	float hf = amp * b1;
+	vec3 gf = amp * 4.0 * x2 * x / ( radius * size ) * dir * step( x, 1.0 );
+	float mask = 1.0 - smoothstep( 0.6, 1.0, x );      // the pebbles flatten on the boss
+	h = h * ( 1.0 - 0.55 * mask ) + hf;
+	g = g * ( 1.0 - 0.55 * mask ) + gf;
 	float ring = smoothstep( 0.85, 0.97, x ) * ( 1.0 - smoothstep( 1.0, 1.12, x ) );
 	crack = max( crack * ( 1.0 - 0.6 * mask ), 0.6 * ring );
 	top = mix( top, 0.25 + 0.25 * b1, mask );
@@ -507,19 +509,22 @@ float skRoughness;
 
 	// reticulate crease network: shallow grooves along the borders of ~9 cm cells, the wrinkle
 	// web that breaks up large smooth areas (flank, thigh, tail) at medium distance
-	float netVis = skVisible( uNetScale * 0.4, pix ) * ( 1.0 - scuteW );
+	// (weighted like the folds: faint on the face, absent on the scutes)
+	float netVis = skVisible( uNetScale * 0.4, pix ) * ( 1.0 - scuteW ) * clamp( vSkinFold.x + vSkinFold.y + vSkinFold.z + 0.3, 0.0, 1.0 );
 	if ( uNetDepth > 0.0 && netVis > 0.0 ) {
 		vec3 eg, cr;
-		vec2 v = skVoronoi( p + 4.41, mat3( 1.0 / uNetScale ), 0.9, 0.25, 0.08 * uNetScale, eg, cr );
+		vec2 v = skVoronoi( p + 4.41, mat3( 1.0 / uNetScale ), 0.9, 0.45, 0.08 * uNetScale, eg, cr );
 		float e = v.x / uNetScale;
 		float w = uNetWidth * ( 0.5 + cr.x );
+		// grooves come and go along their length: a web of wrinkles, not a crackle glaze
+		float on = smoothstep( - 0.25, 0.45, n4.x + 0.5 * n2.x );
 		float t = clamp( e / w, 0.0, 1.0 );
 		float prof = 1.0 - t * t * ( 3.0 - 2.0 * t );
 		float dprof = ( e > 0.0 && e < w ) ? - 6.0 * t * ( 1.0 - t ) / w : 0.0;
-		float depth = uNetDepth * netVis * ( 0.4 + 0.6 * cr.y );   // some grooves fainter than others
-		h -= depth * prof;
-		g -= depth * dprof / uNetScale * eg;
-		foldCrease = max( foldCrease, prof * netVis * ( 0.4 + 0.6 * cr.y ) * 0.7 );
+		float amt = netVis * on * ( 0.35 + 0.65 * cr.y );               // some grooves fainter than others
+		h -= uNetDepth * amt * prof;
+		g -= uNetDepth * amt * dprof / uNetScale * eg;
+		foldCrease = max( foldCrease, prof * amt * 0.45 );
 	}
 
 	// sparse tubercles (feature scales)
@@ -547,7 +552,7 @@ float skRoughness;
 	col *= 1.0 + uGrainTint * n4.x * grainVis;
 	col *= 1.0 + uScaleTint * ( rnd - 0.5 ) * 2.0 * vis;
 	col *= 1.0 + uTopLight * top * vis;
-	col *= 1.0 - 0.12 * boss;                                       // bosses: slightly darker, read by relief
+	col *= 1.0 - 0.2 * boss;                                       // bosses: slightly darker, read by relief
 	float crackAmt = max( crack * vis, foldCrease * 0.6 );
 	col *= 1.0 - uCrackDark * mix( 0.18, crackAmt, vis );           // faded: keep the mean darkening of the mortar
 	col *= 1.0 - uCavityDark * vSkinCavity * vSkinCavity;          // squared: only true creases darken
@@ -598,7 +603,7 @@ void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryP
 	vec3 irrD = directLight.color * diff;
 	reflectedLight.directDiffuse += irrD * BRDF_Lambert( material.diffuseColor );
 	float dotNL = saturate( ndlD );
-	reflectedLight.directSpecular += dotNL * directLight.color * BRDF_GGX( L, geometryViewDir, geometryNormal, material );
+	reflectedLight.directSpecular += uSpecular * dotNL * directLight.color * BRDF_GGX( L, geometryViewDir, geometryNormal, material );
 	#ifdef USE_SHEEN
 		sheenSpecularDirect += dotNL * directLight.color * BRDF_Sheen( L, geometryViewDir, geometryNormal, material.sheenColor, material.sheenRoughness );
 	#endif
@@ -677,7 +682,7 @@ export function createSkinMaterial(THREE, opts = {}) {
     uCavityAO: { value: o.cavityAO }, uRoughness: { value: o.roughness }, uRoughVar: { value: o.roughVar },
     uCrackRough: { value: o.crackRough }, uTopRough: { value: o.topRough }, uFadeRough: { value: o.fadeRough },
     uScatterColor: { value: v3(THREE, o.scatterColor) }, uSSS: { value: o.sss }, uSSSNormalBlur: { value: o.sssNormalBlur },
-    uTranslucency: { value: o.translucency },
+    uTranslucency: { value: o.translucency }, uSpecular: { value: o.specular },
     uDustColor: { value: col(o.dustColor) }, uDust: { value: o.dust }, uDustHeight: { value: o.dustHeight },
     uDetailFade: { value: o.detailFade }, uWorldScale: { value: o.worldScale },
     uEyeColor: { value: col(o.eyeColor) }, uClawColor: { value: col(o.clawColor) }, uOcclusionAO: { value: o.occlusionAO }, uFoldAttr: { value: o.foldAttr },
@@ -708,18 +713,37 @@ export function createSkinMaterial(THREE, opts = {}) {
   return mat;
 }
 
-// Points the scute frames at the real foot bones (rest pose): distal metatarsus direction from
-// metaL -> toesL, toe frame below the metatarsophalangeal joint. bones = TREX_BONES-like array.
-export function configureSkinForBones(material, bones) {
+// Fits the material to a skeleton / sculpt (rest pose, TREX_BONES / TREX_SHAPES-like arrays):
+//  - scute frames: distal metatarsus direction from metaL -> toesL, toe frame below the
+//    metatarsophalangeal joint;
+//  - tubercle hotspots (if shapes are given): for every shape tagged feature 'eye', one above the
+//    orbit (brow bosses) and one below-behind it (cheek / jugal cluster), plus one on the nasal ridge.
+//    The exact placement of feature scales on Tyrannosaurus is not preserved: this is an
+//    art-direction choice modelled on extant archosaurs, keep it subtle.
+export function configureSkinForBones(material, bones, shapes = null) {
   const U = material.userData.skinUniforms;
   const get = (n) => bones.find((b) => b.name === n);
   const meta = get('metaL') || get('metaR'), toes = get('toesL') || get('toesR');
-  if (!meta || !toes) return;
-  const d = [toes.head[0] - meta.head[0], toes.head[1] - meta.head[1], 0];
-  const l = Math.hypot(d[0], d[1]) || 1;
-  U.uMetaAxis.value.set(d[0] / l, d[1] / l, 0);
-  // The toe frame applies below roughly the top of the toe pads (joint height + a toe radius).
-  U.uToeHeight.value = toes.head[1] + 0.06;
+  if (meta && toes) {
+    const d = [toes.head[0] - meta.head[0], toes.head[1] - meta.head[1], 0];
+    const l = Math.hypot(d[0], d[1]) || 1;
+    U.uMetaAxis.value.set(d[0] / l, d[1] / l, 0);
+    // The toe frame applies below roughly the top of the toe pads (joint height + a toe radius).
+    U.uToeHeight.value = toes.head[1] + 0.06;
+  }
+  const eyes = (shapes || []).filter((s) => s.feature === 'eye' && s.center);
+  if (eyes.length) {
+    const spots = [];
+    for (const e of eyes.slice(0, 2)) {
+      const [x, y, z] = e.center;
+      spots.push([x - 0.02, y + 0.1, z * 0.92, 0.17]);          // brow, above the orbit
+      spots.push([x - 0.18, y - 0.2, z * 1.05, 0.2]);           // cheek, below-behind the orbit
+    }
+    const ex = eyes.reduce((a, e) => a + e.center[0], 0) / eyes.length;
+    const ey = eyes.reduce((a, e) => a + e.center[1], 0) / eyes.length;
+    spots.push([ex + 0.45, ey - 0.02, 0, 0.22]);                 // nasal ridge
+    U.uHotspots.value.forEach((v, i) => (spots[i] ? v.set(...spots[i]) : v.set(0, 0, 0, 0)));
+  }
 }
 
 // Optional, recommended for meshes whose aRegion changes abruptly from one vertex to the next

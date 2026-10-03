@@ -146,6 +146,13 @@ function foldPhase(S, i, x, y, z) {
   return (x * f[o + 1] + y * f[o + 2] + z * f[o + 3]) * f[o]
     + 0.45 * Math.sin(3.1 * y + 2.3 * z + 0.7 * x) + 0.25 * Math.sin(5.7 * x - 3.3 * y + 1.9 * z);
 }
+// Soft rolls with rounded (not cusped) creases: a cusp narrower than a voxel would alias into
+// a saw-tooth edge. 0 at the crease, 1 on the roll.
+const FOLD_C = 0.45, FOLD_N = 1 / (Math.sqrt(1 + FOLD_C * FOLD_C) - FOLD_C);
+function foldProfile(t) {
+  const s = Math.sin(Math.PI * t);
+  return (Math.sqrt(s * s + FOLD_C * FOLD_C) - FOLD_C) * FOLD_N;
+}
 // Folds break up along their length (skin creases are not continuous rings) and vary in depth.
 function foldAmp(S, i, t, x, y, z) {
   const b = Math.sin(5.3 * x - 7.9 * y + 3.1 * z + 0.9 * t) * Math.cos(2.3 * y + 4.1 * z - 1.3 * x + 0.4 * t);
@@ -193,7 +200,7 @@ function evalList(S, list, start, end, x, y, z, scratch) {
     const w = foldWeight(S, i, di, d, x, y, z);
     if (w <= 0) continue;
     const t = foldPhase(S, i, x, y, z);
-    d -= foldAmp(S, i, t, x, y, z) * w * Math.abs(Math.sin(Math.PI * t));
+    d -= foldAmp(S, i, t, x, y, z) * w * foldProfile(t);
   }
   return d;
 }
@@ -215,7 +222,7 @@ function foldCrease(S, list, start, end, x, y, z) {
   for (let f = 0; f < dist.length; f += 2) {
     const i = dist[f], w = foldWeight(S, i, dist[f + 1], d, x, y, z);
     if (w <= 0) continue;
-    const t = foldPhase(S, i, x, y, z), g = Math.abs(Math.sin(Math.PI * t));
+    const t = foldPhase(S, i, x, y, z), g = foldProfile(t);
     c = Math.max(c, w * Math.pow(1 - g, 3) * foldAmp(S, i, t, x, y, z) / S.foldAmp[i]);
   }
   return c;
@@ -406,6 +413,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   const nV = pos.length / 3;
   const P = new Float32Array(pos);
   const N = new Float32Array(nV * 3);
+  const gradLen = new Float32Array(nV);   // |grad| of the field at the vertex (1 for a true SDF)
 
   // ---- snap to iso-surface + analytic normals ----------------------------------------------------
   const eps = 0.35 * h;
@@ -439,6 +447,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     grad(x, y, z, g);
     const gl = Math.hypot(g[0], g[1], g[2]) || 1;
     N[vi * 3] = g[0] / gl; N[vi * 3 + 1] = g[1] / gl; N[vi * 3 + 2] = g[2] / gl;
+    gradLen[vi] = gl / (4 * eps);
   }
   lap('snap');
 
@@ -451,13 +460,27 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     const x = P[vi * 3], y = P[vi * 3 + 1], z = P[vi * 3 + 2];
     const nx_ = N[vi * 3], ny_ = N[vi * 3 + 1], nz_ = N[vi * 3 + 2];
     let cs = 0, ws = 0;
+    const gn = Math.min(1, Math.max(0.3, gradLen[vi]));
     for (const hh of smallH) {
-      const d = sdf(fine, x + nx_ * hh, y + ny_ * hh, z + nz_ * hh);
+      const d = sdf(fine, x + nx_ * hh, y + ny_ * hh, z + nz_ * hh) / gn;
       cs += Math.max(0, hh - d) / hh; ws += 1;
     }
     let ob = 0, wb = 0, wt = 1;
     for (const hh of bigH) {
-      const d = sdf(wide, x + nx_ * hh, y + ny_ * hh, z + nz_ * hh);
+      const qx = x + nx_ * hh, qy = y + ny_ * hh, qz = z + nz_ * hh;
+      let d = sdf(wide, qx, qy, qz);
+      if (d < hh) {
+        // Smooth unions and the ellipsoid bound under-estimate distance away from the surface,
+        // which would read as occlusion everywhere: rescale by the local gradient length.
+        let gx = 0, gy = 0, gz = 0;
+        const e = 0.03;
+        for (let t = 0; t < 12; t += 3) {
+          const f = sdf(wide, qx + tet[t] * e, qy + tet[t + 1] * e, qz + tet[t + 2] * e);
+          gx += tet[t] * f; gy += tet[t + 1] * f; gz += tet[t + 2] * f;
+        }
+        const gl = Math.sqrt(gx * gx + gy * gy + gz * gz) / (4 * e);
+        if (gl > 0.2) d /= Math.min(gl, 1);
+      }
       ob += wt * Math.max(0, hh - d) / hh; wb += wt; wt *= 0.75;
     }
     const c = Math.min(1, 1.6 * cs / ws), o = Math.min(1, 1.5 * ob / wb);

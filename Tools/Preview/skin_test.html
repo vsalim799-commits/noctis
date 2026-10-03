@@ -246,7 +246,10 @@ const shots = {
   trex_tail:    { pos: [-3.5, 3.0, 5.2], look: [-4.2, 2.4, 0], fov: 32 },
 };
 const s = shots[shot] || shots.close;
-cam.fov = s.fov; cam.position.set(...s.pos); cam.lookAt(...s.look); cam.updateProjectionMatrix();
+cam.fov = s.fov; cam.position.set(...s.pos); cam.lookAt(...s.look);
+// &jit=0.5 shifts the image by a sub-pixel amount: diffing two renders exposes shimmer/aliasing
+if (P.get('jit')) cam.setViewOffset(W, H, +P.get('jit'), +P.get('jit') * 0.7, W, H);
+cam.updateProjectionMatrix();
 
 if (isTrex) {
   // Hide the test bench and dress the real creature (built by the other modules, read-only here).
@@ -257,7 +260,7 @@ if (isTrex) {
   const tb = performance.now();
   const { mesh, boneMap } = buildCreature(THREE, TREX_BONES, TREX_SHAPES, { voxel: +(P.get('voxel') || 0.035) });
   const mat = createSkinMaterial(THREE, { ...matOpts, hotspots: JSON.parse(P.get('hot') || '[]') });
-  configureSkinForBones(mat, TREX_BONES);
+  configureSkinForBones(mat, TREX_BONES, TREX_SHAPES);
   if (P.get('bake') !== '0') bakeSkinRegions(THREE, mesh.geometry, mat, { radius: 0.08 });
   mesh.material = mat;
   mesh.castShadow = mesh.receiveShadow = true;

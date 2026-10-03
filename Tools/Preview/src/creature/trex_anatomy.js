@@ -93,7 +93,7 @@ function makeShapes(bones) {
     }
   };
   // Neck skin folds: bands across the neck axis, only on the flanks (not on the nape or throat).
-  const neckFolds = { amp: 0.01, wavelength: 0.16, axis: [0.83, 0.56, 0], lateral: 0.4 };
+  const neckFolds = { amp: 0.016, wavelength: 0.18, axis: [0.83, 0.56, 0], lateral: 0.35 };
 
   // ---- trunk -----------------------------------------------------------------------------------
   // Deep ribcage (back ~3.6 m, gastral belly ~1.95 m) narrowing to the shoulders (plausible soft
@@ -103,7 +103,7 @@ function makeShapes(bones) {
   E('spine1', 'torso', [0.4, 2.97, 0], [0.75, 0.6, 0.42], [0, 0, 0], 0.22);               // loins
   E('spine2', 'torso', [1.05, 3.38, 0], [1.65, 0.23, 0.33], [0, 0, 0.02], 0.2);           // epaxial muscles
   E('spine1', 'belly', [1.1, 2.22, 0], [0.85, 0.25, 0.4], [0, 0, 0.05], 0.25);            // gut
-  E('spine3', 'belly', [2.1, 2.24, 0], [0.42, 0.21, 0.35], [0, 0, 0], 0.22);              // chest floor
+  E('spine3', 'belly', [2.2, 2.25, 0], [0.46, 0.23, 0.36], [0, 0, 0.1], 0.22);            // chest floor (coracoids, furcula)
   RC('pelvis', 'belly', [0.1, 2.7, 0], [0.42, 2.02, 0], 0.24, 0.14, 0.2);                // pubis apron
   E('pelvis', 'belly', [0.4, 1.98, 0], [0.34, 0.09, 0.13], [0, 0, -0.1], 0.2);            // pubic boot (keel under the belly skin)
   both((s, m, mr) => {
@@ -139,10 +139,10 @@ function makeShapes(bones) {
   // Short, deep S-curved neck: thick at the shoulders, ~0.85 m deep and narrower than the skull
   // just behind the head.
   E('neck1', 'neck', [2.72, 3.08, 0], [0.5, 0.6, 0.42], [0, 0, 0.65], 0.22, { folds: neckFolds });
-  E('neck2', 'neck', [3.02, 3.32, 0], [0.45, 0.52, 0.36], [0, 0, 0.8], 0.2, { folds: neckFolds });
-  E('neck3', 'neck', [3.3, 3.5, 0], [0.38, 0.47, 0.32], [0, 0, 0.6], 0.18, { folds: neckFolds });
+  E('neck2', 'neck', [3.02, 3.32, 0], [0.45, 0.52, 0.39], [0, 0, 0.8], 0.2, { folds: neckFolds });
+  E('neck3', 'neck', [3.3, 3.5, 0], [0.38, 0.47, 0.35], [0, 0, 0.6], 0.18, { folds: neckFolds });
   E('neck2', 'neck', [3.02, 3.62, 0], [0.6, 0.2, 0.24], [0, 0, 0.5], 0.18);                // nape muscles
-  E('neck3', 'neck', [3.38, 3.06, 0], [0.45, 0.27, 0.29], [0, 0, 0.45], 0.18, { folds: neckFolds }); // throat
+  E('neck3', 'neck', [3.38, 3.06, 0], [0.45, 0.27, 0.31], [0, 0, 0.45], 0.18, { folds: neckFolds }); // throat
   E('neck1', 'neck', [2.72, 2.62, 0], [0.42, 0.34, 0.38], [0, 0, 0.6], 0.2);              // base of the throat
 
   // ---- head (skull bone) -----------------------------------------------------------------------
@@ -151,7 +151,7 @@ function makeShapes(bones) {
   E('skull', 'head', hp([3.7, 3.7, 0]), [0.3, 0.28, 0.29], [0, 0, 0], 0.2);                    // braincase / temporal
   E('skull', 'head', hp([3.86, 3.83, 0]), [0.32, 0.12, 0.26], [0, 0, -0.05], 0.12);          // broad skull roof over the orbits
   RC('skull', 'head', hp([4.74, 3.46, 0]), hp([3.98, 3.6, 0]), 0.17, 0.33, 0.12, { scale: [1, 1.04, 0.76] }); // snout
-  E('skull', 'head', hp([4.77, 3.45, 0]), [0.13, 0.155, 0.125], [0, 0, -0.2], 0.08);           // premaxilla
+  E('skull', 'head', hp([4.77, 3.43, 0]), [0.12, 0.14, 0.11], [0, 0, -0.2], 0.08);           // premaxilla
   E('skull', 'head', hp([4.79, 3.33, 0]), [0.12, 0.08, 0.115], [0, 0, 0], 0.06);               // front of the upper lip
   both((s, m, mr) => {
     E('skull', 'head', m(hp([3.64, 3.84, 0.15])), [0.22, 0.14, 0.15], [0, 0, 0], 0.18);         // jaw-closing muscles
@@ -161,7 +161,7 @@ function makeShapes(bones) {
   });
 
   // ---- lower jaw (jaw bone) --------------------------------------------------------------------
-  E('jaw', 'jaw', hp([4.6, 3.165, 0]), [0.17, 0.095, 0.11], [0, 0, -0.05], 0.07);              // chin (tucked behind the premaxilla)
+  E('jaw', 'jaw', hp([4.58, 3.15, 0]), [0.19, 0.11, 0.11], [0, 0, -0.05], 0.07);              // chin (tucked behind the premaxilla)
   RC('jaw', 'jaw', hp([4.52, 3.1, 0]), hp([3.75, 2.97, 0]), 0.09, 0.14, 0.1, { scale: [1, 1, 1.7] }); // throat floor between the rami
   both((s, m, mr) => {
     E('jaw', 'jaw', m(hp([4.24, 3.14, 0.1])), [0.5, 0.11, 0.065], mr([0.3, 0.24, 0.06]), 0.07);   // dentary (lip side tilted out)
@@ -181,30 +181,35 @@ function makeShapes(bones) {
     E(th, 'thigh', m([0.42, 2.02, 0.5]), [0.24, 0.36, 0.21], [0, 0, 0.43], 0.12);           // lower thigh into the knee
     E(sh, 'shin', m([0.57, 1.86, 0.48]), [0.21, 0.21, 0.18], [0, 0, 0], 0.1);               // knee
     // Shank: tibia + fibula, gastrocnemius bulging behind the upper half.
-    RC(sh, 'shin', m([0.5, 1.75, 0.47]), m([0.2, 0.85, 0.43]), 0.2, 0.12, 0.1);
+    RC(sh, 'shin', m([0.5, 1.75, 0.47]), m([0.2, 0.85, 0.43]), 0.2, 0.135, 0.1);
     E(sh, 'shin', m([0.29, 1.47, 0.47]), [0.21, 0.46, 0.18], [0, 0, -0.35], 0.1);           // gastrocnemius
     E(sh, 'shin', m([0.48, 1.42, 0.48]), [0.11, 0.38, 0.12], [0, 0, -0.35], 0.08);           // tibialis
     E(mt, 'foot', m([0.17, 0.76, 0.43]), [0.14, 0.13, 0.13], [0, 0, 0], 0.08);              // ankle
     // Metatarsus: long arctometatarsalian block, widening to the toe joints.
-    RC(mt, 'foot', m([0.18, 0.74, 0.43]), m([0.4, 0.2, 0.42]), 0.125, 0.14, 0.06);
-    E(to, 'foot', m([0.37, 0.12, 0.42]), [0.2, 0.11, 0.17], [0, 0, 0], 0.06);               // ball pad
-    // Toes II-IV (II medial = towards the midline = -z on the right foot): two round cones
-    // for the phalanges and a cone for the claw.
-    const toe = (dirZ, len, r0) => {
-      const z0 = 0.42 + dirZ * 0.07;
-      const p0 = [0.47, 0.13, z0], p1 = [0.47 + len * 0.55, 0.08, z0 + dirZ * len * 0.3];
-      const p2 = [0.47 + len * 0.9, 0.065, z0 + dirZ * len * 0.45];
-      const p3 = [0.47 + len * 1.12, 0.03, z0 + dirZ * len * 0.53];
-      RC(to, 'foot', m(p0), m(p1), r0, r0 * 0.78, 0.04);
-      RC(to, 'foot', m(p1), m(p2), r0 * 0.78, r0 * 0.62, 0.03);
-      RC(to, 'foot', m(p2), m(p3), r0 * 0.58, 0.012, 0.015, { feature: 'claw' });             // claw
+    RC(mt, 'foot', m([0.18, 0.74, 0.43]), m([0.4, 0.2, 0.42]), 0.125, 0.128, 0.06);
+    E(to, 'foot', m([0.36, 0.11, 0.42]), [0.16, 0.1, 0.15], [0, 0, 0], 0.06);               // metatarsal pad
+    // Toes II-IV splay from the metatarsal pad (II medial = towards the midline = -z on the right
+    // foot). Each toe: phalanges as round cones with a fleshy digital pad under each one, then a
+    // broad, blunt tyrannosaurid claw curving to the ground. Digit III ~0.5 m incl. claw, so the
+    // whole footprint is ~0.8 m long.
+    const toe = (yaw, len, r0) => {
+      const c = Math.cos(yaw), sn = Math.sin(yaw);
+      const at = (u, y) => m([0.47 + c * (len * u + 0.03), y, 0.42 + sn * (len * u + 0.12)]);
+      const joints = [[0, 0.115, r0], [0.34, 0.085, r0 * 0.85], [0.62, 0.07, r0 * 0.74], [0.84, 0.062, r0 * 0.64]];
+      for (let k = 0; k + 1 < joints.length; k++) {
+        const [u0, y0, ra] = joints[k], [u1, y1, rb] = joints[k + 1];
+        RC(to, 'foot', at(u0, y0), at(u1, y1), ra, rb, k === 0 ? 0.03 : 0.015);
+        E(to, 'foot', at(0.5 * (u0 + u1), 0.5 * (y0 + y1) - 0.45 * ra), [0.38 * len * (u1 - u0) + 0.02, 0.42 * ra, 0.85 * ra],
+          [0, -yaw, 0], 0.02);                                                                   // digital pad
+      }
+      RC(to, 'foot', at(0.84, 0.066), at(1.08, 0.018), r0 * 0.68, 0.014, 0.012, { feature: 'claw' }); // claw
     };
-    toe(-0.6, 0.4, 0.08);   // digit II
-    toe(0, 0.48, 0.09);     // digit III
-    toe(0.6, 0.42, 0.08);   // digit IV
+    toe(-0.42, 0.42, 0.072);  // digit II
+    toe(0, 0.5, 0.082);       // digit III
+    toe(0.42, 0.44, 0.072);   // digit IV
     // Hallux (digit I): small, raised off the ground, on the medial back of the metatarsus.
-    RC(mt, 'foot', m([0.28, 0.36, 0.35]), m([0.24, 0.24, 0.3]), 0.04, 0.025, 0.03);
-    RC(mt, 'foot', m([0.24, 0.24, 0.3]), m([0.27, 0.17, 0.29]), 0.022, 0.006, 0.01, { feature: 'claw' });
+    RC(mt, 'foot', m([0.29, 0.38, 0.34]), m([0.25, 0.25, 0.29]), 0.045, 0.032, 0.03);
+    RC(mt, 'foot', m([0.25, 0.25, 0.29]), m([0.28, 0.16, 0.28]), 0.026, 0.008, 0.01, { feature: 'claw' });
   });
 
   // ---- arms ------------------------------------------------------------------------------------
@@ -259,13 +264,14 @@ function makeShapes(bones) {
     for (let k = 0; k + 1 < hits.length; k++) {
       const a = hits[k], b = hits[k + 1];
       const na = normal(a), nb = normal(b);
-      const r = k >= hits.length - 2 ? 0.009 : 0.013;
-      details.push(() => CAP('skull', 'head', along(a, na, 0.006), along(b, nb, 0.006), r, 0.012, { sign: -1 }));
+      // Groove ~8 mm deep and ~4 cm wide: wide enough to survive a 2-3 cm voxel grid.
+      const r = k >= hits.length - 2 ? 0.014 : 0.02;
+      details.push(() => CAP('skull', 'head', along(a, na, r - 0.008), along(b, nb, r - 0.008), r, 0.014, { sign: -1 }));
     }
     // Front of the mouth: the groove wraps round the premaxilla.
     const f0 = cast(hp([5.3, 3.275, 0.07 * sg]), [-1, 0, 0]), f1 = cast(hp([5.3, 3.275, 0.0]), [-1, 0, 0]);
-    details.push(() => CAP('skull', 'head', along(hits[0], normal(hits[0]), 0.006), along(f0, normal(f0), 0.006), 0.013, 0.012, { sign: -1 }));
-    details.push(() => CAP('skull', 'head', along(f0, normal(f0), 0.006), along(f1, normal(f1), 0.006), 0.013, 0.012, { sign: -1 }));
+    details.push(() => CAP('skull', 'head', along(hits[0], normal(hits[0]), 0.012), along(f0, normal(f0), 0.012), 0.02, 0.014, { sign: -1 }));
+    details.push(() => CAP('skull', 'head', along(f0, normal(f0), 0.012), along(f1, normal(f1), 0.012), 0.02, 0.014, { sign: -1 }));
 
     // Eye: high in the skull, looking forward-outward over the narrow snout (binocular field).
     const eyeHit = castAt(hp([3.9, 3.8, 0.27 * sg]), [0.45, 0, -sg]);
@@ -294,28 +300,13 @@ function makeShapes(bones) {
       const n = normal(p);
       details.push(() => E('skull', 'head', along(p, n, -0.7 * r), [r * 1.2, r, r * 1.1], [0, 0, 0], 0.02));
     };
-    for (let k = 0; k < 9; k++) bump(4.12 + 0.62 * R(), 4.6, (0.02 + 0.1 * R()) * sg, [0, -1, 0], 0.022 + 0.012 * R());
-    for (let k = 0; k < 7; k++) {
+    for (let k = 0; k < 7; k++) bump(4.12 + 0.62 * R(), 4.6, (0.02 + 0.1 * R()) * sg, [0, -1, 0], 0.022 + 0.012 * R());
+    for (let k = 0; k < 5; k++) {
       const a = Math.PI * (0.15 + 0.9 * R());
       const p = castAt(hp([3.9 + 0.12 * Math.cos(a), 3.8 + 0.11 * Math.sin(a), 0.27 * sg]), [0.45, 0, -sg]);
       bump(p[0] - 0.3 * 0.45, p[1], p[2] + 0.3 * sg, [0.45, 0, -sg], 0.016 + 0.01 * R());
     }
-    for (let k = 0; k < 5; k++) bump(3.62 + 0.3 * R(), 3.4 + HEAD_OFFSET[1] + 0.18 * R(), 0.9 * sg, [0, 0, -sg], 0.016 + 0.008 * R());
-  });
-  // Lateral tail crease where the epaxial and hypaxial muscles meet (level of the transverse
-  // processes); fades out towards the tip.
-  both((s, m, mr, sg) => {
-    let prev = null;
-    for (let x = TAIL_X0 - 0.35; x > TAIL_TIP + 1.2; x -= 0.32) {
-      const hit = cast([x, tailY(x) + 0.02, 1.2 * sg], [0, 0, -sg]);
-      // Broad, shallow valley: a fat capsule sunk only ~1 cm below the skin, fading at both ends.
-      const u = (x - (TAIL_TIP + 1.2)) / (TAIL_X0 - 0.35 - (TAIL_TIP + 1.2));
-      const r = 0.03 + 0.07 * u, depth = 0.011 * Math.sin(Math.PI * Math.min(1, u * 1.15));
-      const p = along(hit, normal(hit), r - depth);
-      const bone = `tail${Math.min(10, 1 + Math.floor((TAIL_X0 - x) / -TAIL_SEG))}`;
-      if (prev) details.push(((a, b, rr) => () => CAP(bone, 'tail', a, b, rr, 0.04, { sign: -1 }))(prev.p, p, 0.5 * (prev.r + r)));
-      prev = { p, r };
-    }
+    for (let k = 0; k < 4; k++) bump(3.62 + 0.3 * R(), 3.4 + HEAD_OFFSET[1] + 0.18 * R(), 0.9 * sg, [0, 0, -sg], 0.016 + 0.008 * R());
   });
   for (const add of details) add();
   return out;
