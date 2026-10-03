@@ -16,6 +16,8 @@ canvas{display:block}
 // ellipsoid and a foot (metatarsus + 3 toes) carrying fake aRegion / aCavity / aFold attributes,
 // lit like the studio (soft key above-front-left, rim from behind, weak fill, dim room env).
 // URL: skin_test.html?shot=close|neck|head|foot|mid|far|pose2|flat&w=1600&h=900[&seed=0][&bump=1]
+// shot=trex_side|trex_front34|trex_head|trex_eye|trex_flank|trex_feet|trex_tail [&pose=1] dresses the
+// real SDF T. rex (sdf_mesher + trex_anatomy, imported read-only) with the skin.
 // Renders once on demand and sets window.__ready (headless capture: shoot_skin.mjs).
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -211,14 +213,18 @@ const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMat);
 floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
 // ---- lights (camera sits on the -z side: screen-left = +x)
+const isTrex = shot.startsWith('trex');
+const zs = isTrex ? -1 : 1;   // the T. rex shots look at the animal's right (+z) side
 const key = new THREE.DirectionalLight(0xfff1e2, 3.4);
-key.position.set(5, 8, -5.5); key.target.position.set(0.5, 1, 0);
-key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
-Object.assign(key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 30 });
+key.position.set(5, 8, -5.5 * zs); key.target.position.set(0.5, 1, 0);
+if (isTrex) { key.position.set(4, 14, 6); key.target.position.set(0.5, 2, 0); }
+key.castShadow = true; key.shadow.mapSize.set(isTrex ? 4096 : 2048, isTrex ? 4096 : 2048);
+const sc = isTrex ? 9 : 5;
+Object.assign(key.shadow.camera, { left: -sc, right: sc, top: sc, bottom: -sc, near: 1, far: 40 });
 key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 4;
 scene.add(key, key.target);
-const rim = new THREE.DirectionalLight(0xd8e4ff, 2.6); rim.position.set(-3, 5, 7); scene.add(rim);
-const fill = new THREE.DirectionalLight(0xc9d2e0, 0.35); fill.position.set(-6, 1.5, -4); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xd8e4ff, 2.6); rim.position.set(-3, 5, 7 * zs); scene.add(rim);
+const fill = new THREE.DirectionalLight(0xc9d2e0, 0.35); fill.position.set(-6, 1.5, -4 * zs); scene.add(fill);
 
 // ---- cameras
 const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 200);
@@ -231,10 +237,39 @@ const shots = {
   foot:  { pos: [0.6, 0.85, -3.0], look: [-0.15, 0.35, -1.6], fov: 30 },
   mid:   { pos: [1.0, 2.6, -6.5], look: [0.9, 1.3, -0.4], fov: 32 },
   far:   { pos: [1.0, 3.2, -16], look: [1.0, 1.2, -0.4], fov: 30 },
+  trex_side:    { pos: [-0.6, 2.6, 21], look: [-0.6, 2.0, 0], fov: 32 },
+  trex_front34: { pos: [9.5, 3.6, 8.5], look: [2.2, 2.4, 0], fov: 32 },
+  trex_head:    { pos: [6.4, 4.0, 3.2], look: [4.3, 3.45, 0.1], fov: 30 },
+  trex_eye:     { pos: [4.75, 3.95, 1.55], look: [3.92, 3.78, 0.25], fov: 30 },
+  trex_flank:   { pos: [1.2, 2.9, 4.6], look: [0.6, 2.4, 0.3], fov: 32 },
+  trex_feet:    { pos: [2.6, 0.9, 3.4], look: [0.4, 0.5, 0.2], fov: 32 },
+  trex_tail:    { pos: [-3.5, 3.0, 5.2], look: [-4.2, 2.4, 0], fov: 32 },
 };
 const s = shots[shot] || shots.close;
 cam.fov = s.fov; cam.position.set(...s.pos); cam.lookAt(...s.look); cam.updateProjectionMatrix();
 
+if (isTrex) {
+  // Hide the test bench and dress the real creature (built by the other modules, read-only here).
+  for (const o of [...scene.children]) if (o.isMesh && o !== floor) o.visible = false;
+  const { TREX_BONES, TREX_SHAPES } = await import('./src/creature/trex_anatomy.js');
+  const { buildCreature } = await import('./src/creature/sdf_mesher.js');
+  const { configureSkinForBones } = await import('./src/creature/skin_material.js');
+  const tb = performance.now();
+  const { mesh, boneMap } = buildCreature(THREE, TREX_BONES, TREX_SHAPES, { voxel: +(P.get('voxel') || 0.035) });
+  const mat = createSkinMaterial(THREE, { ...matOpts, hotspots: JSON.parse(P.get('hot') || '[]') });
+  configureSkinForBones(mat, TREX_BONES);
+  if (P.get('bake') !== '0') bakeSkinRegions(THREE, mesh.geometry, mat, { radius: 0.08 });
+  mesh.material = mat;
+  mesh.castShadow = mesh.receiveShadow = true;
+  scene.add(mesh);
+  if (P.get('pose') === '1') {
+    const r = (name, x, y, z) => boneMap.get(name)?.rotation.set(x, y, z);
+    r('neck2', 0, 0.25, 0.1); r('neck3', 0, 0.2, 0.05); r('jaw', 0, 0, -0.35);
+    for (let i = 1; i <= 10; i++) r(`tail${i}`, 0, -0.06, 0.02);
+    r('thighR', 0, 0, 0.5); r('shinR', 0, 0, -0.8); r('metaR', 0, 0, 0.6); r('toesR', 0, 0, -0.3);
+  }
+  console.log('trex build ms', Math.round(performance.now() - tb), 'verts', mesh.geometry.attributes.position.count);
+}
 document.getElementById('cap').textContent = `peau procédurale — vue « ${shot} » — couleurs spéculatives`;
 const t0 = performance.now();
 renderer.compile(scene, cam);

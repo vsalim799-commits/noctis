@@ -127,12 +127,13 @@ const DEFAULTS = {
   bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.085, hotspots: [], hotspotBoost: 0.6,
   midlineBoost: 1.6, midlineWidth: 0.12, scuteSize: [0.05, 0.22, 0.3], scuteHeight: 0.16,
   metaAxis: [0.32, -0.95, 0], toeAxis: [1, 0, 0], toeHeight: 0.22,
-  foldDepth: 0.016, foldBase: 0.15, foldDirs: [[1, 0, 0, 9], [0, 1, 0, 10], [0.8, 0.6, 0, 14]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1,
-  dorsalColor: '#463e37', ventralColor: '#968e80', counterShade: [-0.45, 0.35], mottle: 0.32, mottleScale: 1.6,
-  scaleTint: 0.16, topLight: 0.12, crackDark: 0.32, cavityDark: 0.45, cavityAO: 0.75,
-  roughness: 0.64, roughVar: 0.08, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
-  scatterColor: [1.0, 0.5, 0.35], sss: 0.45, sssNormalBlur: 0.45, translucency: 0.0,
+  foldDepth: 0.016, foldBase: 0.15, foldDirs: [[1, 0, 0, 9], [0, 1, 0, 10], [0.8, 0.6, 0, 14]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.09, netDepth: 0.0025, netWidth: 0.07,
+  dorsalColor: '#463e37', ventralColor: '#968e80', counterShade: [-0.8, 0.1], mottle: 0.42, mottleScale: 1.6,
+  scaleTint: 0.12, topLight: 0.08, crackDark: 0.28, cavityDark: 0.35, cavityAO: 0.7,
+  roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
+  scatterColor: [1.0, 0.6, 0.45], sss: 0.3, sssNormalBlur: 0.45, translucency: 0.0,
   dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, worldScale: 1.0,
+  eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.35,
 };
 
 const MAX_HOTSPOTS = 6;
@@ -144,6 +145,8 @@ const VERT_PARS = /* glsl */`
 attribute float aRegion;
 attribute float aCavity;
 attribute float aFold;
+attribute float aFeature;    // optional: 0 skin, 1 eye, 2 claw (sdf_mesher FEATURES)
+attribute float aOcclusion;  // optional: 0..1 occlusion by other body parts
 #ifdef SKIN_BAKED_REGIONS
 attribute vec4 aSkinA;   // smoothed region params (see bakeSkinRegions)
 attribute vec4 aSkinB;
@@ -157,12 +160,14 @@ uniform float uHotspotBoost;
 uniform float uMidlineBoost;
 uniform float uMidlineWidth;
 uniform float uFoldBase;
+uniform float uFoldAttr;
 varying vec3 vRestPos;
 varying vec3 vRestNormal;
 varying vec4 vSkinA;    // x log2(size / base), y tubercle density, z scute weight, w bump
 varying vec4 vSkinB;    // rgb region tint, a roughness offset
 varying vec4 vSkinFold; // xyz weights of the 3 fold fields, w fold amount
 varying float vSkinCavity;
+varying vec3 vSkinFeat;   // x eye, y claw, z occlusion
 `;
 
 // Region data is looked up per vertex and interpolated, so the borders between regions blend
@@ -190,8 +195,9 @@ const VERT_MAIN = /* glsl */`
 	float zz = position.z / uMidlineWidth;
 	float midline = exp( - zz * zz ) * smoothstep( 0.5, 0.9, normal.y );
 	vSkinA = vec4( rp.x, rp.y * ( 1.0 + midline * uMidlineBoost ) + hot * uHotspotBoost, rp.z, rp.w );
-	vSkinFold = vec4( foldW, clamp( aFold + uFoldBase, 0.0, 1.0 ) );
+	vSkinFold = vec4( foldW, clamp( uFoldAttr * aFold + uFoldBase, 0.0, 1.0 ) );
 	vSkinCavity = clamp( aCavity, 0.0, 1.0 );
+	vSkinFeat = vec3( 1.0 - clamp( abs( aFeature - 1.0 ), 0.0, 1.0 ), 1.0 - clamp( abs( aFeature - 2.0 ), 0.0, 1.0 ), clamp( aOcclusion, 0.0, 1.0 ) );
 }
 `;
 
@@ -202,12 +208,13 @@ varying vec4 vSkinA;
 varying vec4 vSkinB;
 varying vec4 vSkinFold;
 varying float vSkinCavity;
+varying vec3 vSkinFeat;
 
 uniform float uSeed, uBaseScale, uJitter, uSizeVar, uMortar, uDomeRadius, uScaleHeight, uSoftness, uBumpStrength;
 uniform float uFeatureScale, uFeatureHeight;
 uniform vec3 uScuteSize, uMetaAxis, uToeAxis;
 uniform float uScuteHeight, uToeHeight;
-uniform float uFoldDepth, uLumpDepth, uLumpScale, uGrainScale, uGrainDepth, uGrainTint;
+uniform float uFoldDepth, uLumpDepth, uLumpScale, uGrainScale, uGrainDepth, uGrainTint, uNetScale, uNetDepth, uNetWidth;
 uniform vec4 uFoldDirs[ 3 ];
 uniform vec3 uDorsalColor, uVentralColor;
 uniform vec2 uCounterShade;
@@ -217,10 +224,13 @@ uniform vec3 uScatterColor;
 uniform float uSSS, uSSSNormalBlur, uTranslucency;
 uniform vec3 uDustColor;
 uniform float uDust, uDustHeight, uDetailFade, uWorldScale;
+uniform vec3 uEyeColor, uClawColor;
+uniform float uOcclusionAO;
 
 // Globals shared between the pattern evaluation and the custom light function.
 vec3 skSmoothN;     // view-space normal with the macro relief only (folds / lumps): used by the SSS red channel
 float skAO;
+float skSkinW;      // 1 on skin, 0 on eyes / claws (no scattering there)
 
 // Hash without sine (D. Hoskins): stable in fp32 for the cell indices we use (|i| < 10^4).
 vec3 skHash33( vec3 p ) {
@@ -495,6 +505,23 @@ float skRoughness;
 		}
 	}
 
+	// reticulate crease network: shallow grooves along the borders of ~9 cm cells, the wrinkle
+	// web that breaks up large smooth areas (flank, thigh, tail) at medium distance
+	float netVis = skVisible( uNetScale * 0.4, pix ) * ( 1.0 - scuteW );
+	if ( uNetDepth > 0.0 && netVis > 0.0 ) {
+		vec3 eg, cr;
+		vec2 v = skVoronoi( p + 4.41, mat3( 1.0 / uNetScale ), 0.9, 0.25, 0.08 * uNetScale, eg, cr );
+		float e = v.x / uNetScale;
+		float w = uNetWidth * ( 0.5 + cr.x );
+		float t = clamp( e / w, 0.0, 1.0 );
+		float prof = 1.0 - t * t * ( 3.0 - 2.0 * t );
+		float dprof = ( e > 0.0 && e < w ) ? - 6.0 * t * ( 1.0 - t ) / w : 0.0;
+		float depth = uNetDepth * netVis * ( 0.4 + 0.6 * cr.y );   // some grooves fainter than others
+		h -= depth * prof;
+		g -= depth * dprof / uNetScale * eg;
+		foldCrease = max( foldCrease, prof * netVis * ( 0.4 + 0.6 * cr.y ) * 0.7 );
+	}
+
 	// sparse tubercles (feature scales)
 	float fVis = skVisible( uFeatureScale * 0.5, pix );
 	if ( vSkinA.y > 0.005 && fVis > 0.0 ) {
@@ -505,9 +532,13 @@ float skRoughness;
 		vis = max( vis, fVis * step( 0.001, abs( h - hb ) ) );
 	}
 
-	float bump = uBumpStrength * vSkinA.w;
+	float eyeW = smoothstep( 0.3, 0.7, vSkinFeat.x ), clawW = smoothstep( 0.3, 0.7, vSkinFeat.y );
+	skSkinW = 1.0 - max( eyeW, clawW );
+	float bump = uBumpStrength * vSkinA.w * skSkinW;
 	skGradDetail = g * bump;
-	skGradMacro *= uBumpStrength;
+	skGradMacro *= uBumpStrength * skSkinW;
+	// keratin claws: faint growth striations instead of scales
+	skGradDetail += clawW * 0.0006 * uLumpScale * 9.0 * n2.yzw;
 
 	// ---- albedo
 	float cs = smoothstep( uCounterShade.x, uCounterShade.y, nR.y + 0.3 * mottle );
@@ -519,10 +550,12 @@ float skRoughness;
 	col *= 1.0 - 0.12 * boss;                                       // bosses: slightly darker, read by relief
 	float crackAmt = max( crack * vis, foldCrease * 0.6 );
 	col *= 1.0 - uCrackDark * mix( 0.18, crackAmt, vis );           // faded: keep the mean darkening of the mortar
-	col *= 1.0 - uCavityDark * vSkinCavity;
+	col *= 1.0 - uCavityDark * vSkinCavity * vSkinCavity;          // squared: only true creases darken
 	float dustW = uDust * ( 1.0 - smoothstep( uDustHeight * 0.25, uDustHeight, p.y ) ) * ( 0.55 + 0.45 * n2.x );
 	dustW *= mix( 0.45, 1.0, max( crack * vis, 0.25 ) );
 	col = mix( col, uDustColor, clamp( dustW, 0.0, 1.0 ) );
+	col = mix( col, uClawColor * ( 0.85 + 0.3 * n2.x ), clawW );
+	col = mix( col, uEyeColor * ( 0.8 + 0.4 * n4.x ), eyeW );
 	diffuseColor.rgb *= max( col, 0.0 );
 
 	// ---- roughness
@@ -530,10 +563,12 @@ float skRoughness;
 	rough += uCrackRough * crack * vis + uTopRough * top * vis + 0.14 * ( fract( rnd * 7.31 ) - 0.5 ) * vis;
 	rough += uFadeRough * ( 1.0 - vis ) * step( 0.001, bump );
 	rough += 0.25 * dustW;
-	skRoughness = clamp( rough, 0.08, 1.0 );
+	rough = mix( rough, 0.36 + 0.08 * n2.x, clawW );
+	rough = mix( rough, 0.07, eyeW );
+	skRoughness = clamp( rough, 0.05, 1.0 );
 
 	// ---- occlusion: aCavity + micro occlusion in cracks and fold creases
-	skAO = ( 1.0 - uCavityAO * vSkinCavity ) * ( 1.0 - 0.35 * crack * vis ) * ( 1.0 - 0.3 * foldCrease );
+	skAO = ( 1.0 - uCavityAO * vSkinCavity ) * ( 1.0 - uOcclusionAO * vSkinFeat.z ) * ( 1.0 - 0.35 * crack * vis ) * ( 1.0 - 0.3 * foldCrease );
 }
 `;
 
@@ -557,8 +592,8 @@ void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryP
 	float ndlD = dot( geometryNormal, L );
 	float ndlS = dot( skSmoothN, L );
 	vec3 blur = clamp( uSSSNormalBlur * uScatterColor, 0.0, 1.0 );
-	vec3 ndl = mix( vec3( ndlD ), vec3( ndlS ), blur );
-	vec3 wrap = uSSS * uScatterColor;
+	vec3 ndl = mix( vec3( ndlD ), vec3( ndlS ), blur * skSkinW );
+	vec3 wrap = uSSS * uScatterColor * skSkinW;
 	vec3 diff = clamp( ( ndl + wrap ) / ( 1.0 + wrap ), 0.0, 1.0 );
 	vec3 irrD = directLight.color * diff;
 	reflectedLight.directDiffuse += irrD * BRDF_Lambert( material.diffuseColor );
@@ -634,6 +669,7 @@ export function createSkinMaterial(THREE, opts = {}) {
     uToeHeight: { value: o.toeHeight },
     uFoldDepth: { value: o.foldDepth }, uFoldDirs: { value: o.foldDirs.map((d) => { const a = v3(THREE, d).normalize(); return new THREE.Vector4(a.x, a.y, a.z, d[3]); }) }, uLumpDepth: { value: o.lumpDepth }, uLumpScale: { value: o.lumpScale },
     uGrainScale: { value: o.grainScale }, uGrainDepth: { value: o.grainDepth }, uGrainTint: { value: o.grainTint },
+    uNetScale: { value: o.netScale }, uNetDepth: { value: o.netDepth }, uNetWidth: { value: o.netWidth },
     uDorsalColor: { value: col(o.dorsalColor) }, uVentralColor: { value: col(o.ventralColor) },
     uCounterShade: { value: new THREE.Vector2(o.counterShade[0], o.counterShade[1]) },
     uMottle: { value: o.mottle }, uMottleScale: { value: o.mottleScale }, uScaleTint: { value: o.scaleTint },
@@ -644,6 +680,7 @@ export function createSkinMaterial(THREE, opts = {}) {
     uTranslucency: { value: o.translucency },
     uDustColor: { value: col(o.dustColor) }, uDust: { value: o.dust }, uDustHeight: { value: o.dustHeight },
     uDetailFade: { value: o.detailFade }, uWorldScale: { value: o.worldScale },
+    uEyeColor: { value: col(o.eyeColor) }, uClawColor: { value: col(o.clawColor) }, uOcclusionAO: { value: o.occlusionAO }, uFoldAttr: { value: o.foldAttr },
   };
 
   mat.onBeforeCompile = (shader) => {
