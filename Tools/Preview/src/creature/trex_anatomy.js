@@ -150,12 +150,12 @@ function makeShapes(bones) {
   // quadratojugals, narrow snout with near-vertical flanks down to the lip line (y ~3.25).
   E('skull', 'head', hp([3.7, 3.7, 0]), [0.3, 0.28, 0.29], [0, 0, 0], 0.2);                    // braincase / temporal
   E('skull', 'head', hp([3.86, 3.83, 0]), [0.32, 0.12, 0.26], [0, 0, -0.05], 0.12);          // broad skull roof over the orbits
-  RC('skull', 'head', hp([4.74, 3.46, 0]), hp([3.98, 3.6, 0]), 0.17, 0.33, 0.12, { scale: [1, 1.04, 0.76] }); // snout
+  RC('skull', 'head', hp([4.74, 3.46, 0]), hp([3.98, 3.6, 0]), 0.17, 0.33, 0.12, { scale: [1, 1.04, 0.72] }); // snout
   E('skull', 'head', hp([4.77, 3.43, 0]), [0.12, 0.14, 0.11], [0, 0, -0.2], 0.08);           // premaxilla
   E('skull', 'head', hp([4.79, 3.33, 0]), [0.12, 0.08, 0.115], [0, 0, 0], 0.06);               // front of the upper lip
   both((s, m, mr) => {
     E('skull', 'head', m(hp([3.64, 3.84, 0.15])), [0.22, 0.14, 0.15], [0, 0, 0], 0.18);         // jaw-closing muscles
-    E('skull', 'head', m(hp([4.28, 3.45, 0.14])), [0.55, 0.21, 0.09], mr([0, 0.2, -0.04]), 0.12); // maxillary flank
+    E('skull', 'head', m(hp([4.28, 3.45, 0.15])), [0.55, 0.21, 0.09], mr([0, 0.2, -0.04]), 0.1);  // maxillary flank
     E('skull', 'head', m(hp([3.76, 3.5, 0.28])), [0.3, 0.22, 0.13], mr([0, 0.3, 0]), 0.15);      // jugal / postorbital
     E('skull', 'head', m(hp([3.57, 3.38, 0.35])), [0.14, 0.18, 0.1], [0, 0, 0], 0.16);             // quadratojugal flare
   });
@@ -289,6 +289,11 @@ function makeShapes(bones) {
     const la = castAt(hp([4.03, 3.9, 0.17 * sg]), [0, -0.8, -sg]);
     details.push(() => E('skull', 'head', along(la, normal(la), -0.03), [0.11, 0.05, 0.065], mr([0, 0.3, -0.15]), 0.06));
     // External naris near the top front of the snout, opening forward-outward.
+    // Brow ridge joining the two bosses: the overhang that keeps the eye in shadow.
+    details.push(() => CAP('skull', 'head', along(la, normal(la), -0.035), along(po, normal(po), -0.04), 0.045, 0.05));
+    // Jugal ridge ("cheekbone") from below the orbit back towards the jaw joint.
+    const j0 = castAt(hp([4.08, 3.6, 0.3 * sg]), [0, 0, -sg]), j1 = castAt(hp([3.62, 3.46, 0.42 * sg]), [0, 0, -sg]);
+    details.push(() => CAP('skull', 'head', along(j0, normal(j0), -0.035), along(j1, normal(j1), -0.04), 0.05, 0.06));
     const na = castAt(hp([4.74, 3.52, 0.12 * sg]), [0.3, 0, -sg]);
     details.push(() => E('skull', 'head', along(na, normal(na), 0.01), [0.05, 0.018, 0.022], mr([0, 0.35, -0.3]), 0.015, { sign: -1 }));
 
