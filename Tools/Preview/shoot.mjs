@@ -7,7 +7,7 @@ import path from 'node:path';
 
 const base = process.argv[2] || 'http://127.0.0.1:8765/Tools/Preview/valley.html';
 const outDir = process.argv[3] || '../../Output/preview';
-const views = process.argv.length > 4 ? process.argv.slice(4) : ['overview', 'herd', 'low', 'river'];
+const views = process.argv.length > 4 ? process.argv.slice(4) : ['herd', 'low', 'river', 'drone', 'aerial'];
 const exe = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell';
 
 fs.mkdirSync(outDir, { recursive: true });

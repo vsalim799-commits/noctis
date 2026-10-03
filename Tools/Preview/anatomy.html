@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Noctis — planche anatomique (débogage)</title>
+<style>html,body{margin:0;height:100%;background:#cfd6d8;overflow:hidden;font-family:system-ui,sans-serif}#l{position:absolute;left:12px;top:8px;font-size:13px;color:#222}</style>
+<script type="importmap">{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }</script>
+</head>
+<body><div id="l"></div>
+<script type="module">
+// Side-view line-up of the procedural bodies with the simulation's standing foot layout
+// (hind feet 0.08 L behind the reference point, fore feet 0.22 L ahead, track ±0.06 L).
+import * as THREE from 'three';
+import { buildAnimal } from './src/animals.js';
+import * as TX from './src/textures.js';
+const P = new URLSearchParams(location.search);
+const plans = (P.get('plans') || 'facultative_quadruped_hadrosaur,quadruped_ceratopsian,biped_large_theropod').split(',');
+const sizes = { facultative_quadruped_hadrosaur: [10, 2.6], quadruped_ceratopsian: [8.5, 2.1], quadruped_ankylosaur: [7, 1.4], biped_large_theropod: [12, 3.1],
+  biped_small_theropod: [2.2, 0.55], biped_small_ornithischian: [3.5, 0.9], biped_pachycephalosaur: [4.5, 1.3], biped_ornithomimid: [4, 1.4], biped_oviraptorosaur: [3.5, 1.5],
+  quadruped_crocodylian: [2.8, 0.3], aquatic_reptile: [1.5, 0.12], quadruped_small_mammal: [0.8, 0.12], quadruped_azhdarchid: [1.8, 0.8] };
+const posture = +(P.get('posture') || 0);
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+r.setSize(innerWidth, innerHeight); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 0.9; r.shadowMap.enabled = true;
+document.body.appendChild(r.domElement);
+const s = new THREE.Scene(); s.background = new THREE.Color(0xcfd6d8);
+s.add(new THREE.HemisphereLight(0xdde8ff, 0x605040, 1.4));
+const sun = new THREE.DirectionalLight(0xffffff, 4); sun.position.set(-20, 40, 30); sun.castShadow = true;
+sun.shadow.camera.left = -60; sun.shadow.camera.right = 60; sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30; sun.shadow.mapSize.set(4096, 2048); s.add(sun);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 100), new THREE.MeshStandardMaterial({ color: 0xa89c86 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; s.add(ground);
+// 1 m grid for scale.
+const grid = new THREE.GridHelper(400, 400, 0x776655, 0x998877); grid.position.y = 0.002; s.add(grid);
+const skin = TX.scaleNormalTexture(81);
+let x = 0;
+const labels = [];
+plans.forEach((plan, k) => {
+  const [L, H] = sizes[plan];
+  x += L * 0.55;
+  const quad = !plan.startsWith('biped');
+  const c = { id: 1000 + k, len: L, hip: H, posture, feet: [] };
+  const lay = quad ? [[-0.08, 0.06, 0], [0.22, 0.06, 1], [-0.08, -0.06, 0], [0.22, -0.06, 1]] : [[0, 0.045, 0], [0, -0.045, 0]];
+  // Feet are given in world coords (x east, y north, z up); the animal faces +x at origin x.
+  for (const [fx, fy, fore] of lay) c.feet.push([x + fx * L, fy * L, 0, 1, fore]);
+  const root = new THREE.Group(); root.position.set(x, 0, 0); s.add(root); root.updateMatrixWorld();
+  const inv = root.matrixWorld.clone().invert();
+  const body = buildAnimal(c, { plan }, (f) => new THREE.Vector3(f[0], f[2], -f[1]).applyMatrix4(inv), skin);
+  body.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  root.add(body);
+  labels.push(`${plan} (L ${L} m, hanche ${H} m)`);
+  x += L * 0.55;
+});
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 1000);
+const midX = x / 2, maxH = Math.max(...plans.map((p) => sizes[p][1]));
+const dist = Math.max(x * 1.05, 8) / (2 * Math.tan(15 * Math.PI / 180)) / (innerWidth / innerHeight);
+cam.position.set(midX + (P.get('az') ? +P.get('az') : 0), maxH * 1.0 + (+(P.get('up') || 0)), Math.max(dist, 6));
+cam.lookAt(midX, maxH * 0.7, 0);
+r.render(s, cam);
+document.getElementById('l').textContent = labels.join(' · ');
+window.__ready = true;
+</script>
+</body>
+</html>
