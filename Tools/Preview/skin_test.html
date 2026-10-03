@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Noctis — banc d'essai peau reptilienne</title>
+<style>
+html,body{margin:0;height:100%;background:#141416;overflow:hidden;font-family:system-ui,sans-serif}
+canvas{display:block}
+#cap{position:absolute;left:14px;bottom:10px;color:#9a9a9a;font-size:12px;letter-spacing:.02em}
+</style>
+<script type="importmap">{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }</script>
+</head>
+<body><div id="cap"></div>
+<script type="module">
+// Test bench for src/creature/skin_material.js: a skinned, bendable "neck" tube, a head-like
+// ellipsoid and a foot (metatarsus + 3 toes) carrying fake aRegion / aCavity / aFold attributes,
+// lit like the studio (soft key above-front-left, rim from behind, weak fill, dim room env).
+// URL: skin_test.html?shot=close|neck|head|foot|mid|far|pose2|flat&w=1600&h=900[&seed=0][&bump=1]
+// Renders once on demand and sets window.__ready (headless capture: shoot_skin.mjs).
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { createSkinMaterial, bakeSkinRegions, SKIN_REGIONS } from './src/creature/skin_material.js';
+
+const P = new URLSearchParams(location.search);
+const W = +(P.get('w') || 1600), H = +(P.get('h') || 900);
+const shot = P.get('shot') || 'close';
+const gauss = (x, w) => Math.exp(-(x / w) * (x / w));
+const R = Object.fromEntries(SKIN_REGIONS.map((n, i) => [n, i]));
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a1c);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.22;
+
+// ---------------------------------------------------------------------------------------------
+// Tube builder: centreline p0 -> p1, radius r(u), rounded ends, per-vertex attribute callbacks.
+function tube({ p0, p1, radius, rings = 160, segs = 128, up = [0, 1, 0], attr }) {
+  const a = new THREE.Vector3(...p0), b = new THREE.Vector3(...p1);
+  const dir = b.clone().sub(a); const len = dir.length(); dir.normalize();
+  const side = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(...up)).normalize();
+  const upv = new THREE.Vector3().crossVectors(side, dir).normalize();
+  const pos = [], idx = [];
+  const cap = (u) => Math.pow(Math.max(0, 1 - Math.pow(Math.abs(2 * u - 1), 8)), 1 / 8); // rounded ends
+  for (let i = 0; i <= rings; i++) {
+    const u = 0.004 + 0.992 * i / rings;
+    const r = radius(u) * cap(u);
+    const c = a.clone().addScaledVector(dir, u * len);
+    for (let j = 0; j < segs; j++) {
+      const t = j / segs * Math.PI * 2;
+      const p = c.clone().addScaledVector(upv, Math.cos(t) * r).addScaledVector(side, Math.sin(t) * r);
+      pos.push(p.x, p.y, p.z);
+    }
+  }
+  const pole = (u) => a.clone().addScaledVector(dir, u * len);
+  const p0v = pole(0), p1v = pole(1);
+  const i0 = pos.length / 3; pos.push(p0v.x, p0v.y, p0v.z);
+  const i1 = i0 + 1; pos.push(p1v.x, p1v.y, p1v.z);
+  for (let i = 0; i < rings; i++) for (let j = 0; j < segs; j++) {
+    const j1 = (j + 1) % segs;
+    const A = i * segs + j, B = i * segs + j1, C = (i + 1) * segs + j, D = (i + 1) * segs + j1;
+    idx.push(A, B, C, B, D, C);
+  }
+  for (let j = 0; j < segs; j++) {
+    idx.push(i0, (j + 1) % segs, j);
+    idx.push(i1, rings * segs + j, rings * segs + (j + 1) % segs);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  fillAttributes(g, attr, (k) => {
+    // along-axis parameter of a vertex
+    const p = new THREE.Vector3().fromBufferAttribute(g.attributes.position, k);
+    return p.sub(a).dot(dir) / len;
+  });
+  return g;
+}
+
+function fillAttributes(g, attr, uOf) {
+  const n = g.attributes.position.count;
+  const reg = new Float32Array(n), cav = new Float32Array(n), fold = new Float32Array(n);
+  const p = new THREE.Vector3(), nn = new THREE.Vector3();
+  for (let k = 0; k < n; k++) {
+    p.fromBufferAttribute(g.attributes.position, k);
+    nn.fromBufferAttribute(g.attributes.normal, k);
+    const o = attr(p, nn, uOf ? uOf(k) : 0);
+    reg[k] = o.region; cav[k] = o.cavity || 0; fold[k] = o.fold || 0;
+  }
+  g.setAttribute('aRegion', new THREE.BufferAttribute(reg, 1));
+  g.setAttribute('aCavity', new THREE.BufferAttribute(cav, 1));
+  g.setAttribute('aFold', new THREE.BufferAttribute(fold, 1));
+}
+
+const seed = +(P.get('seed') || 0);
+const bumpStrength = +(P.get('bump') || 1);
+const flat = shot === 'flat';
+const matOpts = { seed, bumpStrength: flat ? 0 : bumpStrength };
+
+// ---- 1. skinned neck: 2.6 m tube along +x, 3 bones, S-bend posed at render time.
+const neckY = 1.6;
+const joints = [-0.45, 0.4];   // x of the two bending joints
+const neckGeo = tube({
+  p0: [-1.3, neckY, 0], p1: [1.3, neckY, 0], rings: 220, segs: 160,
+  radius: (u) => 0.46 - 0.12 * u,
+  attr: (p, n, u) => {
+    // fold + cavity on the concave side of each joint (joint 0 bends up -> top concave; joint 1 down -> belly)
+    let fold = 0, cavity = 0;
+    joints.forEach((jx, k) => {
+      const g = gauss(p.x - jx, 0.28);
+      const side = k === 0 ? n.y : -n.y;
+      fold = Math.max(fold, g * THREE.MathUtils.smoothstep(side, -0.2, 0.7));
+      cavity = Math.max(cavity, 0.35 * gauss(p.x - jx, 0.12) * THREE.MathUtils.smoothstep(side, 0.3, 0.9));
+    });
+    let region = u > 0.78 ? R.head : u < 0.25 ? R.torso : R.neck;
+    if (region === R.torso && n.y < -0.55) region = R.belly;
+    return { region, fold, cavity };
+  },
+});
+// skin weights: each vertex follows the bones before/after the joints, blended over +-0.18 m
+const nv = neckGeo.attributes.position.count;
+const sIdx = new Uint16Array(nv * 4), sW = new Float32Array(nv * 4);
+for (let k = 0; k < nv; k++) {
+  const x = neckGeo.attributes.position.getX(k);
+  const w1 = THREE.MathUtils.smoothstep(x, joints[0] - 0.18, joints[0] + 0.18);
+  const w2 = THREE.MathUtils.smoothstep(x, joints[1] - 0.18, joints[1] + 0.18);
+  const ws = [1 - w1, w1 - w2, w2];
+  sIdx.set([0, 1, 2, 0], k * 4); sW.set([ws[0], ws[1], ws[2], 0], k * 4);
+}
+neckGeo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(sIdx, 4));
+neckGeo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sW, 4));
+const b0 = new THREE.Bone(), b1 = new THREE.Bone(), b2 = new THREE.Bone();
+b0.position.set(-1.3, neckY, 0); b1.position.set(joints[0] + 1.3, 0, 0); b2.position.set(joints[1] - joints[0], 0, 0);
+b0.add(b1); b1.add(b2);
+const neckMat = createSkinMaterial(THREE, { ...matOpts, dust: 0 });
+// &bake=0 shows the raw per-vertex region switch (hard borders) for comparison
+if (P.get('bake') !== '0') bakeSkinRegions(THREE, neckGeo, neckMat, { radius: 0.08 });
+const neck = new THREE.SkinnedMesh(neckGeo, neckMat);
+neck.add(b0);
+neck.bind(new THREE.Skeleton([b0, b1, b2]));
+neck.castShadow = neck.receiveShadow = true;
+scene.add(neck);
+const bend = shot === 'pose2' ? [0.15, -0.55] : [0.42, -0.5];
+b1.rotation.z = bend[0]; b2.rotation.z = bend[1];
+
+// ---- 2. head-like ellipsoid with brow hotspot, eye, jaw region and a mouth line.
+const headC = new THREE.Vector3(2.9, 1.7, 0);
+const headGeo = new THREE.SphereGeometry(1, 220, 160);
+headGeo.scale(0.78, 0.42, 0.4);
+headGeo.deleteAttribute('uv');
+headGeo.computeVertexNormals();
+const mouthY = (x) => -0.07 - 0.05 * (x / 0.78) ** 2;
+fillAttributes(headGeo, (p, n) => {
+  const dm = Math.abs(p.y - mouthY(p.x));
+  const lip = gauss(dm, 0.012) * THREE.MathUtils.smoothstep(Math.abs(n.z), 0.2, 0.6);
+  const eye = gauss(p.clone().sub(new THREE.Vector3(0.12, 0.13, 0.33 * Math.sign(p.z))).length(), 0.07);
+  return { region: p.y < mouthY(p.x) ? R.jaw : R.head, cavity: Math.max(0.8 * lip, 0.7 * eye), fold: 0.6 * gauss(p.x + 0.55, 0.12) * (p.y < 0 ? 1 : 0) };
+});
+const headMat = createSkinMaterial(THREE, { ...matOpts, dust: 0, hotspots: [[0.12, 0.27, 0.27, 0.16], [0.12, 0.27, -0.27, 0.16], [0.6, 0.18, 0.0, 0.14]] });
+const head = new THREE.Mesh(headGeo, headMat);
+head.position.copy(headC);
+head.castShadow = head.receiveShadow = true;
+scene.add(head);
+for (const side of [1, -1]) {
+  const eyeBall = new THREE.Mesh(new THREE.SphereGeometry(0.045, 48, 32), new THREE.MeshPhysicalMaterial({ color: 0x2a1c0c, roughness: 0.08, clearcoat: 1 }));
+  eyeBall.position.copy(headC).add(new THREE.Vector3(0.12, 0.13, 0.355 * side));
+  scene.add(eyeBall);
+}
+
+// ---- 3. foot: metatarsus + three toes (II-IV) with claws, digitigrade.
+const footC = new THREE.Vector3(-0.4, 0, -1.6);
+const toeJoint = [0.3, 0.16, 0];
+const footParts = [tube({ p0: [-0.05, 1.0, 0], p1: toeJoint, rings: 120, segs: 96, radius: (u) => 0.13 + 0.03 * u, attr: () => ({ region: R.foot }) })];
+const toeDirs = [-0.38, 0, 0.38];
+const claws = [];
+toeDirs.forEach((a, k) => {
+  const L = k === 1 ? 0.62 : 0.5;
+  const end = [toeJoint[0] + Math.cos(a) * L, 0.07, Math.sin(a) * L];
+  footParts.push(tube({ p0: [toeJoint[0] - 0.05, 0.12, 0], p1: end, rings: 110, segs: 72, radius: (u) => 0.085 - 0.04 * u, attr: (p, n) => ({ region: R.foot, cavity: 0.25 * gauss(p.y - 0.02, 0.03) }) }));
+  claws.push({ pos: end, a });
+});
+const footMat = createSkinMaterial(THREE, { ...matOpts, toeHeight: 0.24 });
+for (const g of footParts) {
+  const m = new THREE.Mesh(g, footMat);
+  m.position.copy(footC); m.castShadow = m.receiveShadow = true; scene.add(m);
+}
+for (const c of claws) {
+  const cl = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.14, 24), new THREE.MeshStandardMaterial({ color: 0x1d1a17, roughness: 0.35 }));
+  cl.position.set(footC.x + c.pos[0] + Math.cos(c.a) * 0.05, 0.05, footC.z + c.pos[2] + Math.sin(c.a) * 0.05);
+  cl.rotation.set(0, -c.a, -Math.PI / 2 - 0.35);
+  scene.add(cl);
+}
+
+// ---- floor: grey, fading into the dark background
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x3b3b3d, roughness: 0.92 });
+floorMat.onBeforeCompile = (s) => {
+  s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vFloor;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvFloor = position.xy;');
+  s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec2 vFloor;')
+    .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.0105), smoothstep(5.0, 13.0, length(vFloor)));');
+};
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMat);
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+// ---- lights (camera sits on the -z side: screen-left = +x)
+const key = new THREE.DirectionalLight(0xfff1e2, 3.4);
+key.position.set(5, 8, -5.5); key.target.position.set(0.5, 1, 0);
+key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
+Object.assign(key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 30 });
+key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 4;
+scene.add(key, key.target);
+const rim = new THREE.DirectionalLight(0xd8e4ff, 2.6); rim.position.set(-3, 5, 7); scene.add(rim);
+const fill = new THREE.DirectionalLight(0xc9d2e0, 0.35); fill.position.set(-6, 1.5, -4); scene.add(fill);
+
+// ---- cameras
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 200);
+const shots = {
+  close: { pos: [-0.3, 2.3, -1.8], look: [-0.45, 1.8, -0.2], fov: 30 },
+  pose2: { pos: [-0.3, 2.3, -1.8], look: [-0.45, 1.8, -0.2], fov: 30 },
+  flat:  { pos: [-0.3, 2.3, -1.8], look: [-0.45, 1.8, -0.2], fov: 30 },
+  neck:  { pos: [0.3, 2.4, -3.6], look: [0.2, 1.9, 0], fov: 32 },
+  head:  { pos: [3.3, 2.05, -2.0], look: [2.95, 1.72, 0], fov: 30 },
+  foot:  { pos: [0.6, 0.85, -3.0], look: [-0.15, 0.35, -1.6], fov: 30 },
+  mid:   { pos: [1.0, 2.6, -6.5], look: [0.9, 1.3, -0.4], fov: 32 },
+  far:   { pos: [1.0, 3.2, -16], look: [1.0, 1.2, -0.4], fov: 30 },
+};
+const s = shots[shot] || shots.close;
+cam.fov = s.fov; cam.position.set(...s.pos); cam.lookAt(...s.look); cam.updateProjectionMatrix();
+
+document.getElementById('cap').textContent = `peau procédurale — vue « ${shot} » — couleurs spéculatives`;
+const t0 = performance.now();
+renderer.compile(scene, cam);
+const t1 = performance.now();
+renderer.render(scene, cam);
+renderer.getContext().finish();
+const t2 = performance.now();
+window.__stats = { compileMs: Math.round(t1 - t0), renderMs: Math.round(t2 - t1) };
+console.log('skin_test', shot, JSON.stringify(window.__stats));
+window.__ready = true;
+</script>
+</body>
+</html>

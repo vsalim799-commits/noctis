@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Noctis — T. rex, sculpture SDF (argile)</title>
+<style>
+html,body{margin:0;height:100%;background:#2b2d30;overflow:hidden;font-family:system-ui,sans-serif}
+#l{position:absolute;left:12px;bottom:10px;font-size:13px;color:#cfd2d6;white-space:pre}
+</style>
+<script type="importmap">{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }</script>
+</head>
+<body><div id="l"></div>
+<script type="module">
+// Clay check of the procedural T. rex: grey matte material, neutral light, 1 m grid.
+// ?voxel=0.03  ?mode=clay|region|cavity|fold|occl|weights&bone=thighR  ?pose=1 (skinning test)
+// ?view=side|front34|head|top|front|back34|feet  (or call window.renderView(name) repeatedly)
+import * as THREE from 'three';
+import { TREX_BONES, TREX_SHAPES } from './src/creature/trex_anatomy.js';
+import { buildCreature, REGIONS } from './src/creature/sdf_mesher.js';
+
+const P = new URLSearchParams(location.search);
+const W = +(P.get('w') || innerWidth), H = +(P.get('h') || innerHeight);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x2b2d30);
+scene.add(new THREE.HemisphereLight(0xe8ecf0, 0x3a3631, 1.3));
+const key = new THREE.DirectionalLight(0xffffff, 2.6);
+key.position.set(6, 14, 9);
+key.castShadow = true;
+Object.assign(key.shadow.camera, { left: -9, right: 9, top: 6, bottom: -3, near: 1, far: 40 });
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.bias = -0.0005;
+key.shadow.normalBias = 0.02;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xdfe6ff, 1.0);
+rim.position.set(-8, 6, -10);
+scene.add(rim);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 30), new THREE.MeshStandardMaterial({ color: 0x55585c, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+const grid = new THREE.GridHelper(30, 30, 0x6a6e73, 0x60646a);
+grid.position.y = 0.003;
+scene.add(grid);
+
+const mode = P.get('mode') || 'clay';
+const t0 = performance.now();
+const { mesh, boneMap, stats } = buildCreature(THREE, TREX_BONES, TREX_SHAPES, { voxel: +(P.get('voxel') || 0.03) });
+stats.totalMs = Math.round(performance.now() - t0);
+mesh.castShadow = true;
+mesh.receiveShadow = true;
+
+// Debug colourings use vertex colours derived from the extra attributes.
+if (mode !== 'clay') {
+  const g = mesh.geometry, n = g.attributes.position.count, col = new Float32Array(n * 3);
+  const palette = [[0.9, 0.55, 0.45], [0.95, 0.8, 0.4], [0.55, 0.8, 0.5], [0.5, 0.65, 0.9], [0.8, 0.6, 0.9],
+    [0.45, 0.85, 0.85], [0.95, 0.5, 0.7], [0.7, 0.9, 0.35], [0.9, 0.9, 0.9], [0.95, 0.65, 0.2]];
+  const boneIdx = TREX_BONES.findIndex((b) => b.name === (P.get('bone') || 'thighR'));
+  for (let i = 0; i < n; i++) {
+    let c;
+    if (mode === 'region') c = palette[g.attributes.aRegion.getX(i) | 0];
+    else if (mode === 'cavity') { const v = 1 - g.attributes.aCavity.getX(i); c = [v, v, v]; }
+    else if (mode === 'fold') { const v = 1 - g.attributes.aFold.getX(i); c = [v, v, v]; }
+    else if (mode === 'occl') { const v = 1 - g.attributes.aOcclusion.getX(i); c = [v, v, v]; }
+    else {
+      let w = 0;
+      for (let q = 0; q < 4; q++) if (g.attributes.skinIndex.getComponent(i, q) === boneIdx) w += g.attributes.skinWeight.getComponent(i, q);
+      c = [0.25 + 0.75 * w, 0.25, 0.25 + 0.5 * (1 - w)];
+    }
+    col.set(c, i * 3);
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  mesh.material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9 });
+} else {
+  mesh.material = new THREE.MeshStandardMaterial({ color: 0x9a9894, roughness: 0.82, metalness: 0 });
+}
+scene.add(mesh);
+
+// Skinning test: bend neck and tail, open the jaw, step the right leg, raise the left arm.
+if (P.get('pose') === '1') {
+  const r = (name, x, y, z) => boneMap.get(name).rotation.set(x, y, z);
+  r('neck2', 0, 0.25, 0.1); r('neck3', 0, 0.2, 0.05); r('jaw', 0, 0, -0.35);
+  for (let i = 1; i <= 10; i++) r(`tail${i}`, 0, -0.06, 0.02);
+  r('thighR', 0, 0, 0.5); r('shinR', 0, 0, -0.8); r('metaR', 0, 0, 0.6); r('toesR', 0, 0, -0.3);
+  r('upperArmL', 0, 0, 0.6);
+}
+
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 200);
+const VIEWS = {
+  side: { pos: [-0.8, 2.4, 25], at: [-0.8, 2.1, 0], fov: 30 },
+  front34: { pos: [9.5, 3.6, 8.5], at: [2.2, 2.4, 0], fov: 32 },
+  head: { pos: [6.6, 4.1, 2.9], at: [4.35, 3.45, 0.05], fov: 30 },
+  headside: { pos: [4.4, 3.5, 5.0], at: [4.4, 3.45, 0], fov: 30 },
+  top: { pos: [-0.8, 30, 0.01], at: [-0.8, 0, 0], fov: 30 },
+  front: { pos: [16, 2.8, 0], at: [0, 2.4, 0], fov: 22 },
+  back34: { pos: [-9, 4.5, 8], at: [-0.5, 2.4, 0], fov: 34 },
+  feet: { pos: [2.6, 0.9, 3.4], at: [0.4, 0.5, 0.2], fov: 32 },
+  eye: { pos: [4.7, 3.95, 1.5], at: [3.92, 3.78, 0.25], fov: 30 },
+  headfront: { pos: [8.5, 3.7, 0], at: [4.2, 3.5, 0], fov: 16 },
+  headtop: { pos: [4.1, 9, 0.01], at: [4.1, 3.5, 0], fov: 16 },
+  arm: { pos: [3.6, 2.4, 2.4], at: [2.1, 2.2, 0.4], fov: 30 },
+};
+window.renderView = (name) => {
+  const v = VIEWS[name] || VIEWS.side;
+  cam.fov = v.fov; cam.aspect = W / H; cam.updateProjectionMatrix();
+  cam.position.set(...v.pos); cam.lookAt(...v.at);
+  renderer.render(scene, cam);
+  return true;
+};
+const bb = stats.bbox;
+document.getElementById('l').textContent =
+  `T. rex — sculpture SDF (argile) · longueur ${(bb.max[0] - bb.min[0]).toFixed(2)} m · hauteur max ${bb.max[1].toFixed(2)} m · ` +
+  `largeur ${(bb.max[2] - bb.min[2]).toFixed(2)} m · volume ${stats.volume.toFixed(2)} m³ · ${stats.triangles} triangles · mode ${mode}`;
+window.__stats = stats;
+renderView(P.get('view') || 'side');
+window.__ready = true;
+</script>
+</body>
+</html>
