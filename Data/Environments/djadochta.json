@@ -1,0 +1,328 @@
+{
+  "schema": "noctis.environment/1",
+  "id": "djadochta",
+  "reconstruction_version": "2026.10-a",
+  "name": {
+    "fr": "Formation de Djadochta",
+    "en": "Djadochta Formation"
+  },
+  "science": {
+    "geology": {
+      "summary": "La Formation de Djadochta (Djadokhta), du Crétacé supérieur, affleure dans le désert de Gobi au sud de la Mongolie : Bayn Dzak (« Flaming Cliffs »), Tugriken Shireh, Ukhaa Tolgod. Des strates corrélatives existent en Mongolie-Intérieure (Bayan Mandahu, Chine). La formation est surtout faite de grès fins à moyens, rougeâtres à orangés : grès éoliens à grandes stratifications obliques (dunes), grès massifs sans structure apparente qui contiennent la plupart des fossiles, dépôts d'interdunes, horizons carbonatés (calcrètes) et, localement, conglomérats déposés par des écoulements éphémères en bordure de bassin.",
+      "confidence": "inferred",
+      "sources": [
+        "gradzinski1974_gobi_aeolian",
+        "jerzykiewicz1993_djadokhta_correlatives",
+        "eberth1993_bayan_mandahu",
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_tolgod_geology",
+        "dashzeveg2005_djadokhta_ulan_nur"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification. L'origine éolienne de ces dépôts fait pourtant consensus dans la littérature."
+    },
+    "age": {
+      "summary": "Crétacé supérieur, généralement attribué au Campanien (souvent Campanien moyen à supérieur, ~75–71 Ma). L'âge repose sur des corrélations biostratigraphiques (dinosaures, mammifères, lézards) et magnétostratigraphiques. Aucune datation radiométrique directe n'a été vérifiée. Une révision stratigraphique avec estimation d'âge a été proposée pour le bassin d'Ulan Nur.",
+      "confidence": "inferred",
+      "sources": [
+        "jerzykiewicz1991_gobi_stratigraphy",
+        "dashzeveg2005_djadokhta_ulan_nur",
+        "dingus2008_ukhaa_tolgod_geology"
+      ],
+      "value": 74,
+      "min": 71,
+      "max": 80,
+      "unit": "Ma",
+      "notes": "Intervalle volontairement large ; value = centre indicatif, pas une date publiée. Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "paleolatitude": {
+      "summary": "Environ 45° N (fourchette ~40–50° N). Valeur déduite de la latitude actuelle des localités (~43,5–44,5° N) et du faible déplacement en latitude du bloc mongol depuis le Crétacé supérieur. Aucune valeur paléomagnétique publiée n'a été vérifiée.",
+      "confidence": "inferred",
+      "sources": [],
+      "value": 45,
+      "min": 40,
+      "max": 50,
+      "unit": "°N",
+      "notes": "À remplacer par une valeur publiée (paléomagnétisme ou modèle de plaques) dès vérification."
+    },
+    "climate": {
+      "summary": "Climat aride à semi-aride. Les champs de dunes éoliennes actives, les calcrètes et l'absence de dépôts fluviatiles pérennes indiquent un déficit en eau, au moins saisonnier. Des pluies épisodiques suffisaient toutefois à humidifier le sable des dunes (hypothèse des glissements de sable humide) et à remplir des mares temporaires entre les dunes. Aucune estimation chiffrée de température n'a été vérifiée. Le climat de serre du Campanien suggère des températures moyennes nettement plus élevées que dans le Gobi actuel.",
+      "confidence": "inferred",
+      "sources": [
+        "loope1998_dune_field",
+        "loope1999_sandslides",
+        "dingus2008_ukhaa_tolgod_geology",
+        "jerzykiewicz1993_djadokhta_correlatives",
+        "fastovsky1997_tugrikin_shireh"
+      ],
+      "notes": "Toutes les valeurs climatiques chiffrées du bloc sim sont des hypothèses de jeu. Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "precipitation": {
+      "summary": "Faibles et épisodiques ; aucune estimation chiffrée n'a été vérifiée. Les grès éoliens, les calcrètes et les traces de racines suggèrent un régime semi-aride avec des pluies intermittentes, parfois intenses.",
+      "confidence": "inferred",
+      "sources": [
+        "loope1998_dune_field",
+        "loope1999_sandslides",
+        "dingus2008_ukhaa_tolgod_geology"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "seasonality": {
+      "summary": "Mal connue. Les calcrètes des sols fossiles impliquent une alternance de périodes humides et sèches. À ~45° N, l'insolation variait fortement selon la saison. Aucun indicateur ne permet de situer la saison des pluies.",
+      "confidence": "inferred",
+      "sources": [
+        "dingus2008_ukhaa_tolgod_geology",
+        "jerzykiewicz1993_djadokhta_correlatives"
+      ],
+      "notes": "Le calendrier saisonnier du jeu est entièrement une hypothèse de travail. Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "hydrology": {
+      "summary": "Aucun réseau de rivières permanentes n'est documenté au cœur du champ de dunes. L'eau était éphémère : mares et dépressions humides entre les dunes après les pluies, nappe phréatique proche de la surface dans certaines interdunes, écoulements temporaires déposant localement des conglomérats en bordure de bassin (cônes alluviaux). Les fortes pluies pouvaient déstabiliser les faces d'avalanche des dunes.",
+      "confidence": "inferred",
+      "sources": [
+        "jerzykiewicz1993_djadokhta_correlatives",
+        "eberth1993_bayan_mandahu",
+        "dingus2008_ukhaa_tolgod_geology",
+        "loope1999_sandslides"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "flora": {
+      "summary": "Très mal connue. Aucune macroflore (feuilles, bois identifiés) ni assemblage de pollen n'a été vérifié pour la Formation de Djadochta. La présence de végétation n'est attestée qu'indirectement, par des traces de racines (rhizolithes) et des structures de sols fossiles ; sa composition taxonomique est inconnue. Par analogie avec les déserts actuels, on suppose une végétation clairsemée de plantes tolérantes à la sécheresse, concentrée dans les interdunes et autour des points d'eau.",
+      "confidence": "inferred",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_tolgod_geology",
+        "fastovsky1997_tugrikin_shireh"
+      ],
+      "notes": "Composition taxonomique : « Information insuffisante — recherche nécessaire. » La présence de végétation enracinée est INFÉRÉE ; sa nature (arbustes, herbacées, gymnospermes) est SPÉCULATIVE. Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "fauna": {
+      "summary": "Faune de vertébrés remarquablement conservée. Dinosaures : Protoceratops andrewsi (très abondant), Velociraptor mongoliensis, oviraptoridés (Oviraptor philoceratops, Citipati osmolskae), Pinacosaurus grangeri, alvarezsauridés (Shuvuuia deserti), troodontidés (Saurornithoides, Byronosaurus). S'y ajoutent des oiseaux, de nombreux lézards et des mammifères : multituberculés (Kryptobaatar), euthériens (Zalambdalestes, Kennalestes, Ukhaatherium) et deltathéroïdes. On connaît aussi des œufs et des nids de dinosaures, dont des oviraptoridés en position de couvaison à Ukhaa Tolgod.",
+      "confidence": "inferred",
+      "sources": [
+        "dashzeveg1995_ukhaa_tolgod",
+        "jerzykiewicz1991_gobi_stratigraphy",
+        "dingus2008_ukhaa_tolgod_geology"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification. Ces occurrences sont pourtant bien établies dans la littérature."
+    },
+    "taphonomy": {
+      "summary": "Squelettes articulés exceptionnellement conservés, souvent en posture de vie, dans des grès massifs sans structure. Plusieurs hypothèses d'enfouissement s'opposent : (1) tempêtes de sable ; (2) glissements et écoulements de sable humide depuis les faces d'avalanche des dunes après de fortes pluies (Loope et al. 1998, 1999), appuyés à Ukhaa Tolgod par l'interstratification des bancs sans structure avec les dépôts de dunes. Des traces d'insectes sur les os indiquent que certaines carcasses sont restées exposées ou enfouies à faible profondeur. Exemple célèbre : le spécimen des « Fighting Dinosaurs » (Velociraptor et Protoceratops) de Tugriken Shireh.",
+      "confidence": "inferred",
+      "sources": [
+        "loope1998_dune_field",
+        "loope1999_sandslides",
+        "dingus2008_ukhaa_tolgod_geology",
+        "fastovsky1997_tugrikin_shireh",
+        "saneyoshi2011_bone_trace_fossils",
+        "gradzinski1974_gobi_aeolian"
+      ],
+      "notes": "Hypothèses concurrentes, non exclusives : le mécanisme a pu varier selon le site et l'épisode. Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "landscape": {
+      "summary": "Champ de dunes (erg) avec interdunes plates, mares temporaires après les pluies et broussailles clairsemées. Les dunes alternaient avec des interdunes, où se concentraient l'eau, les plantes et une partie de la faune. Les falaises rouges actuelles de Bayn Dzak (« Flaming Cliffs ») sont des formes d'érosion récentes : elles n'existaient pas au Campanien.",
+      "confidence": "inferred",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_tolgod_geology",
+        "jerzykiewicz1993_djadokhta_correlatives"
+      ],
+      "notes": "Hauteur des dunes non vérifiée (plusieurs mètres à quelques dizaines de mètres, inféré de l'épaisseur des séries obliques préservées). Dans le jeu, « cutbank_cliff » représente les talus raides du paysage crétacé (faces d'avalanche, berges d'écoulements éphémères, petits escarpements), pas les falaises actuelles. Confiance plafonnée à INFÉRÉ : les références de cette fiche n'ont pas pu être vérifiées lors de la passe 2026-10-03 (budget de recherche épuisé). À réévaluer après vérification."
+    },
+    "fire": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun charbon de bois fossile vérifié. Avec une végétation clairsemée, les incendies étaient probablement rares (SPÉCULATIF)."
+    }
+  },
+  "sim": {
+    "latitude_deg": 45,
+    "axial_tilt_deg": 23.4,
+    "mean_annual_temp_c": 17,
+    "annual_temp_range_c": 24,
+    "diurnal_temp_range_c": 16,
+    "annual_precip_mm": 200,
+    "wet_season_doy": [
+      160,
+      250
+    ],
+    "dry_season_strength": 0.85,
+    "relative_humidity_mean": 0.3,
+    "fog_morning_probability": 0.02,
+    "storm_probability_per_day": 0.03,
+    "mean_wind_ms": 5.5,
+    "prevailing_wind_deg": 270,
+    "terrain_generator": "dune_field",
+    "map_size_m": 8192,
+    "relief_m": 35,
+    "habitats": [
+      "dune_field",
+      "interdune_flat",
+      "ephemeral_pond",
+      "xeric_scrub",
+      "cutbank_cliff"
+    ],
+    "plant_functional_types": {
+      "fern": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "horsetail": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "angio_herb": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "angio_shrub": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "angio_tree": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "conifer": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "palm": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "cycadophyte": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "ginkgo": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "aquatic_macrophyte": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      },
+      "xeric_shrub": {
+        "present": true,
+        "max_biomass_kg_m2": 0.4,
+        "growth_rate_per_day": 0.005,
+        "height_m": 1.0,
+        "habitats": {
+          "xeric_scrub": 1.0,
+          "interdune_flat": 0.8,
+          "ephemeral_pond": 0.6,
+          "dune_field": 0.15,
+          "cutbank_cliff": 0.05
+        }
+      }
+    },
+    "species": []
+  },
+  "sim_basis": {
+    "latitude_deg": "derived: latitude actuelle des localités (~43,5–44,5° N) et faible déplacement en latitude du bloc mongol depuis le Crétacé supérieur ; aucune source paléomagnétique vérifiée (voir science.paleolatitude).",
+    "axial_tilt_deg": "game_assumption: obliquité moyenne actuelle ; valeur campanienne instantanée non contrainte.",
+    "mean_annual_temp_c": "game_assumption: aucune estimation publiée vérifiée. Choix : désert de latitude moyenne (~45° N) en climat de serre campanien, plus chaud que la plaine humide de Hell Creek (~12 °C, plus tardive et plus septentrionale). Incertitude d'au moins ±5 °C.",
+    "annual_temp_range_c": "game_assumption: forte amplitude saisonnière typique des déserts continentaux de latitude moyenne, atténuée par rapport à l'actuel (climat de serre).",
+    "diurnal_temp_range_c": "game_assumption: ciel clair et air sec des déserts actuels (amplitude diurne de 12–20 °C).",
+    "annual_precip_mm": "game_assumption: les dunes actives et les calcrètes indiquent un climat aride à semi-aride (loope1998_dune_field ; dingus2008_ukhaa_tolgod_geology, non vérifiés) ; 200 mm, dans une fourchette plausible de ~50–400 mm, sans estimation publiée vérifiée.",
+    "wet_season_doy": "game_assumption: pluies d'été orageuses (jours 160–250) par analogie avec les déserts continentaux de l'hémisphère nord ; calendrier réel inconnu.",
+    "dry_season_strength": "game_assumption: longue saison sèche marquée, cohérente avec les calcrètes (non vérifié).",
+    "relative_humidity_mean": "game_assumption: air sec de désert continental.",
+    "fog_morning_probability": "game_assumption: brouillards très rares, éventuellement au-dessus des mares d'interdune.",
+    "storm_probability_per_day": "game_assumption: orages convectifs rares, concentrés en saison humide. Ils peuvent déclencher les glissements de sable humide décrits par loope1999_sandslides (non vérifié) ; leur fréquence est inconnue.",
+    "mean_wind_ms": "game_assumption: vents assez forts pour transporter le sable par moments (champ de dunes actif) ; aucune mesure de paléovent.",
+    "prevailing_wind_deg": "game_assumption: les orientations de stratifications obliques publiées n'ont pas été vérifiées ; vent d'ouest par défaut. À remplacer par la direction de paléovent mesurée dans la littérature (Ukhaa Tolgod, Bayn Dzak) après vérification.",
+    "terrain_generator": "derived: dépôts éoliens de dunes et d'interdunes (loope1998_dune_field ; dingus2008_ukhaa_tolgod_geology ; gradzinski1974_gobi_aeolian — non vérifiés).",
+    "map_size_m": "game_assumption: taille de carte standard du moteur (8 192 m de côté).",
+    "relief_m": "game_assumption: dunes de quelques mètres à ~25 m (inféré de l'épaisseur des séries obliques, non vérifié), plus des creux d'interdunes et une pente régionale faible ; 35 m au total.",
+    "habitats": "derived: dunes, interdunes, mares temporaires et broussailles d'après les faciès éoliens et d'interdune (non vérifiés). « cutbank_cliff » = talus raides crétacés (faces d'avalanche, berges d'écoulements éphémères), PAS les « Flaming Cliffs » actuelles, qui sont des formes d'érosion récentes.",
+    "species": "game_assumption: liste remplie par l'intégrateur à partir des fiches espèces.",
+    "plant_functional_types.fern.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.fern.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.fern.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.fern.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.fern.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.horsetail.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.horsetail.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.horsetail.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.horsetail.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.horsetail.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_herb.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.angio_herb.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_herb.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_herb.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_herb.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_shrub.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.angio_shrub.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_shrub.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_shrub.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_shrub.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_tree.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.angio_tree.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_tree.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_tree.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.angio_tree.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.conifer.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.conifer.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.conifer.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.conifer.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.conifer.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.palm.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.palm.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.palm.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.palm.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.palm.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.cycadophyte.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.cycadophyte.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.cycadophyte.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.cycadophyte.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.cycadophyte.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.ginkgo.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.ginkgo.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.ginkgo.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.ginkgo.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.ginkgo.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.aquatic_macrophyte.present": "derived: aucune occurrence documentée de ce type de plante dans la Formation de Djadochta (flore inconnue) — present=false par règle de prudence.",
+    "plant_functional_types.aquatic_macrophyte.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.aquatic_macrophyte.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.aquatic_macrophyte.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.aquatic_macrophyte.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.xeric_shrub.present": "derived: les traces de racines (rhizolithes) attestent une végétation enracinée (non vérifié) ; ce type fonctionnel générique la représente par convention de jeu, sa composition réelle étant inconnue — SPÉCULATIF",
+    "plant_functional_types.xeric_shrub.max_biomass_kg_m2": "game_assumption: broussailles désertiques actuelles (biomasse aérienne ~0,1–0,5 kg/m²) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.xeric_shrub.growth_rate_per_day": "game_assumption: croissance lente, limitée par l'eau ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.xeric_shrub.height_m": "game_assumption: arbustes désertiques actuels (~0,5–1,5 m).",
+    "plant_functional_types.xeric_shrub.habitats": "game_assumption: végétation concentrée dans les interdunes et autour des mares, rare sur les dunes vives."
+  }
+}

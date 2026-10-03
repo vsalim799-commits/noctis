@@ -1,0 +1,12 @@
+build/
+build-*/
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
+*.sln
+*.VC.db
+.idea/
+Output/
+node_modules/

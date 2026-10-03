@@ -1,0 +1,660 @@
+{
+  "schema": "noctis.species/1",
+  "id": "citipati_osmolskae",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Citipati osmolskae",
+  "authority": "Clark, Norell & Barsbold, 2001",
+  "common_names": {
+    "fr": "Citipati",
+    "en": "Citipati"
+  },
+  "regions": [
+    "djadochta"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Citipati osmolskae Clark, Norell & Barsbold, 2001 : oviraptoridé (Oviraptorosauria, Oviraptoridae), théropode maniraptorien proche des oiseaux. Le nom évoque les Citipati, divinités funéraires du bouddhisme tibétain, et l'espèce honore la paléontologue Halszka Osmólska. Des oviraptoridés semblables provenant d'autres localités pourraient représenter une espèce distincte.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "clark2001_citipati_khaan",
+        "varricchio2008_paternal_care",
+        "erickson2007_brooding_growth"
+      ],
+      "notes": "Étymologie et matériel « Citipati sp. » d'autres localités cités de mémoire."
+    },
+    "period": {
+      "summary": "Crétacé supérieur, Campanien. L'âge de la Formation de Djadochta n'est pas fixé par une datation radiométrique directe des couches fossilifères ; les estimations (magnétostratigraphie, corrélations) le placent généralement vers la fin du Campanien, autour de ~75–71 millions d'années, et il n'est pas certain qu'un même âge s'applique à toute la formation dans la région.",
+      "confidence": "inferred",
+      "sources": [
+        "dashzeveg2005_djadokhta_age",
+        "dingus2008_ukhaa_geology"
+      ],
+      "value": 73,
+      "min": 71,
+      "max": 75,
+      "unit": "Ma",
+      "notes": "Attribution au Campanien bien admise ; la fourchette chiffrée (~75–71 Ma) n'a pas été relue dans le texte intégral de Dashzeveg et al. (2005) ni de Dingus et al. (2008) — à confirmer."
+    },
+    "formation": {
+      "summary": "Formation de Djadochta, localité d'Ukhaa Tolgod (holotype, adultes couveurs et nids).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "clark2001_citipati_khaan",
+        "varricchio2008_paternal_care",
+        "norell2018_citipati_second_nest"
+      ]
+    },
+    "location": {
+      "summary": "Ukhaa Tolgod, bassin de Nemegt, désert de Gobi, sud de la Mongolie (Ömnögovi).",
+      "confidence": "established",
+      "sources": [
+        "clark2001_citipati_khaan",
+        "dashzeveg1995_ukhaa_tolgod",
+        "norell2018_citipati_second_nest"
+      ]
+    },
+    "size": {
+      "summary": "Oviraptoridé de grande taille pour la famille : environ 2,5–3 m de long d'après les estimations courantes.",
+      "confidence": "inferred",
+      "sources": [
+        "clark2001_citipati_khaan"
+      ],
+      "value": 2.9,
+      "min": 2.5,
+      "max": 3.0,
+      "unit": "m",
+      "notes": "Valeurs citées de mémoire d'après des synthèses ; non relues dans les descriptions originales."
+    },
+    "mass": {
+      "summary": "Les estimations publiées citées dans la littérature secondaire sont de l'ordre de 75–85 kg pour un adulte ; aucune n'a pu être vérifiée ici.",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 75,
+      "min": 60,
+      "max": 85,
+      "unit": "kg"
+    },
+    "morphology": {
+      "summary": "Bipède au long cou et à la tête courte et haute, dépourvue de dents, munie d'un bec corné ; haute crête osseuse formée surtout par les prémaxillaires et les nasaux. Bras assez longs à trois doigts griffus, probablement emplumés ; queue courte, très flexible et musclée, terminée par des vertèbres soudées en pygostyle (Persons et al. 2014).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "clark2002_citipati_skull",
+        "clark2001_citipati_khaan",
+        "persons2014_oviraptorosaur_tails"
+      ]
+    },
+    "skeleton": {
+      "summary": "Holotype comprenant un crâne et un squelette ; au moins deux adultes trouvés en posture de couvaison sur leur ponte (dont IGM 100/979) ; un embryon dans son œuf, d'abord décrit en 1994 et rapporté depuis à Citipati. Le crâne a été décrit en détail (Clark et al. 2002).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "varricchio2008_paternal_care",
+        "erickson2007_brooding_growth",
+        "norell1994_theropod_embryo",
+        "clark2002_citipati_skull",
+        "norell2018_citipati_second_nest"
+      ]
+    },
+    "musculature": {
+      "summary": "Non préservée. Les oviraptoridés possèdent des mâchoires courtes et hautes, avec de larges zones d'insertion des adducteurs, compatibles avec une morsure puissante relativement à leur taille.",
+      "confidence": "speculative",
+      "sources": [
+        "funston2018_oviraptorosaur_ecology"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Aucun tissu mou préservé. Un étui corné (rhamphothèque) sur le bec et probablement sur la crête est inféré.",
+      "confidence": "inferred",
+      "sources": [
+        "clark2002_citipati_skull"
+      ]
+    },
+    "integument": {
+      "summary": "Plumes non préservées chez Citipati. Un plumage complet est inféré par encadrement phylogénétique (oviraptorosaures à plumes préservées, oiseaux). La posture de couvaison, bras déployés autour de la ponte, est compatible avec des plumes de bras couvrant les œufs ; le pygostyle et la musculature caudale suggèrent un large éventail de plumes caudales (Persons et al. 2014). Couleur inconnue.",
+      "confidence": "inferred",
+      "sources": [
+        "clark1999_oviraptorid_brooding",
+        "persons2014_oviraptorosaur_tails",
+        "varricchio2008_paternal_care"
+      ]
+    },
+    "locomotion": {
+      "summary": "Bipède coureur à membres postérieurs longs ; aucune piste attribuée.",
+      "confidence": "inferred",
+      "sources": [
+        "clark2001_citipati_khaan"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée de vitesse n'a été vérifiée pour Citipati."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Débattu. Pour les oviraptoridés, on a proposé l'herbivorie, l'omnivorie (végétaux, petits vertébrés, invertébrés) et la durophagie (graines, coquilles). Aucun contenu stomacal n'est connu chez Citipati. Le cliché du « voleur d'œufs » est infondé : l'embryon de 1994 a montré que les œufs associés aux oviraptoridés étaient les leurs.",
+      "confidence": "speculative",
+      "sources": [
+        "norell1994_theropod_embryo",
+        "funston2018_oviraptorosaur_ecology"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Bec édenté, robuste et court, adapté à saisir et à écraser ; mode d'alimentation précis inconnu.",
+      "confidence": "speculative",
+      "sources": [
+        "funston2018_oviraptorosaur_ecology"
+      ]
+    },
+    "predation": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune trace de prédation sur Citipati n'est documentée dans la littérature vérifiée."
+    },
+    "defense": {
+      "summary": "Fuite rapide, griffes des mains, coups de pied et bec ; défense du nid probable chez l'adulte couveur. Non documenté.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Les adultes connus étaient seuls sur leur nid. Aucune donnée sur d'éventuels groupes ; la structure sociale est inconnue en dehors de la nidification.",
+      "confidence": "speculative",
+      "sources": [
+        "varricchio2008_paternal_care"
+      ]
+    },
+    "reproduction": {
+      "summary": "Nids circulaires d'œufs allongés (type élongatoolithidé), pondus par paires et disposés en anneaux autour d'un espace central. Des adultes ont été trouvés en posture de couvaison avienne : pattes repliées sous le corps au centre du nid, bras étendus au-dessus de la ponte. Le volume relatif des pontes correspond au modèle des oiseaux à soins paternels, et les adultes couveurs ne présentent pas les caractères histologiques liés à la ponte (os médullaire) (Varricchio et al. 2008). Œufs probablement bleu-vert d'après les pigments trouvés dans des œufs d'oviraptoridés de Chine (Wiemann et al. 2017, 2018). Les isotopes de l'oxygène d'œufs d'oviraptorosaures indiquent des températures d'incubation de type aviaire (Amiot et al. 2017), conclusion appuyée par un oviraptoridé chinois couvant une ponte contenant des embryons (Bi et al. 2021).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "varricchio2008_paternal_care",
+        "erickson2007_brooding_growth",
+        "norell1995_nesting_dinosaur",
+        "clark1999_oviraptorid_brooding",
+        "norell2018_citipati_second_nest",
+        "wiemann2017_oviraptor_egg_colour",
+        "wiemann2018_egg_colour_origin",
+        "amiot2017_oviraptorosaur_incubation",
+        "bi2021_oviraptorid_embryo_clutch"
+      ],
+      "notes": "FORTEMENT ÉTAYÉ : couvaison sur le nid. INFÉRÉ pour Citipati : couleur des œufs (pigments mesurés sur d'autres oviraptoridés) et températures d'incubation (Amiot et al. 2017 et Bi et al. 2021, références non vérifiées, autres taxons)."
+    },
+    "development": {
+      "summary": "Un embryon très avancé, replié dans son œuf, découvert à Ukhaa Tolgod et décrit en 1994, a montré que les œufs allongés du type trouvé aux Flaming Cliffs, longtemps attribués à Protoceratops, appartenaient à un oviraptoridé ; cet embryon est rapporté depuis à Citipati. Chez un oviraptoridé chinois, des embryons à des stades différents dans une même ponte suggèrent une éclosion légèrement asynchrone (Bi et al. 2021).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "norell1994_theropod_embryo",
+        "clark2001_citipati_khaan",
+        "bi2021_oviraptorid_embryo_clutch"
+      ],
+      "notes": "Embryon : FORTEMENT ÉTAYÉ. Éclosion asynchrone : INFÉRÉ (autre taxon, référence non vérifiée)."
+    },
+    "growth": {
+      "summary": "L'histologie des os longs d'adultes couveurs (fémurs et fibulas de Citipati) indique que la reproduction commençait avant l'arrêt de la croissance somatique, contrairement aux oiseaux actuels (Erickson et al. 2007).",
+      "confidence": "inferred",
+      "sources": [
+        "erickson2007_brooding_growth"
+      ]
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "La queue des oviraptorosaures, courte, très mobile et probablement porteuse d'un éventail de plumes, est interprétée comme une structure de parade intraspécifique dynamique (Persons et al. 2014) ; la crête crânienne pouvait aussi servir de signal visuel. Aucune donnée sur les vocalisations.",
+      "confidence": "inferred",
+      "sources": [
+        "persons2014_oviraptorosaur_tails",
+        "clark2002_citipati_skull"
+      ],
+      "notes": "Rôle de la crête : SPÉCULATIF."
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Les adultes couveurs restaient vraisemblablement sur le nid de jour comme de nuit, mais le rythme d'activité général est inconnu."
+    },
+    "habitat": {
+      "summary": "Dunes et plaines interdunaires : les nids et les adultes couveurs ont été ensevelis dans des sables éoliens, probablement lors d'effondrements de dunes ou de tempêtes de sable.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "fastovsky1997_tugrikin",
+        "dashzeveg1995_ukhaa_tolgod"
+      ],
+      "notes": "Le cadre (dunes, interdunes, mares temporaires) est bien établi ; les préférences fines de l'espèce entre ces milieux sont inférées."
+    },
+    "climate": {
+      "summary": "Climat aride à semi-aride et saisonnier : grès éoliens à stratifications entrecroisées (dunes), dépôts interdunaires, paléosols carbonatés et mares ou cours d'eau temporaires. Les effondrements de dunes humidifiées par la pluie et les tempêtes de sable ont enseveli des animaux vivants ou fraîchement morts, d'où la fréquence de squelettes articulés en position de vie (Loope et al. 1998).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "jerzykiewicz1993_djadokhta",
+        "fastovsky1997_tugrikin",
+        "dashzeveg2005_djadokhta_age"
+      ],
+      "notes": "Température, précipitations et saisonnalité chiffrées : information insuffisante."
+    },
+    "interactions": {
+      "summary": "Contemporain de Velociraptor, Protoceratops et Pinacosaurus. Deux crânes de très jeunes petits théropodes (rapportés depuis à des troodontidés) ont été trouvés dans un nid d'oviraptoridé décrit en 1994 : proies apportées au nid, parasitisme de ponte ou simple coïncidence restent possibles.",
+      "confidence": "speculative",
+      "sources": [
+        "norell1994_theropod_embryo",
+        "dashzeveg1995_ukhaa_tolgod"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Décrit en 2001 d'après du matériel d'Ukhaa Tolgod récolté par les expéditions AMNH–Académie mongole des sciences. Il comprend l'holotype, au moins deux adultes couveurs (Norell et al. 1995 ; Clark et al. 1999 ; Norell et al. 2018), des nids et un embryon (Norell et al. 1994).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "clark2001_citipati_khaan",
+        "varricchio2008_paternal_care",
+        "norell1995_nesting_dinosaur",
+        "clark1999_oviraptorid_brooding",
+        "norell2018_citipati_second_nest",
+        "norell1994_theropod_embryo"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Couvaison : des adultes ont été ensevelis assis sur leur ponte, dans une posture identique à celle des oiseaux couveurs (membres repliés, bras déployés sur la périphérie du nid).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "varricchio2008_paternal_care",
+        "erickson2007_brooding_growth",
+        "norell1995_nesting_dinosaur",
+        "clark1999_oviraptorid_brooding"
+      ]
+    },
+    "inferred_behavior": {
+      "summary": "Soins paternels (hypothèse dominante, non démontrée) ; incubation par contact à température de type aviaire ; protection de la ponte contre le soleil, le vent et le sable par les plumes des bras ; parades utilisant la crête et l'éventail caudal.",
+      "confidence": "inferred",
+      "sources": [
+        "varricchio2008_paternal_care",
+        "amiot2017_oviraptorosaur_incubation",
+        "persons2014_oviraptorosaur_tails"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "reproduction",
+      "summary": "Qui couvait ?",
+      "positions": [
+        {
+          "summary": "Le mâle : volume des pontes conforme au modèle aviaire à soins paternels, absence d'os médullaire chez les adultes couveurs.",
+          "sources": [
+            "varricchio2008_paternal_care"
+          ]
+        },
+        {
+          "summary": "La femelle ou les deux parents : l'absence d'os médullaire n'exclut pas une femelle ayant terminé sa ponte ; le sexe des couveurs reste indéterminé.",
+          "sources": []
+        }
+      ]
+    },
+    {
+      "topic": "reproduction",
+      "summary": "Mode d'incubation.",
+      "positions": [
+        {
+          "summary": "Incubation par contact à températures de type aviaire.",
+          "sources": [
+            "amiot2017_oviraptorosaur_incubation",
+            "bi2021_oviraptorid_embryo_clutch"
+          ]
+        },
+        {
+          "summary": "Œufs en partie enfouis dans le sédiment, avec une part de chaleur environnementale ; architecture des nids propre aux oviraptoridés, variable selon la taille du corps.",
+          "sources": [
+            "yang2019_oviraptorid_clutches",
+            "tanaka2018_oviraptorosaur_incubation"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "diet",
+      "summary": "Régime alimentaire des oviraptoridés.",
+      "positions": [
+        {
+          "summary": "Herbivorie ou omnivorie à dominante végétale (bec édenté, mâchoires puissantes).",
+          "sources": [
+            "funston2018_oviraptorosaur_ecology"
+          ]
+        },
+        {
+          "summary": "Prédation sur des œufs (origine du nom Oviraptor) : réfutée par l'identification des œufs comme appartenant aux oviraptoridés eux-mêmes.",
+          "sources": [
+            "norell1994_theropod_embryo"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_oviraptorosaur",
+    "adult_mass_kg": 75,
+    "adult_length_m": 2.9,
+    "hip_height_m": 0.9,
+    "foot_length_m": 0.22,
+    "foot_width_m": 0.15,
+    "hatchling_mass_kg": 0.2,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 80,
+      "max_growth_rate_kg_per_year": 35,
+      "inflection_age_years": 2,
+      "maturity_age_years": 3,
+      "max_lifespan_years": 15
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.5,
+      "max_speed_ms": 9.0,
+      "max_accel_ms2": 4.0,
+      "max_decel_ms2": 6.0,
+      "max_yaw_rate_dps": 120,
+      "max_slope_deg": 35,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.38
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 14,
+      "water_l_per_day_per_100kg": 4.0
+    },
+    "diet": {
+      "type": "omnivore",
+      "plant_preferences": {
+        "fern": 0.1,
+        "horsetail": 0.1,
+        "angio_herb": 0.4,
+        "angio_shrub": 0.5,
+        "angio_tree": 0,
+        "conifer": 0.3,
+        "palm": 0,
+        "cycadophyte": 0.3,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0.7
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 1.6,
+      "prey_mass_min_kg": 0.005,
+      "prey_mass_max_kg": 1.0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": true,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 500,
+      "fov_deg": 280,
+      "binocular_deg": 35,
+      "low_light": 0.4,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 3000,
+      "hearing_best_hz": 1000,
+      "hearing_threshold_db": 20,
+      "olfaction": 0.4,
+      "vibration": 0.2
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 2,
+      "cohesion": 0.2,
+      "territorial": true,
+      "territory_radius_m": 300,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "claws",
+        "beak",
+        "kick"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.4,
+      "flee_preference": 0.55
+    },
+    "predation": {
+      "hunt_style": "probe_forage",
+      "attack_strength": 0.1,
+      "bite_force_n": 800,
+      "max_chase_s": 5
+    },
+    "reproduction": {
+      "clutch_size_mean": 22,
+      "clutch_size_max": 30,
+      "incubation_days": 70,
+      "breeding_season_doy": [
+        90,
+        150
+      ],
+      "parental_care": 0.9,
+      "nest_type": "brooded"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 100,
+      "f0_max_hz": 1500,
+      "call_types": [
+        {
+          "id": "contact_coo",
+          "duration_s": 0.8,
+          "f0_hz": 300,
+          "source_level_db": 75,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "nest_threat_hiss",
+          "duration_s": 1.2,
+          "f0_hz": 500,
+          "source_level_db": 80,
+          "context": "nest_defense",
+          "confidence": "speculative"
+        },
+        {
+          "id": "hatchling_peep",
+          "duration_s": 0.2,
+          "f0_hz": 1400,
+          "source_level_db": 60,
+          "context": "juvenile_contact",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "cathemeral"
+    },
+    "personality": {
+      "boldness": [
+        0.5,
+        0.15
+      ],
+      "caution": [
+        0.55,
+        0.15
+      ],
+      "aggression": [
+        0.35,
+        0.15
+      ],
+      "curiosity": [
+        0.5,
+        0.15
+      ],
+      "sociability": [
+        0.3,
+        0.15
+      ],
+      "vigilance": [
+        0.6,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.4,
+        0.15
+      ],
+      "exploration": [
+        0.45,
+        0.15
+      ],
+      "flight_tendency": [
+        0.45,
+        0.15
+      ],
+      "dominance": [
+        0.45,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0,
+      "sandbar": 0,
+      "oxbow_lake": 0,
+      "backswamp": 0,
+      "riparian_forest": 0,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0.2,
+      "dune_field": 0.6,
+      "interdune_flat": 0.9,
+      "ephemeral_pond": 0.5,
+      "xeric_scrub": 0.8
+    },
+    "population": {
+      "initial_count": 25,
+      "regional_density_per_km2": 0.4
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: animal simulé individuellement (agent), avec nids",
+    "body_plan": "derived: oviraptoridé bipède (clark2001_citipati_khaan ; clark2002_citipati_skull)",
+    "adult_mass_kg": "game_assumption: ordre de grandeur des estimations publiées (~75–85 kg) non vérifiées dans cette passe",
+    "adult_length_m": "game_assumption: longueur ~2,5–3 m couramment citée (non vérifiée)",
+    "hip_height_m": "game_assumption: proportions d'oviraptoridé à longues pattes",
+    "foot_length_m": "game_assumption: proportions d'oviraptoridé ; aucune piste attribuée",
+    "foot_width_m": "game_assumption: proportions d'oviraptoridé ; aucune piste attribuée",
+    "hatchling_mass_kg": "game_assumption: embryon connu (norell1994_theropod_embryo) mais masse à l'éclosion non publiée/vérifiée",
+    "sexual_dimorphism_mass": "game_assumption: dimorphisme inconnu",
+    "growth.asymptotic_mass_kg": "game_assumption: courbe de petit théropode ; reproduction avant l'arrêt de croissance (erickson2007_brooding_growth), d'où maturité avant l'asymptote",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: courbe de petit théropode ; reproduction avant l'arrêt de croissance (erickson2007_brooding_growth), d'où maturité avant l'asymptote",
+    "growth.inflection_age_years": "game_assumption: courbe de petit théropode ; reproduction avant l'arrêt de croissance (erickson2007_brooding_growth), d'où maturité avant l'asymptote",
+    "growth.maturity_age_years": "game_assumption: courbe de petit théropode ; reproduction avant l'arrêt de croissance (erickson2007_brooding_growth), d'où maturité avant l'asymptote",
+    "growth.max_lifespan_years": "game_assumption: courbe de petit théropode ; reproduction avant l'arrêt de croissance (erickson2007_brooding_growth), d'où maturité avant l'asymptote",
+    "locomotion.walk_speed_ms": "derived: nombre de Froude 0,25 avec hauteur de hanche 0,9 m, v = sqrt(0,25·9,81·0,9) ≈ 1,5 m/s",
+    "locomotion.max_speed_ms": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "locomotion.max_accel_ms2": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "locomotion.max_decel_ms2": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "locomotion.max_slope_deg": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "locomotion.swim": "game_assumption: nage non simulée",
+    "locomotion.swim_speed_ms": "game_assumption: nage non simulée",
+    "locomotion.fly": "derived: incapable de voler (taille, proportions des bras)",
+    "locomotion.fly_speed_ms": "derived: incapable de voler",
+    "locomotion.duty_factor_walk": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "locomotion.duty_factor_run": "game_assumption: aucune estimation publiée vérifiée ; bipède coureur de ~75 kg",
+    "metabolism.thermo_class": "game_assumption: incubation de contact à température de type aviaire (amiot2017_oviraptorosaur_incubation ; bi2021_oviraptorid_embryo_clutch, non vérifiées) et métabolisme aviaire ancestral proposé par wiemann2022_dinosaur_metabolism",
+    "metabolism.max_fasting_days": "game_assumption: jeûne prolongé possible pendant la couvaison (par analogie avec des oiseaux couveurs)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: omnivore de milieu aride",
+    "diet.type": "game_assumption: régime débattu (funston2018_oviraptorosaur_ecology) ; omnivore retenu comme compromis",
+    "diet.plant_preferences.fern": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.horsetail": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.angio_herb": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.angio_shrub": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.angio_tree": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.conifer": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.palm": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.cycadophyte": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.ginkgo": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: flore de Djadochta quasi inconnue ; arbustes xérophiles (xeric_shrub) dominants, graines et cônes supposés",
+    "diet.browse_height_min_m": "game_assumption: alimentation au sol possible",
+    "diet.browse_height_max_m": "game_assumption: hauteur atteinte par la tête d'un bipède au long cou",
+    "diet.prey_mass_min_kg": "game_assumption: petits invertébrés et vertébrés — spéculatif",
+    "diet.prey_mass_max_kg": "game_assumption: petits vertébrés (lézards, mammifères) — spéculatif",
+    "diet.scavenges": "game_assumption: aucune preuve",
+    "diet.eats_fish": "game_assumption: milieu désertique ; aucune preuve",
+    "diet.eats_invertebrates": "game_assumption: omnivorie supposée — spéculatif",
+    "diet.eats_eggs": "derived: l'image de « voleur d'œufs » est réfutée (norell1994_theropod_embryo) ; non simulé",
+    "senses.vision_range_m": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.fov_deg": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.binocular_deg": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.low_light": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.hearing_min_hz": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.hearing_max_hz": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.hearing_best_hz": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.hearing_threshold_db": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.olfaction": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "senses.vibration": "game_assumption: aucune étude sensorielle vérifiée pour Citipati ; valeurs relatives",
+    "social.group_size_mean": "game_assumption: adultes trouvés seuls sur leur nid (varricchio2008_paternal_care) ; vie sociale inconnue",
+    "social.group_size_max": "game_assumption: adultes trouvés seuls sur leur nid (varricchio2008_paternal_care) ; vie sociale inconnue",
+    "social.cohesion": "game_assumption: adultes trouvés seuls sur leur nid (varricchio2008_paternal_care) ; vie sociale inconnue",
+    "social.territorial": "game_assumption: défense de l'aire du nid supposée",
+    "social.territory_radius_m": "game_assumption: zone défendue autour du nid",
+    "social.alarm_calls": "game_assumption: aucune donnée",
+    "defense.weapons": "game_assumption: animal non cuirassé ; armes déduites de l'anatomie (griffes, bec, membres postérieurs)",
+    "defense.armor": "game_assumption: animal non cuirassé ; armes déduites de l'anatomie (griffes, bec, membres postérieurs)",
+    "defense.defense_strength": "game_assumption: animal non cuirassé ; armes déduites de l'anatomie (griffes, bec, membres postérieurs)",
+    "defense.flee_preference": "game_assumption: animal non cuirassé ; armes déduites de l'anatomie (griffes, bec, membres postérieurs)",
+    "predation.hunt_style": "game_assumption: recherche de nourriture au sol (omnivore)",
+    "predation.attack_strength": "game_assumption: valeur relative faible",
+    "predation.bite_force_n": "game_assumption: aucune valeur vérifiée ; bec puissant supposé pour un oviraptoridé de ~75 kg",
+    "predation.max_chase_s": "game_assumption: pas de poursuite prolongée",
+    "reproduction.clutch_size_mean": "game_assumption: ordre de grandeur des pontes d'oviraptoridés mongols (norell1995_nesting_dinosaur ; clark1999_oviraptorid_brooding) — effectifs exacts non vérifiés",
+    "reproduction.clutch_size_max": "game_assumption: borne haute arbitraire",
+    "reproduction.incubation_days": "game_assumption: aucune durée publiée vérifiée pour un oviraptoridé ; valeur intermédiaire entre la durée de type reptilien d'erickson2017_incubation et celle des oiseaux",
+    "reproduction.breeding_season_doy": "game_assumption: saison inconnue",
+    "reproduction.parental_care": "varricchio2008_paternal_care",
+    "reproduction.nest_type": "varricchio2008_paternal_care; erickson2007_brooding_growth",
+    "vocal.closed_mouth": "game_assumption: aucune donnée ; sons à bec fermé supposés par analogie avec les oiseaux (riede2016_closed_mouth_vocalization)",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée ; sons à bec fermé supposés par analogie avec les oiseaux (riede2016_closed_mouth_vocalization)",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée ; sons à bec fermé supposés par analogie avec les oiseaux (riede2016_closed_mouth_vocalization)",
+    "vocal.call_types": "game_assumption: aucune donnée ; sons à bec fermé supposés par analogie avec les oiseaux (riede2016_closed_mouth_vocalization)",
+    "activity.pattern": "game_assumption: adulte couveur présent sur le nid de jour comme de nuit ; rythme général inconnu",
+    "personality.boldness": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.caution": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.aggression": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.curiosity": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.sociability": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.vigilance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.risk_tolerance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.exploration": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.flight_tendency": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.dominance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "habitat.channel": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.riverbank": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.sandbar": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.oxbow_lake": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.backswamp": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.riparian_forest": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.floodplain_open": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.levee_woodland": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.upland_conifer_forest": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.cutbank_cliff": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.dune_field": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.interdune_flat": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.ephemeral_pond": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "habitat.xeric_scrub": "game_assumption: nids dans les sables dunaires et interdunaires ; habitats fluviaux absents de la carte (0)",
+    "population.initial_count": "derived: densité de jeu 0,4 ind./km² × 64 km² ≈ 26, arrondi à 25",
+    "population.regional_density_per_km2": "game_assumption: oviraptoridés fréquents à Ukhaa Tolgod (dashzeveg1995_ukhaa_tolgod) ; densité réelle inconnue"
+  }
+}

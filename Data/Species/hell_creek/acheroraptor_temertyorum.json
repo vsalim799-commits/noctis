@@ -1,0 +1,575 @@
+{
+  "schema": "noctis.species/1",
+  "id": "acheroraptor_temertyorum",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Acheroraptor temertyorum",
+  "authority": "Evans, Larson & Currie, 2013",
+  "common_names": {
+    "fr": "Acheroraptor",
+    "en": "Acheroraptor"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Acheroraptor temertyorum Evans, Larson & Currie, 2013 — Theropoda, Maniraptora, Dromaeosauridae, Velociraptorinae. Holotype ROM 63777 (maxillaire portant des dents) ; un dentaire (ROM 63778) lui est rapporté. L'analyse phylogénétique des auteurs le place plus près des vélociraptorinés asiatiques (Velociraptor et formes apparentées) que des dromaeosauridés nord-américains plus anciens, suggérant une dispersion depuis l'Asie à la fin du Crétacé. Taxon fondé sur un matériel très limité : sa position exacte pourrait changer avec de nouveaux fossiles.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "evans2013_acheroraptor"
+      ],
+      "notes": "Numéros de spécimens cités de mémoire."
+    },
+    "period": {
+      "summary": "Fin du Maastrichtien (Crétacé supérieur), dans les derniers millions d'années avant l'extinction Crétacé–Paléogène.",
+      "confidence": "established",
+      "sources": [
+        "evans2013_acheroraptor",
+        "fowler2017_western_interior_geochronology",
+        "sprain2015_hellcreek_chronostratigraphy"
+      ],
+      "min": 66.0,
+      "max": 67.5,
+      "unit": "Ma"
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana). Des dents isolées de dromaeosauridés de Hell Creek et de la Formation de Lance, autrefois rapportées à Dromaeosaurus ou Saurornitholestes, appartiennent probablement à Acheroraptor (Evans et al. 2013 ; Larson & Currie 2013). Un second dromaeosauridé, beaucoup plus grand, Dakotaraptor steini, a été décrit de Hell Creek au Dakota du Sud (DePalma et al. 2015) ; son matériel est en partie contesté (Arbour et al. 2016).",
+      "confidence": "established",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth",
+        "depalma2015_dakotaraptor",
+        "arbour2016_dakotaraptor_furcula"
+      ]
+    },
+    "location": {
+      "summary": "Montana (États-Unis) pour le matériel type ; dents attribuées dans des formations équivalentes de l'ouest de l'Amérique du Nord (Laramidia).",
+      "confidence": "established",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth"
+      ]
+    },
+    "size": {
+      "summary": "Inconnue directement : seuls des os de mâchoires et des dents sont connus. Par comparaison avec des vélociraptorinés apparentés, on suppose un animal d'environ 2 à 3 m de long (queue comprise). Les valeurs diffusées dans les ouvrages de vulgarisation ne sont pas fondées sur un squelette.",
+      "confidence": "speculative",
+      "sources": [
+        "evans2013_acheroraptor"
+      ],
+      "value": 2.2,
+      "min": 1.8,
+      "max": 3.0,
+      "unit": "m",
+      "notes": "Aucune estimation de taille publiée et vérifiée ; plage = hypothèse par analogie."
+    },
+    "mass": {
+      "summary": "Inconnue. Par analogie avec des dromaeosauridés de longueur comparable (Velociraptor, Saurornitholestes), quelques dizaines de kilogrammes au plus.",
+      "confidence": "speculative",
+      "sources": [
+        "evans2013_acheroraptor"
+      ],
+      "value": 20,
+      "min": 10,
+      "max": 40,
+      "unit": "kg",
+      "notes": "Valeur entièrement inférée par analogie ; aucune estimation publiée vérifiée."
+    },
+    "morphology": {
+      "summary": "Connue : maxillaire et dentaire de dromaeosauridé ; dents dentelées dont les couronnes portent des crêtes longitudinales (cannelures) caractéristiques. Inférée par crochet phylogénétique (non observée chez Acheroraptor) : griffe en faucille au deuxième orteil, queue longue et rigidifiée, membres antérieurs emplumés, museau allongé.",
+      "confidence": "inferred",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth",
+        "turner2007_velociraptor_quills"
+      ]
+    },
+    "skeleton": {
+      "summary": "Squelette postcrânien totalement inconnu. Matériel : maxillaire (holotype), dentaire référé et dents isolées attribuées.",
+      "confidence": "established",
+      "sources": [
+        "evans2013_acheroraptor"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Seuls des os de mâchoire sont connus ; aucune reconstruction musculaire."
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Non observé. Des tubercules d'insertion de plumes sur l'ulna de Velociraptor (Turner et al. 2007), proche parent, indiquent que les vélociraptorinés portaient des plumes pennées aux bras ; un plumage étendu est donc très probable chez Acheroraptor.",
+      "confidence": "inferred",
+      "sources": [
+        "turner2007_velociraptor_quills"
+      ]
+    },
+    "locomotion": {
+      "summary": "Bipède ; par crochet phylogénétique, la griffe du deuxième orteil était tenue relevée et l'animal marchait sur deux orteils fonctionnels (comme l'indiquent les pistes didactyles attribuées aux deinonychosaures).",
+      "confidence": "inferred",
+      "sources": [
+        "fowler2011_deinonychus_predation",
+        "turner2007_velociraptor_quills"
+      ],
+      "notes": "Rien de la locomotion n'est observé directement chez Acheroraptor."
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Membres inconnus ; les dromaeosauridés ont des proportions de membres moins cursoriales que les ornithomimidés (persons2016_cursorial_limbs), mais aucune vitesse n'est estimable ici."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Carnivore : dents comprimées et dentelées de dromaeosauridé. Proies probables : petits vertébrés (mammifères, lézards, oiseaux, jeunes dinosaures) ; consommation de charognes possible.",
+      "confidence": "inferred",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Le modèle « restreindre et immobiliser la proie » (RPR) proposé pour Deinonychus — proie maintenue au sol par les pieds et dépecée vivante, avec battements d'ailes stabilisateurs — est une hypothèse transposable aux dromaeosauridés en général, non testée chez Acheroraptor.",
+      "confidence": "speculative",
+      "sources": [
+        "fowler2011_deinonychus_predation"
+      ]
+    },
+    "predation": {
+      "summary": "Prédateur de petites proies ; mode de chasse (embuscade, approche) non documenté. Chasse coopérative non démontrée.",
+      "confidence": "speculative",
+      "sources": [
+        "fowler2011_deinonychus_predation",
+        "roach2007_pack_hunting"
+      ]
+    },
+    "defense": {
+      "summary": "Aucune donnée. Défense supposée par la fuite, la morsure et les griffes ; menacé par les tyrannosaures, les grands crocodyliformes et éventuellement Dakotaraptor.",
+      "confidence": "speculative",
+      "sources": [
+        "fowler2011_deinonychus_predation"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Inconnu pour Acheroraptor. Pour les dromaeosauridés, l'hypothèse de meutes coopératives de type loup n'est pas étayée ; des agrégations agonistiques de type varan ou crocodilien sont proposées comme alternative (Roach & Brinkman 2007).",
+      "confidence": "speculative",
+      "sources": [
+        "roach2007_pack_hunting"
+      ]
+    },
+    "reproduction": {
+      "summary": "Ovipare (crochet phylogénétique). Chez les maniraptoriens proches des oiseaux, des adultes couvaient leurs œufs dans des nids ouverts, avec soins probablement paternels chez certains groupes (Varricchio et al. 2008) ; rien n'est connu directement pour Acheroraptor.",
+      "confidence": "inferred",
+      "sources": [
+        "varricchio2008_paternal_care",
+        "norell1995_nesting_dinosaur"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune histologie publiée pour Acheroraptor."
+    },
+    "senses": {
+      "summary": "Non documentés (aucune boîte crânienne connue). Les dromaeosauridés présentent en général un odorat moyennement développé et une vision binoculaire notable (études comparatives sur d'autres genres).",
+      "confidence": "speculative",
+      "sources": [
+        "zelenitsky2009_theropod_olfaction",
+        "stevens2006_binocular_vision"
+      ]
+    },
+    "communication": {
+      "summary": "Aucune preuve directe. Signaux visuels (plumage) et vocalisations à bouche fermée possibles par crochet phylogénétique ; aucun syrinx connu chez les dinosaures non aviens.",
+      "confidence": "speculative",
+      "sources": [
+        "riede2016_closed_mouth_vocal",
+        "clarke2016_mesozoic_syrinx"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Inconnu pour Acheroraptor. Des analyses d'anneaux sclérotiques ont suggéré une activité nocturne ou crépusculaire chez certains petits théropodes, dont Velociraptor (Schmitz & Motani 2011), interprétation discutée.",
+      "confidence": "speculative",
+      "sources": [
+        "schmitz2011_dinosaur_nocturnality",
+        "choiniere2021_theropod_senses"
+      ]
+    },
+    "habitat": {
+      "summary": "Plaine côtière humide de Hell Creek (chenaux, forêts riveraines, plaines d'inondation) ; les dents isolées sont surtout récoltées dans des dépôts de chenal, ce qui reflète en partie un biais de conservation.",
+      "confidence": "inferred",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth",
+        "horner2011_hellcreek_census"
+      ]
+    },
+    "climate": {
+      "summary": "Climat chaud tempéré à subtropical, humide, à saisonnalité modérée (contexte de Hell Creek).",
+      "confidence": "inferred",
+      "sources": [
+        "wilf2003_kpg_climate"
+      ]
+    },
+    "interactions": {
+      "summary": "Coexistait avec T. rex, Nanotyrannus, de petits théropodes connus par des dents (troodontidés, Richardoestesia, etc.) et peut-être Dakotaraptor. Proie potentielle des grands théropodes et crocodyliformes ; concurrent probable des autres petits carnivores.",
+      "confidence": "speculative",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth",
+        "depalma2015_dakotaraptor",
+        "zanno2025_nanotyrannus"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Très fragmentaire : un maxillaire (holotype), un dentaire et de nombreuses dents isolées attribuées. Aucun os postcrânien n'est rapporté avec certitude. La rareté des restes squelettiques reflète en partie la mauvaise conservation des petits animaux à os fins.",
+      "confidence": "established",
+      "sources": [
+        "evans2013_acheroraptor",
+        "larson2013_theropod_teeth"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun comportement documenté (ni traces de morsure attribuées, ni pistes, ni nids)."
+    },
+    "inferred_behavior": {
+      "summary": "Petit prédateur agile chassant des proies plus petites que lui, utilisant probablement les griffes des pieds pour immobiliser ses proies ; probablement solitaire ou en petits groupes lâches ; couvaison des œufs plausible. Toutes ces propositions sont extrapolées depuis d'autres dromaeosauridés.",
+      "confidence": "speculative",
+      "sources": [
+        "fowler2011_deinonychus_predation",
+        "roach2007_pack_hunting",
+        "varricchio2008_paternal_care"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "interactions",
+      "summary": "Combien de dromaeosauridés à Hell Creek ?",
+      "positions": [
+        {
+          "summary": "Deux dromaeosauridés au moins : Acheroraptor (petit) et Dakotaraptor steini (grand, ~4–5 m).",
+          "sources": [
+            "depalma2015_dakotaraptor",
+            "evans2013_acheroraptor"
+          ]
+        },
+        {
+          "summary": "Dakotaraptor est douteux : une partie de son matériel (« furcula ») est une plaque de tortue trionychidé, et l'association des autres os est discutée.",
+          "sources": [
+            "arbour2016_dakotaraptor_furcula"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "social_behavior",
+      "summary": "Chasse en groupe chez les dromaeosauridés ?",
+      "positions": [
+        {
+          "summary": "Chasse en groupe coordonnée (hypothèse classique fondée sur des associations Deinonychus–Tenontosaurus) — aucune référence vérifiée enregistrée ici.",
+          "sources": []
+        },
+        {
+          "summary": "Agrégations non coopératives, de type varan ou crocodilien.",
+          "sources": [
+            "roach2007_pack_hunting"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_small_theropod",
+    "adult_mass_kg": 20,
+    "adult_length_m": 2.2,
+    "hip_height_m": 0.55,
+    "foot_length_m": 0.17,
+    "foot_width_m": 0.08,
+    "hatchling_mass_kg": 0.1,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 20,
+      "max_growth_rate_kg_per_year": 8,
+      "inflection_age_years": 2,
+      "maturity_age_years": 4,
+      "max_lifespan_years": 12
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.0,
+      "max_speed_ms": 9.0,
+      "max_accel_ms2": 5.0,
+      "max_decel_ms2": 6.0,
+      "max_yaw_rate_dps": 180,
+      "max_slope_deg": 40,
+      "swim": true,
+      "swim_speed_ms": 0.6,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.35
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 10,
+      "water_l_per_day_per_100kg": 5.0
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.05,
+      "prey_mass_max_kg": 30,
+      "scavenges": true,
+      "eats_fish": false,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 300,
+      "fov_deg": 280,
+      "binocular_deg": 50,
+      "low_light": 0.6,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 4000,
+      "hearing_best_hz": 1000,
+      "hearing_threshold_db": 15,
+      "olfaction": 0.6,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 4,
+      "cohesion": 0.2,
+      "territorial": false,
+      "territory_radius_m": 1000,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite",
+        "claws",
+        "kick"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.3,
+      "flee_preference": 0.7
+    },
+    "predation": {
+      "hunt_style": "stalk_rush",
+      "attack_strength": 0.25,
+      "bite_force_n": 400,
+      "max_chase_s": 20
+    },
+    "reproduction": {
+      "clutch_size_mean": 15,
+      "clutch_size_max": 24,
+      "incubation_days": 80,
+      "breeding_season_doy": [
+        90,
+        150
+      ],
+      "parental_care": 0.6,
+      "nest_type": "brooded"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 100,
+      "f0_max_hz": 1500,
+      "call_types": [
+        {
+          "id": "contact_coo",
+          "duration_s": 0.5,
+          "f0_hz": 400,
+          "source_level_db": 70,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "threat_rumble",
+          "duration_s": 0.8,
+          "f0_hz": 150,
+          "source_level_db": 70,
+          "context": "agonistic_threat",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "crepuscular"
+    },
+    "personality": {
+      "boldness": [
+        0.5,
+        0.15
+      ],
+      "caution": [
+        0.6,
+        0.15
+      ],
+      "aggression": [
+        0.5,
+        0.15
+      ],
+      "curiosity": [
+        0.6,
+        0.15
+      ],
+      "sociability": [
+        0.3,
+        0.15
+      ],
+      "vigilance": [
+        0.7,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.4,
+        0.15
+      ],
+      "exploration": [
+        0.6,
+        0.15
+      ],
+      "flight_tendency": [
+        0.6,
+        0.15
+      ],
+      "dominance": [
+        0.3,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0.6,
+      "sandbar": 0.4,
+      "oxbow_lake": 0.1,
+      "backswamp": 0.3,
+      "riparian_forest": 0.9,
+      "floodplain_open": 0.5,
+      "levee_woodland": 0.8,
+      "upland_conifer_forest": 0.6,
+      "cutbank_cliff": 0.2,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.2,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 6,
+      "regional_density_per_km2": 0.1
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: petit prédateur de la faune de Hell Creek simulé individuellement pour les interactions prédateur–proie ; taxon valide mais très fragmentaire (evans2013_acheroraptor)",
+    "body_plan": "derived: dromaeosauridé (evans2013_acheroraptor) → petit théropode bipède",
+    "adult_mass_kg": "game_assumption: taille inconnue (seules des mâchoires sont connues : evans2013_acheroraptor) ; valeur par analogie avec les vélociraptorinés de taille moyenne",
+    "adult_length_m": "game_assumption: taille inconnue (seules des mâchoires sont connues : evans2013_acheroraptor) ; valeur par analogie avec les vélociraptorinés de taille moyenne",
+    "hip_height_m": "game_assumption: taille inconnue (seules des mâchoires sont connues : evans2013_acheroraptor) ; valeur par analogie avec les vélociraptorinés de taille moyenne",
+    "foot_length_m": "game_assumption: pied inconnu ; mise à l'échelle depuis la hauteur de hanche supposée",
+    "foot_width_m": "game_assumption: empreinte didactyle étroite supposée (deuxième orteil relevé, crochet phylogénétique)",
+    "hatchling_mass_kg": "game_assumption: aucun œuf connu ; ordre de grandeur pour un maniraptorien de ~20 kg",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée → 1,0",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg (hypothétique)",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune histologie publiée",
+    "growth.inflection_age_years": "game_assumption: aucune histologie publiée",
+    "growth.maturity_age_years": "game_assumption: aucune histologie publiée ; petits théropodes supposés matures en quelques années",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.max_speed_ms": "game_assumption: membres inconnus ; valeur modérée, les dromaeosauridés étant moins cursoriaux que les ornithomimidés (persons2016_cursorial_limbs)",
+    "locomotion.max_accel_ms2": "game_assumption: petit animal agile, aucune donnée",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée",
+    "locomotion.max_yaw_rate_dps": "game_assumption: faible inertie, queue rigidifiée supposée servir à l'équilibre ; aucune donnée",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée",
+    "locomotion.swim": "game_assumption: aucune donnée ; nage supposée possible",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.fly": "derived: dromaeosauridé non volant de cette taille (crochet phylogénétique)",
+    "locomotion.fly_speed_ms": "derived: sans objet",
+    "locomotion.duty_factor_walk": "game_assumption: valeur typique de marche bipède",
+    "locomotion.duty_factor_run": "game_assumption: course avec phase aérienne",
+    "metabolism.thermo_class": "game_assumption: maniraptorien emplumé — endothermie supposée (débat : grady2014_mesothermy vs wiemann2022_dinosaur_metabolism)",
+    "metabolism.max_fasting_days": "game_assumption: petit endotherme, réserves limitées",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: besoins relatifs plus élevés pour un petit animal",
+    "diet.type": "derived: dents dentelées de dromaeosauridé (evans2013_acheroraptor ; larson2013_theropod_teeth)",
+    "diet.plant_preferences": "derived: carnivore — aucune plante",
+    "diet.browse_height_min_m": "derived: sans objet",
+    "diet.browse_height_max_m": "derived: sans objet",
+    "diet.prey_mass_min_kg": "game_assumption: petites proies (lézards, mammifères)",
+    "diet.prey_mass_max_kg": "game_assumption: proies jusqu'à ~1,5 fois sa masse, cohérent avec le modèle RPR (fowler2011_deinonychus_predation)",
+    "diet.scavenges": "game_assumption: charognage opportuniste plausible",
+    "diet.eats_fish": "game_assumption: aucune preuve",
+    "diet.eats_invertebrates": "game_assumption: plausible chez les juvéniles et adultes, non documenté",
+    "diet.eats_eggs": "game_assumption: plausible, non documenté",
+    "senses.vision_range_m": "game_assumption: aucune donnée",
+    "senses.fov_deg": "game_assumption: aucune donnée",
+    "senses.binocular_deg": "game_assumption: ordre de grandeur des dromaeosauridés étudiés (stevens2006_binocular_vision) ; non mesurable chez Acheroraptor",
+    "senses.low_light": "game_assumption: activité crépusculaire supposée par analogie avec Velociraptor (schmitz2011_dinosaur_nocturnality)",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée",
+    "senses.hearing_max_hz": "game_assumption: petit animal supposé entendre des fréquences plus élevées que les grands théropodes",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée",
+    "senses.olfaction": "game_assumption: odorat moyen des dromaeosauridés (zelenitsky2009_theropod_olfaction), non mesurable ici",
+    "senses.vibration": "game_assumption: aucune donnée",
+    "social.group_size_mean": "game_assumption: solitaire par défaut (roach2007_pack_hunting)",
+    "social.group_size_max": "game_assumption: petits groupes lâches possibles",
+    "social.cohesion": "game_assumption: faible",
+    "social.territorial": "game_assumption: aucune donnée",
+    "social.territory_radius_m": "game_assumption: aucune donnée",
+    "social.alarm_calls": "game_assumption: aucune donnée",
+    "defense.weapons": "game_assumption: morsure, griffes et coup de pied (griffe en faucille inférée par crochet phylogénétique, non observée)",
+    "defense.armor": "game_assumption: aucun ostéoderme chez les dromaeosauridés",
+    "defense.defense_strength": "game_assumption: petit animal, défense faible face aux grands prédateurs",
+    "defense.flee_preference": "game_assumption: fuite préférée face aux grands prédateurs",
+    "predation.hunt_style": "game_assumption: approche et attaque courte ; aucune donnée",
+    "predation.attack_strength": "game_assumption: valeur relative faible",
+    "predation.bite_force_n": "game_assumption: aucune estimation publiée pour Acheroraptor",
+    "predation.max_chase_s": "game_assumption: aucune donnée",
+    "reproduction.clutch_size_mean": "game_assumption: aucune ponte connue",
+    "reproduction.clutch_size_max": "game_assumption: aucune ponte connue",
+    "reproduction.incubation_days": "game_assumption: ordre de grandeur des incubations dinosauriennes (erickson2017_dinosaur_incubation)",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée",
+    "reproduction.parental_care": "game_assumption: couvaison et soins plausibles chez les maniraptoriens (varricchio2008_paternal_care)",
+    "reproduction.nest_type": "game_assumption: couvaison par crochet phylogénétique (varricchio2008_paternal_care ; norell1995_nesting_dinosaur)",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF (riede2016_closed_mouth_vocal)",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée",
+    "vocal.call_types": "game_assumption: répertoire entièrement SPÉCULATIF ; le grondement de menace à bouche fermée est inspiré des crocodiliens et oiseaux actuels ; aucune preuve directe (clarke2016_mesozoic_syrinx)",
+    "activity.pattern": "game_assumption: crépusculaire par analogie spéculative avec Velociraptor (schmitz2011_dinosaur_nocturnality)",
+    "personality": "game_assumption: traits de personnalité toujours hypothétiques",
+    "habitat": "game_assumption: petit prédateur supposé préférer les milieux boisés offrant couvert",
+    "population.initial_count": "game_assumption: abondance inconnue (restes rares, biais de conservation) ; densité supposée ~0,1/km² → ~6 individus sur 64 km²",
+    "population.regional_density_per_km2": "game_assumption: aucune donnée ; ordre de grandeur pour un carnivore de ~20 kg, bien supérieur à T. rex"
+  }
+}

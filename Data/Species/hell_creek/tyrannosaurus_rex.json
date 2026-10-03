@@ -1,0 +1,753 @@
+{
+  "schema": "noctis.species/1",
+  "id": "tyrannosaurus_rex",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Tyrannosaurus rex",
+  "authority": "Osborn, 1905",
+  "common_names": {
+    "fr": "Tyrannosaure",
+    "en": "Tyrannosaurus"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Tyrannosaurus rex Osborn, 1905 — Theropoda, Coelurosauria, Tyrannosauroidea, Tyrannosauridae, Tyrannosaurinae. Holotype CM 9380, découvert dans la Formation de Hell Creek (Montana). Espèce valide et universellement reconnue ; c'est le tyrannosauridé de référence des études d'ontogenèse (Carr 2020). Paul et al. (2022) ont proposé de scinder le matériel en T. rex, « T. imperator » et « T. regina » ; Carr et al. (2022) jugent les preuves insuffisantes et la plupart des auteurs conservent une seule espèce à Hell Creek. Dalman et al. (2024) ont décrit T. mcraeensis, plus ancien, du Nouveau-Mexique. Enfin, plusieurs petits tyrannosaures de Hell Creek longtemps traités comme des T. rex juvéniles sont aujourd'hui attribués par plusieurs équipes au genre distinct Nanotyrannus (Zanno & Napoli 2025 ; Griffin et al. 2025) — voir la fiche nanotyrannus_lancensis.",
+      "confidence": "established",
+      "sources": [
+        "carr2020_trex_growth",
+        "zanno2025_nanotyrannus",
+        "osborn1905_tyrannosaurus",
+        "paul2022_tyrannosaurus_species",
+        "carr2022_tyrannosaurus_species_comment",
+        "dalman2024_tyrannosaurus_mcraeensis"
+      ],
+      "notes": "La validité de l'espèce est établie ; le découpage en plusieurs espèces (2022) et l'attribution des petits spécimens restent débattus (voir competing_hypotheses)."
+    },
+    "period": {
+      "summary": "Fin du Maastrichtien (Crétacé supérieur). Les T. rex de Hell Creek vivaient dans le dernier million d'années environ avant l'extinction Crétacé–Paléogène (~66 Ma) ; l'espèce est présente jusqu'à la limite K-Pg.",
+      "confidence": "established",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "fowler2017_western_interior_geochronology",
+        "sprain2015_hellcreek_chronostratigraphy"
+      ],
+      "min": 66.0,
+      "max": 68.0,
+      "unit": "Ma",
+      "notes": "Bornes indicatives pour l'espèce ; la datation fine de la Formation de Hell Creek repose notamment sur Sprain et al. (2015) et Fowler (2017)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakota du Nord, Dakota du Sud), formation type de nombreux spécimens dont l'holotype. Aussi connu dans des formations équivalentes de la fin du Maastrichtien : Lance (Wyoming), Frenchman (Saskatchewan — spécimen « Scotty », RSM P2523.8), Scollard (Alberta), entre autres. Le recensement de Horner et al. (2011) montre que T. rex est un élément relativement abondant de la faune de grands dinosaures de Hell Creek.",
+      "confidence": "established",
+      "sources": [
+        "carr2020_trex_growth",
+        "persons2019_trex_scotty",
+        "woodward2020_trex_ontogeny",
+        "horner2011_hellcreek_census"
+      ]
+    },
+    "location": {
+      "summary": "Ouest de l'Amérique du Nord (Laramidia), à l'ouest de la Voie maritime intérieure : Montana, Dakotas, Wyoming, Saskatchewan, Alberta et régions voisines ; des restes plus méridionaux sont généralement rapportés à Tyrannosaurus sp. ou à T. mcraeensis.",
+      "confidence": "established",
+      "sources": [
+        "persons2019_trex_scotty",
+        "carr2020_trex_growth",
+        "dalman2024_tyrannosaurus_mcraeensis"
+      ]
+    },
+    "size": {
+      "summary": "Un des plus grands théropodes terrestres connus. Longueur adulte d'environ 11 à 13 m ; les plus grands spécimens (Sue FMNH PR 2081, Scotty RSM P2523.8) atteignent ~12–13 m. Hauteur à la hanche de l'ordre de 3 m.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hutchinson2011_trex_mass",
+        "persons2019_trex_scotty",
+        "brochu2003_trex_osteology"
+      ],
+      "value": 12.0,
+      "min": 11.0,
+      "max": 13.0,
+      "unit": "m",
+      "notes": "Longueurs exactes de Sue citées de mémoire (monographie de Brochu 2003 non relue)."
+    },
+    "mass": {
+      "summary": "Adultes d'environ 6 à 9,5 tonnes selon les spécimens et les méthodes. Hutchinson et al. (2011), par modélisation volumétrique 3D, estiment Sue à ~9 500 kg (modèle de référence ; les modèles extrêmes donnent une plage plus large) et indiquent que des adultes de plus de 6 000 kg étaient atteints en moins de 20 ans. Persons et al. (2019) estiment Scotty, le plus robuste connu, à ~8 870 kg. Une masse « adulte typique » de ~7 t est retenue comme valeur centrale.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hutchinson2011_trex_mass",
+        "persons2019_trex_scotty"
+      ],
+      "value": 7000,
+      "min": 6000,
+      "max": 9500,
+      "unit": "kg",
+      "notes": "Les estimations dépendent fortement des hypothèses sur les tissus mous et les sacs aériens."
+    },
+    "morphology": {
+      "summary": "Crâne massif et large en arrière, museau étroit, orbites orientées vers l'avant permettant un champ binoculaire ; dents épaisses, dentelées, à section arrondie (dents prémaxillaires incisiformes) ; cou court et puissant en S ; membres antérieurs très réduits à deux doigts fonctionnels ; membres postérieurs longs, pied arctométatarsien tridactyle ; queue longue et musclée servant de contrepoids. Ces traits sont directement observés sur de nombreux squelettes et évoluent fortement au cours de la croissance (crâne plus haut et plus robuste chez l'adulte).",
+      "confidence": "established",
+      "sources": [
+        "carr2020_trex_growth",
+        "hutchinson2011_trex_mass",
+        "brochu2003_trex_osteology",
+        "stevens2006_binocular_vision"
+      ]
+    },
+    "skeleton": {
+      "summary": "Squelette très bien connu grâce à plusieurs spécimens partiels à quasi complets : Sue (FMNH PR 2081, monographie de Brochu 2003), Scotty (~65 % complet ; Persons et al. 2019) et une série de croissance de nombreux individus (Carr 2020). Os pneumatisés (crâne, vertèbres), gastralia, furcula présente chez les tyrannosauridés.",
+      "confidence": "established",
+      "sources": [
+        "persons2019_trex_scotty",
+        "carr2020_trex_growth",
+        "brochu2003_trex_osteology"
+      ]
+    },
+    "musculature": {
+      "summary": "Reconstruite à partir des insertions osseuses et des groupes actuels (oiseaux, crocodiliens). Muscles extenseurs de la hanche volumineux, dont un grand M. caudofemoralis longus ancré sur la queue (Persons & Currie 2011) ; Hutchinson et al. (2011) modélisent les masses musculaires des membres pour évaluer la locomotion. Musculature adductrice des mâchoires très développée, cohérente avec des forces de morsure extrêmes (Gignac & Erickson 2017 ; Bates & Falkingham 2012).",
+      "confidence": "inferred",
+      "sources": [
+        "hutchinson2011_trex_mass",
+        "persons2011_trex_tail",
+        "gignac2017_trex_osteophagy",
+        "bates2012_trex_bite"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Cullen et al. (2023) concluent que les dents des théropodes, y compris des tyrannosauridés, étaient probablement recouvertes au repos par des tissus extraoraux de type lèvres (arguments : usure de l'émail, rapports taille des dents/crâne, analogie avec les varans). De l'os médullaire (tissu reproducteur) a été identifié chez une femelle (MOR 1125 ; Schweitzer et al. 2005). Aucun organe interne n'est préservé ; sacs aériens inférés par la pneumaticité osseuse.",
+      "confidence": "inferred",
+      "sources": [
+        "cullen2023_theropod_lips",
+        "schweitzer2005_trex_medullary"
+      ]
+    },
+    "integument": {
+      "summary": "Des impressions de peau associées à des squelettes de T. rex (cou, bassin, queue) montrent de petites écailles non imbriquées (Bell et al. 2017). Des tyrannosauroïdes plus anciens portaient des plumes filamenteuses (Yutyrannus ; Xu et al. 2012) : un plumage clairsemé, notamment dorsal ou chez les juvéniles, n'est pas exclu mais n'est pas démontré chez T. rex. Couleur : inconnue.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "bell2017_tyrannosaur_integument",
+        "xu2012_yutyrannus"
+      ]
+    },
+    "locomotion": {
+      "summary": "Bipède strict, digitigrade. Chez l'adulte, les analyses biomécaniques (masse musculaire nécessaire, contraintes osseuses) excluent une course rapide avec phase aérienne prolongée : l'adulte était probablement limité à la marche et à une marche rapide/course « au sol ». Les juvéniles, plus légers et aux membres relativement plus longs, étaient sans doute plus cursoriaux.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hutchinson2011_trex_mass",
+        "hutchinson2002_trex_running",
+        "sellers2017_trex_running",
+        "hutchinson2004_running_extinct"
+      ]
+    },
+    "speed": {
+      "summary": "Vitesse maximale adulte probablement de l'ordre de 5 à 8 m/s (18–29 km/h) ; des valeurs de ~20 m/s sont biomécaniquement exclues (Hutchinson & Garcia 2002). Les estimations plausibles publiées couvrent environ 5–11 m/s (Hutchinson 2004) ; Sellers et al. (2017), en intégrant les contraintes osseuses, trouvent que l'adulte ne pouvait pas courir et restait à des allures de marche rapide (~5 m/s, ordre de grandeur). Vitesse de marche préférée estimée à ~1,3 m/s par la fréquence propre de la queue (van Bijlert et al. 2021).",
+      "confidence": "inferred",
+      "sources": [
+        "hutchinson2002_trex_running",
+        "hutchinson2004_running_extinct",
+        "sellers2017_trex_running",
+        "vanbijlert2021_trex_walking"
+      ],
+      "value": 5.5,
+      "min": 5.0,
+      "max": 11.0,
+      "unit": "m/s",
+      "notes": "La plage ~5–11 m/s (avec des estimations anciennes allant jusqu'à ~20 m/s) est confirmée par une citation secondaire de Hutchinson (2004) ; la valeur ~5 m/s de Sellers et al. (2017) est citée de mémoire."
+    },
+    "acceleration": {
+      "summary": "Aucune mesure directe. Une très grande masse et un moment d'inertie élevé impliquent des accélérations et décélérations modestes par rapport aux théropodes plus petits ; Snively et al. (prépublication 2018) suggèrent néanmoins que les tyrannosauridés étaient relativement agiles pour leur taille (inertie rotationnelle plus faible, muscles des membres plus grands).",
+      "confidence": "speculative",
+      "sources": [
+        "snively2018_tyrannosaurid_turning",
+        "carrier2001_theropod_turning"
+      ]
+    },
+    "diet": {
+      "summary": "Hypercarnivore. Proies principales documentées par des traces de morsure : grands ornithischiens comme Edmontosaurus et Triceratops (Erickson & Olson 1996 ; DePalma et al. 2013). Un grand coprolithe attribué à T. rex contient une forte proportion d'os broyé (Chin et al. 1998). Des traces de morsure sur des os de T. rex indiquent aussi la consommation de congénères (Longrich et al. 2010).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "erickson1996_trex_bitemarks",
+        "depalma2013_trex_predation",
+        "chin1998_theropod_coprolite",
+        "longrich2010_trex_cannibalism",
+        "hone2010_theropod_feeding"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Morsure de type « perforer et tirer » (puncture-and-pull) avec ostéophagie : les dents et la force de morsure permettaient de fracturer les os, comportement rare chez les reptiles (Gignac & Erickson 2017). Le régime changeait probablement avec l'âge : les juvéniles, plus légers et aux mâchoires plus faibles, occupaient une niche différente des adultes (partition ontogénétique ; Woodward et al. 2020 — dont une partie de l'échantillon juvénile est désormais attribuée à Nanotyrannus par d'autres auteurs).",
+      "confidence": "inferred",
+      "sources": [
+        "gignac2017_trex_osteophagy",
+        "woodward2020_trex_ontogeny",
+        "erickson1996_trex_bitemarks",
+        "peterson2021_juvenile_trex_bite"
+      ]
+    },
+    "predation": {
+      "summary": "Prédateur actif et charognard opportuniste. Une vertèbre caudale d'Edmontosaurus de Hell Creek portant une couronne dentaire de tyrannosaure entourée d'os cicatrisé prouve qu'au moins une attaque a visé un animal vivant qui a survécu (DePalma et al. 2013). L'hypothèse d'un charognard strict est aujourd'hui minoritaire ; les modèles écologiques suggèrent que la charogne pouvait néanmoins représenter une ressource importante (Carbone et al. 2011). Mode de chasse (embuscade, approche) non documenté directement.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "depalma2013_trex_predation",
+        "carbone2011_trex_scavenging",
+        "hone2010_theropod_feeding"
+      ]
+    },
+    "defense": {
+      "summary": "Les adultes avaient très peu de prédateurs potentiels en dehors de leurs congénères. Les blessures faciales cicatrisées fréquentes chez les tyrannosauridés indiquent des combats intraspécifiques (Tanke & Currie 1998). Défense principale : la morsure. Les juvéniles étaient vraisemblablement vulnérables à d'autres prédateurs (inférence non documentée).",
+      "confidence": "inferred",
+      "sources": [
+        "tanke1998_head_biting",
+        "longrich2010_trex_cannibalism"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Débattu. Aucune preuve directe de groupe chez T. rex lui-même. Chez d'autres tyrannosauridés, des sites à individus multiples d'âges différents (Albertosaurus — Currie & Eberth 2010 ; Teratophoneus — Titus et al. 2021) et des pistes parallèles (McCrea et al. 2014) suggèrent des agrégations, dont la nature (groupe social durable, rassemblement autour d'une ressource, accumulation taphonomique) reste discutée. La chasse coopérative en meute est spéculative (Roach & Brinkman 2007). Les morsures faciales indiquent des interactions agonistiques entre congénères (Tanke & Currie 1998).",
+      "confidence": "speculative",
+      "sources": [
+        "currie2010_albertosaurus_gregarious",
+        "titus2021_teratophoneus_bonebed",
+        "mccrea2014_tyrannosaurid_trackways",
+        "roach2007_pack_hunting",
+        "tanke1998_head_biting"
+      ]
+    },
+    "reproduction": {
+      "summary": "Ovipare (crochet phylogénétique : oiseaux et crocodiliens). De l'os médullaire chez le spécimen MOR 1125 indique une femelle en période de ponte, avec une physiologie reproductive de type aviaire (Schweitzer et al. 2005). Aucun œuf ni nid de tyrannosauridé n'est identifié avec certitude ; des os et dents embryonnaires ou de nouveau-nés de tyrannosauridés ont été décrits (Funston et al. 2021). Taille de ponte, incubation et soins parentaux : inconnus.",
+      "confidence": "inferred",
+      "sources": [
+        "schweitzer2005_trex_medullary",
+        "funston2021_baby_tyrannosaurids",
+        "erickson2017_dinosaur_incubation"
+      ]
+    },
+    "development": {
+      "summary": "Nouveau-nés estimés à moins de 10 kg (Hutchinson et al. 2011) ; la croissance transforme profondément la morphologie (21 stades de croissance reconnus par Carr 2020). Woodward et al. (2020) décrivent par l'histologie des individus de ~13 et ~15 ans encore en croissance rapide et soutiennent une partition de niche ontogénétique. Depuis 2025, le spécimen « Jane » (BMRP 2002.4.1) est rattaché à Nanotyrannus par Zanno & Napoli (2025) : la phase juvénile de T. rex est donc moins bien documentée qu'on ne le pensait.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hutchinson2011_trex_mass",
+        "carr2020_trex_growth",
+        "woodward2020_trex_ontogeny",
+        "zanno2025_nanotyrannus"
+      ],
+      "notes": "Le nombre de stades et les âges juvéniles sont à réinterpréter si les petits spécimens appartiennent à Nanotyrannus."
+    },
+    "growth": {
+      "summary": "Croissance sigmoïde avec une phase exponentielle à l'adolescence. Erickson et al. (2004) : taux maximal ~2,1 kg/jour (~767 kg/an), maturité squelettique vers 20 ans, longévité observée jusqu'à 28 ans. Hutchinson et al. (2011), avec des masses corporelles révisées, obtiennent un taux maximal jusqu'à ~1 790 kg/an. Scotty, plus âgé que les autres spécimens échantillonnés, montre que certains individus dépassaient cet âge (Persons et al. 2019).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "erickson2004_tyrannosaurid_growth",
+        "hutchinson2011_trex_mass",
+        "persons2019_trex_scotty",
+        "horner2004_trex_growth"
+      ],
+      "value": 1790,
+      "min": 767,
+      "max": 1790,
+      "unit": "kg/an",
+      "notes": "Valeur = taux de croissance maximal ; dépend de la masse asymptotique retenue."
+    },
+    "senses": {
+      "summary": "Bulbes olfactifs proportionnellement parmi les plus grands des théropodes (Zelenitsky et al. 2009, 2011) : odorat probablement excellent. Champ binoculaire d'environ 55° (Stevens 2006), favorable à l'estimation des distances. Conduit cochléaire long suggérant une bonne sensibilité aux basses fréquences ; oreille interne compatible avec une stabilisation fine de la tête et du regard (Witmer & Ridgely 2009). Audiogramme précis inconnu.",
+      "confidence": "inferred",
+      "sources": [
+        "zelenitsky2009_theropod_olfaction",
+        "zelenitsky2011_olfaction_evolution",
+        "stevens2006_binocular_vision",
+        "witmer2009_tyrannosaur_brain",
+        "gleich2005_archosaur_hearing"
+      ]
+    },
+    "communication": {
+      "summary": "Aucune preuve directe de vocalisation. Les dinosaures non aviens ne possèdent pas de syrinx fossilisé connu (Clarke et al. 2016). Par crochet phylogénétique (crocodiliens, oiseaux), des vocalisations à bouche fermée, graves et résonantes (« booms ») sont une hypothèse plausible (Riede et al. 2016). Les rugissements de cinéma n'ont aucun fondement. Des signaux visuels (posture, ornements crâniens) sont possibles mais non démontrés.",
+      "confidence": "speculative",
+      "sources": [
+        "riede2016_closed_mouth_vocal",
+        "clarke2016_mesozoic_syrinx"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune étude publiée vérifiée ne détermine le rythme d'activité de T. rex (pas d'analyse d'anneau sclérotique connue pour l'espèce). Le jeu utilise une hypothèse cathémérale (voir sim_basis)."
+    },
+    "habitat": {
+      "summary": "Plaine côtière humide traversée de chenaux méandriformes, avec forêts riveraines, marécages et plaines d'inondation, à l'ouest de la Voie maritime intérieure. Les restes se trouvent aussi bien dans les grès de chenal que dans les dépôts de plaine d'inondation ; T. rex était probablement un généraliste d'habitat à grand domaine vital.",
+      "confidence": "inferred",
+      "sources": [
+        "horner2011_hellcreek_census",
+        "fowler2017_western_interior_geochronology",
+        "sprain2015_hellcreek_chronostratigraphy"
+      ]
+    },
+    "climate": {
+      "summary": "Climat chaud, tempéré chaud à subtropical, humide, à saisonnalité modérée ; les flores et les données isotopiques montrent des fluctuations de température durant les dernières centaines de milliers d'années du Maastrichtien (Wilf et al. 2003).",
+      "confidence": "inferred",
+      "sources": [
+        "wilf2003_kpg_climate"
+      ]
+    },
+    "interactions": {
+      "summary": "Superprédateur de Hell Creek. Proies : Edmontosaurus, Triceratops (traces de morsure). Cannibalisme au moins nécrophage (Longrich et al. 2010). Parasites : lésions mandibulaires érosives présentes chez ~15 % des tyrannosauridés examinés, compatibles avec une infection de type trichomonose aviaire (Wolff et al. 2009). Coexistait avec un tyrannosaure plus petit, Nanotyrannus, si l'on suit Zanno & Napoli (2025) et Griffin et al. (2025) ; selon Schroeder et al. (2021), les juvéniles de mégathéropodes occupaient la niche des carnivores de taille moyenne, ce qui expliquerait la rareté de ceux-ci — conclusion à réévaluer si Nanotyrannus est valide.",
+      "confidence": "inferred",
+      "sources": [
+        "longrich2010_trex_cannibalism",
+        "wolff2009_trex_trichomonosis",
+        "schroeder2021_juvenile_dinosaurs",
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "depalma2013_trex_predation"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Plusieurs dizaines de spécimens, dont des squelettes partiels à quasi complets (Sue, Scotty, etc.), suffisants pour une série de croissance détaillée (Carr 2020). Le recensement de Hell Creek montre une abondance relative élevée de T. rex parmi les grands dinosaures (Horner et al. 2011). Marshall et al. (2021) estiment qu'environ 20 000 adultes vivaient à un instant donné (intervalle de confiance très large), soit une densité de l'ordre d'un individu par ~100 km².",
+      "confidence": "established",
+      "sources": [
+        "carr2020_trex_growth",
+        "persons2019_trex_scotty",
+        "horner2011_hellcreek_census",
+        "marshall2021_trex_abundance"
+      ],
+      "notes": "Les chiffres de population (Marshall et al. 2021) sont des estimations de modèle (confiance « inferred ») ; ≈20 000 adultes confirmé par une vérification secondaire, l'aire de répartition (~2,3 millions de km²) est citée de mémoire."
+    },
+    "documented_behavior": {
+      "summary": "Traces directes : (1) morsures sur Triceratops et Edmontosaurus, dont des marques d'arrachement (Erickson & Olson 1996) ; (2) attaque non létale sur un Edmontosaurus vivant, avec cicatrisation osseuse (DePalma et al. 2013) ; (3) ingestion d'os prouvée par un coprolithe (Chin et al. 1998) ; (4) morsures faciales entre congénères (Tanke & Currie 1998) ; (5) consommation de carcasses de congénères (Longrich et al. 2010).",
+      "confidence": "established",
+      "sources": [
+        "erickson1996_trex_bitemarks",
+        "depalma2013_trex_predation",
+        "chin1998_theropod_coprolite",
+        "tanke1998_head_biting",
+        "longrich2010_trex_cannibalism"
+      ]
+    },
+    "inferred_behavior": {
+      "summary": "Probablement solitaire ou en associations lâches et temporaires ; chasse par approche et embuscade plutôt que par poursuite longue ; charognage opportuniste ; changement de proies au cours de la croissance ; comportements agonistiques ritualisés (morsures à la tête). La chasse en meute coordonnée, les soins parentaux prolongés et la territorialité ne sont pas démontrés.",
+      "confidence": "speculative",
+      "sources": [
+        "woodward2020_trex_ontogeny",
+        "tanke1998_head_biting",
+        "roach2007_pack_hunting",
+        "carbone2011_trex_scavenging"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Une ou plusieurs espèces de Tyrannosaurus à la fin du Maastrichtien ?",
+      "positions": [
+        {
+          "summary": "Variation morphologique et stratigraphique suffisante pour distinguer T. imperator, T. regina et T. rex.",
+          "sources": [
+            "paul2022_tyrannosaurus_species"
+          ]
+        },
+        {
+          "summary": "Preuves insuffisantes ; la variation observée est compatible avec une seule espèce variable.",
+          "sources": [
+            "carr2022_tyrannosaurus_species_comment"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "growth",
+      "summary": "Quels spécimens documentent la croissance juvénile de T. rex ?",
+      "positions": [
+        {
+          "summary": "Jane, Petey et les autres petits tyrannosaures de Hell Creek sont des T. rex immatures ; ils documentent une croissance rapide et une partition de niche ontogénétique.",
+          "sources": [
+            "woodward2020_trex_ontogeny",
+            "carr2020_trex_growth"
+          ]
+        },
+        {
+          "summary": "Une partie de ces spécimens appartient à Nanotyrannus (N. lancensis, N. lethaeus) ; la courbe de croissance juvénile de T. rex doit être recalculée sans eux.",
+          "sources": [
+            "zanno2025_nanotyrannus",
+            "longrich2024_nanotyrannus",
+            "griffin2025_nanotyrannus_hyoid"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "speed",
+      "summary": "Capacité de course de l'adulte.",
+      "positions": [
+        {
+          "summary": "Course « au sol » modérée possible (ordre de 5–11 m/s), sans grande phase aérienne.",
+          "sources": [
+            "hutchinson2002_trex_running",
+            "hutchinson2004_running_extinct",
+            "hutchinson2011_trex_mass"
+          ]
+        },
+        {
+          "summary": "Contraintes osseuses limitant l'adulte aux allures de marche (≈5 m/s au maximum).",
+          "sources": [
+            "sellers2017_trex_running"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "predation",
+      "summary": "Prédateur actif ou charognard ?",
+      "positions": [
+        {
+          "summary": "Prédateur actif et charognard opportuniste (morsure cicatrisée sur proie vivante).",
+          "sources": [
+            "depalma2013_trex_predation",
+            "hone2010_theropod_feeding"
+          ]
+        },
+        {
+          "summary": "Charognard dominant : la charogne aurait pu fournir une part majeure de l'énergie (hypothèse historique de charognard strict aujourd'hui minoritaire).",
+          "sources": [
+            "carbone2011_trex_scavenging"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "social_behavior",
+      "summary": "Grégarisme des tyrannosauridés.",
+      "positions": [
+        {
+          "summary": "Sites à individus multiples et pistes parallèles indiquent des groupes sociaux au moins temporaires.",
+          "sources": [
+            "currie2010_albertosaurus_gregarious",
+            "titus2021_teratophoneus_bonebed",
+            "mccrea2014_tyrannosaurid_trackways"
+          ]
+        },
+        {
+          "summary": "Les rassemblements de théropodes s'expliquent mieux par des agrégations agonistiques non coopératives ; la chasse en meute de type mammifère n'est pas étayée.",
+          "sources": [
+            "roach2007_pack_hunting"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "soft_tissue",
+      "summary": "Dents exposées ou couvertes par des lèvres ?",
+      "positions": [
+        {
+          "summary": "Tissus extraoraux (lèvres) couvrant les dents au repos.",
+          "sources": [
+            "cullen2023_theropod_lips"
+          ]
+        },
+        {
+          "summary": "Reconstruction ancienne de type crocodilien avec dents exposées — aujourd'hui peu soutenue (pas de référence vérifiée).",
+          "sources": []
+        }
+      ]
+    },
+    {
+      "topic": "integument",
+      "summary": "Écailles ou plumes ?",
+      "positions": [
+        {
+          "summary": "Peau majoritairement écailleuse chez l'adulte, d'après les impressions cutanées.",
+          "sources": [
+            "bell2017_tyrannosaur_integument"
+          ]
+        },
+        {
+          "summary": "Plumage filamenteux partiel possible (crochet phylogénétique avec Yutyrannus), surtout chez les juvéniles.",
+          "sources": [
+            "xu2012_yutyrannus"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_large_theropod",
+    "adult_mass_kg": 7000,
+    "adult_length_m": 12.0,
+    "hip_height_m": 3.1,
+    "foot_length_m": 0.8,
+    "foot_width_m": 0.7,
+    "hatchling_mass_kg": 5,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 7000,
+      "max_growth_rate_kg_per_year": 1300,
+      "inflection_age_years": 16,
+      "maturity_age_years": 20,
+      "max_lifespan_years": 30
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.3,
+      "max_speed_ms": 5.5,
+      "max_accel_ms2": 1.5,
+      "max_decel_ms2": 2.5,
+      "max_yaw_rate_dps": 30,
+      "max_slope_deg": 25,
+      "swim": true,
+      "swim_speed_ms": 0.8,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.65,
+      "duty_factor_run": 0.5
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 40,
+      "water_l_per_day_per_100kg": 2.5
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 50,
+      "prey_mass_max_kg": 10000,
+      "scavenges": true,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 1000,
+      "fov_deg": 250,
+      "binocular_deg": 55,
+      "low_light": 0.4,
+      "hearing_min_hz": 20,
+      "hearing_max_hz": 1100,
+      "hearing_best_hz": 300,
+      "hearing_threshold_db": 20,
+      "olfaction": 0.95,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 2,
+      "cohesion": 0.1,
+      "territorial": true,
+      "territory_radius_m": 4000,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite"
+      ],
+      "armor": 0.1,
+      "defense_strength": 0.9,
+      "flee_preference": 0.1
+    },
+    "predation": {
+      "hunt_style": "stalk_rush",
+      "attack_strength": 1.0,
+      "bite_force_n": 35000,
+      "max_chase_s": 20
+    },
+    "reproduction": {
+      "clutch_size_mean": 20,
+      "clutch_size_max": 30,
+      "incubation_days": 120,
+      "breeding_season_doy": [
+        90,
+        160
+      ],
+      "parental_care": 0.4,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 15,
+      "f0_max_hz": 200,
+      "call_types": [
+        {
+          "id": "contact_boom",
+          "duration_s": 2.0,
+          "f0_hz": 30,
+          "source_level_db": 100,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "threat_rumble",
+          "duration_s": 1.5,
+          "f0_hz": 25,
+          "source_level_db": 105,
+          "context": "agonistic_threat",
+          "confidence": "speculative"
+        },
+        {
+          "id": "juvenile_contact",
+          "duration_s": 0.6,
+          "f0_hz": 250,
+          "source_level_db": 75,
+          "context": "juvenile_parent_contact",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "cathemeral"
+    },
+    "personality": {
+      "boldness": [
+        0.7,
+        0.15
+      ],
+      "caution": [
+        0.35,
+        0.15
+      ],
+      "aggression": [
+        0.55,
+        0.15
+      ],
+      "curiosity": [
+        0.35,
+        0.15
+      ],
+      "sociability": [
+        0.15,
+        0.1
+      ],
+      "vigilance": [
+        0.5,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.55,
+        0.15
+      ],
+      "exploration": [
+        0.5,
+        0.15
+      ],
+      "flight_tendency": [
+        0.1,
+        0.05
+      ],
+      "dominance": [
+        0.8,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0.05,
+      "riverbank": 0.6,
+      "sandbar": 0.5,
+      "oxbow_lake": 0.2,
+      "backswamp": 0.3,
+      "riparian_forest": 0.8,
+      "floodplain_open": 0.9,
+      "levee_woodland": 0.7,
+      "upland_conifer_forest": 0.5,
+      "cutbank_cliff": 0.1,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.2,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 2,
+      "regional_density_per_km2": 0.009
+    }
+  },
+  "sim_basis": {
+    "role": "derived: espèce bien documentée, superprédateur — simulée individuellement (zanno2025_nanotyrannus et carr2020_trex_growth confirment sa présence à Hell Creek)",
+    "body_plan": "derived: théropode bipède géant (carr2020_trex_growth ; hutchinson2011_trex_mass)",
+    "adult_mass_kg": "derived: valeur centrale d'adulte typique dans la plage 6 000–9 500 kg (hutchinson2011_trex_mass : Sue ≈ 9 501 kg, adultes > 6 000 kg ; persons2019_trex_scotty : 8 870 kg) ; les records ne sont pas la norme",
+    "adult_length_m": "derived: ~12 m pour les grands adultes (brochu2003_trex_osteology ; persons2019_trex_scotty) ; arrondi",
+    "hip_height_m": "game_assumption: somme approximative fémur + tibia + métatarse d'un grand adulte avec membres légèrement fléchis (~3 m) ; longueurs osseuses de brochu2003_trex_osteology non revérifiées",
+    "foot_length_m": "derived: ordre de grandeur de l'empreinte Tyrannosauripus pillmorei attribuée à Tyrannosaurus (~0,8–0,9 m ; lockley1994_tyrannosauripus, non vérifiée), arrondi vers le bas",
+    "foot_width_m": "derived: même empreinte (lockley1994_tyrannosauripus, non vérifiée) ; largeur ~0,7 m",
+    "hatchling_mass_kg": "derived: hutchinson2011_trex_mass indique des nouveau-nés < 10 kg ; 5 kg retenu comme valeur médiane ; cohérent avec funston2021_baby_tyrannosaurids",
+    "sexual_dimorphism_mass": "game_assumption: aucun dimorphisme sexuel de taille démontré chez les dinosaures non aviens (mallon2017_sexual_dimorphism) → 1,0",
+    "growth.asymptotic_mass_kg": "derived: égal à adult_mass_kg (hutchinson2011_trex_mass ; persons2019_trex_scotty)",
+    "growth.max_growth_rate_kg_per_year": "derived: intermédiaire entre 767 kg/an (erickson2004_tyrannosaurid_growth, 2,1 kg/jour) et 1 790 kg/an (hutchinson2011_trex_mass, asymptote ~9,5 t), mis à l'échelle pour une asymptote de 7 t",
+    "growth.inflection_age_years": "derived: milieu de la phase de croissance exponentielle adolescente (~14–18 ans) de la courbe d'erickson2004_tyrannosaurid_growth (valeur lue de mémoire)",
+    "growth.maturity_age_years": "erickson2004_tyrannosaurid_growth",
+    "growth.max_lifespan_years": "derived: individu le plus âgé à 28 ans (erickson2004_tyrannosaurid_growth) et spécimen plus âgé encore (persons2019_trex_scotty) → 30",
+    "locomotion.walk_speed_ms": "vanbijlert2021_trex_walking",
+    "locomotion.max_speed_ms": "derived: borne basse des estimations publiées (~5 m/s : sellers2017_trex_running ; 5–11 m/s : hutchinson2004_running_extinct ; hutchinson2002_trex_running exclut ~20 m/s) — choix conservateur",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée ; valeur faible cohérente avec une forte inertie",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée ; freinage limité par la masse",
+    "locomotion.max_yaw_rate_dps": "derived: carrier2001_theropod_turning estime 1–2 s pour un virage de 45° chez l'adulte (≈22–45 °/s) ; snively2018_tyrannosaurid_turning suggère une agilité relative ; 30 °/s retenu",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée ; pente modérée pour un bipède de 7 t",
+    "locomotion.swim": "game_assumption: aucune trace de nage attribuée à T. rex ; la plupart des grands animaux terrestres actuels savent nager, et la carte comporte des chenaux à franchir",
+    "locomotion.swim_speed_ms": "game_assumption: nage lente par pédalage, sans donnée",
+    "locomotion.fly": "derived: incapable de voler (anatomie ; carr2020_trex_growth)",
+    "locomotion.fly_speed_ms": "derived: sans objet (fly=false)",
+    "locomotion.duty_factor_walk": "game_assumption: valeur typique de marche bipède (> 0,5)",
+    "locomotion.duty_factor_run": "game_assumption: ~0,5 pour une course « au sol » sans phase aérienne marquée (cohérent avec sellers2017_trex_running)",
+    "metabolism.thermo_class": "game_assumption: débat ouvert — mésothermie (grady2014_mesothermy) vs métabolisme de type aviaire chez les théropodes (wiemann2022_dinosaur_metabolism) ; endotherme retenu",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée ; grand carnivore à faible fréquence de repas",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: ordre de grandeur des grands mammifères terrestres actuels",
+    "diet.type": "derived: hypercarnivore (erickson1996_trex_bitemarks ; chin1998_theropod_coprolite ; gignac2017_trex_osteophagy)",
+    "diet.plant_preferences": "derived: carnivore strict — aucune consommation de plantes",
+    "diet.browse_height_min_m": "derived: sans objet (carnivore)",
+    "diet.browse_height_max_m": "derived: sans objet (carnivore)",
+    "diet.prey_mass_min_kg": "game_assumption: un adulte de 7 t néglige probablement les très petites proies ; seuil de 50 kg",
+    "diet.prey_mass_max_kg": "derived: Triceratops et Edmontosaurus adultes (plusieurs tonnes) consommés (erickson1996_trex_bitemarks ; depalma2013_trex_predation) ; plafond de 10 t",
+    "diet.scavenges": "derived: charognage plausible et cannibalisme nécrophage (longrich2010_trex_cannibalism ; carbone2011_trex_scavenging)",
+    "diet.eats_fish": "game_assumption: aucune preuve",
+    "diet.eats_invertebrates": "game_assumption: aucune preuve",
+    "diet.eats_eggs": "game_assumption: aucune preuve",
+    "senses.vision_range_m": "game_assumption: grands yeux et vision binoculaire, mais acuité inconnue",
+    "senses.fov_deg": "game_assumption: orbites orientées vers l'avant ; champ total non publié",
+    "senses.binocular_deg": "stevens2006_binocular_vision",
+    "senses.low_light": "game_assumption: aucune donnée d'anneau sclérotique pour T. rex",
+    "senses.hearing_min_hz": "game_assumption: sensibilité aux basses fréquences suggérée par le long conduit cochléaire (witmer2009_tyrannosaur_brain ; gleich2005_archosaur_hearing) ; valeur numérique choisie",
+    "senses.hearing_max_hz": "game_assumption: limite haute basse, cohérente qualitativement avec witmer2009_tyrannosaur_brain et gleich2005_archosaur_hearing ; valeur numérique choisie",
+    "senses.hearing_best_hz": "game_assumption: meilleure sensibilité supposée vers quelques centaines de Hz (qualitatif : witmer2009_tyrannosaur_brain)",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée",
+    "senses.olfaction": "derived: rapport bulbe olfactif/hémisphère parmi les plus élevés des théropodes (zelenitsky2009_theropod_olfaction ; zelenitsky2011_olfaction_evolution) → proche du maximum de l'échelle relative",
+    "senses.vibration": "game_assumption: aucune donnée",
+    "social.group_size_mean": "game_assumption: solitaire par défaut (aucune preuve directe de groupe chez T. rex) ; le grégarisme est spéculatif (voir competing_hypotheses)",
+    "social.group_size_max": "game_assumption: couple ou parent–jeune possible ; groupes plus grands réservés à un profil de reconstruction spéculatif",
+    "social.cohesion": "game_assumption: faible cohésion",
+    "social.territorial": "game_assumption: territorialité non démontrée ; agressions intraspécifiques documentées (tanke1998_head_biting)",
+    "social.territory_radius_m": "game_assumption: domaine vital supérieur à la carte (densité ~1 individu/100 km² ; marshall2021_trex_abundance)",
+    "social.alarm_calls": "game_assumption: superprédateur — pas de cris d'alarme",
+    "defense.weapons": "derived: morsure (gignac2017_trex_osteophagy ; tanke1998_head_biting)",
+    "defense.armor": "derived: peau écailleuse sans ostéodermes (bell2017_tyrannosaur_integument) → faible",
+    "defense.defense_strength": "game_assumption: adulte quasi invulnérable sauf face à un congénère",
+    "defense.flee_preference": "game_assumption: fuite rare chez l'adulte",
+    "predation.hunt_style": "game_assumption: vitesse limitée (sellers2017_trex_running) → approche et attaque courte plutôt que poursuite",
+    "predation.attack_strength": "derived: plus puissant prédateur de l'écosystème (gignac2017_trex_osteophagy) → 1,0",
+    "predation.bite_force_n": "derived: haut de la plage 8 526–34 522 N (gignac2017_trex_osteophagy) et bas de 35 000–57 000 N (bates2012_trex_bite) → 35 000 N",
+    "predation.max_chase_s": "game_assumption: poursuites brèves compte tenu de la vitesse limitée",
+    "reproduction.clutch_size_mean": "game_assumption: aucune ponte de tyrannosauridé connue",
+    "reproduction.clutch_size_max": "game_assumption: aucune ponte de tyrannosauridé connue",
+    "reproduction.incubation_days": "game_assumption: ordre de grandeur des incubations de 3–6 mois mesurées chez d'autres dinosaures (erickson2017_dinosaur_incubation)",
+    "reproduction.breeding_season_doy": "game_assumption: début de saison chaude, aucune donnée",
+    "reproduction.parental_care": "game_assumption: soins parentaux plausibles par crochet phylogénétique mais non documentés",
+    "reproduction.nest_type": "game_assumption: un adulte de 7 t ne pouvait pas couver ; œufs supposés enfouis (sédiment/végétation)",
+    "vocal.closed_mouth": "game_assumption: hypothèse de vocalisation à bouche fermée (riede2016_closed_mouth_vocal) — SPÉCULATIF, aucune preuve directe",
+    "vocal.f0_min_hz": "game_assumption: sons graves supposés pour un animal de cette taille ; aucune donnée",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée",
+    "vocal.call_types": "game_assumption: répertoire entièrement SPÉCULATIF (aucune preuve de vocalisation chez les dinosaures non aviens, pas de syrinx connu : clarke2016_mesozoic_syrinx) ; sons graves à bouche fermée inspirés des crocodiliens et oiseaux (riede2016_closed_mouth_vocal) ; aucun rugissement",
+    "activity.pattern": "game_assumption: aucune donnée ; cathéméral par défaut, fréquent chez les grands vertébrés actuels",
+    "personality": "game_assumption: traits de personnalité toujours hypothétiques",
+    "habitat": "game_assumption: généraliste à grand domaine vital ; préférences relatives fondées qualitativement sur la répartition des restes en chenal et plaine d'inondation (horner2011_hellcreek_census)",
+    "population.initial_count": "derived: densité estimée ~0,009 individu/km² (marshall2021_trex_abundance : ~20 000 adultes sur ~2,3 millions de km², aire de répartition citée de mémoire, IC très large) → espérance ~0,6 sur 64 km² ; le jeu place 2 individus de passage (domaine vital > carte), ce qui reste dans l'intervalle de confiance haut",
+    "population.regional_density_per_km2": "derived: ~20 000 / ~2,3 × 10^6 km² (marshall2021_trex_abundance)"
+  }
+}

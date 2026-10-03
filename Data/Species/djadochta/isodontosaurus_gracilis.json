@@ -1,0 +1,548 @@
+{
+  "schema": "noctis.species/1",
+  "id": "isodontosaurus_gracilis",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Isodontosaurus gracilis",
+  "authority": "Gilmore, 1943",
+  "common_names": {
+    "fr": "Isodontosaure",
+    "en": "Isodontosaurus"
+  },
+  "regions": [
+    "djadochta"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Isodontosaurus gracilis Gilmore, 1943 : petit lézard (Squamata) dont le nom évoque ses dents marginales de forme uniforme. Sa position phylogénétique est débattue : il a été rapproché de divers lézards « scincomorphes », et une famille propre (Isodontosauridae) a été proposée.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1943_mongolian_lizards",
+        "gao2000_ukhaa_lizards"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : la description originale (Gilmore 1943) n'a pas pu être vérifiée et le traitement d'Isodontosaurus dans Gao & Norell (2000) n'a pas été relu dans le texte intégral."
+    },
+    "period": {
+      "summary": "Crétacé supérieur, Campanien. L'âge de la Formation de Djadochta n'est pas fixé par une datation radiométrique directe des couches fossilifères ; les estimations (magnétostratigraphie, corrélations) le placent généralement vers la fin du Campanien, autour de ~75–71 millions d'années, et il n'est pas certain qu'un même âge s'applique à toute la formation dans la région.",
+      "confidence": "inferred",
+      "sources": [
+        "dashzeveg2005_djadokhta_age",
+        "dingus2008_ukhaa_geology"
+      ],
+      "value": 73,
+      "min": 71,
+      "max": 75,
+      "unit": "Ma",
+      "notes": "Attribution au Campanien bien admise ; la fourchette chiffrée (~75–71 Ma) n'a pas été relue dans le texte intégral de Dashzeveg et al. (2005) ni de Dingus et al. (2008) — à confirmer."
+    },
+    "formation": {
+      "summary": "Formation de Djadochta : localité type à Bayn Dzak (Shabarakh Usu), d'après le matériel des Central Asiatic Expeditions ; également signalé à Ukhaa Tolgod, dont l'assemblage de lézards est l'un des plus riches du Crétacé.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1943_mongolian_lizards",
+        "gao2000_ukhaa_lizards",
+        "dashzeveg1995_ukhaa_tolgod"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : la description originale (Gilmore 1943) n'a pas pu être vérifiée et le traitement d'Isodontosaurus dans Gao & Norell (2000) n'a pas été relu dans le texte intégral."
+    },
+    "location": {
+      "summary": "Désert de Gobi, sud de la Mongolie : Bayn Dzak, Ukhaa Tolgod.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1943_mongolian_lizards",
+        "gao2000_ukhaa_lizards"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : la description originale (Gilmore 1943) n'a pas pu être vérifiée et le traitement d'Isodontosaurus dans Gao & Norell (2000) n'a pas été relu dans le texte intégral."
+    },
+    "size": {
+      "summary": "Petit lézard connu surtout par des crânes et mâchoires de l'ordre du centimètre à deux centimètres ; une longueur totale de ~10–15 cm est une extrapolation, aucune mesure corporelle publiée n'ayant pu être vérifiée.",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 0.12,
+      "min": 0.08,
+      "max": 0.18,
+      "unit": "m"
+    },
+    "mass": {
+      "summary": "Aucune estimation publiée ; quelques grammes à une vingtaine de grammes sont plausibles pour un lézard de cette taille.",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 0.01,
+      "min": 0.003,
+      "max": 0.025,
+      "unit": "kg"
+    },
+    "morphology": {
+      "summary": "Crâne léger de petit lézard ; dents marginales nombreuses et de forme uniforme (isodontes), implantées sur la face interne des mâchoires (pleurodontie, comme chez la plupart des lézards).",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1943_mongolian_lizards",
+        "gao2000_ukhaa_lizards"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : la description originale (Gilmore 1943) n'a pas pu être vérifiée et le traitement d'Isodontosaurus dans Gao & Norell (2000) n'a pas été relu dans le texte intégral."
+    },
+    "skeleton": {
+      "summary": "Connu principalement par des crânes et des mandibules ; le squelette postcrânien est mal documenté dans la littérature consultée.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1943_mongolian_lizards",
+        "gao2000_ukhaa_lizards"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : la description originale (Gilmore 1943) n'a pas pu être vérifiée et le traitement d'Isodontosaurus dans Gao & Norell (2000) n'a pas été relu dans le texte intégral."
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Écailles cornées inférées (caractère de tous les squamates) ; aucune impression cutanée connue.",
+      "confidence": "inferred",
+      "sources": [],
+      "notes": "Inférence par encadrement phylogénétique, sans référence spécifique."
+    },
+    "locomotion": {
+      "summary": "Quadrupède à membres écartés avec ondulation latérale du tronc, comme les lézards actuels de morphologie générale comparable.",
+      "confidence": "inferred",
+      "sources": [],
+      "notes": "Inférence par analogie actuelle ; aucun squelette postcrânien vérifié."
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Insectivore ou omnivore probable par analogie avec les petits lézards actuels de taille comparable ; la morphologie dentaire n'a pas fait l'objet d'une étude de régime vérifiée.",
+      "confidence": "speculative",
+      "sources": [
+        "gilmore1943_mongolian_lizards"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Recherche active ou affût d'arthropodes au sol, par analogie avec les petits lézards de désert actuels.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "predation": {
+      "summary": "Proie probable de petits théropodes (y compris de jeunes Velociraptor), de lézards plus grands et de mammifères ; aucune preuve directe.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Fuite, enfouissement dans le sable et, peut-être, autotomie caudale comme chez de nombreux lézards actuels ; non documenté.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Oviparité avec œufs enfouis dans le sable probable (mode le plus répandu chez les lézards) ; aucun œuf attribué.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Activité diurne héliotherme probable, comme chez la majorité des petits lézards de désert actuels ; non démontrée.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Dunes, plaines interdunaires et zones d'arbustes xérophiles ; les lézards d'Ukhaa Tolgod sont conservés dans des grès éoliens et interdunaires.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "fastovsky1997_tugrikin",
+        "dashzeveg1995_ukhaa_tolgod"
+      ],
+      "notes": "Le cadre (dunes, interdunes, mares temporaires) est bien établi ; les préférences fines de l'espèce entre ces milieux sont inférées."
+    },
+    "climate": {
+      "summary": "Climat aride à semi-aride et saisonnier : grès éoliens à stratifications entrecroisées (dunes), dépôts interdunaires, paléosols carbonatés et mares ou cours d'eau temporaires. Les effondrements de dunes humidifiées par la pluie et les tempêtes de sable ont enseveli des animaux vivants ou fraîchement morts, d'où la fréquence de squelettes articulés en position de vie (Loope et al. 1998).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "jerzykiewicz1993_djadokhta",
+        "fastovsky1997_tugrikin",
+        "dashzeveg2005_djadokhta_age"
+      ],
+      "notes": "Température, précipitations et saisonnalité chiffrées : information insuffisante."
+    },
+    "interactions": {
+      "summary": "Membre d'un assemblage de lézards très diversifié (plusieurs dizaines d'espèces dans le Crétacé supérieur du Gobi) ; concurrence probable avec d'autres petits insectivores (lézards, mammifères) et prédation par les théropodes.",
+      "confidence": "speculative",
+      "sources": [
+        "gao2000_ukhaa_lizards"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Décrit par Gilmore (1943) d'après du matériel récolté par les Central Asiatic Expeditions de l'AMNH à Shabarakh Usu (Bayn Dzak). Du matériel supplémentaire a été récolté à Ukhaa Tolgod par les expéditions AMNH–Académie mongole des sciences.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1943_mongolian_lizards",
+        "gao2000_ukhaa_lizards"
+      ],
+      "notes": "Confiance plafonnée à INFÉRÉ : la description originale (Gilmore 1943) n'a pas pu être vérifiée et le traitement d'Isodontosaurus dans Gao & Norell (2000) n'a pas été relu dans le texte intégral."
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "inferred_behavior": {
+      "summary": "Petit insectivore diurne se réfugiant dans le sable ou des terriers pendant les heures chaudes ; ponte enfouie.",
+      "confidence": "speculative",
+      "sources": []
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Affinités d'Isodontosaurus.",
+      "positions": [
+        {
+          "summary": "Lézard « scincomorphe » rattaché à un groupe connu de lézards.",
+          "sources": [
+            "gao2000_ukhaa_lizards"
+          ]
+        },
+        {
+          "summary": "Lignée distincte méritant une famille propre (Isodontosauridae).",
+          "sources": []
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "population",
+    "body_plan": "small_reptile",
+    "adult_mass_kg": 0.01,
+    "adult_length_m": 0.12,
+    "hip_height_m": 0.015,
+    "foot_length_m": 0.01,
+    "foot_width_m": 0.008,
+    "hatchling_mass_kg": 0.0008,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 0.01,
+      "max_growth_rate_kg_per_year": 0.01,
+      "inflection_age_years": 0.5,
+      "maturity_age_years": 1.5,
+      "max_lifespan_years": 6
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.2,
+      "max_speed_ms": 2.0,
+      "max_accel_ms2": 15,
+      "max_decel_ms2": 20,
+      "max_yaw_rate_dps": 360,
+      "max_slope_deg": 60,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.35
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 60,
+      "water_l_per_day_per_100kg": 0.5
+    },
+    "diet": {
+      "type": "insectivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 1e-05,
+      "prey_mass_max_kg": 0.002,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": true,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 15,
+      "fov_deg": 300,
+      "binocular_deg": 25,
+      "low_light": 0.2,
+      "hearing_min_hz": 100,
+      "hearing_max_hz": 4000,
+      "hearing_best_hz": 1000,
+      "hearing_threshold_db": 40,
+      "olfaction": 0.5,
+      "vibration": 0.6
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 1,
+      "cohesion": 0.0,
+      "territorial": true,
+      "territory_radius_m": 5,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.02,
+      "flee_preference": 0.95
+    },
+    "predation": {
+      "hunt_style": "ambush",
+      "attack_strength": 0.01,
+      "bite_force_n": 2,
+      "max_chase_s": 2
+    },
+    "reproduction": {
+      "clutch_size_mean": 4,
+      "clutch_size_max": 8,
+      "incubation_days": 60,
+      "breeding_season_doy": [
+        120,
+        180
+      ],
+      "parental_care": 0.0,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": [
+        {
+          "id": "defensive_hiss",
+          "duration_s": 0.4,
+          "f0_hz": 0,
+          "source_level_db": 40,
+          "context": "threat_display",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.3,
+        0.15
+      ],
+      "caution": [
+        0.7,
+        0.1
+      ],
+      "aggression": [
+        0.2,
+        0.1
+      ],
+      "curiosity": [
+        0.3,
+        0.15
+      ],
+      "sociability": [
+        0.05,
+        0.05
+      ],
+      "vigilance": [
+        0.75,
+        0.1
+      ],
+      "risk_tolerance": [
+        0.3,
+        0.1
+      ],
+      "exploration": [
+        0.35,
+        0.15
+      ],
+      "flight_tendency": [
+        0.85,
+        0.1
+      ],
+      "dominance": [
+        0.3,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0,
+      "sandbar": 0,
+      "oxbow_lake": 0,
+      "backswamp": 0,
+      "riparian_forest": 0,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0.5,
+      "dune_field": 0.8,
+      "interdune_flat": 0.9,
+      "ephemeral_pond": 0.3,
+      "xeric_scrub": 1.0
+    },
+    "population": {
+      "initial_count": 3200,
+      "regional_density_per_km2": 50
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: petit lézard simulé en effectifs de population",
+    "body_plan": "derived: petit squamate quadrupède (gilmore1943_mongolian_lizards)",
+    "adult_mass_kg": "game_assumption: aucune estimation publiée ; petit lézard de ~10–15 cm",
+    "adult_length_m": "game_assumption: longueur totale extrapolée de crânes de 1–2 cm",
+    "hip_height_m": "game_assumption: proportions de petit lézard",
+    "foot_length_m": "game_assumption: proportions de petit lézard",
+    "foot_width_m": "game_assumption: proportions de petit lézard",
+    "hatchling_mass_kg": "game_assumption: proportion typique de petits lézards actuels",
+    "sexual_dimorphism_mass": "game_assumption: dimorphisme inconnu",
+    "growth.asymptotic_mass_kg": "game_assumption: cycle de vie de petit lézard actuel ; aucune donnée fossile",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: cycle de vie de petit lézard actuel ; aucune donnée fossile",
+    "growth.inflection_age_years": "game_assumption: cycle de vie de petit lézard actuel ; aucune donnée fossile",
+    "growth.maturity_age_years": "game_assumption: cycle de vie de petit lézard actuel ; aucune donnée fossile",
+    "growth.max_lifespan_years": "game_assumption: cycle de vie de petit lézard actuel ; aucune donnée fossile",
+    "locomotion.walk_speed_ms": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.max_speed_ms": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.max_accel_ms2": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.max_decel_ms2": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.max_yaw_rate_dps": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.max_slope_deg": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.swim": "game_assumption: nage non simulée",
+    "locomotion.swim_speed_ms": "game_assumption: nage non simulée",
+    "locomotion.fly": "derived: lézard terrestre",
+    "locomotion.fly_speed_ms": "derived: lézard terrestre",
+    "locomotion.duty_factor_walk": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "locomotion.duty_factor_run": "game_assumption: petit lézard terrestre rapide sur de courtes distances",
+    "metabolism.thermo_class": "derived: squamate — ectothermie par encadrement phylogénétique",
+    "metabolism.max_fasting_days": "game_assumption: faible métabolisme d'ectotherme",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: lézard de désert très économe en eau",
+    "diet.type": "game_assumption: insectivorie supposée par analogie avec les petits lézards actuels",
+    "diet.plant_preferences.fern": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.horsetail": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.angio_herb": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.angio_shrub": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.angio_tree": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.conifer": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.palm": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.cycadophyte": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.ginkgo": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: pas de consommation végétale simulée",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: pas de consommation végétale simulée",
+    "diet.browse_height_min_m": "derived: insectivore — sans objet",
+    "diet.browse_height_max_m": "derived: insectivore — sans objet",
+    "diet.prey_mass_min_kg": "game_assumption: petits arthropodes",
+    "diet.prey_mass_max_kg": "game_assumption: gros insectes",
+    "diet.scavenges": "game_assumption: non",
+    "diet.eats_fish": "game_assumption: non",
+    "diet.eats_invertebrates": "game_assumption: insectivorie supposée",
+    "diet.eats_eggs": "game_assumption: non",
+    "senses.vision_range_m": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.fov_deg": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.binocular_deg": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.low_light": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.hearing_min_hz": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.hearing_max_hz": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.hearing_best_hz": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.hearing_threshold_db": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.olfaction": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "senses.vibration": "game_assumption: valeurs de petits lézards diurnes actuels ; aucune donnée fossile",
+    "social.group_size_mean": "game_assumption: lézard solitaire et territorial par analogie actuelle",
+    "social.group_size_max": "game_assumption: lézard solitaire et territorial par analogie actuelle",
+    "social.cohesion": "game_assumption: lézard solitaire et territorial par analogie actuelle",
+    "social.territorial": "game_assumption: lézard solitaire et territorial par analogie actuelle",
+    "social.territory_radius_m": "game_assumption: lézard solitaire et territorial par analogie actuelle",
+    "social.alarm_calls": "game_assumption: lézard solitaire et territorial par analogie actuelle",
+    "defense.weapons": "game_assumption: défense principale = fuite et enfouissement",
+    "defense.armor": "game_assumption: défense principale = fuite et enfouissement",
+    "defense.defense_strength": "game_assumption: défense principale = fuite et enfouissement",
+    "defense.flee_preference": "game_assumption: défense principale = fuite et enfouissement",
+    "predation.hunt_style": "game_assumption: chasse à l'affût d'arthropodes",
+    "predation.attack_strength": "game_assumption: chasse à l'affût d'arthropodes",
+    "predation.bite_force_n": "game_assumption: chasse à l'affût d'arthropodes",
+    "predation.max_chase_s": "game_assumption: chasse à l'affût d'arthropodes",
+    "reproduction.clutch_size_mean": "game_assumption: oviparité et ponte enfouie, mode le plus répandu chez les lézards ; aucun œuf attribué",
+    "reproduction.clutch_size_max": "game_assumption: oviparité et ponte enfouie, mode le plus répandu chez les lézards ; aucun œuf attribué",
+    "reproduction.incubation_days": "game_assumption: oviparité et ponte enfouie, mode le plus répandu chez les lézards ; aucun œuf attribué",
+    "reproduction.breeding_season_doy": "game_assumption: oviparité et ponte enfouie, mode le plus répandu chez les lézards ; aucun œuf attribué",
+    "reproduction.parental_care": "game_assumption: oviparité et ponte enfouie, mode le plus répandu chez les lézards ; aucun œuf attribué",
+    "reproduction.nest_type": "game_assumption: oviparité et ponte enfouie, mode le plus répandu chez les lézards ; aucun œuf attribué",
+    "vocal.closed_mouth": "game_assumption: la plupart des lézards ne vocalisent pas ; seul un souffle défensif non tonal (f0 = 0) est simulé",
+    "vocal.f0_min_hz": "game_assumption: la plupart des lézards ne vocalisent pas ; seul un souffle défensif non tonal (f0 = 0) est simulé",
+    "vocal.f0_max_hz": "game_assumption: la plupart des lézards ne vocalisent pas ; seul un souffle défensif non tonal (f0 = 0) est simulé",
+    "vocal.call_types": "game_assumption: la plupart des lézards ne vocalisent pas ; seul un souffle défensif non tonal (f0 = 0) est simulé",
+    "activity.pattern": "game_assumption: activité diurne héliotherme supposée",
+    "personality.boldness": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.caution": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.aggression": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.curiosity": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.sociability": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.vigilance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.risk_tolerance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.exploration": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.flight_tendency": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.dominance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "habitat.channel": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.riverbank": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.sandbar": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.oxbow_lake": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.backswamp": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.riparian_forest": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.floodplain_open": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.levee_woodland": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.upland_conifer_forest": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.cutbank_cliff": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.dune_field": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.interdune_flat": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.ephemeral_pond": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "habitat.xeric_scrub": "game_assumption: préférences relatives d'un petit lézard de désert ; habitats fluviaux absents de la carte (0)",
+    "population.initial_count": "derived: 50 ind./km² × 64 km² = 3 200",
+    "population.regional_density_per_km2": "game_assumption: densité prudente pour de petits lézards de désert actuels ; assemblage fossile riche à Ukhaa Tolgod (gao2000_ukhaa_lizards)"
+  }
+}

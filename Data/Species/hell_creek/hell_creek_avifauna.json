@@ -1,0 +1,527 @@
+{
+  "schema": "noctis.species/1",
+  "id": "hell_creek_avifauna",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Aves indet. (assemblage de Hell Creek)",
+  "authority": "Assemblage multitaxon",
+  "common_names": {
+    "fr": "Avifaune de Hell Creek",
+    "en": "Hell Creek avifauna"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Assemblage d'oiseaux comprenant des Enantiornithes — Avisaurus archibaldi, décrit d'après un tarsométatarse par Brett-Surman & Paul (1985) d'abord comme dinosaure non avien, puis reconnu comme oiseau énantiornithe — et des ornithurines, dont des formes plongeuses (Brodavis americanus) et de nombreux os isolés d'ornithurines non néornithines et de néornithines.",
+      "confidence": "inferred",
+      "sources": [
+        "brettsurman1985_avisaurus",
+        "chiappe1993_enantiornithine",
+        "martin2012_brodavis",
+        "longrich2011_bird_extinction"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakotas) et formations équivalentes de l'Ouest intérieur (Lance, Frenchman).",
+      "confidence": "inferred",
+      "sources": [
+        "longrich2011_bird_extinction",
+        "brettsurman1985_avisaurus"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "location": {
+      "summary": "Montana et Dakotas (Hell Creek) ; Wyoming et Saskatchewan pour les formations équivalentes.",
+      "confidence": "inferred",
+      "sources": [
+        "longrich2011_bird_extinction"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "size": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Assemblage hétérogène : de petits oiseaux à des formes de la taille d'un canard ou plus ; aucune estimation vérifiée."
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "morphology": {
+      "summary": "Connus surtout par des os isolés (tarsométatarses, coracoïdes, humérus). Les énantiornithes conservent des caractères primitifs ; Brodavis présente des adaptations à la plongée propulsée par les pattes.",
+      "confidence": "inferred",
+      "sources": [
+        "martin2012_brodavis",
+        "chiappe1993_enantiornithine"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "skeleton": {
+      "summary": "Restes isolés et fragmentaires ; aucun squelette articulé de Hell Creek dans les sources consultées.",
+      "confidence": "inferred",
+      "sources": [
+        "longrich2011_bird_extinction"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Plumes inférées (caractère de tous les oiseaux) ; aucune plume fossile de Hell Creek connue des sources consultées.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "locomotion": {
+      "summary": "Vol actif chez la majorité des taxons ; plongée propulsée par les pattes chez Brodavis (inférée de la morphologie).",
+      "confidence": "inferred",
+      "sources": [
+        "martin2012_brodavis"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Variée et largement inconnue : piscivorie probable chez les formes plongeuses, insectivorie ou omnivorie chez d'autres.",
+      "confidence": "speculative",
+      "sources": [
+        "martin2012_brodavis"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Plongée à la poursuite de poissons (Brodavis) ; recherche au sol, dans la végétation ou en eau peu profonde pour les autres (spéculatif).",
+      "confidence": "speculative",
+      "sources": [
+        "martin2012_brodavis"
+      ]
+    },
+    "predation": {
+      "summary": "Petits prédateurs ou omnivores ; proies potentielles des théropodes, mammifères, crocodyliens et ptérosaures.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Fuite par le vol (ou la plongée pour Brodavis).",
+      "confidence": "inferred",
+      "sources": [
+        "martin2012_brodavis"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Ovipares ; couvaison et soins parentaux probables chez les ornithurines (EPB avec les oiseaux actuels) ; modalités inconnues chez les énantiornithes de Hell Creek.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun organe vocal (syrinx) documenté à Hell Creek."
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Milieux aquatiques et riverains pour les formes plongeuses ; milieux boisés et ouverts pour les autres.",
+      "confidence": "inferred",
+      "sources": [
+        "martin2012_brodavis"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Les énantiornithes et la plupart des ornithurines non néornithines disparaissent à la limite K–Pg ; seuls certains néornithines survivent.",
+      "confidence": "inferred",
+      "sources": [
+        "longrich2011_bird_extinction"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "fossil_record": {
+      "summary": "Rare et fragmentaire, dominé par des os des membres isolés issus de microsites ; diversité probablement sous-estimée.",
+      "confidence": "inferred",
+      "sources": [
+        "longrich2011_bird_extinction"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "inferred_behavior": {
+      "summary": "Vol, plongée (Brodavis), recherche de nourriture au sol et dans l'eau.",
+      "confidence": "inferred",
+      "sources": [
+        "martin2012_brodavis"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "population",
+    "body_plan": "bird_flyer",
+    "adult_mass_kg": 0.5,
+    "adult_length_m": 0.4,
+    "hip_height_m": 0.15,
+    "foot_length_m": 0.05,
+    "foot_width_m": 0.04,
+    "hatchling_mass_kg": 0.02,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 0.5,
+      "max_growth_rate_kg_per_year": 2,
+      "inflection_age_years": 0.1,
+      "maturity_age_years": 1,
+      "max_lifespan_years": 10
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.6,
+      "max_speed_ms": 3.0,
+      "max_accel_ms2": 5,
+      "max_decel_ms2": 8,
+      "max_yaw_rate_dps": 360,
+      "max_slope_deg": 45,
+      "swim": true,
+      "swim_speed_ms": 1.0,
+      "fly": true,
+      "fly_speed_ms": 12,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.4
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 3,
+      "water_l_per_day_per_100kg": 15
+    },
+    "diet": {
+      "type": "omnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0.3,
+        "angio_shrub": 0.3,
+        "angio_tree": 0.2,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0.2,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 10,
+      "prey_mass_min_kg": 0.0001,
+      "prey_mass_max_kg": 0.3,
+      "scavenges": false,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 500,
+      "fov_deg": 300,
+      "binocular_deg": 30,
+      "low_light": 0.4,
+      "hearing_min_hz": 100,
+      "hearing_max_hz": 8000,
+      "hearing_best_hz": 2000,
+      "hearing_threshold_db": 10,
+      "olfaction": 0.3,
+      "vibration": 0.1
+    },
+    "social": {
+      "group_size_mean": 4,
+      "group_size_max": 30,
+      "cohesion": 0.5,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": true
+    },
+    "defense": {
+      "weapons": [
+        "beak"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.1,
+      "flee_preference": 0.95
+    },
+    "predation": {
+      "hunt_style": "probe_forage",
+      "attack_strength": 0.05,
+      "bite_force_n": 5,
+      "max_chase_s": 3
+    },
+    "reproduction": {
+      "clutch_size_mean": 3,
+      "clutch_size_max": 6,
+      "incubation_days": 25,
+      "breeding_season_doy": [
+        110,
+        170
+      ],
+      "parental_care": 0.6,
+      "nest_type": "brooded"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 500,
+      "f0_max_hz": 5000,
+      "call_types": [
+        {
+          "id": "contact",
+          "duration_s": 0.3,
+          "f0_hz": 2000,
+          "source_level_db": 70,
+          "context": "social_contact",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.4,
+        0.15
+      ],
+      "caution": [
+        0.6,
+        0.15
+      ],
+      "aggression": [
+        0.2,
+        0.1
+      ],
+      "curiosity": [
+        0.5,
+        0.15
+      ],
+      "sociability": [
+        0.6,
+        0.15
+      ],
+      "vigilance": [
+        0.7,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.3,
+        0.1
+      ],
+      "exploration": [
+        0.6,
+        0.15
+      ],
+      "flight_tendency": [
+        0.9,
+        0.05
+      ],
+      "dominance": [
+        0.3,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0.5,
+      "riverbank": 0.8,
+      "sandbar": 0.7,
+      "oxbow_lake": 0.7,
+      "backswamp": 0.6,
+      "riparian_forest": 0.7,
+      "floodplain_open": 0.6,
+      "levee_woodland": 0.7,
+      "upland_conifer_forest": 0.4,
+      "cutbank_cliff": 0.3,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.5,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 3000,
+      "regional_density_per_km2": 50
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "adult_length_m": "game_assumption: valeur représentative",
+    "adult_mass_kg": "game_assumption: masse représentative d'un oiseau de taille moyenne ; assemblage hétérogène, aucune estimation vérifiée",
+    "body_plan": "game_assumption: oiseau volant générique représentant un assemblage multitaxon",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "derived: piscivorie probable des formes plongeuses (martin2012_brodavis, non vérifiée)",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "game_assumption: omnivorie moyenne d'un assemblage hétérogène",
+    "foot_length_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "foot_width_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "habitat.backswamp": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.channel": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.cutbank_cliff": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.dune_field": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.ephemeral_pond": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.floodplain_open": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.interdune_flat": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.levee_woodland": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.oxbow_lake": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.riparian_forest": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.riverbank": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.sandbar": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.upland_conifer_forest": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "habitat.xeric_scrub": "game_assumption: répartition large d'un assemblage hétérogène ; formes plongeuses près de l'eau (science.habitat)",
+    "hatchling_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "hip_height_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "derived: Aves volants (EPB)",
+    "locomotion.fly_speed_ms": "game_assumption: vitesse de croisière d'oiseaux actuels de taille comparable",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "derived: formes plongeuses (Brodavis) dans l'assemblage (martin2012_brodavis, non vérifiée)",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: EPB — oiseaux (witmer1995_epb)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~3000 oiseaux dans 64 km² (ordre de grandeur ; registre fossile très lacunaire)",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.hunt_style": "game_assumption: recherche de petites proies au sol et dans l'eau",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: pontes d'oiseaux actuels de taille comparable",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "game_assumption: couvaison de type néornithine ; inconnu chez les énantiornithes",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: assemblage d'oiseaux simulé en effectifs agrégés",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: cris d'alarme répandus chez les oiseaux actuels ; non documentés à Hell Creek (spéculatif)",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: cri de contact générique, spéculatif (aucun syrinx documenté à Hell Creek)",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

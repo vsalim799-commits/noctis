@@ -1,0 +1,532 @@
+{
+  "schema": "noctis.species/1",
+  "id": "didelphodon_vorax",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Didelphodon vorax",
+  "authority": "Marsh, 1889",
+  "common_names": {
+    "fr": "Didelphodon",
+    "en": "Didelphodon"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Mammalia, Metatheria (Marsupialiformes), Stagodontidae. Wilson et al. (2016) décrivent les premiers crânes presque complets ; leur analyse phylogénétique soutient une origine nord-américaine des marsupiaux (ou de leurs plus proches parents) dans le cadre d'une diversification des métathériens au Crétacé supérieur.",
+      "confidence": "established",
+      "sources": [
+        "wilson2016_didelphodon"
+      ],
+      "notes": "Autorité « Marsh, 1889 » non revérifiée pendant cette session."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (crânes du Montana et du Dakota du Nord décrits par Wilson et al. 2016) ; l'espèce est aussi connue dans des formations contemporaines de l'Ouest intérieur (Lance).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "location": {
+      "summary": "Montana et Dakota du Nord (crânes décrits) ; Ouest intérieur nord-américain.",
+      "confidence": "established",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "size": {
+      "summary": "Animal de la taille d'un opossum de Virginie ; aucune longueur corporelle publiée n'a été relevée dans les sources vérifiées.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "mass": {
+      "summary": "Masse estimée d'environ 2,4 kg (jeune adulte) à 5,2 kg (adulte âgé) : le plus grand mammifère thérien mésozoïque connu.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2016_didelphodon"
+      ],
+      "min": 2.4,
+      "max": 5.2,
+      "unit": "kg",
+      "notes": "Chiffres relevés via des résumés de l'article ; texte intégral non consulté."
+    },
+    "morphology": {
+      "summary": "Crâne court et robuste, museau large, canines fortes, prémolaires bulbeuses adaptées à l'écrasement, larges arcades zygomatiques et crête sagittale traduisant des muscles masticateurs puissants.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "skeleton": {
+      "summary": "Connu surtout par des crânes presque complets, des mâchoires et des dents ; le squelette postcrânien reste très mal connu.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "musculature": {
+      "summary": "Musculature adductrice (temporal, masséter) très développée, inférée de la crête sagittale et des arcades zygomatiques ; elle sous-tend l'estimation de force de morsure.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Pelage inféré : tous les mammifères actuels ont des poils. Aucune empreinte tégumentaire connue pour Didelphodon.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "locomotion": {
+      "summary": "Quadrupède, probablement terrestre ; faute de squelette postcrânien bien connu, le degré d'adaptation à la nage, à l'escalade ou au fouissage reste incertain.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée ; valeur de jeu inspirée de métathériens actuels de taille comparable."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée ; valeur de jeu."
+    },
+    "diet": {
+      "summary": "Prédateur-charognard durophage : force de morsure élevée et traits crânio-dentaires indiquent la capacité de broyer des proies dures (mollusques, petites tortues ?), de petits vertébrés et des carcasses ; premier thérien connu à occuper cette niche.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Écrasement des proies à coquille ou à carapace avec les prémolaires bulbeuses, morsure puissante aux canines, exploitation probable de carcasses.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "predation": {
+      "summary": "Force de morsure très élevée relativement à la taille corporelle ; une force à la canine d'environ 200 N (≈218 N) est rapportée dans les résumés de Wilson et al. (2016).",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ],
+      "value": 218,
+      "unit": "N",
+      "notes": "Valeur modélisée, relevée dans des résumés secondaires ; à confirmer dans l'article."
+    },
+    "defense": {
+      "summary": "Taille modeste ; défense probable par la morsure. Proie potentielle de théropodes et de crocodyliens.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Par analogie avec des mammifères carnivores de taille comparable, une vie solitaire est supposée (spéculatif)."
+    },
+    "reproduction": {
+      "summary": "Métathérien hors groupe-couronne : une gestation courte et des jeunes très immatures à la naissance, comme chez les marsupiaux actuels, sont possibles mais non encadrés phylogénétiquement (les euthériens diffèrent) ; aucune preuve directe.",
+      "confidence": "speculative",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Wilson et al. (2016) distinguent un jeune adulte et un adulte plus âgé, d'où l'intervalle de masses estimées ; aucun modèle de croissance publié.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Pas de données neuroanatomiques (bulbes olfactifs, taille des orbites) vérifiées pendant cette session."
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Nocturnalité inférée par analogie avec les métathériens actuels de taille comparable et par l'hypothèse générale d'une activité surtout nocturne chez les mammifères mésozoïques ; aucune preuve anatomique directe vérifiée.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Plaines d'inondation boisées et bords de cours d'eau de la Formation de Hell Creek ; habitat précis non démontré.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon",
+        "fastovsky2016_hellcreek_primer"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Occupe une niche de prédateur-charognard durophage jusque-là non reconnue chez les thériens mésozoïques ; consommateur potentiel de mollusques (dont unionidés et gastéropodes), de petits vertébrés et de carcasses ; concurrent de lézards, petits crocodyliens et autres mammifères ; proie potentielle des théropodes.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Dents et mâchoires connues de longue date ; premiers crânes presque complets décrits par Wilson et al. (2016) à partir de spécimens du Montana et du Dakota du Nord. Comme la plupart des métathériens nord-américains, le genre disparaît à la limite K–Pg.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2016_didelphodon",
+        "wilson2014_mammals_kpg"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune trace comportementale directe (contenu stomacal, traces de morsure attribuées) vérifiée."
+    },
+    "inferred_behavior": {
+      "summary": "Prédation et charognage durophages (morphologie crânio-dentaire, force de morsure) ; activité nocturne et vie solitaire supposées par analogie.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2016_didelphodon"
+      ]
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "agent",
+    "body_plan": "quadruped_small_mammal",
+    "adult_mass_kg": 3.8,
+    "adult_length_m": 0.8,
+    "hip_height_m": 0.12,
+    "foot_length_m": 0.06,
+    "foot_width_m": 0.03,
+    "hatchling_mass_kg": 0.0002,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 3.8,
+      "max_growth_rate_kg_per_year": 6,
+      "inflection_age_years": 0.4,
+      "maturity_age_years": 1,
+      "max_lifespan_years": 4
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.5,
+      "max_speed_ms": 4.0,
+      "max_accel_ms2": 4.0,
+      "max_decel_ms2": 6.0,
+      "max_yaw_rate_dps": 180,
+      "max_slope_deg": 40,
+      "swim": true,
+      "swim_speed_ms": 0.4,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.4
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 7,
+      "water_l_per_day_per_100kg": 10
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.005,
+      "prey_mass_max_kg": 4,
+      "scavenges": true,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 30,
+      "fov_deg": 200,
+      "binocular_deg": 60,
+      "low_light": 0.8,
+      "hearing_min_hz": 100,
+      "hearing_max_hz": 20000,
+      "hearing_best_hz": 4000,
+      "hearing_threshold_db": 20,
+      "olfaction": 0.8,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 2,
+      "cohesion": 0.0,
+      "territorial": true,
+      "territory_radius_m": 200,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite",
+        "claws"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.4,
+      "flee_preference": 0.6
+    },
+    "predation": {
+      "hunt_style": "stalk_rush",
+      "attack_strength": 0.15,
+      "bite_force_n": 218,
+      "max_chase_s": 10
+    },
+    "reproduction": {
+      "clutch_size_mean": 6,
+      "clutch_size_max": 10,
+      "incubation_days": 13,
+      "breeding_season_doy": [
+        80,
+        200
+      ],
+      "parental_care": 0.7,
+      "nest_type": "live_birth"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 300,
+      "f0_max_hz": 4000,
+      "call_types": [
+        {
+          "id": "threat_hiss",
+          "duration_s": 0.8,
+          "f0_hz": 1000,
+          "source_level_db": 60,
+          "context": "defense",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "nocturnal"
+    },
+    "personality": {
+      "boldness": [
+        0.6,
+        0.15
+      ],
+      "caution": [
+        0.5,
+        0.15
+      ],
+      "aggression": [
+        0.6,
+        0.15
+      ],
+      "curiosity": [
+        0.6,
+        0.15
+      ],
+      "sociability": [
+        0.1,
+        0.05
+      ],
+      "vigilance": [
+        0.6,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.5,
+        0.15
+      ],
+      "exploration": [
+        0.6,
+        0.15
+      ],
+      "flight_tendency": [
+        0.5,
+        0.15
+      ],
+      "dominance": [
+        0.5,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0.1,
+      "riverbank": 0.8,
+      "sandbar": 0.4,
+      "oxbow_lake": 0.3,
+      "backswamp": 0.5,
+      "riparian_forest": 0.9,
+      "floodplain_open": 0.4,
+      "levee_woodland": 0.8,
+      "upland_conifer_forest": 0.4,
+      "cutbank_cliff": 0.2,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.3,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 40,
+      "regional_density_per_km2": 0.6
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: nocturnalité inférée par analogie (voir science.activity_pattern)",
+    "adult_length_m": "game_assumption: longueur (queue comprise) d'un opossum de Virginie de masse comparable ; non publiée pour le taxon",
+    "adult_mass_kg": "derived: valeur intermédiaire dans l'intervalle 2,4–5,2 kg de wilson2016_didelphodon",
+    "body_plan": "wilson2016_didelphodon",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: proie opportuniste plausible, non documentée",
+    "diet.eats_fish": "game_assumption: proie opportuniste plausible, non documentée",
+    "diet.eats_invertebrates": "derived: durophagie (mollusques) inférée par wilson2016_didelphodon",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: proies jusqu'à la taille d'un petit vertébré",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "wilson2016_didelphodon",
+    "diet.type": "wilson2016_didelphodon",
+    "foot_length_m": "game_assumption: proportions d'un opossum actuel",
+    "foot_width_m": "game_assumption: proportions d'un opossum actuel",
+    "growth.asymptotic_mass_kg": "derived: égal à adult_mass_kg (wilson2016_didelphodon)",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: maturité précoce de métathériens actuels",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: longévité d'opossums actuels",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (wilson2016_didelphodon ; fastovsky2016_hellcreek_primer)",
+    "hatchling_mass_kg": "game_assumption: nouveau-né de type marsupial (spéculatif, voir science.reproduction)",
+    "hip_height_m": "game_assumption: proportions d'un opossum actuel",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: la plupart des mammifères terrestres savent nager ; hypothèse semi-aquatique non vérifiée",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: mammifère (EPB, witmer1995_epb)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~40 individus pour 64 km² (carnivore de ~4 kg ; densité non mesurable fossilement)",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "derived: force à la canine (~218 N) de wilson2016_didelphodon telle que rapportée par des résumés secondaires ; à confirmer",
+    "predation.hunt_style": "game_assumption: prédateur-charognard opportuniste ; mode de chasse non documenté",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.incubation_days": "game_assumption: durée de gestation d'un opossum actuel (spéculatif)",
+    "reproduction.nest_type": "game_assumption: viviparité mammalienne ; modalités métathériennes spéculatives",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: carnivore emblématique simulé individuellement (choix de conception)",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

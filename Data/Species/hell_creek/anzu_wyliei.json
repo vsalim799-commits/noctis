@@ -1,0 +1,568 @@
+{
+  "schema": "noctis.species/1",
+  "id": "anzu_wyliei",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Anzu wyliei",
+  "authority": "Lamanna, Sues, Schachner & Lyson, 2014",
+  "common_names": {
+    "fr": "Anzu",
+    "en": "Anzu"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Anzu wyliei Lamanna, Sues, Schachner & Lyson, 2014 — Theropoda, Maniraptora, Oviraptorosauria, Caenagnathidae. Holotype CM 78000, complété par CM 78001 et un troisième squelette partiel. Plus grand caenagnathidé nord-américain connu. Un second caenagnathidé, plus petit, Eoneophron infernalis, a été décrit de la même formation (Atkins-Weltman et al. 2024) : l'attribution à Anzu de restes isolés de Hell Creek doit donc être réexaminée au cas par cas.",
+      "confidence": "established",
+      "sources": [
+        "lamanna2014_anzu",
+        "atkins2024_eoneophron"
+      ],
+      "notes": "Numéros de spécimens cités de mémoire. L'analyse phylogénétique de Lamanna et al. (2014) rapproche Anzu de Caenagnathus collinsi et place Microvenator et Gigantoraptor parmi les caenagnathidés basaux."
+    },
+    "period": {
+      "summary": "Fin du Maastrichtien (Crétacé supérieur), derniers millions d'années avant l'extinction Crétacé–Paléogène.",
+      "confidence": "established",
+      "sources": [
+        "lamanna2014_anzu",
+        "fowler2017_western_interior_geochronology",
+        "sprain2015_hellcreek_chronostratigraphy"
+      ],
+      "min": 66.0,
+      "max": 67.5,
+      "unit": "Ma"
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Dakota du Nord et Dakota du Sud).",
+      "confidence": "established",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "location": {
+      "summary": "Dakota du Nord et Dakota du Sud (États-Unis), ouest de l'Amérique du Nord (Laramidia).",
+      "confidence": "established",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "size": {
+      "summary": "Environ 3,5 m de long et ~1,5 m de hauteur à la hanche, d'après la reconstitution composite des squelettes partiels (Lamanna et al. 2014).",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu"
+      ],
+      "value": 3.5,
+      "min": 3.0,
+      "max": 3.8,
+      "unit": "m",
+      "notes": "Valeurs citées de mémoire (le résumé vérifié ne les reprend pas)."
+    },
+    "mass": {
+      "summary": "Environ 200 à 300 kg selon l'estimation des descripteurs.",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu"
+      ],
+      "value": 250,
+      "min": 200,
+      "max": 300,
+      "unit": "kg",
+      "notes": "Estimation de modèle ; valeurs citées de mémoire."
+    },
+    "morphology": {
+      "summary": "Oviraptorosaure de grande taille : crâne court portant une haute crête arrondie, mâchoires édentées formant un bec, long cou, membres antérieurs longs terminés par des griffes acérées, membres postérieurs longs et élancés.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "skeleton": {
+      "summary": "Trois squelettes partiels qui, combinés, représentent la majeure partie du squelette ; l'un des caenagnathidés les mieux connus, groupe généralement documenté par des restes très fragmentaires.",
+      "confidence": "established",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "musculature": {
+      "summary": "Aucune reconstruction propre à Anzu vérifiée. Meade & Ma (2022) reconstruisent la musculature mandibulaire des oviraptorosaures et concluent à des capacités de morsure relativement élevées dans le groupe ; la valeur pour Anzu n'est pas connue ici.",
+      "confidence": "speculative",
+      "sources": [
+        "meade2022_oviraptorosaur_bite"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Bec corné (ramphothèque) inféré sur les mâchoires édentées, par comparaison avec les oiseaux et les autres oviraptorosaures. La crête était probablement recouverte de kératine ou de peau ; son apparence est inconnue.",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu",
+        "zanno2011_herbivorous_theropods"
+      ]
+    },
+    "integument": {
+      "summary": "Non observé chez Anzu. Les oviraptorosaures préservés avec leurs téguments (formes asiatiques) portaient des plumes pennées aux bras et à la queue ; un plumage étendu est donc très probable. Couleur inconnue.",
+      "confidence": "inferred",
+      "sources": [
+        "persons2014_oviraptorosaur_tails"
+      ],
+      "notes": "Les références directes sur les plumes d'oviraptorosaures asiatiques n'ont pas pu être vérifiées ici."
+    },
+    "locomotion": {
+      "summary": "Bipède à membres postérieurs longs et élancés, suggérant une bonne aptitude à la marche et à la course.",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation biomécanique publiée vérifiée."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Débattu. Les caenagnathidés édentés montrent une écomorphologie compatible avec l'herbivorie ou l'omnivorie (Zanno & Makovicky 2011). Lamanna et al. (2014) interprètent Anzu et les autres caenagnathidés comme des généralistes écologiques se nourrissant de végétaux, de petits animaux et peut-être d'œufs.",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu",
+        "zanno2011_herbivorous_theropods"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Prélèvement et écrasement au bec ; les longs bras griffus ont pu servir à saisir branches ou petites proies (hypothèse).",
+      "confidence": "speculative",
+      "sources": [
+        "lamanna2014_anzu",
+        "meade2022_oviraptorosaur_bite"
+      ]
+    },
+    "predation": {
+      "summary": "Si omnivore, prédation occasionnelle de petits vertébrés et d'invertébrés ; non documentée.",
+      "confidence": "speculative",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "defense": {
+      "summary": "Aucune donnée directe. Défense supposée par la fuite, les coups de pattes et les griffes des mains ; proie potentielle des tyrannosaures.",
+      "confidence": "speculative",
+      "sources": [
+        "lamanna2014_anzu"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune association d'individus publiée et vérifiée pour Anzu."
+    },
+    "reproduction": {
+      "summary": "Ovipare. Les caenagnathidés pondaient de grands œufs allongés (embryon et œufs de Beibeilong : Pu et al. 2017) ; les oviraptorosaures couvaient leurs œufs disposés en anneau, les grandes espèces laissant un espace central qui limitait le poids reposant sur les œufs (Tanaka et al. 2018 ; Norell et al. 1995). Aucun œuf ni nid n'est attribué à Anzu.",
+      "confidence": "inferred",
+      "sources": [
+        "pu2017_beibeilong",
+        "tanaka2018_oviraptorosaur_incubation",
+        "norell1995_nesting_dinosaur"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune histologie de croissance d'Anzu vérifiée."
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Aucune preuve directe. La haute crête crânienne et, chez les oviraptorosaures, un éventail de plumes caudales probable (Persons et al. 2014) suggèrent des parades visuelles ; vocalisations à bouche fermée possibles par crochet phylogénétique.",
+      "confidence": "speculative",
+      "sources": [
+        "persons2014_oviraptorosaur_tails",
+        "riede2016_closed_mouth_vocal"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Les squelettes proviennent de dépôts de plaine d'inondation ; Lamanna et al. (2014) suggèrent qu'Anzu et les autres caenagnathidés fréquentaient de préférence les plaines d'inondation bien arrosées plutôt que les bords de chenaux.",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu",
+        "horner2011_hellcreek_census"
+      ]
+    },
+    "climate": {
+      "summary": "Climat chaud tempéré à subtropical, humide, à saisonnalité modérée (contexte de Hell Creek).",
+      "confidence": "inferred",
+      "sources": [
+        "wilf2003_kpg_climate"
+      ]
+    },
+    "interactions": {
+      "summary": "Proie potentielle de T. rex et de Nanotyrannus ; coexistait avec Eoneophron (holotype CM 96523 : fémur de 39 cm), autre caenagnathidé nettement plus petit, et avec les ornithomimidés, avec lesquels il partageait peut-être une partie des ressources végétales.",
+      "confidence": "speculative",
+      "sources": [
+        "lamanna2014_anzu",
+        "atkins2024_eoneophron",
+        "zanno2025_nanotyrannus"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Trois squelettes partiels principaux et quelques restes isolés ; matériel du crâne et du squelette postcrânien.",
+      "confidence": "established",
+      "sources": [
+        "lamanna2014_anzu",
+        "atkins2024_eoneophron"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Pathologies cicatrisées rapportées sur le matériel type (côte fracturée, lésion d'un orteil), indiquant des blessures survécues ; leur cause (chute, combat, attaque) est inconnue.",
+      "confidence": "inferred",
+      "sources": [
+        "lamanna2014_anzu"
+      ],
+      "notes": "Détails cités de mémoire (absents du résumé vérifié) ; à confirmer dans le texte de Lamanna et al. (2014)."
+    },
+    "inferred_behavior": {
+      "summary": "Omnivore de plaine d'inondation se nourrissant de végétation basse, de petits animaux et peut-être d'œufs ; parades visuelles avec la crête et le plumage ; couvaison des œufs. Socialité inconnue.",
+      "confidence": "speculative",
+      "sources": [
+        "lamanna2014_anzu",
+        "tanaka2018_oviraptorosaur_incubation",
+        "persons2014_oviraptorosaur_tails"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "diet",
+      "summary": "Régime alimentaire des caenagnathidés.",
+      "positions": [
+        {
+          "summary": "Herbivore ou omnivore à dominante végétale (écomorphologie édentée).",
+          "sources": [
+            "zanno2011_herbivorous_theropods"
+          ]
+        },
+        {
+          "summary": "Omnivore opportuniste incluant petits vertébrés, invertébrés et œufs.",
+          "sources": [
+            "lamanna2014_anzu"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "taxonomy",
+      "summary": "Diversité des caenagnathidés de Hell Creek.",
+      "positions": [
+        {
+          "summary": "Anzu, seul grand caenagnathidé, auquel la plupart des restes isolés étaient rapportés.",
+          "sources": [
+            "lamanna2014_anzu"
+          ]
+        },
+        {
+          "summary": "Au moins deux caenagnathidés (Anzu et Eoneophron, plus petit) ; restes isolés à réattribuer.",
+          "sources": [
+            "atkins2024_eoneophron"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_oviraptorosaur",
+    "adult_mass_kg": 250,
+    "adult_length_m": 3.5,
+    "hip_height_m": 1.5,
+    "foot_length_m": 0.3,
+    "foot_width_m": 0.25,
+    "hatchling_mass_kg": 0.8,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 250,
+      "max_growth_rate_kg_per_year": 60,
+      "inflection_age_years": 3,
+      "maturity_age_years": 6,
+      "max_lifespan_years": 20
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.3,
+      "max_speed_ms": 9.0,
+      "max_accel_ms2": 3.0,
+      "max_decel_ms2": 4.0,
+      "max_yaw_rate_dps": 120,
+      "max_slope_deg": 35,
+      "swim": true,
+      "swim_speed_ms": 0.6,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.4
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 15,
+      "water_l_per_day_per_100kg": 4.0
+    },
+    "diet": {
+      "type": "omnivore",
+      "plant_preferences": {
+        "fern": 0.4,
+        "horsetail": 0.3,
+        "angio_herb": 0.6,
+        "angio_shrub": 0.6,
+        "angio_tree": 0.3,
+        "conifer": 0.2,
+        "palm": 0.3,
+        "cycadophyte": 0.3,
+        "ginkgo": 0.2,
+        "aquatic_macrophyte": 0.3,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 2.5,
+      "prey_mass_min_kg": 0.01,
+      "prey_mass_max_kg": 5,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 400,
+      "fov_deg": 300,
+      "binocular_deg": 30,
+      "low_light": 0.4,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 3000,
+      "hearing_best_hz": 800,
+      "hearing_threshold_db": 15,
+      "olfaction": 0.5,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 2,
+      "group_size_max": 6,
+      "cohesion": 0.3,
+      "territorial": false,
+      "territory_radius_m": 1500,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "claws",
+        "kick",
+        "beak"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.4,
+      "flee_preference": 0.7
+    },
+    "predation": {
+      "hunt_style": "probe_forage",
+      "attack_strength": 0.1,
+      "bite_force_n": 500,
+      "max_chase_s": 5
+    },
+    "reproduction": {
+      "clutch_size_mean": 20,
+      "clutch_size_max": 30,
+      "incubation_days": 90,
+      "breeding_season_doy": [
+        90,
+        150
+      ],
+      "parental_care": 0.8,
+      "nest_type": "brooded"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 50,
+      "f0_max_hz": 600,
+      "call_types": [
+        {
+          "id": "contact_boom",
+          "duration_s": 1.0,
+          "f0_hz": 120,
+          "source_level_db": 85,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "display_call",
+          "duration_s": 2.0,
+          "f0_hz": 80,
+          "source_level_db": 90,
+          "context": "courtship_display",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.45,
+        0.15
+      ],
+      "caution": [
+        0.6,
+        0.15
+      ],
+      "aggression": [
+        0.35,
+        0.15
+      ],
+      "curiosity": [
+        0.5,
+        0.15
+      ],
+      "sociability": [
+        0.4,
+        0.15
+      ],
+      "vigilance": [
+        0.65,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.35,
+        0.15
+      ],
+      "exploration": [
+        0.5,
+        0.15
+      ],
+      "flight_tendency": [
+        0.6,
+        0.15
+      ],
+      "dominance": [
+        0.35,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0.7,
+      "sandbar": 0.4,
+      "oxbow_lake": 0.3,
+      "backswamp": 0.5,
+      "riparian_forest": 0.7,
+      "floodplain_open": 0.8,
+      "levee_woodland": 0.7,
+      "upland_conifer_forest": 0.3,
+      "cutbank_cliff": 0.1,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.3,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 6,
+      "regional_density_per_km2": 0.1
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: animal de taille moyenne interagissant avec les prédateurs → simulé individuellement",
+    "body_plan": "derived: caenagnathidé (lamanna2014_anzu)",
+    "adult_mass_kg": "lamanna2014_anzu",
+    "adult_length_m": "lamanna2014_anzu",
+    "hip_height_m": "lamanna2014_anzu",
+    "foot_length_m": "game_assumption: mise à l'échelle depuis la hauteur de hanche ; pas d'empreinte attribuée",
+    "foot_width_m": "game_assumption: pied tridactyle, aucune donnée",
+    "hatchling_mass_kg": "game_assumption: ordre de grandeur cohérent avec de grands œufs allongés de caenagnathidés (pu2017_beibeilong)",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée → 1,0",
+    "growth.asymptotic_mass_kg": "derived: égal à adult_mass_kg (lamanna2014_anzu)",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune histologie vérifiée",
+    "growth.inflection_age_years": "game_assumption: aucune histologie vérifiée",
+    "growth.maturity_age_years": "game_assumption: aucune histologie vérifiée",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.max_speed_ms": "game_assumption: membres longs (lamanna2014_anzu) mais aucune estimation publiée ; valeur modérée",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée",
+    "locomotion.swim": "game_assumption: aucune donnée ; nage supposée possible",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.fly": "derived: incapable de voler (taille et anatomie ; lamanna2014_anzu)",
+    "locomotion.fly_speed_ms": "derived: sans objet",
+    "locomotion.duty_factor_walk": "game_assumption: valeur typique de marche bipède",
+    "locomotion.duty_factor_run": "game_assumption: course avec phase aérienne",
+    "metabolism.thermo_class": "game_assumption: maniraptorien emplumé — endothermie supposée (débat : grady2014_mesothermy vs wiemann2022_dinosaur_metabolism)",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée",
+    "diet.type": "derived: écomorphologie édentée compatible avec l'omnivorie/herbivorie (zanno2011_herbivorous_theropods ; lamanna2014_anzu) — régime débattu",
+    "diet.plant_preferences": "game_assumption: préférences relatives choisies pour un omnivore à bec de plaine d'inondation ; aucune donnée de contenu stomacal",
+    "diet.browse_height_min_m": "game_assumption: alimentation au sol possible",
+    "diet.browse_height_max_m": "derived: hauteur de hanche ~1,5 m (lamanna2014_anzu) + long cou → ~2,5 m (estimation)",
+    "diet.prey_mass_min_kg": "game_assumption: invertébrés et très petits vertébrés",
+    "diet.prey_mass_max_kg": "game_assumption: petites proies seulement",
+    "diet.scavenges": "game_assumption: aucune preuve",
+    "diet.eats_fish": "game_assumption: aucune preuve",
+    "diet.eats_invertebrates": "game_assumption: plausible pour un omnivore, non documenté",
+    "diet.eats_eggs": "game_assumption: hypothèse SPÉCULATIVE (les oviraptorosaures ne sont pas des voleurs d'œufs avérés) ; non documenté",
+    "senses.vision_range_m": "game_assumption: aucune donnée",
+    "senses.fov_deg": "game_assumption: aucune donnée",
+    "senses.binocular_deg": "game_assumption: aucune donnée",
+    "senses.low_light": "game_assumption: aucune donnée",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée",
+    "senses.olfaction": "game_assumption: aucune donnée",
+    "senses.vibration": "game_assumption: aucune donnée",
+    "social.group_size_mean": "game_assumption: socialité inconnue ; petits groupes lâches supposés",
+    "social.group_size_max": "game_assumption: aucune donnée",
+    "social.cohesion": "game_assumption: aucune donnée",
+    "social.territorial": "game_assumption: aucune donnée",
+    "social.territory_radius_m": "game_assumption: aucune donnée",
+    "social.alarm_calls": "game_assumption: cris d'alarme non démontrés ; désactivés dans la reconstruction de base",
+    "defense.weapons": "derived: griffes des mains et bec observés (lamanna2014_anzu) ; coups de pattes supposés",
+    "defense.armor": "game_assumption: aucun ostéoderme",
+    "defense.defense_strength": "game_assumption: aucune donnée",
+    "defense.flee_preference": "game_assumption: fuite préférée face aux grands prédateurs",
+    "predation.hunt_style": "game_assumption: omnivore fouisseur/glaneur",
+    "predation.attack_strength": "game_assumption: valeur relative très faible",
+    "predation.bite_force_n": "game_assumption: aucune estimation propre à Anzu (meade2022_oviraptorosaur_bite traite le groupe)",
+    "predation.max_chase_s": "game_assumption: pas de poursuite prolongée",
+    "reproduction.clutch_size_mean": "game_assumption: ordre de grandeur des pontes d'oviraptorosaures (tanaka2018_oviraptorosaur_incubation, non vérifiée)",
+    "reproduction.clutch_size_max": "game_assumption: aucune ponte attribuée à Anzu",
+    "reproduction.incubation_days": "game_assumption: ordre de grandeur des incubations dinosauriennes (erickson2017_dinosaur_incubation)",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée",
+    "reproduction.parental_care": "derived: couvaison bien documentée chez les oviraptorosaures (norell1995_nesting_dinosaur ; tanaka2018_oviraptorosaur_incubation, cette dernière non vérifiée) — non observée chez Anzu",
+    "reproduction.nest_type": "derived: couvaison de pontes en anneau chez les oviraptorosaures (tanaka2018_oviraptorosaur_incubation, non vérifiée ; pu2017_beibeilong)",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF (riede2016_closed_mouth_vocal)",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée",
+    "vocal.call_types": "game_assumption: répertoire entièrement SPÉCULATIF (aucun syrinx connu chez les non-aviens : clarke2016_mesozoic_syrinx)",
+    "activity.pattern": "game_assumption: diurne supposé (crête et plumage probablement utilisés en parade visuelle) ; aucune donnée",
+    "personality": "game_assumption: traits de personnalité toujours hypothétiques",
+    "habitat": "derived: préférence pour la plaine d'inondation humide d'après les sédiments des squelettes (lamanna2014_anzu) ; valeurs relatives = game_assumption",
+    "population.initial_count": "game_assumption: abondance inconnue (restes rares) ; ~6 individus sur 64 km²",
+    "population.regional_density_per_km2": "game_assumption: aucune donnée"
+  }
+}

@@ -1,0 +1,515 @@
+{
+  "schema": "noctis.species/1",
+  "id": "meniscoessus_robustus",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Meniscoessus robustus",
+  "authority": "(Marsh, 1889)",
+  "common_names": {
+    "fr": "Meniscoessus",
+    "en": "Meniscoessus"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Mammalia, Allotheria, Multituberculata, Cimolodonta, Cimolomyidae ; l'un des plus grands multituberculés du Maastrichtien nord-américain.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg",
+        "archibald1982_mammalia",
+        "clemens1964_multituberculata"
+      ],
+      "notes": "Autorité « (Marsh, 1889) » non revérifiée pendant cette session."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formations de Hell Creek (Montana, Dakotas) et de Lance (Wyoming).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg",
+        "wilson2014_hellcreek_volume",
+        "archibald1982_mammalia",
+        "clemens1964_multituberculata"
+      ]
+    },
+    "location": {
+      "summary": "Nord-est du Montana (comté de Garfield), Dakotas, Wyoming.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg",
+        "archibald1982_mammalia"
+      ]
+    },
+    "size": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Une des plus grandes espèces de multituberculés de l'assemblage ; aucune estimation chiffrée vérifiée pendant cette session."
+    },
+    "morphology": {
+      "summary": "Connu surtout par des dents : molaires à nombreuses cuspides disposées en rangées longitudinales, adaptées au broyage, typiques des cimolodontes ; incisives inférieures procumbentes.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg",
+        "clemens1964_multituberculata"
+      ]
+    },
+    "skeleton": {
+      "summary": "Essentiellement des dents et fragments de mâchoires ; squelette postcrânien très mal connu.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Pelage inféré (mammifère).",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "locomotion": {
+      "summary": "Quadrupède ; mode de vie (terrestre, arboricole, fouisseur) inconnu faute de postcrânien.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Omnivore à tendance herbivore probable (graines, fruits, tissus végétaux, insectes), inféré de la complexité dentaire ; les analyses de complexité dentaire des multituberculés associent les grandes espèces tardives à des régimes plus végétariens.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2012_multituberculates",
+        "wilson2014_mammals_kpg"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Mastication palinale (mouvement de la mâchoire vers l'arrière) caractéristique des multituberculés, broyant les aliments entre les rangées de cuspides.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2012_multituberculates"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "predation": {
+      "summary": "Proie potentielle de Didelphodon, de petits théropodes, de crocodyliens et de lézards de grande taille.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Vivipare probable ; le mode de reproduction des multituberculés (degré de développement des petits) reste inconnu.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Une activité nocturne est souvent supposée pour les petits mammifères mésozoïques (spéculatif)."
+    },
+    "habitat": {
+      "summary": "Plaine d'inondation boisée ; dents surtout récoltées dans des microsites fluviatiles.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2014_mammals_kpg"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Membre d'une communauté mammalienne diversifiée (multituberculés, métathériens, euthériens) étudiée sur 4 769 spécimens du comté de Garfield ; espèce disparue à la limite K–Pg, avec un rétablissement des communautés de mammifères en ~600–700 ka.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Dents isolées relativement fréquentes dans les microsites de Hell Creek et de Lance.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_mammals_kpg",
+        "clemens1964_multituberculata"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "inferred_behavior": {
+      "summary": "Recherche de graines, fruits et invertébrés au sol ; activité probablement nocturne.",
+      "confidence": "speculative",
+      "sources": []
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "population",
+    "body_plan": "quadruped_small_mammal",
+    "adult_mass_kg": 0.5,
+    "adult_length_m": 0.35,
+    "hip_height_m": 0.06,
+    "foot_length_m": 0.03,
+    "foot_width_m": 0.015,
+    "hatchling_mass_kg": 0.001,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 0.5,
+      "max_growth_rate_kg_per_year": 1.5,
+      "inflection_age_years": 0.2,
+      "maturity_age_years": 0.5,
+      "max_lifespan_years": 4
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.4,
+      "max_speed_ms": 3.0,
+      "max_accel_ms2": 5,
+      "max_decel_ms2": 8,
+      "max_yaw_rate_dps": 270,
+      "max_slope_deg": 45,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.4
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 3,
+      "water_l_per_day_per_100kg": 12
+    },
+    "diet": {
+      "type": "omnivore",
+      "plant_preferences": {
+        "fern": 0.2,
+        "horsetail": 0.1,
+        "angio_herb": 0.6,
+        "angio_shrub": 0.6,
+        "angio_tree": 0.4,
+        "conifer": 0.2,
+        "palm": 0.2,
+        "cycadophyte": 0.1,
+        "ginkgo": 0.1,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0.5,
+      "prey_mass_min_kg": 0.0001,
+      "prey_mass_max_kg": 0.01,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 20,
+      "fov_deg": 260,
+      "binocular_deg": 40,
+      "low_light": 0.8,
+      "hearing_min_hz": 500,
+      "hearing_max_hz": 30000,
+      "hearing_best_hz": 8000,
+      "hearing_threshold_db": 15,
+      "olfaction": 0.8,
+      "vibration": 0.4
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 4,
+      "cohesion": 0.2,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.1,
+      "flee_preference": 0.9
+    },
+    "predation": {
+      "hunt_style": "probe_forage",
+      "attack_strength": 0.02,
+      "bite_force_n": 30,
+      "max_chase_s": 2
+    },
+    "reproduction": {
+      "clutch_size_mean": 4,
+      "clutch_size_max": 8,
+      "incubation_days": 20,
+      "breeding_season_doy": [
+        90,
+        200
+      ],
+      "parental_care": 0.8,
+      "nest_type": "live_birth"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 1000,
+      "f0_max_hz": 20000,
+      "call_types": [
+        {
+          "id": "distress",
+          "duration_s": 0.2,
+          "f0_hz": 6000,
+          "source_level_db": 60,
+          "context": "distress",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "nocturnal"
+    },
+    "personality": {
+      "boldness": [
+        0.3,
+        0.1
+      ],
+      "caution": [
+        0.7,
+        0.15
+      ],
+      "aggression": [
+        0.2,
+        0.1
+      ],
+      "curiosity": [
+        0.5,
+        0.15
+      ],
+      "sociability": [
+        0.3,
+        0.1
+      ],
+      "vigilance": [
+        0.7,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.3,
+        0.1
+      ],
+      "exploration": [
+        0.5,
+        0.15
+      ],
+      "flight_tendency": [
+        0.8,
+        0.1
+      ],
+      "dominance": [
+        0.2,
+        0.1
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0.5,
+      "sandbar": 0.2,
+      "oxbow_lake": 0,
+      "backswamp": 0.3,
+      "riparian_forest": 0.9,
+      "floodplain_open": 0.6,
+      "levee_woodland": 0.9,
+      "upland_conifer_forest": 0.6,
+      "cutbank_cliff": 0.2,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 5000,
+      "regional_density_per_km2": 80
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: nocturnalité supposée pour les petits mammifères mésozoïques (spéculatif)",
+    "adult_length_m": "game_assumption: proportions d'un rongeur actuel de masse comparable",
+    "adult_mass_kg": "game_assumption: grande espèce de multituberculé ; aucune estimation vérifiée (ordre de quelques centaines de grammes)",
+    "body_plan": "derived: mammifère multituberculé (wilson2014_mammals_kpg)",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: omnivorie supposée",
+    "diet.plant_preferences.angio_herb": "game_assumption: graines, fruits et organes végétaux d'angiospermes supposés dominants",
+    "diet.plant_preferences.angio_shrub": "game_assumption: graines, fruits et organes végétaux d'angiospermes supposés dominants",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "derived: complexité dentaire des multituberculés (wilson2012_multituberculates, non vérifiée)",
+    "foot_length_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "foot_width_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: longévité de petits mammifères actuels",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (wilson2014_mammals_kpg)",
+    "hatchling_mass_kg": "game_assumption: mode de reproduction des multituberculés inconnu",
+    "hip_height_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: mammifère (EPB, witmer1995_epb)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~5000 individus dans 64 km² (taxon commun des microsites, densité non mesurable)",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.hunt_style": "game_assumption: fourragement au sol",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: portées de petits mammifères actuels",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "game_assumption: viviparité mammalienne supposée (modalités inconnues)",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: petit mammifère simulé en effectifs",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: cri de détresse générique de petit mammifère, spéculatif",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

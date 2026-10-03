@@ -1,0 +1,575 @@
+{
+  "schema": "noctis.species/1",
+  "id": "hell_creek_azhdarchid",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Infernodrakon hastacollis",
+  "authority": "Thomas, Hone, Gomes & Peterson, 2025",
+  "common_names": {
+    "fr": "Azhdarchidé de Hell Creek",
+    "en": "Hell Creek azhdarchid"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Pterosauria, Azhdarchidae. Le seul ptérosaure nommé de la Formation de Hell Creek (à notre connaissance) repose sur une vertèbre cervicale isolée (BMR P2002.2), d'abord attribuée à Quetzalcoatlus sp. (Henderson & Peterson 2006), puis désignée holotype d'un nouveau genre et espèce, Infernodrakon hastacollis, retrouvé plus proche d'Arambourgiania que de Quetzalcoatlus (Thomas et al. 2025).",
+      "confidence": "established",
+      "sources": [
+        "henderson2006_azhdarchid",
+        "thomas2025_infernodrakon"
+      ],
+      "notes": "Fiche nommée hell_creek_azhdarchid car le taxon ne repose que sur un seul os."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek, nord-ouest du comté de Carter (Montana), sur des terres du Bureau of Land Management ; vertèbre découverte pendant la préparation d'un tyrannosaure juvénile collecté en 2002 par le Burpee Museum.",
+      "confidence": "established",
+      "sources": [
+        "henderson2006_azhdarchid",
+        "thomas2025_infernodrakon"
+      ]
+    },
+    "location": {
+      "summary": "Sud-est du Montana (comté de Carter).",
+      "confidence": "established",
+      "sources": [
+        "henderson2006_azhdarchid"
+      ]
+    },
+    "size": {
+      "summary": "Envergure estimée à 5,0–5,5 m par Henderson & Peterson (2006), réestimée à environ 4 m (≈4,15 m selon des résumés) par Thomas et al. (2025). On ignore si l'individu était adulte.",
+      "confidence": "inferred",
+      "sources": [
+        "henderson2006_azhdarchid",
+        "thomas2025_infernodrakon"
+      ],
+      "value": 4.15,
+      "min": 4.0,
+      "max": 5.5,
+      "unit": "m",
+      "notes": "Envergure (et non longueur du corps), extrapolée à partir d'une seule vertèbre."
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation de masse publiée pour ce spécimen n'a été retrouvée."
+    },
+    "morphology": {
+      "summary": "Seule une vertèbre cervicale médiane très allongée et étroite est connue, typique des azhdarchidés à long cou. Le reste de l'animal (crâne à long bec édenté, grandes ailes, membres) est reconstruit par comparaison avec d'autres azhdarchidés.",
+      "confidence": "inferred",
+      "sources": [
+        "thomas2025_infernodrakon",
+        "henderson2006_azhdarchid",
+        "witton2008_azhdarchid"
+      ]
+    },
+    "skeleton": {
+      "summary": "Une seule vertèbre cervicale isolée (BMR P2002.2). Le reste du squelette est inconnu.",
+      "confidence": "established",
+      "sources": [
+        "henderson2006_azhdarchid",
+        "thomas2025_infernodrakon"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Inconnu pour ce taxon ; des pycnofibres (filaments) sont connues chez plusieurs ptérosaures, ce qui rend plausible un revêtement filamenteux.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "locomotion": {
+      "summary": "Vol battu et plané ; au sol, quadrupédie sur les membres antérieurs repliés et les pieds — modèle général des azhdarchidés fondé sur l'anatomie des membres et les traces de pas, non vérifiable sur ce spécimen.",
+      "confidence": "inferred",
+      "sources": [
+        "witton2008_azhdarchid"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation pour ce taxon ; valeurs de jeu."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Carnivore généraliste probable (petits vertébrés, éventuellement charognes) selon le modèle de « chasseur terrestre » proposé pour les azhdarchidés ; aucune donnée directe pour ce taxon.",
+      "confidence": "speculative",
+      "sources": [
+        "witton2008_azhdarchid"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Modèle du « terrestrial stalker » : l'animal arpente des milieux ouverts et saisit au sol de petites proies avec un bec long et rigide ; l'écrémage en vol (skim-feeding) est jugé peu compatible avec l'anatomie des azhdarchidés.",
+      "confidence": "inferred",
+      "sources": [
+        "witton2008_azhdarchid",
+        "witton2015_azhdarchid"
+      ],
+      "notes": "Inférence au niveau de la famille, non propre à Infernodrakon."
+    },
+    "predation": {
+      "summary": "Prédateur probable de petits vertébrés au sol (jeunes dinosaures, mammifères, lézards, amphibiens) ; non documenté.",
+      "confidence": "speculative",
+      "sources": [
+        "witton2008_azhdarchid"
+      ]
+    },
+    "defense": {
+      "summary": "Grande taille et envol comme moyens probables d'échapper aux prédateurs ; non documenté.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Ovipare : des œufs de ptérosaures sont connus chez d'autres taxons ; aucun œuf d'azhdarchidé n'est connu.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Stade ontogénétique du spécimen incertain (Thomas et al. 2025)."
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Spécimen issu de dépôts fluviatiles d'une plaine côtière ; le modèle de Witton & Naish (2008) associe les azhdarchidés à des milieux continentaux ouverts à semi-boisés.",
+      "confidence": "inferred",
+      "sources": [
+        "witton2008_azhdarchid",
+        "henderson2006_azhdarchid"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Contemporain de Tyrannosaurus (la vertèbre a été trouvée avec un T. rex juvénile, sans interaction démontrée). Concurrent possible des oiseaux et petits théropodes pour les petites proies ; proie ou charogne possible pour les théropodes.",
+      "confidence": "speculative",
+      "sources": [
+        "henderson2006_azhdarchid"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Extrêmement pauvre : une seule vertèbre publiée pour la Formation de Hell Creek. Thomas et al. (2025) soulignent que les azhdarchidés maastrichtiens nord-américains, bien que fragmentaires, sont plus diversifiés qu'on ne le pensait.",
+      "confidence": "established",
+      "sources": [
+        "henderson2006_azhdarchid",
+        "thomas2025_infernodrakon"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune trace comportementale connue."
+    },
+    "inferred_behavior": {
+      "summary": "Chasse à pied en milieu ouvert, vol plané sur de longues distances — comportements inférés au niveau de la famille, non spécifiques à ce taxon.",
+      "confidence": "speculative",
+      "sources": [
+        "witton2008_azhdarchid"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Attribution de la vertèbre BMR P2002.2.",
+      "positions": [
+        {
+          "summary": "Cervicale de Quetzalcoatlus sp.",
+          "sources": [
+            "henderson2006_azhdarchid"
+          ]
+        },
+        {
+          "summary": "Holotype d'un nouveau genre, Infernodrakon hastacollis, plus proche d'Arambourgiania que de Quetzalcoatlus.",
+          "sources": [
+            "thomas2025_infernodrakon"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "size",
+      "summary": "Envergure estimée à partir d'une seule vertèbre.",
+      "positions": [
+        {
+          "summary": "Environ 5,0–5,5 m.",
+          "sources": [
+            "henderson2006_azhdarchid"
+          ]
+        },
+        {
+          "summary": "Environ 4 m ; maturité de l'individu incertaine.",
+          "sources": [
+            "thomas2025_infernodrakon"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "feeding_strategy",
+      "summary": "Mode d'alimentation des azhdarchidés.",
+      "positions": [
+        {
+          "summary": "Écrémage en vol, pêche ou sondage des sédiments — hypothèses anciennes passées en revue et jugées peu compatibles avec l'anatomie.",
+          "sources": [
+            "witton2008_azhdarchid"
+          ]
+        },
+        {
+          "summary": "Chasse terrestre de petites proies (« terrestrial stalking »).",
+          "sources": [
+            "witton2008_azhdarchid",
+            "witton2015_azhdarchid"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "quadruped_azhdarchid",
+    "adult_mass_kg": 25,
+    "adult_length_m": 1.8,
+    "hip_height_m": 0.8,
+    "foot_length_m": 0.12,
+    "foot_width_m": 0.06,
+    "hatchling_mass_kg": 0.05,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 25,
+      "max_growth_rate_kg_per_year": 6,
+      "inflection_age_years": 3,
+      "maturity_age_years": 5,
+      "max_lifespan_years": 30
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.2,
+      "max_speed_ms": 4.0,
+      "max_accel_ms2": 2.0,
+      "max_decel_ms2": 3.0,
+      "max_yaw_rate_dps": 60,
+      "max_slope_deg": 30,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": true,
+      "fly_speed_ms": 15,
+      "duty_factor_walk": 0.7,
+      "duty_factor_run": 0.5
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 20,
+      "water_l_per_day_per_100kg": 3
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.01,
+      "prey_mass_max_kg": 5,
+      "scavenges": true,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 1500,
+      "fov_deg": 200,
+      "binocular_deg": 40,
+      "low_light": 0.3,
+      "hearing_min_hz": 100,
+      "hearing_max_hz": 4000,
+      "hearing_best_hz": 1000,
+      "hearing_threshold_db": 25,
+      "olfaction": 0.3,
+      "vibration": 0.1
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 3,
+      "cohesion": 0.1,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "beak"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.3,
+      "flee_preference": 0.8
+    },
+    "predation": {
+      "hunt_style": "aerial_ground_stalk",
+      "attack_strength": 0.2,
+      "bite_force_n": 200,
+      "max_chase_s": 5
+    },
+    "reproduction": {
+      "clutch_size_mean": 2,
+      "clutch_size_max": 4,
+      "incubation_days": 120,
+      "breeding_season_doy": [
+        120,
+        200
+      ],
+      "parental_care": 0.2,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": []
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.5,
+        0.15
+      ],
+      "caution": [
+        0.6,
+        0.15
+      ],
+      "aggression": [
+        0.3,
+        0.1
+      ],
+      "curiosity": [
+        0.5,
+        0.15
+      ],
+      "sociability": [
+        0.2,
+        0.1
+      ],
+      "vigilance": [
+        0.7,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.3,
+        0.1
+      ],
+      "exploration": [
+        0.7,
+        0.15
+      ],
+      "flight_tendency": [
+        0.7,
+        0.15
+      ],
+      "dominance": [
+        0.4,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0.1,
+      "riverbank": 0.6,
+      "sandbar": 0.7,
+      "oxbow_lake": 0.3,
+      "backswamp": 0.3,
+      "riparian_forest": 0.2,
+      "floodplain_open": 0.9,
+      "levee_woodland": 0.3,
+      "upland_conifer_forest": 0.2,
+      "cutbank_cliff": 0.3,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.4,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 3,
+      "regional_density_per_km2": 0.05
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: diurne par défaut ; aucune donnée",
+    "adult_length_m": "game_assumption: longueur bec–queue extrapolée d'azhdarchidés de taille comparable ; non publiée",
+    "adult_mass_kg": "game_assumption: aucune estimation publiée ; ordre de grandeur de quelques dizaines de kg pour un azhdarchidé de ~4–5 m d'envergure",
+    "body_plan": "derived: Azhdarchidae (henderson2006_azhdarchid ; thomas2025_infernodrakon)",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: petites proies avalables entières",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "derived: modèle de chasseur terrestre généraliste (witton2008_azhdarchid), spéculatif pour ce taxon",
+    "foot_length_m": "game_assumption: pieds relativement petits des azhdarchidés ; dimensions extrapolées",
+    "foot_width_m": "game_assumption: dimensions extrapolées",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "habitat.backswamp": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.channel": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.cutbank_cliff": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.dune_field": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.ephemeral_pond": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.floodplain_open": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.interdune_flat": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.levee_woodland": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.oxbow_lake": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.riparian_forest": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.riverbank": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.sandbar": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "habitat.xeric_scrub": "derived: pondération qualitative selon le modèle de milieux ouverts de witton2008_azhdarchid ; spéculatif pour ce taxon",
+    "hatchling_mass_kg": "game_assumption: nouveau-nés de ptérosaures connus chez d'autres taxons ; aucune donnée azhdarchidé",
+    "hip_height_m": "game_assumption: posture quadrupède d'azhdarchidé (witton2008_azhdarchid), proportions extrapolées",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "derived: Pterosauria volants (witton2008_azhdarchid)",
+    "locomotion.fly_speed_ms": "game_assumption: vitesse de croisière plausible pour un grand ptérosaure ; non calculée",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: marche quadrupède du modèle witton2008_azhdarchid ; vitesse non estimée",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "game_assumption: endothermie largement supposée pour les ptérosaures (pycnofibres, vol actif), non démontrée pour ce taxon",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: animal rare au registre et à grand domaine vital — ~3 individus fréquentant la vallée",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée ; bec de saisie plutôt que de broyage",
+    "predation.hunt_style": "witton2008_azhdarchid; witton2015_azhdarchid",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "game_assumption: œufs enfouis connus chez d'autres ptérosaures ; non documenté chez les azhdarchidés",
+    "reproduction.parental_care": "game_assumption: faible soin parental supposé (spéculatif)",
+    "role": "game_assumption: simulé comme agent pour sa visibilité, malgré une science presque entièrement inférée",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: inconnu (1,0 par défaut)",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: capacités vocales des ptérosaures inconnues — aucun cri simulé",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

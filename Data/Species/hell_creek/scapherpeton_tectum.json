@@ -1,0 +1,504 @@
+{
+  "schema": "noctis.species/1",
+  "id": "scapherpeton_tectum",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Scapherpeton tectum",
+  "authority": "Cope, 1876",
+  "common_names": {
+    "fr": "Scapherpeton",
+    "en": "Scapherpeton"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Lissamphibia, Caudata, Scapherpetidae : salamandre du Crétacé supérieur nord-américain.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_salamanders_kpg",
+        "estes1964_lance",
+        "gardner2013_lissamphibians"
+      ],
+      "notes": "Autorité « Cope, 1876 » non revérifiée pendant cette session."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formations de Hell Creek et de Lance ; présent aussi dans d'autres formations campaniennes à paléocènes.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_salamanders_kpg",
+        "wilson2014_hellcreek_volume",
+        "gardner2013_lissamphibians"
+      ]
+    },
+    "location": {
+      "summary": "Nord-est du Montana (comté de Garfield), Dakotas, Wyoming.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_salamanders_kpg"
+      ]
+    },
+    "size": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Connu par des éléments isolés ; aucune longueur corporelle vérifiée."
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "morphology": {
+      "summary": "Salamandre robuste ; connue par des vertèbres, des mâchoires et des éléments crâniens isolés.",
+      "confidence": "inferred",
+      "sources": [
+        "estes1964_lance",
+        "gardner2013_lissamphibians"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "skeleton": {
+      "summary": "Éléments isolés (vertèbres, dentaires, os crâniens) provenant des microsites de vertébrés.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_salamanders_kpg"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Peau nue, perméable et glandulaire inférée par EPB (lissamphibiens actuels).",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "integument": {
+      "summary": "Peau nue glandulaire (EPB).",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "locomotion": {
+      "summary": "Principalement aquatique (inféré du contexte de dépôt et de la morphologie des scapherpétidés) ; nage par ondulations.",
+      "confidence": "inferred",
+      "sources": [
+        "gardner2013_lissamphibians",
+        "wilson2014_salamanders_kpg"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Carnivore : invertébrés aquatiques, petits poissons, larves d'amphibiens (analogie avec les salamandres aquatiques actuelles).",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "feeding_strategy": {
+      "summary": "Capture par aspiration ou par morsure, analogie avec les salamandres aquatiques actuelles.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "predation": {
+      "summary": "Prédateur de petits invertébrés ; proie des poissons, crocodyliens, Champsosaurus et oiseaux.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Probablement œufs pondus dans l'eau et larves aquatiques (EPB avec les salamandres actuelles) ; aucune donnée directe.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "development": {
+      "summary": "Développement larvaire aquatique probable ; une néoténie est possible mais non démontrée.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Ligne latérale probable chez une forme aquatique ; non documentée.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Eaux douces calmes : marécages, lacs de méandre, chenaux lents.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2014_salamanders_kpg"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Fait partie d'assemblages de salamandres et d'amphibiens salamandriformes dont la richesse culmine à 11 espèces au milieu de la Formation de Hell Creek, avant un déclin progressif dans le tiers supérieur de la formation.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilson2014_salamanders_kpg"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Fréquent dans les microsites ; l'un des taxons de salamandres les plus communs du Maastrichtien de l'Ouest intérieur.",
+      "confidence": "inferred",
+      "sources": [
+        "wilson2014_salamanders_kpg",
+        "estes1964_lance",
+        "gardner2013_lissamphibians"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "inferred_behavior": {
+      "summary": "Vie aquatique et chasse d'invertébrés, probablement de nuit.",
+      "confidence": "speculative",
+      "sources": []
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "population",
+    "body_plan": "small_reptile",
+    "adult_mass_kg": 0.2,
+    "adult_length_m": 0.35,
+    "hip_height_m": 0.03,
+    "foot_length_m": 0.015,
+    "foot_width_m": 0.012,
+    "hatchling_mass_kg": 0.0005,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 0.2,
+      "max_growth_rate_kg_per_year": 0.05,
+      "inflection_age_years": 3,
+      "maturity_age_years": 4,
+      "max_lifespan_years": 15
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.1,
+      "max_speed_ms": 0.3,
+      "max_accel_ms2": 1,
+      "max_decel_ms2": 2,
+      "max_yaw_rate_dps": 90,
+      "max_slope_deg": 15,
+      "swim": true,
+      "swim_speed_ms": 0.3,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.8,
+      "duty_factor_run": 0.7
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 90,
+      "water_l_per_day_per_100kg": 0
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 1e-05,
+      "prey_mass_max_kg": 0.01,
+      "scavenges": false,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 5,
+      "fov_deg": 270,
+      "binocular_deg": 30,
+      "low_light": 0.6,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 1000,
+      "hearing_best_hz": 300,
+      "hearing_threshold_db": 60,
+      "olfaction": 0.6,
+      "vibration": 0.8
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 5,
+      "cohesion": 0.0,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [],
+      "armor": 0.0,
+      "defense_strength": 0.05,
+      "flee_preference": 0.8
+    },
+    "predation": {
+      "hunt_style": "ambush",
+      "attack_strength": 0.02,
+      "bite_force_n": 5,
+      "max_chase_s": 1
+    },
+    "reproduction": {
+      "clutch_size_mean": 100,
+      "clutch_size_max": 300,
+      "incubation_days": 30,
+      "breeding_season_doy": [
+        80,
+        140
+      ],
+      "parental_care": 0,
+      "nest_type": "none"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": []
+    },
+    "activity": {
+      "pattern": "nocturnal"
+    },
+    "personality": {
+      "boldness": [
+        0.2,
+        0.1
+      ],
+      "caution": [
+        0.7,
+        0.15
+      ],
+      "aggression": [
+        0.2,
+        0.1
+      ],
+      "curiosity": [
+        0.3,
+        0.1
+      ],
+      "sociability": [
+        0.2,
+        0.1
+      ],
+      "vigilance": [
+        0.5,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.2,
+        0.1
+      ],
+      "exploration": [
+        0.3,
+        0.1
+      ],
+      "flight_tendency": [
+        0.8,
+        0.1
+      ],
+      "dominance": [
+        0.1,
+        0.05
+      ]
+    },
+    "habitat": {
+      "channel": 0.4,
+      "riverbank": 0.3,
+      "sandbar": 0,
+      "oxbow_lake": 1.0,
+      "backswamp": 0.9,
+      "riparian_forest": 0,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.6,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 20000,
+      "regional_density_per_km2": 300
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: activité nocturne de nombreuses salamandres actuelles",
+    "adult_length_m": "game_assumption: aucune longueur vérifiée ; salamandre aquatique robuste de taille moyenne",
+    "adult_mass_kg": "game_assumption: masse d'une salamandre aquatique actuelle de ~35 cm",
+    "body_plan": "game_assumption: pas de plan « amphibien » dans l'énumération du schéma — small_reptile retenu (petit tétrapode à 4 membres)",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "game_assumption: carnivore d'invertébrés et petits vertébrés aquatiques (analogie)",
+    "foot_length_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "foot_width_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (wilson2014_salamanders_kpg)",
+    "hatchling_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "hip_height_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: EPB — lissamphibiens ectothermes (witmer1995_epb)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: sans objet (amphibien aquatique, échanges cutanés)",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~2×10^4 individus dans les eaux calmes de 64 km² ; taxon fréquent des microsites (wilson2014_salamanders_kpg), densité non mesurable",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.hunt_style": "game_assumption: capture par aspiration à l'affût (analogie)",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: pontes de salamandres aquatiques actuelles",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "game_assumption: œufs pondus dans l'eau sans nid (EPB, salamandres actuelles)",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: amphibien simulé en effectifs",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: aucune vocalisation simulée",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

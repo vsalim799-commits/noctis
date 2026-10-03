@@ -1,0 +1,539 @@
+{
+  "schema": "noctis.species/1",
+  "id": "lepisosteus_occidentalis",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Lepisosteus occidentalis",
+  "authority": "(Leidy, 1856)",
+  "common_names": {
+    "fr": "Lépisosté de l'Ouest",
+    "en": "Western gar"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Actinopterygii, Ginglymodi, Lepisosteidae. Nom créé (sous Lepidotus occidentalis) à partir de quelques écailles isolées et largement employé pour les écailles et vertèbres de lépisostéidés du Crétacé supérieur de l'Ouest intérieur, dont Hell Creek. L'appartenance aux Lepisosteidae est solide (écailles ganoïdes rhomboïdes, vertèbres opisthocœles), mais l'attribution générique et spécifique de restes isolés est délicate et le nom est parfois traité comme nomen dubium.",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars",
+        "pearson2002_hellcreek_vertebrates",
+        "brinkman2014_actinopterygians"
+      ],
+      "notes": "Le statut nomenclatural exact n'a pas pu être vérifié dans la révision de Grande (2010) pendant cette session."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakotas) et nombreuses formations campaniennes à paléocènes de l'Ouest intérieur.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates",
+        "brinkman2014_actinopterygians"
+      ]
+    },
+    "location": {
+      "summary": "Montana, Dakota du Nord, Dakota du Sud (Hell Creek) ; Ouest intérieur nord-américain.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates",
+        "brinkman2014_actinopterygians"
+      ]
+    },
+    "size": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Les restes isolés ne permettent pas d'estimation fiable ; les lépisostéidés actuels mesurent de ~0,6 à plus de 2 m."
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "morphology": {
+      "summary": "Poisson allongé couvert d'écailles ganoïdes rhomboïdes épaisses, mâchoires allongées garnies de dents pointues (anatomie générale des lépisostéidés).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "grande2010_gars",
+        "brinkman2014_actinopterygians"
+      ]
+    },
+    "skeleton": {
+      "summary": "Connu surtout par des écailles, des dents et des vertèbres isolées, très abondantes dans les microsites.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates",
+        "brinkman2014_actinopterygians"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Vessie natatoire vascularisée servant à la respiration aérienne chez tous les lépisostéidés actuels ; inférée par EPB, sans preuve fossile directe.",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars"
+      ]
+    },
+    "integument": {
+      "summary": "Écailles ganoïdes rhomboïdes articulées, éléments les plus fréquemment fossilisés.",
+      "confidence": "established",
+      "sources": [
+        "grande2010_gars",
+        "pearson2002_hellcreek_vertebrates"
+      ]
+    },
+    "locomotion": {
+      "summary": "Nage ; par analogie avec les lépisostéidés actuels : déplacements lents, détentes brusques lors de la capture.",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Piscivore probable (poissons, crustacés, autres invertébrés), d'après la denture et l'analogie avec les lépisostéidés actuels.",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Prédateur à l'affût : capture latérale rapide avec les mâchoires allongées (analogie actuelle).",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars"
+      ]
+    },
+    "predation": {
+      "summary": "Prédateur intermédiaire des eaux douces ; les juvéniles étaient probablement la proie des crocodyliens, de Champsosaurus et de poissons plus grands.",
+      "confidence": "inferred",
+      "sources": [
+        "brinkman2014_actinopterygians"
+      ]
+    },
+    "defense": {
+      "summary": "Armure d'écailles ganoïdes épaisses.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "grande2010_gars"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Par analogie avec les lépisostéidés actuels : frai en eaux peu profondes et végétalisées, œufs adhésifs, pas de garde parentale.",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Ligne latérale et vision inférées par EPB (poissons actinoptérygiens) ; aucune donnée propre au taxon.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Chenaux, lacs de méandre et marécages d'eau douce ; la respiration aérienne (inférée) permettait sans doute de tolérer des eaux pauvres en oxygène. Pearson et al. (2002) signalent aussi des taxons tolérants au milieu marin, suggérant la proximité d'une voie maritime.",
+      "confidence": "inferred",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates",
+        "brinkman2014_actinopterygians"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Partage les eaux douces avec des requins et raies (euselachiens), des amiidés et téléostéens, Champsosaurus, les crocodyliens et de nombreuses tortues.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "cook2014_euselachians",
+        "brinkman2014_actinopterygians",
+        "pearson2002_hellcreek_vertebrates"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Parmi les vertébrés les plus abondants des microsites : 938 spécimens, soit ~9,2 % des 10 124 spécimens de microsites du sud-ouest du Dakota du Nord (Pearson et al. 2002).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates"
+      ],
+      "value": 9.23,
+      "unit": "% des spécimens de microsites",
+      "notes": "Effectif par taxon relevé via des résumés secondaires du tableau 2 de Pearson et al. (2002)."
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "inferred_behavior": {
+      "summary": "Chasse à l'affût en eaux calmes, respiration aérienne en eaux hypoxiques, frai saisonnier en eaux peu profondes (analogie actuelle).",
+      "confidence": "inferred",
+      "sources": [
+        "grande2010_gars"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Valeur taxonomique du nom Lepisosteus occidentalis pour les restes de Hell Creek.",
+      "positions": [
+        {
+          "summary": "Nom utilisé pour les écailles et vertèbres de lépisostéidés dans les inventaires fauniques de Hell Creek.",
+          "sources": [
+            "pearson2002_hellcreek_vertebrates"
+          ]
+        },
+        {
+          "summary": "Des restes isolés (écailles) ne permettent pas d'attribution spécifique fiable ; les révisions des lépisostéidés invitent à la prudence (le nom est parfois considéré comme nomen dubium).",
+          "sources": [
+            "grande2010_gars"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "population",
+    "body_plan": "fish",
+    "adult_mass_kg": 5,
+    "adult_length_m": 1.0,
+    "hip_height_m": 0,
+    "foot_length_m": 0,
+    "foot_width_m": 0,
+    "hatchling_mass_kg": 0.0001,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 5,
+      "max_growth_rate_kg_per_year": 1,
+      "inflection_age_years": 3,
+      "maturity_age_years": 4,
+      "max_lifespan_years": 20
+    },
+    "locomotion": {
+      "walk_speed_ms": 0,
+      "max_speed_ms": 3.0,
+      "max_accel_ms2": 10,
+      "max_decel_ms2": 10,
+      "max_yaw_rate_dps": 180,
+      "max_slope_deg": 0,
+      "swim": true,
+      "swim_speed_ms": 0.8,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0,
+      "duty_factor_run": 0
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 60,
+      "water_l_per_day_per_100kg": 0
+    },
+    "diet": {
+      "type": "piscivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.001,
+      "prey_mass_max_kg": 0.5,
+      "scavenges": false,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 10,
+      "fov_deg": 300,
+      "binocular_deg": 20,
+      "low_light": 0.5,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 1000,
+      "hearing_best_hz": 200,
+      "hearing_threshold_db": 70,
+      "olfaction": 0.5,
+      "vibration": 0.9
+    },
+    "social": {
+      "group_size_mean": 3,
+      "group_size_max": 20,
+      "cohesion": 0.3,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite"
+      ],
+      "armor": 0.7,
+      "defense_strength": 0.4,
+      "flee_preference": 0.6
+    },
+    "predation": {
+      "hunt_style": "ambush",
+      "attack_strength": 0.1,
+      "bite_force_n": 50,
+      "max_chase_s": 2
+    },
+    "reproduction": {
+      "clutch_size_mean": 10000,
+      "clutch_size_max": 50000,
+      "incubation_days": 7,
+      "breeding_season_doy": [
+        110,
+        160
+      ],
+      "parental_care": 0,
+      "nest_type": "none"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": []
+    },
+    "activity": {
+      "pattern": "cathemeral"
+    },
+    "personality": {
+      "boldness": [
+        0.4,
+        0.15
+      ],
+      "caution": [
+        0.5,
+        0.15
+      ],
+      "aggression": [
+        0.3,
+        0.1
+      ],
+      "curiosity": [
+        0.3,
+        0.1
+      ],
+      "sociability": [
+        0.4,
+        0.15
+      ],
+      "vigilance": [
+        0.5,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.4,
+        0.15
+      ],
+      "exploration": [
+        0.3,
+        0.1
+      ],
+      "flight_tendency": [
+        0.6,
+        0.15
+      ],
+      "dominance": [
+        0.3,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 1.0,
+      "riverbank": 0.3,
+      "sandbar": 0.1,
+      "oxbow_lake": 1.0,
+      "backswamp": 0.8,
+      "riparian_forest": 0,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.2,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 20000,
+      "regional_density_per_km2": 300
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "adult_length_m": "game_assumption: taille intermédiaire de lépisostéidés actuels ; restes fossiles isolés non mesurables",
+    "adult_mass_kg": "game_assumption: masse d'un lépisostéidé actuel d'environ 1 m",
+    "body_plan": "derived: Lepisosteidae (grande2010_gars)",
+    "defense.armor": "derived: écailles ganoïdes épaisses (grande2010_gars)",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "derived: denture et analogie avec les lépisostéidés actuels (grande2010_gars)",
+    "foot_length_m": "game_assumption: sans objet (poisson)",
+    "foot_width_m": "game_assumption: sans objet (poisson)",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; brinkman2014_actinopterygians)",
+    "hatchling_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "hip_height_m": "game_assumption: sans objet (poisson)",
+    "locomotion.duty_factor_run": "game_assumption: sans objet (poisson)",
+    "locomotion.duty_factor_walk": "game_assumption: sans objet (poisson)",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: sans objet (poisson)",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: sans objet (poisson)",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: actinoptérygien (EPB)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: sans objet (aquatique)",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~2×10^4 individus — ordre de grandeur pour quelques km² d'eaux libres dans 64 km² ; abondance relative élevée dans les microsites (pearson2002_hellcreek_vertebrates)",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.hunt_style": "derived: affût des lépisostéidés actuels (analogie)",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: fécondité de lépisostéidés actuels (ordre de grandeur)",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "derived: pas de nid chez les lépisostéidés actuels (œufs adhésifs dispersés)",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: poisson simulé en effectifs",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: aucune vocalisation simulée",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

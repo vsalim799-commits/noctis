@@ -1,0 +1,432 @@
+{
+  "schema": "noctis.species/1",
+  "id": "triceratops_horridus",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Triceratops horridus",
+  "authority": "(Marsh, 1889)",
+  "common_names": { "fr": "Tricératops", "en": "Triceratops" },
+  "regions": ["hell_creek"],
+
+  "science": {
+    "taxonomy": {
+      "summary": "Cératopsidé chasmosauriné. Triceratops horridus est l'espèce type du genre, décrite d'abord sous le nom de Ceratops horridus (Marsh, 1889). Dans la formation de Hell Creek, deux espèces sont reconnues et séparées stratigraphiquement : T. horridus dans la partie inférieure et T. prorsus dans la partie supérieure, avec des spécimens de morphologie intermédiaire dans la partie moyenne ; ce schéma est interprété comme une évolution anagénétique d'une espèce vers l'autre (Scannella et al. 2014), interprétation renforcée par la présence du seul T. prorsus au Canada (Mallon et al. 2025). Le statut de Torosaurus (genre distinct ou stade adulte de Triceratops) reste débattu.",
+      "confidence": "strongly_supported",
+      "sources": ["scannella2014_triceratops_evolution", "mallon2025_triceratops_anagenesis", "marsh1889_ceratops_horridus", "scannella2010_torosaurus_synonymy", "longrich2012_torosaurus"],
+      "notes": "Genre et position phylogénétique établis ; distinction spécifique et anagenèse fortement étayées mais discutées (voir competing_hypotheses). La fiche porte le nom de l'espèce type : selon le niveau stratigraphique simulé, la forme présente serait T. horridus (Hell Creek inférieur), une forme intermédiaire (moyen) ou T. prorsus (supérieur)."
+    },
+    "period": {
+      "summary": "Maastrichtien terminal (Crétacé supérieur). La formation de Hell Creek couvre approximativement 67,1 à 66,0 millions d'années (base datée vers ~67,1 Ma ou plus ancienne ; sommet à la limite Crétacé–Paléogène). T. horridus caractérise les niveaux inférieurs, T. prorsus les niveaux supérieurs jusqu'à proximité de la limite K-Pg.",
+      "confidence": "established",
+      "sources": ["scannella2014_triceratops_evolution", "horner2011_hellcreek_census", "roberts2025_dueling_dinosaurs_age", "sprain2015_hellcreek_chronostratigraphy"],
+      "min": 66.0, "max": 67.1, "unit": "Ma",
+      "notes": "Bornes d'âge de la formation, pas de la durée d'existence propre de chaque espèce."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakota du Nord, Dakota du Sud) ; également formation de Lance (Wyoming), où une accumulation de plusieurs individus a été étudiée par isotopes stables (de Rooij et al. 2022), et formations contemporaines du Canada où seul T. prorsus est reconnu (Mallon et al. 2025).",
+      "confidence": "established",
+      "sources": ["scannella2014_triceratops_evolution", "horner2011_hellcreek_census", "derooij2022_triceratops_isotopes", "mallon2025_triceratops_anagenesis"]
+    },
+    "location": {
+      "summary": "Intérieur de l'Ouest de l'Amérique du Nord (Laramidia) : Montana, Dakotas, Wyoming et sud du Canada (Alberta, Saskatchewan). Paléolatitude de la région de Hell Creek d'environ 49° N.",
+      "confidence": "established",
+      "sources": ["scannella2014_triceratops_evolution", "mallon2025_triceratops_anagenesis", "derooij2022_triceratops_isotopes", "wilf2003_kpg_climate"]
+    },
+    "size": {
+      "summary": "Grand cératopsidé ; longueur adulte de l'ordre de 8 à 9 m. Le crâne, l'un des plus grands de tous les vertébrés terrestres, peut dépasser 2 m de long (collerette comprise) chez les grands individus. Les dimensions souvent citées reposent sur des squelettes composites ; les très grands adultes sont rares dans les collections (Horner et al. 2011).",
+      "confidence": "inferred",
+      "sources": ["horner2011_hellcreek_census"],
+      "value": 8.5, "min": 7.5, "max": 9.0, "unit": "m",
+      "notes": "Aucune mesure standardisée de longueur totale vérifiée dans cette session ; ordre de grandeur de la littérature générale."
+    },
+    "mass": {
+      "summary": "Masse adulte estimée selon les auteurs entre ~6 et ~12 t, selon la méthode (modèles volumétriques ou équations allométriques fondées sur la circonférence des os longs) et le spécimen. Valeur centrale retenue : ~8 t.",
+      "confidence": "inferred",
+      "sources": [],
+      "value": 8000, "min": 6000, "max": 12000, "unit": "kg",
+      "notes": "Estimations publiées non vérifiées dans cette session (quota de recherche épuisé) ; fourchette volontairement large."
+    },
+    "morphology": {
+      "summary": "Quadrupède massif à tête énorme : deux longues cornes postorbitaires (noyaux osseux recouverts d'une gaine kératinisée), une corne nasale plus courte issue de la fusion de l'épinasal, une collerette pariéto-squamosale pleine (sans fenêtres) bordée d'épiossifications, un bec corné (os rostral et prédentaire) et des batteries dentaires à cisaillement. T. horridus et T. prorsus diffèrent notamment par la corne nasale et les proportions du museau.",
+      "confidence": "established",
+      "sources": ["horner2006_triceratops_ontogeny", "scannella2014_triceratops_evolution", "erickson2015_triceratops_dentition"]
+    },
+    "skeleton": {
+      "summary": "Connu par de très nombreux crânes et plusieurs squelettes partiels ; un squelette exceptionnellement complet (« Lane », HMNS PV.1506) est associé à des empreintes de peau (Bell et al. 2022). Vertèbres cervicales antérieures fusionnées (syncervical) soutenant le crâne, membres postérieurs dressés, membres antérieurs plus courts et robustes ; la structure de la main a été réinterprétée (Fujiwara 2009).",
+      "confidence": "strongly_supported",
+      "sources": ["horner2011_hellcreek_census", "bell2022_ceratopsian_skin", "fujiwara2009_triceratops_manus"],
+      "notes": "Le syncervical et les proportions des membres relèvent de l'anatomie descriptive classique."
+    },
+    "musculature": {
+      "summary": "Reconstruite par encadrement phylogénétique (crocodiliens et oiseaux) et cicatrices d'insertion : muscles adducteurs des mâchoires très puissants actionnant les batteries dentaires à cisaillement, musculature cervicale et épaxiale massive pour porter et mouvoir le crâne. L'ancienne hypothèse d'une collerette servant surtout d'ancrage aux muscles masticateurs n'est plus privilégiée.",
+      "confidence": "inferred",
+      "sources": ["erickson2015_triceratops_dentition"]
+    },
+    "soft_tissue": {
+      "summary": "En dehors des empreintes cutanées, aucun tissu mou interne n'est décrit. Les gaines kératinisées des cornes et du bec sont inférées de la texture de surface des os et de l'encadrement phylogénétique (oiseaux, crocodiliens).",
+      "confidence": "inferred",
+      "sources": ["bell2022_ceratopsian_skin"]
+    },
+    "integument": {
+      "summary": "Peau écailleuse établie par les empreintes du spécimen « Lane » : grandes écailles polygonales à subcirculaires (tubercules dépassant parfois 10 cm, certains avec une projection conique centrale) entourées d'un réseau d'écailles basales plus petites et non imbriquées, avec plusieurs types d'écaillure selon les régions du corps. Bell et al. (2022) en donnent une brève description et montrent que l'écaillure des cératopsiens est conservatrice. Aucune structure filamenteuse (comparable aux « soies » caudales de Psittacosaurus) n'est documentée chez Triceratops. Couleur inconnue.",
+      "confidence": "established",
+      "sources": ["bell2022_ceratopsian_skin"],
+      "notes": "Description complète de « Lane » non publiée ; les dimensions des tubercules proviennent de présentations muséales sommaires. Toute structure filamenteuse chez Triceratops serait spéculative."
+    },
+    "locomotion": {
+      "summary": "Quadrupède obligatoire. Membres postérieurs dressés ; la posture des membres antérieurs a longtemps été débattue (étalée ou dressée). La réévaluation de la main et les pistes attribuées aux cératopsidés favorisent une posture semi-dressée, coudes légèrement écartés et doigts orientés vers l'avant et l'extérieur.",
+      "confidence": "inferred",
+      "sources": ["fujiwara2009_triceratops_manus"]
+    },
+    "speed": {
+      "summary": "Aucune mesure directe (aucune piste de course attribuée). Les proportions des membres (graviportales à médiportales) suggèrent une vitesse maximale modérée, du même ordre que celle des grands mammifères herbivores lourds actuels. Les valeurs numériques de la simulation sont des hypothèses de jeu.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivore. Les batteries dentaires à cisaillement très efficaces (Erickson et al. 2015) et le bec étroit indiquent une végétation fibreuse. Aucun contenu stomacal connu. Les graminées n'existaient pas dans la flore de Hell Creek, dominée par les angiospermes (surtout arborescentes et arbustives), avec des conifères abondants mais peu diversifiés, des fougères, de rares ginkgos, des palmiers et des cycadophytes : le régime reposait nécessairement sur ces groupes.",
+      "confidence": "inferred",
+      "sources": ["erickson2015_triceratops_dentition", "johnson2002_hellcreek_megaflora", "wilson2021_seafood_salad_flora", "mallon2013_feeding_height"]
+    },
+    "feeding_strategy": {
+      "summary": "Brouteur de végétation basse. Chez les cératopsidés de la formation de Dinosaur Park (Campanien d'Alberta), utilisés comme analogie écologique et phylogénétique, la hauteur d'alimentation est estimée surtout en dessous de ~1 m (Mallon et al. 2013). Triceratops, plus grand, pouvait atteindre un peu plus haut ; renverser de jeunes arbres est envisageable mais non démontré.",
+      "confidence": "inferred",
+      "sources": ["mallon2013_feeding_height"],
+      "notes": "Analogie avec une autre formation et d'autres genres ; source non vérifiée dans cette session."
+    },
+    "predation": {
+      "summary": "Proie et carcasse exploitée par Tyrannosaurus. Un bassin de Triceratops de Hell Creek (MOR 799) porte 58 marques de dents certaines et 22 possibles ; environ un sixième de l'ilium a été arraché par morsures répétées (Erickson & Olson 1996). Une corne sus-orbitaire sectionnée puis cicatrisée, associée à des traces de dents, montre qu'au moins un individu a survécu à une attaque (Happ 2008).",
+      "confidence": "established",
+      "sources": ["erickson1996_trex_bite_marks", "happ2008_trex_triceratops"]
+    },
+    "defense": {
+      "summary": "Les cornes et la collerette pouvaient servir à la défense contre les tyrannosaures : la corne cicatrisée après une morsure suggère une confrontation frontale (Happ 2008). La collerette pleine protégeait probablement le cou et l'arrière du crâne, notamment lors des combats entre congénères (Farke et al. 2009). La taille adulte constituait elle-même une protection.",
+      "confidence": "inferred",
+      "sources": ["happ2008_trex_triceratops", "farke2009_triceratops_combat"]
+    },
+    "social_behavior": {
+      "summary": "Le gisement « Quittin' Time » (Hell Creek) contient trois juvéniles de Triceratops, interprété comme un indice de vie en groupe, au moins chez les jeunes (Mathews et al. 2009) ; une accumulation de plusieurs individus est aussi connue dans la formation de Lance (de Rooij et al. 2022). La plupart des spécimens sont toutefois trouvés isolés ; la taille et la structure des groupes adultes restent inconnues.",
+      "confidence": "inferred",
+      "sources": ["mathews2009_triceratops_bonebed", "derooij2022_triceratops_isotopes"]
+    },
+    "reproduction": {
+      "summary": "Ovipare (encadrement phylogénétique). Œufs et nids de Triceratops inconnus. Chez le cératopsien Protoceratops, les œufs étaient probablement à coquille souple et enfouis (Norell et al. 2020) et l'incubation a été estimée à ~83 jours d'après les lignes de croissance des dents embryonnaires (Erickson et al. 2017). L'application de ces valeurs à Triceratops, dont les œufs étaient sans doute bien plus grands, est une inférence.",
+      "confidence": "inferred",
+      "sources": ["erickson2017_incubation", "norell2020_soft_eggs"]
+    },
+    "development": {
+      "summary": "Changements crâniens ontogénétiques majeurs : cornes postorbitaires courbées vers l'arrière chez les juvéniles puis redressées et orientées vers l'avant chez l'adulte, creusement interne de leur base, fermeture de la suture nasale médiane, fusion de l'épinasal formant une corne nasale de forme variable, exclusion du supraoccipital du foramen magnum (Horner & Goodwin 2006). Petits juvéniles rares dans les collections (Horner et al. 2011).",
+      "confidence": "established",
+      "sources": ["horner2006_triceratops_ontogeny", "horner2011_hellcreek_census"]
+    },
+    "growth": {
+      "summary": "L'histologie des os longs (gisement de Lance et matériel canadien) définit sept stades histologiques ontogénétiques corrélés à la taille, avec alternance de tissu à fibres parallèles (croissance plus lente) et de tissu mixte tissé–parallèle (croissance plus rapide) ; les marques de croissance sont rares et irrégulièrement espacées, ce qui empêche d'estimer de façon fiable l'âge et le taux de croissance (de Rooij et al. 2023). L'histologie des ornements crâniens suggère un ralentissement tardif de la croissance (Obuszewski et al., non vérifié). Âge à maturité et longévité inconnus.",
+      "confidence": "inferred",
+      "sources": ["derooij2023_triceratops_histology", "obuszewski2025_triceratops_ornament_histology", "horner2011_triceratops_frill_histology"]
+    },
+    "senses": {
+      "summary": "L'anatomie endocrânienne de Triceratops a été étudiée pour interpréter ses fonctions sensorielles et motrices (Sakagami & Kawabe 2020). Orbites latérales impliquant un large champ visuel et un champ binoculaire restreint ; audition probablement orientée vers les basses fréquences comme chez d'autres grands dinosaures (inférence). Aucune valeur quantitative établie.",
+      "confidence": "inferred",
+      "sources": ["sakagami2020_triceratops_endocast"],
+      "notes": "Référence vérifiée secondairement ; ses valeurs quantitatives n'ont pas été consultées dans cette session."
+    },
+    "communication": {
+      "summary": "Cornes et collerette interprétées comme structures de signalisation visuelle (reconnaissance, sélection sociale ou sexuelle) en plus de leur rôle mécanique (Padian & Horner 2011). Aucune donnée sur les vocalisations : une vocalisation à bouche fermée de basse fréquence est envisageable par analogie avec des archosaures actuels (Riede et al. 2016), mais reste spéculative.",
+      "confidence": "inferred",
+      "sources": ["padian2011_bizarre_structures", "riede2016_closed_mouth_vocalization"],
+      "notes": "La partie vocale relève du niveau SPÉCULATIF."
+    },
+    "activity_pattern": {
+      "summary": "Aucune donnée propre à Triceratops. D'après l'anneau sclérotique et l'orbite, Schmitz & Motani (2011) ont classé les cératopsiens et autres herbivores moyens à grands comme cathéméraux (actifs de jour comme de nuit) ; la fiabilité de cette méthode est contestée (Hall et al. 2011).",
+      "confidence": "inferred",
+      "sources": ["schmitz2011_nocturnality", "hall2011_nocturnality_comment"]
+    },
+    "habitat": {
+      "summary": "Les isotopes de l'oxygène et du carbone de dents provenant d'une accumulation de la formation de Lance indiquent une eau de boisson douce et un milieu de vie intermédiaire entre forêts intérieures et plaines côtières (de Rooij et al. 2022). Les restes sont fréquents dans les dépôts de plaine d'inondation de Hell Creek ; des préférences spatiales distinctes entre cératopsidés et hadrosauridés ont été proposées d'après les faciès d'enfouissement (Lyson & Longrich 2011).",
+      "confidence": "inferred",
+      "sources": ["derooij2022_triceratops_isotopes", "horner2011_hellcreek_census", "lyson2011_niche_partitioning"]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide et saisonnière en bordure de la Voie maritime intérieure de l'Ouest, à ~49° N. Les estimations foliaires donnent une température moyenne annuelle d'environ 7–12 °C et des précipitations élevées (de l'ordre de 2 m/an) à la base de la formation ; la fin du Maastrichtien montre un réchauffement puis un refroidissement avant la limite K-Pg. La tolérance thermique propre à Triceratops est inconnue.",
+      "confidence": "inferred",
+      "sources": ["arens2014_hellcreek_basal_florule", "wilf2003_kpg_climate", "johnson2002_hellcreek_megaflora", "tobin2014_hellcreek_clumped_isotopes"]
+    },
+    "interactions": {
+      "summary": "Coexistait avec Tyrannosaurus (prédateur et consommateur de carcasses documenté), Edmontosaurus, Ankylosaurus, Pachycephalosaurus, Thescelosaurus et Torosaurus (si distinct). Dinosaure le plus fréquent du recensement du Hell Creek Project, probablement composante majeure de la biomasse herbivore, sous réserve des biais taphonomiques favorisant les grands os robustes.",
+      "confidence": "strongly_supported",
+      "sources": ["horner2011_hellcreek_census", "erickson1996_trex_bite_marks", "happ2008_trex_triceratops"]
+    },
+    "fossil_record": {
+      "summary": "Très abondant : taxon le plus commun du recensement du Hell Creek Project (par exemple 22 Triceratops contre 5 Tyrannosaurus et 5 Edmontosaurus dans la partie supérieure de la formation) ; nombreux crânes, squelettes complets rares, petits juvéniles et très grands adultes rares (Horner et al. 2011). Spécimens notables : « Lane » (squelette avec peau, HMNS) et « Big John » (lésion du squamosal).",
+      "confidence": "established",
+      "sources": ["horner2011_hellcreek_census", "bell2022_ceratopsian_skin", "danastasio2022_triceratops_lesion"]
+    },
+    "documented_behavior": {
+      "summary": "Combat intraspécifique : les lésions du squamosal sont significativement plus fréquentes chez Triceratops que chez Centrosaurus (Farke et al. 2009), répartition compatible avec un combat corne contre corne ; la fenêtre cicatrisée en « trou de serrure » du squamosal de « Big John » est confirmée histologiquement et chimiquement comme une blessure en cours de guérison, infligée au moins six mois avant la mort, attribuée à la corne d'un congénère (D'Anastasio et al. 2022). Interactions avec T. rex : bassin consommé et corne cicatrisée après morsure.",
+      "confidence": "strongly_supported",
+      "sources": ["farke2009_triceratops_combat", "danastasio2022_triceratops_lesion", "erickson1996_trex_bite_marks", "happ2008_trex_triceratops"]
+    },
+    "inferred_behavior": {
+      "summary": "Combats ritualisés au cours desquels les cornes s'entrecroisent (testé sur modèles réduits, Farke 2004, et compatible avec les lésions) ; regroupements au moins chez les juvéniles ; parades visuelles ; défense active face aux tyrannosaures. La fréquence, la saisonnalité et le contexte (rut, hiérarchie) de ces comportements restent inconnus.",
+      "confidence": "inferred",
+      "sources": ["farke2004_horn_models", "farke2009_triceratops_combat", "mathews2009_triceratops_bonebed", "happ2008_trex_triceratops"]
+    }
+  },
+
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "T. horridus et T. prorsus : deux espèces successives par anagenèse, ou variation au sein d'un ensemble plus complexe ?",
+      "positions": [
+        {
+          "summary": "Deux espèces stratigraphiquement séparées : T. horridus (Hell Creek inférieur) puis T. prorsus (supérieur), reliées par des formes intermédiaires dans la partie moyenne ; interprétation anagénétique (une lignée qui se transforme). Le matériel canadien, uniquement attribuable à T. prorsus, renforce ce schéma.",
+          "sources": ["scannella2014_triceratops_evolution", "mallon2025_triceratops_anagenesis"]
+        },
+        {
+          "summary": "Avant le cadre stratigraphique fin, les différences entre morphotypes ont été analysées par cladistique et morphométrie sans signal temporel ; une partie de la variation peut relever de l'individu ou de l'ontogenèse, et la distinction entre anagenèse et cladogenèse dépend de la résolution stratigraphique disponible.",
+          "sources": ["forster1996_triceratops_species"]
+        }
+      ]
+    },
+    {
+      "topic": "taxonomy_torosaurus",
+      "summary": "Torosaurus (collerette fenestrée, très grande) est-il le stade adulte de Triceratops ?",
+      "positions": [
+        {
+          "summary": "Synonymie par ontogenèse : la collerette s'allonge et s'amincit tardivement, des fenêtres s'y ouvrent, et la microstructure osseuse de Torosaurus indique des individus plus âgés que les plus grands Triceratops ; « Nedoceratops » représenterait une morphologie de transition.",
+          "sources": ["scannella2010_torosaurus_synonymy", "scannella2011_nedoceratops"]
+        },
+        {
+          "summary": "Taxons distincts : sur 35 crânes, la fusion des sutures montre des Torosaurus immatures et des Triceratops pleinement adultes, incompatibles avec la synonymie ; la morphométrie géométrique soutient aussi deux trajectoires de forme distinctes.",
+          "sources": ["longrich2012_torosaurus", "maiorino2013_torosaurus_morphometrics"]
+        },
+        {
+          "summary": "Débat non tranché : la rareté de Torosaurus par rapport à Triceratops et la description de nouveaux spécimens de Hell Creek continuent d'alimenter la discussion.",
+          "sources": ["mcdonald2016_torosaurus_specimen", "horner2011_hellcreek_census"]
+        }
+      ]
+    },
+    {
+      "topic": "horn_function",
+      "summary": "Fonction principale des cornes et de la collerette (hypothèses non exclusives).",
+      "positions": [
+        {
+          "summary": "Combat intraspécifique : cornes s'entrecroisant sur modèles réduits ; lésions du squamosal plus fréquentes que chez Centrosaurus ; lésion de combat confirmée par histologie et chimie sur « Big John ».",
+          "sources": ["farke2004_horn_models", "farke2009_triceratops_combat", "danastasio2022_triceratops_lesion"]
+        },
+        {
+          "summary": "Défense contre les prédateurs : corne sus-orbitaire mordue par un tyrannosaure puis cicatrisée.",
+          "sources": ["happ2008_trex_triceratops"]
+        },
+        {
+          "summary": "Signalisation (sélection sociale ou sexuelle, reconnaissance) : les structures « bizarres » des dinosaures ont souvent une fonction de signal, les fonctions mécaniques étant secondaires.",
+          "sources": ["padian2011_bizarre_structures"]
+        }
+      ]
+    },
+    {
+      "topic": "metabolism",
+      "summary": "Niveau métabolique des cératopsidés (utile pour metabolism.thermo_class).",
+      "positions": [
+        {
+          "summary": "Croissance relativement rapide par phases (tissu tissé–parallèle) chez Triceratops, compatible avec un métabolisme élevé, mais marques de croissance trop rares pour quantifier.",
+          "sources": ["derooij2023_triceratops_histology"]
+        },
+        {
+          "summary": "Les dinosaures dans leur ensemble auraient eu des taux métaboliques intermédiaires (mésothermie).",
+          "sources": ["grady2014_mesothermy"]
+        },
+        {
+          "summary": "Signatures biomoléculaires suggérant des taux métaboliques secondairement abaissés chez plusieurs ornithischiens.",
+          "sources": ["wiemann2022_ale_metabolism"]
+        }
+      ]
+    }
+  ],
+
+  "sim": {
+    "role": "agent",
+    "body_plan": "quadruped_ceratopsian",
+    "adult_mass_kg": 8000,
+    "adult_length_m": 8.5,
+    "hip_height_m": 2.1,
+    "foot_length_m": 0.55,
+    "foot_width_m": 0.5,
+    "hatchling_mass_kg": 2.5,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 8000,
+      "max_growth_rate_kg_per_year": 1000,
+      "inflection_age_years": 9,
+      "maturity_age_years": 15,
+      "max_lifespan_years": 30
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.2,
+      "max_speed_ms": 6.5,
+      "max_accel_ms2": 1.2,
+      "max_decel_ms2": 2.5,
+      "max_yaw_rate_dps": 30,
+      "max_slope_deg": 25,
+      "swim": true, "swim_speed_ms": 0.5,
+      "fly": false, "fly_speed_ms": 0,
+      "duty_factor_walk": 0.7,
+      "duty_factor_run": 0.55
+    },
+    "metabolism": {
+      "thermo_class": "mesotherm",
+      "max_fasting_days": 30,
+      "water_l_per_day_per_100kg": 4.0
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": { "fern": 0.7, "horsetail": 0.5, "angio_herb": 0.8, "angio_shrub": 0.9,
+                             "angio_tree": 0.3, "conifer": 0.3, "palm": 0.6, "cycadophyte": 0.6,
+                             "ginkgo": 0.2, "aquatic_macrophyte": 0.2, "xeric_shrub": 0 },
+      "browse_height_min_m": 0.0, "browse_height_max_m": 1.2,
+      "prey_mass_min_kg": 0, "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 800, "fov_deg": 300, "binocular_deg": 40, "low_light": 0.4,
+      "hearing_min_hz": 20, "hearing_max_hz": 3000, "hearing_best_hz": 500, "hearing_threshold_db": 25,
+      "olfaction": 0.5,
+      "vibration": 0.4
+    },
+    "social": {
+      "group_size_mean": 4, "group_size_max": 12, "cohesion": 0.5,
+      "territorial": false, "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": ["horns", "frill", "beak"],
+      "armor": 0.35, "defense_strength": 0.85, "flee_preference": 0.25
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.7,
+      "bite_force_n": 2000,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 15, "clutch_size_max": 25,
+      "incubation_days": 150,
+      "breeding_season_doy": [100, 170],
+      "parental_care": 0.3,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 15, "f0_max_hz": 150,
+      "call_types": [
+        { "id": "contact_low", "duration_s": 1.5, "f0_hz": 40, "source_level_db": 95,
+          "context": "social_contact", "confidence": "speculative" },
+        { "id": "threat_rumble", "duration_s": 2.0, "f0_hz": 30, "source_level_db": 100,
+          "context": "agonistic", "confidence": "speculative" }
+      ]
+    },
+    "activity": { "pattern": "cathemeral" },
+    "personality": {
+      "boldness": [0.6, 0.15], "caution": [0.4, 0.15], "aggression": [0.5, 0.15],
+      "curiosity": [0.3, 0.1], "sociability": [0.5, 0.15], "vigilance": [0.5, 0.15],
+      "risk_tolerance": [0.5, 0.15], "exploration": [0.4, 0.15], "flight_tendency": [0.3, 0.1],
+      "dominance": [0.6, 0.2]
+    },
+    "habitat": {
+      "channel": 0, "riverbank": 0.5, "sandbar": 0.3, "oxbow_lake": 0.1, "backswamp": 0.3,
+      "riparian_forest": 0.6, "floodplain_open": 0.9, "levee_woodland": 0.7,
+      "upland_conifer_forest": 0.4, "cutbank_cliff": 0.05,
+      "dune_field": 0, "interdune_flat": 0, "ephemeral_pond": 0.3, "xeric_scrub": 0
+    },
+    "population": { "initial_count": 40, "regional_density_per_km2": 0.6 }
+  },
+
+  "sim_basis": {
+    "role": "game_assumption: grand herbivore abondant, simulé individuellement",
+    "body_plan": "derived: cératopsidé quadrupède (horner2006_triceratops_ontogeny; scannella2014_triceratops_evolution)",
+    "adult_mass_kg": "game_assumption: valeur centrale d'une fourchette publiée large (~6–12 t) ; estimations non vérifiées dans cette session",
+    "adult_length_m": "game_assumption: ordre de grandeur de la littérature générale (8–9 m), squelettes composites",
+    "hip_height_m": "game_assumption: proportion approximative pour un cératopsidé de 8,5 m",
+    "foot_length_m": "game_assumption: dimension plausible d'empreinte de pied de grand cératopsidé ; non mesurée sur Triceratops",
+    "foot_width_m": "game_assumption: idem foot_length_m",
+    "hatchling_mass_kg": "game_assumption: œufs de Triceratops inconnus ; nouveau-né de quelques kilogrammes",
+    "sexual_dimorphism_mass": "game_assumption: aucun dimorphisme sexuel démontré",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg",
+    "growth.max_growth_rate_kg_per_year": "derived: courbe logistique supposée (A = 8000 kg, inflexion 9 ans, 95 % à 15 ans → k ≈ 0,49/an → kA/4 ≈ 1000 kg/an) ; les âges ne sont pas établis histologiquement (derooij2023_triceratops_histology : marques de croissance rares et irrégulières)",
+    "growth.inflection_age_years": "game_assumption: âge non établi (derooij2023_triceratops_histology)",
+    "growth.maturity_age_years": "game_assumption: âge non établi ; ralentissement tardif suggéré (obuszewski2025_triceratops_ornament_histology, non vérifié)",
+    "growth.max_lifespan_years": "game_assumption: longévité inconnue",
+    "locomotion.walk_speed_ms": "game_assumption: vitesse de marche typique d'un grand quadrupède actuel (éléphant, rhinocéros)",
+    "locomotion.max_speed_ms": "game_assumption: valeur prudente pour un quadrupède de ~8 t à membres antérieurs semi-dressés ; aucune donnée de piste",
+    "locomotion.max_accel_ms2": "game_assumption: animal lourd, faible accélération",
+    "locomotion.max_decel_ms2": "game_assumption",
+    "locomotion.max_yaw_rate_dps": "game_assumption: rotation lente d'un grand quadrupède à crâne massif",
+    "locomotion.max_slope_deg": "game_assumption",
+    "locomotion.swim": "game_assumption: la plupart des grands vertébrés terrestres actuels peuvent nager ; aucune donnée",
+    "locomotion.swim_speed_ms": "game_assumption",
+    "locomotion.fly": "derived: non volant",
+    "locomotion.fly_speed_ms": "derived: non volant",
+    "locomotion.duty_factor_walk": "game_assumption: analogie avec les grands quadrupèdes actuels",
+    "locomotion.duty_factor_run": "game_assumption: pas de phase aérienne supposée (analogie éléphant)",
+    "metabolism.thermo_class": "game_assumption: compromis « mesotherm » entre croissance relativement rapide (derooij2023_triceratops_histology) et signatures métaboliques plus basses proposées pour les ornithischiens (wiemann2022_ale_metabolism ; grady2014_mesothermy) — voir competing_hypotheses",
+    "metabolism.max_fasting_days": "game_assumption",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: ordre de grandeur des grands herbivores actuels ; eau de boisson douce (derooij2022_triceratops_isotopes)",
+    "diet.type": "erickson2015_triceratops_dentition; mallon2013_feeding_height",
+    "diet.plant_preferences": "game_assumption: pondérations guidées par la composition de la flore (johnson2002_hellcreek_megaflora ; wilson2021_seafood_salad_flora — pas de graminées, angiospermes dominantes) et par une alimentation basse (mallon2013_feeding_height, analogie) ; aucun contenu stomacal connu",
+    "diet.browse_height_min_m": "derived: brouteur au ras du sol (mallon2013_feeding_height, analogie cératopsidés du Dinosaur Park)",
+    "diet.browse_height_max_m": "derived: mallon2013_feeding_height (cératopsidés ≲ 1 m, analogie) + marge de 0,2 m pour la taille supérieure de Triceratops (game_assumption)",
+    "diet.prey_mass_min_kg": "derived: herbivore",
+    "diet.prey_mass_max_kg": "derived: herbivore",
+    "diet.scavenges": "game_assumption: aucun indice",
+    "diet.eats_fish": "game_assumption: aucun indice",
+    "diet.eats_invertebrates": "game_assumption: aucun indice",
+    "diet.eats_eggs": "game_assumption: aucun indice",
+    "senses.vision_range_m": "game_assumption",
+    "senses.fov_deg": "game_assumption: orbites latérales",
+    "senses.binocular_deg": "game_assumption: champ binoculaire restreint",
+    "senses.low_light": "game_assumption",
+    "senses.hearing_min_hz": "game_assumption: audition basse fréquence supposée (sakagami2020_triceratops_endocast ; limite supérieure ~3 kHz proposée pour les grands dinosaures, gleich2005_basilar_papilla)",
+    "senses.hearing_max_hz": "derived: limite supérieure ~3 kHz proposée pour les grands dinosaures (gleich2005_basilar_papilla)",
+    "senses.hearing_best_hz": "game_assumption",
+    "senses.hearing_threshold_db": "game_assumption",
+    "senses.olfaction": "game_assumption",
+    "senses.vibration": "game_assumption",
+    "social.group_size_mean": "derived: trois juvéniles associés (mathews2009_triceratops_bonebed) et accumulation de Lance (derooij2022_triceratops_isotopes) ; taille des groupes adultes inconnue → game_assumption",
+    "social.group_size_max": "game_assumption",
+    "social.cohesion": "game_assumption",
+    "social.territorial": "game_assumption: aucun indice de territorialité",
+    "social.territory_radius_m": "game_assumption: non territorial",
+    "social.alarm_calls": "game_assumption: aucun indice ; laissé désactivé",
+    "defense.weapons": "farke2009_triceratops_combat; happ2008_trex_triceratops; danastasio2022_triceratops_lesion",
+    "defense.armor": "game_assumption: collerette pleine protégeant le cou (farke2009_triceratops_combat) ; pas d'armure dermique",
+    "defense.defense_strength": "game_assumption: cornes efficaces contre un tyrannosaure (happ2008_trex_triceratops) mais prédation documentée (erickson1996_trex_bite_marks)",
+    "defense.flee_preference": "game_assumption",
+    "predation.hunt_style": "derived: herbivore",
+    "predation.attack_strength": "game_assumption: force relative d'une charge défensive aux cornes",
+    "predation.bite_force_n": "game_assumption: force du bec inconnue ; valeur modeste utilisée uniquement en défense",
+    "predation.max_chase_s": "derived: herbivore, pas de poursuite",
+    "reproduction.clutch_size_mean": "game_assumption: pontes de Triceratops inconnues",
+    "reproduction.clutch_size_max": "game_assumption",
+    "reproduction.incubation_days": "derived: valeur intermédiaire entre Protoceratops (~83 j) et Hypacrosaurus (~171 j) (erickson2017_incubation), en supposant de grands œufs ; game_assumption",
+    "reproduction.breeding_season_doy": "game_assumption: printemps–début d'été dans un climat saisonnier",
+    "reproduction.parental_care": "game_assumption",
+    "reproduction.nest_type": "derived: œufs à coquille souple probablement enfouis chez Protoceratops (norell2020_soft_eggs) — inférence phylogénétique",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF — analogie avec la vocalisation bouche fermée des archosaures actuels (riede2016_closed_mouth_vocalization)",
+    "vocal.f0_min_hz": "game_assumption: spéculatif",
+    "vocal.f0_max_hz": "game_assumption: spéculatif",
+    "vocal.call_types": "game_assumption: tous les cris sont SPÉCULATIFS",
+    "activity.pattern": "schmitz2011_nocturnality (cératopsiens classés cathéméraux, sans Triceratops lui-même ; méthode contestée, hall2011_nocturnality_comment)",
+    "personality": "game_assumption: valeurs de personnalité toujours hypothétiques",
+    "habitat": "derived: milieu intermédiaire forêt intérieure / plaine côtière, eau douce (derooij2022_triceratops_isotopes) ; pondérations par habitat = game_assumption",
+    "population.initial_count": "derived: Triceratops est le dinosaure le plus fréquent du recensement de Hell Creek (horner2011_hellcreek_census) ; densité supposée ~0,6 ind./km² (ordre de grandeur des grands herbivores actuels de plusieurs tonnes) × ~67 km² (carte de 8,192 km de côté) ≈ 40, soit ~320 t, herbivore dominant en biomasse — game_assumption",
+    "population.regional_density_per_km2": "game_assumption: voir population.initial_count"
+  }
+}

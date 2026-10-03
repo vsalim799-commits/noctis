@@ -1,0 +1,502 @@
+{
+  "schema": "noctis.species/1",
+  "id": "basilemys_sinuosa",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Basilemys sinuosa",
+  "authority": "Riggs, 1906",
+  "common_names": {
+    "fr": "Basilemys",
+    "en": "Basilemys"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Testudines, Trionychoidea, Nanhsiungchelyidae. Basilemys est le nanhsiungchélyidé nord-américain du Crétacé supérieur ; B. sinuosa est l'espèce couramment citée pour le Maastrichtien de Hell Creek.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg",
+        "hutchison1986_turtles"
+      ],
+      "notes": "Autorité « Riggs, 1906 » et attribution spécifique des restes de Hell Creek non revérifiées pendant cette session."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakotas) ; genre connu aussi dans d'autres formations campaniennes et maastrichtiennes.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg",
+        "wilson2014_hellcreek_volume",
+        "hutchison1986_turtles"
+      ]
+    },
+    "location": {
+      "summary": "Nord-est du Montana et Dakotas.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg"
+      ]
+    },
+    "size": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Grande tortue d'après la littérature ; dimensions non vérifiées pendant cette session."
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "morphology": {
+      "summary": "Carapace haute et massive à surface fortement ornementée (sculptée), plastron épais : caractères typiques des nanhsiungchélyidés.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg"
+      ]
+    },
+    "skeleton": {
+      "summary": "Surtout connu par des fragments de carapace et de plastron, faciles à reconnaître grâce à leur ornementation.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Écailles cornées (scutes) inférées par EPB ; leurs sillons sont visibles sur les plaques osseuses.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "locomotion": {
+      "summary": "Quadrupède terrestre lent ; un mode de vie terrestre est généralement admis pour les nanhsiungchélyidés.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivore probable, hypothèse fondée sur l'écologie terrestre supposée ; non démontrée.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "feeding_strategy": {
+      "summary": "Broutage de végétation basse au sol (spéculatif).",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "predation": {
+      "summary": "Non prédateur ; proie potentielle des crocodyliens et grands théropodes, surtout aux stades juvéniles.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Carapace et plastron épais : protection passive.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Ovipare (EPB : toutes les tortues actuelles pondent des œufs, généralement enfouis) ; aucune ponte attribuée.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Milieux terrestres de la plaine d'inondation (forêts riveraines, levées) d'après le mode de vie terrestre inféré ; restes souvent remaniés dans des dépôts fluviatiles.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Membre d'une faune de tortues très diversifiée (trionychidés, baénidés, chélydridés, etc.) dont la composition a varié avec les changements climatiques de la fin du Crétacé.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "holroyd2014_turtles_kpg",
+        "hutchison1986_turtles"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Fragments de carapace fréquents, individus complets rares ; les nanhsiungchélyidés ne sont plus connus en Amérique du Nord après la limite K–Pg.",
+      "confidence": "inferred",
+      "sources": [
+        "holroyd2014_turtles_kpg",
+        "hutchison1986_turtles"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "inferred_behavior": {
+      "summary": "Broutage terrestre et repli dans la carapace face aux prédateurs.",
+      "confidence": "speculative",
+      "sources": []
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "population",
+    "body_plan": "small_reptile",
+    "adult_mass_kg": 40,
+    "adult_length_m": 0.8,
+    "hip_height_m": 0.2,
+    "foot_length_m": 0.08,
+    "foot_width_m": 0.07,
+    "hatchling_mass_kg": 0.03,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 40,
+      "max_growth_rate_kg_per_year": 2,
+      "inflection_age_years": 15,
+      "maturity_age_years": 20,
+      "max_lifespan_years": 80
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.2,
+      "max_speed_ms": 0.4,
+      "max_accel_ms2": 0.3,
+      "max_decel_ms2": 1.0,
+      "max_yaw_rate_dps": 30,
+      "max_slope_deg": 25,
+      "swim": true,
+      "swim_speed_ms": 0.2,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.8,
+      "duty_factor_run": 0.75
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 200,
+      "water_l_per_day_per_100kg": 0.5
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": {
+        "fern": 0.6,
+        "horsetail": 0.3,
+        "angio_herb": 0.8,
+        "angio_shrub": 0.5,
+        "angio_tree": 0.1,
+        "conifer": 0.1,
+        "palm": 0.2,
+        "cycadophyte": 0.2,
+        "ginkgo": 0.1,
+        "aquatic_macrophyte": 0.2,
+        "xeric_shrub": 0.1
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0.4,
+      "prey_mass_min_kg": 0,
+      "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 50,
+      "fov_deg": 250,
+      "binocular_deg": 30,
+      "low_light": 0.3,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 1000,
+      "hearing_best_hz": 300,
+      "hearing_threshold_db": 40,
+      "olfaction": 0.6,
+      "vibration": 0.5
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 3,
+      "cohesion": 0.05,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "beak"
+      ],
+      "armor": 1.0,
+      "defense_strength": 0.7,
+      "flee_preference": 0.1
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.05,
+      "bite_force_n": 200,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 10,
+      "clutch_size_max": 20,
+      "incubation_days": 80,
+      "breeding_season_doy": [
+        130,
+        180
+      ],
+      "parental_care": 0,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": []
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.3,
+        0.1
+      ],
+      "caution": [
+        0.7,
+        0.15
+      ],
+      "aggression": [
+        0.1,
+        0.05
+      ],
+      "curiosity": [
+        0.3,
+        0.1
+      ],
+      "sociability": [
+        0.1,
+        0.05
+      ],
+      "vigilance": [
+        0.4,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.3,
+        0.1
+      ],
+      "exploration": [
+        0.3,
+        0.1
+      ],
+      "flight_tendency": [
+        0.1,
+        0.05
+      ],
+      "dominance": [
+        0.2,
+        0.1
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0.4,
+      "sandbar": 0.2,
+      "oxbow_lake": 0.1,
+      "backswamp": 0.2,
+      "riparian_forest": 0.7,
+      "floodplain_open": 0.8,
+      "levee_woodland": 0.8,
+      "upland_conifer_forest": 0.4,
+      "cutbank_cliff": 0,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.2,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 300,
+      "regional_density_per_km2": 5
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "adult_length_m": "game_assumption: grande tortue terrestre ; dimensions non vérifiées",
+    "adult_mass_kg": "game_assumption: masse d'une grande tortue terrestre actuelle de taille comparable",
+    "body_plan": "game_assumption: pas de plan « tortue » dans l'énumération du schéma — small_reptile retenu par défaut",
+    "defense.armor": "derived: carapace et plastron épais (holroyd2014_turtles_kpg)",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: hauteur accessible pour une tortue terrestre",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: végétation basse accessible, préférences non documentées",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: végétation basse accessible, préférences non documentées",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "game_assumption: herbivorie spéculative (voir science.diet)",
+    "foot_length_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "foot_width_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: maturité tardive de grandes tortues actuelles",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: longévité de grandes tortues actuelles",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (holroyd2014_turtles_kpg)",
+    "hatchling_mass_kg": "game_assumption: nouveau-nés de grandes tortues terrestres actuelles",
+    "hip_height_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: EPB — tortues actuelles ectothermes (witmer1995_epb)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~300 individus dans 64 km² ; tortues fréquentes mais Basilemys moins que les tortues aquatiques",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.hunt_style": "game_assumption: non prédateur",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "derived: EPB — tortues actuelles enfouissent leurs œufs (witmer1995_epb)",
+    "reproduction.parental_care": "derived: EPB — absence de soins chez la plupart des tortues actuelles",
+    "role": "game_assumption: tortue terrestre simulée en effectifs",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: aucune vocalisation simulée",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

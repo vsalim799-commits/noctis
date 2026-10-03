@@ -1,0 +1,505 @@
+{
+  "schema": "noctis.species/1",
+  "id": "hell_creek_insects",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Insecta indet. (assemblage de Hell Creek)",
+  "authority": "Assemblage multitaxon",
+  "common_names": {
+    "fr": "Insectes de Hell Creek",
+    "en": "Hell Creek insects"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Assemblage d'insectes (et autres arthropodes herbivores) connu presque exclusivement par des traces d'alimentation sur feuilles fossiles (types de dommages : marges broutées, perforations, mines, galles, piqûres-succion). Les fossiles corporels d'insectes sont rares dans la Formation de Hell Creek et les auteurs des dommages ne peuvent généralement pas être identifiés taxonomiquement.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg",
+        "labandeira2002_herbivory"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Flores de la Formation de Hell Creek (notamment du sud-ouest du Dakota du Nord), comparées à celles du Fort Union (Paléocène).",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg",
+        "johnson2002_megaflora"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "location": {
+      "summary": "Sud-ouest du Dakota du Nord et régions voisines (bassin de Williston).",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "size": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Fossiles corporels rares ; tailles non documentées."
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "morphology": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Fossiles corporels rares : morphologie des insectes de Hell Creek pratiquement inconnue."
+    },
+    "skeleton": {
+      "summary": "Exosquelette cuticulaire d'arthropode ; spécimens corporels rares dans la formation.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Cuticule chitineuse (caractère de tous les arthropodes).",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "locomotion": {
+      "summary": "Marche et vol chez la majorité des insectes adultes ; stades larvaires terrestres ou aquatiques (inférence générale).",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivorie attestée par les dommages foliaires : les flores du Crétacé terminal portent une grande diversité de types de dommages, y compris des associations spécialisées (mines, galles), qui disparaissent largement après la limite K–Pg.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg",
+        "labandeira2002_herbivory"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "feeding_strategy": {
+      "summary": "Folivorie externe, perforation, minage, induction de galles, piqûre-succion — inférés des types de dommages.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_herbivory"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "predation": {
+      "summary": "Proies majeures probables des salamandres, lézards, petits mammifères, oiseaux et jeunes dinosaures.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Des insectes sociaux (fourmis, termites) existaient au Crétacé, mais leur présence à Hell Creek n'est pas documentée dans les sources consultées.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Toutes les formations végétales de la plaine d'inondation (dommages observés sur de nombreuses plantes hôtes) ; larves aquatiques probables dans les eaux douces.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Interactions plante–insecte : herbivorie (attestée par les traces), décomposition de la litière (inférée) ; la pollinisation des angiospermes par des insectes est plausible mais sans preuve directe à Hell Creek (spéculatif). Après la limite K–Pg, la diversité des dommages et celle des plantes ont évolué de façon découplée.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg",
+        "wilf2006_insect_diversity"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "fossil_record": {
+      "summary": "Fossiles corporels rares ; l'essentiel de la preuve provient de milliers de feuilles fossiles portant des dommages d'insectes, échantillonnées de part et d'autre de la limite K–Pg.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg",
+        "labandeira2002_herbivory",
+        "wilf2006_insect_diversity"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "documented_behavior": {
+      "summary": "Traces d'alimentation sur feuilles : l'herbivorie est un comportement directement observé sur les fossiles.",
+      "confidence": "inferred",
+      "sources": [
+        "labandeira2002_insect_kpg",
+        "labandeira2002_herbivory"
+      ],
+      "notes": "Confiance plafonnée à « inferred » : la ou les sources primaires citées n'ont pas pu être vérifiées pendant cette session (budget de recherche web épuisé) — à revérifier."
+    },
+    "inferred_behavior": {
+      "summary": "Pollinisation, décomposition, rôle de proie pour les vertébrés insectivores.",
+      "confidence": "speculative",
+      "sources": []
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "population",
+    "body_plan": "invertebrate",
+    "adult_mass_kg": 0.0001,
+    "adult_length_m": 0.01,
+    "hip_height_m": 0.002,
+    "foot_length_m": 0.001,
+    "foot_width_m": 0.001,
+    "hatchling_mass_kg": 1e-06,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 0.0001,
+      "max_growth_rate_kg_per_year": 0.001,
+      "inflection_age_years": 0.05,
+      "maturity_age_years": 0.1,
+      "max_lifespan_years": 0.5
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.05,
+      "max_speed_ms": 0.5,
+      "max_accel_ms2": 2,
+      "max_decel_ms2": 5,
+      "max_yaw_rate_dps": 720,
+      "max_slope_deg": 90,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": true,
+      "fly_speed_ms": 2,
+      "duty_factor_walk": 0.5,
+      "duty_factor_run": 0.5
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 5,
+      "water_l_per_day_per_100kg": 0
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": {
+        "fern": 0.3,
+        "horsetail": 0.1,
+        "angio_herb": 0.8,
+        "angio_shrub": 0.9,
+        "angio_tree": 1.0,
+        "conifer": 0.2,
+        "palm": 0.3,
+        "cycadophyte": 0.2,
+        "ginkgo": 0.2,
+        "aquatic_macrophyte": 0.3,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 30,
+      "prey_mass_min_kg": 0,
+      "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 2,
+      "fov_deg": 330,
+      "binocular_deg": 20,
+      "low_light": 0.4,
+      "hearing_min_hz": 0,
+      "hearing_max_hz": 0,
+      "hearing_best_hz": 0,
+      "hearing_threshold_db": 0,
+      "olfaction": 0.9,
+      "vibration": 0.8
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 1000,
+      "cohesion": 0.1,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [],
+      "armor": 0.2,
+      "defense_strength": 0.01,
+      "flee_preference": 0.7
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0,
+      "bite_force_n": 0,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 100,
+      "clutch_size_max": 500,
+      "incubation_days": 10,
+      "breeding_season_doy": [
+        100,
+        250
+      ],
+      "parental_care": 0,
+      "nest_type": "none"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": []
+    },
+    "activity": {
+      "pattern": "cathemeral"
+    },
+    "personality": {
+      "boldness": [
+        0.5,
+        0.2
+      ],
+      "caution": [
+        0.5,
+        0.2
+      ],
+      "aggression": [
+        0.1,
+        0.05
+      ],
+      "curiosity": [
+        0.3,
+        0.1
+      ],
+      "sociability": [
+        0.3,
+        0.2
+      ],
+      "vigilance": [
+        0.3,
+        0.1
+      ],
+      "risk_tolerance": [
+        0.5,
+        0.2
+      ],
+      "exploration": [
+        0.5,
+        0.2
+      ],
+      "flight_tendency": [
+        0.7,
+        0.15
+      ],
+      "dominance": [
+        0.1,
+        0.05
+      ]
+    },
+    "habitat": {
+      "channel": 0.2,
+      "riverbank": 0.7,
+      "sandbar": 0.3,
+      "oxbow_lake": 0.5,
+      "backswamp": 0.8,
+      "riparian_forest": 1.0,
+      "floodplain_open": 0.9,
+      "levee_woodland": 1.0,
+      "upland_conifer_forest": 0.7,
+      "cutbank_cliff": 0.2,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.6,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 1000000000,
+      "regional_density_per_km2": 15000000
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "adult_length_m": "game_assumption: insecte représentatif d'~1 cm",
+    "adult_mass_kg": "game_assumption: insecte représentatif de ~100 mg ; fossiles corporels rares",
+    "body_plan": "game_assumption: invertébré générique représentant un assemblage",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: les insectes atteignent toute la canopée",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "derived: idem, pondération qualitative",
+    "diet.plant_preferences.angio_shrub": "derived: idem, pondération qualitative",
+    "diet.plant_preferences.angio_tree": "derived: les angiospermes dominent les flores étudiées pour les dommages (labandeira2002_insect_kpg, non vérifiée) ; pondération qualitative",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "derived: herbivorie attestée par les dommages foliaires (labandeira2002_insect_kpg ; labandeira2002_herbivory — non vérifiées)",
+    "foot_length_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "foot_width_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "habitat.backswamp": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.channel": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.cutbank_cliff": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.dune_field": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.ephemeral_pond": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.floodplain_open": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.interdune_flat": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.levee_woodland": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.oxbow_lake": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.riparian_forest": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.riverbank": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.sandbar": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.upland_conifer_forest": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "habitat.xeric_scrub": "game_assumption: présence dans toutes les formations végétales (science.habitat), pondération qualitative",
+    "hatchling_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "hip_height_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: la plupart des insectes adultes volent",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: sans objet à l'échelle de l'assemblage",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~10^9 insectes (feuillage et litière hors faune du sol) pour 64 km², soit ~15 par m² — ordre de grandeur de forêts tempérées actuelles",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.hunt_style": "game_assumption: assemblage modélisé comme herbivore",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "game_assumption: sans objet",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: insectes simulés en effectifs/biomasse agrégés",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: audition non modélisée pour l'assemblage (0)",
+    "senses.hearing_max_hz": "game_assumption: audition non modélisée pour l'assemblage (0)",
+    "senses.hearing_min_hz": "game_assumption: audition non modélisée pour l'assemblage (0)",
+    "senses.hearing_threshold_db": "game_assumption: audition non modélisée pour l'assemblage (0)",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: stridulation non modélisée",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

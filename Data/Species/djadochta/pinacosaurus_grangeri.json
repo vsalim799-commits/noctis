@@ -1,0 +1,653 @@
+{
+  "schema": "noctis.species/1",
+  "id": "pinacosaurus_grangeri",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Pinacosaurus grangeri",
+  "authority": "Gilmore, 1933",
+  "common_names": {
+    "fr": "Pinacosaure",
+    "en": "Pinacosaurus"
+  },
+  "regions": [
+    "djadochta"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Pinacosaurus grangeri Gilmore, 1933 : ankylosaure de la famille des Ankylosauridae (Ankylosaurinae selon les analyses phylogénétiques récentes). Une seconde espèce, P. mephistocephalus Godefroit et al., 1999, décrite de Bayan Mandahu (Mongolie-Intérieure), a été considérée comme synonyme de P. grangeri par Burns et al. (2011). Une révision de 2026 (Penkalski, non vérifiée ici) placerait au contraire cette espèce dans un genre distinct, Eopinacosaurus, et nommerait une nouvelle espèce, P. hilwitnorum, pour le crâne d'Ukhaa Tolgod décrit par Hill et al. (2003) : la taxonomie du genre est donc en mouvement.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1933_pinacosaurus",
+        "godefroit1999_pinacosaurus_mephistocephalus",
+        "burns2011_pinacosaurus_juveniles",
+        "arbour2016_ankylosaurid_systematics",
+        "penkalski2026_pinacosaurus"
+      ],
+      "notes": "FORTEMENT ÉTAYÉ : genre, espèce type, ankylosauridé. SPÉCULATIF tant que non vérifié : la révision de 2026. Si elle est confirmée, la population d'Ukhaa Tolgod pourrait relever de P. hilwitnorum et non de P. grangeri."
+    },
+    "period": {
+      "summary": "Crétacé supérieur, Campanien. L'âge de la Formation de Djadochta n'est pas fixé par une datation radiométrique directe des couches fossilifères ; les estimations (magnétostratigraphie, corrélations) le placent généralement vers la fin du Campanien, autour de ~75–71 millions d'années, et il n'est pas certain qu'un même âge s'applique à toute la formation dans la région.",
+      "confidence": "inferred",
+      "sources": [
+        "dashzeveg2005_djadokhta_age",
+        "dingus2008_ukhaa_geology"
+      ],
+      "value": 73,
+      "min": 71,
+      "max": 75,
+      "unit": "Ma",
+      "notes": "Attribution au Campanien bien admise ; la fourchette chiffrée (~75–71 Ma) n'a pas été relue dans le texte intégral de Dashzeveg et al. (2005) ni de Dingus et al. (2008) — à confirmer."
+    },
+    "formation": {
+      "summary": "Formation de Djadochta (Bayn Dzak, localité type ; Ukhaa Tolgod ; site à juvéniles d'Alag Teeg, généralement rapporté à cette formation) et couches corrélées de Bayan Mandahu en Mongolie-Intérieure.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1933_pinacosaurus",
+        "hill2003_pinacosaurus",
+        "burns2011_pinacosaurus_juveniles",
+        "currie2011_pinacosaurus_hands_feet"
+      ],
+      "notes": "Rattachement d'Alag Teeg à Djadochta : INFÉRÉ (référence Currie et al. 2011 non vérifiée)."
+    },
+    "location": {
+      "summary": "Désert de Gobi : sud de la Mongolie (Bayn Dzak, Ukhaa Tolgod, Alag Teeg) et Mongolie-Intérieure, Chine (Bayan Mandahu).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1933_pinacosaurus",
+        "hill2003_pinacosaurus",
+        "burns2011_pinacosaurus_juveniles"
+      ]
+    },
+    "size": {
+      "summary": "La plupart des spécimens sont des juvéniles. Un squelette postcrânien presque complet (décrit à l'origine sous le nom de Syrmosaurus viminocaudus, aujourd'hui rapporté à P. grangeri) mesure environ 3,7 m du cou au bout de la queue ; avec la tête, les adultes sont généralement estimés vers ~4,5–5 m.",
+      "confidence": "inferred",
+      "sources": [
+        "hill2003_pinacosaurus"
+      ],
+      "value": 5.0,
+      "min": 4.0,
+      "max": 6.0,
+      "unit": "m",
+      "notes": "La mesure de ~3,66 m provient d'une base bibliographique citant Hill et al. (2003) ; la longueur totale adulte est une estimation."
+    },
+    "mass": {
+      "summary": "Aucune estimation de masse publiée n'a pu être vérifiée. Par comparaison avec d'autres ankylosaurinés de taille voisine, un adulte de ~5 m pesait vraisemblablement de l'ordre de 1 à 2 tonnes.",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 1500,
+      "min": 1000,
+      "max": 2000,
+      "unit": "kg"
+    },
+    "morphology": {
+      "summary": "Quadrupède bas, large et cuirassé. Crâne relativement étroit pour un ankylosauridé, avec des ouvertures nasales accessoires caractéristiques du genre. Armure d'ostéodermes, demi-anneaux cervicaux, et queue terminée par une massue osseuse : une « poignée » de vertèbres caudales distales raidies et emboîtées, et un « bouton » formé d'ostéodermes.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hill2003_pinacosaurus",
+        "arbour2015_tail_club_evolution",
+        "arbour2016_ankylosaurid_systematics"
+      ]
+    },
+    "skeleton": {
+      "summary": "Connu par de nombreux squelettes, surtout juvéniles (Alag Teeg, Bayan Mandahu), et par des crânes d'individus plus âgés (Hill et al. 2003) ; c'est l'un des ankylosaures les mieux représentés. Un spécimen conserve un larynx ossifié (cricoïde et aryténoïdes ; Yoshida et al. 2023), une structure rarissime chez les dinosaures non aviens. Mains et pieds décrits par Currie et al. (2011).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hill2003_pinacosaurus",
+        "burns2011_pinacosaurus_juveniles",
+        "yoshida2023_ankylosaur_larynx",
+        "currie2011_pinacosaurus_hands_feet"
+      ]
+    },
+    "musculature": {
+      "summary": "Non préservée. Une puissante musculature de la base de la queue est inférée pour balancer la massue caudale ; les forces d'impact des massues d'ankylosauridés ont été modélisées (Arbour 2009). Ceinture scapulaire et membres antérieurs robustes.",
+      "confidence": "inferred",
+      "sources": [
+        "arbour2009_tail_club_impact"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Larynx ossifié conservé : cricoïde et longs aryténoïdes, avec une articulation cricoïde-aryténoïde mobile (Yoshida et al. 2023). Des voies nasales complexes, connues chez d'autres ankylosaures, sont probables. Aucun autre tissu mou préservé.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "yoshida2023_ankylosaur_larynx",
+        "hill2003_pinacosaurus"
+      ],
+      "notes": "Voies nasales complexes : INFÉRÉ."
+    },
+    "integument": {
+      "summary": "Ostéodermes de tailles variées, probablement recouverts de kératine. Chez les juvéniles, l'armure est peu ossifiée et se développe progressivement au cours de la croissance.",
+      "confidence": "inferred",
+      "sources": [
+        "burns2011_pinacosaurus_juveniles",
+        "hill2003_pinacosaurus"
+      ]
+    },
+    "locomotion": {
+      "summary": "Quadrupède lent à membres courts et robustes ; mains et pieds décrits par Currie et al. (2011). Aucune piste attribuée dans la formation.",
+      "confidence": "inferred",
+      "sources": [
+        "currie2011_pinacosaurus_hands_feet",
+        "arbour2016_ankylosaurid_systematics"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée de vitesse n'a été vérifiée pour Pinacosaurus."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivore à petites dents foliiformes et large bec, consommant de la végétation basse. La flore de Djadochta étant presque inconnue, les plantes consommées restent inconnues.",
+      "confidence": "inferred",
+      "sources": [
+        "hill2003_pinacosaurus"
+      ],
+      "notes": "La flore de Djadochta est presque inconnue : les milieux éoliens oxydants conservent très mal les végétaux (pas de flore décrite à notre connaissance). Les préférences végétales de la simulation sont donc des hypothèses de jeu centrées sur les arbustes xérophiles (xeric_shrub)."
+    },
+    "feeding_strategy": {
+      "summary": "Brouteur bas (sous ~1 m), avec peu de traitement oral ; une digestion fermentaire prolongée est probable par analogie avec les grands herbivores, mais non démontrée.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "predation": {
+      "summary": "Aucun cas de prédation documenté. Les adultes, cuirassés, avaient peu de prédateurs potentiels dans la Formation de Djadochta ; les jeunes, peu ossifiés, pouvaient être vulnérables à Velociraptor.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Armure dermique et massue caudale. Chez les juvéniles, la massue est encore peu développée : elle s'acquiert au cours de la croissance. Arbour (2009) estime que les massues d'ankylosauridés adultes pouvaient produire des impacts capables de fracturer des os ; la poignée raidie apparaît avant le bouton terminal dans l'évolution des ankylosauridés (Arbour & Currie 2015).",
+      "confidence": "inferred",
+      "sources": [
+        "arbour2009_tail_club_impact",
+        "arbour2015_tail_club_evolution",
+        "burns2011_pinacosaurus_juveniles"
+      ]
+    },
+    "social_behavior": {
+      "summary": "De nombreux juvéniles d'âge semblable retrouvés ensemble (Alag Teeg ; Bayan Mandahu) sont interprétés comme des groupes grégaires de jeunes, morts ensemble lors d'événements de mortalité de masse. Le comportement social des adultes est inconnu.",
+      "confidence": "inferred",
+      "sources": [
+        "burns2011_pinacosaurus_juveniles",
+        "currie2011_pinacosaurus_hands_feet",
+        "jerzykiewicz1993_djadokhta"
+      ],
+      "notes": "Les associations de juvéniles sont documentées ; leur interprétation comme groupes sociaux vivants est INFÉRÉE."
+    },
+    "reproduction": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun œuf, nid ni embryon n'est attribué à Pinacosaurus."
+    },
+    "development": {
+      "summary": "Fortes transformations ontogénétiques : ossification progressive des ostéodermes et de la massue caudale, sutures crâniennes visibles chez les jeunes et fusion des éléments dermiques du crâne avec l'âge.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "hill2003_pinacosaurus",
+        "burns2011_pinacosaurus_juveniles",
+        "arbour2015_tail_club_evolution"
+      ]
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune donnée histologique de croissance vérifiée pour Pinacosaurus."
+    },
+    "senses": {
+      "summary": "Les voies nasales complexes des ankylosaures suggèrent un odorat possiblement développé et/ou un rôle thermique ou vocal des cavités nasales ; aucune étude sensorielle spécifique à Pinacosaurus n'a été vérifiée.",
+      "confidence": "speculative",
+      "sources": [
+        "hill2003_pinacosaurus"
+      ]
+    },
+    "communication": {
+      "summary": "Le larynx ossifié de Pinacosaurus présente un cricoïde et de longs aryténoïdes reliés par une articulation mobile. Yoshida et al. (2023) proposent qu'il permettait de contrôler le flux d'air et de moduler les sons comme le larynx des oiseaux, d'où des vocalisations possiblement « aviennes ». Il n'y a pas de syrinx connue ; la nature des sons émis reste spéculative. Des vocalisations à bouche fermée sont apparues plusieurs fois chez les archosaures (Riede et al. 2016).",
+      "confidence": "inferred",
+      "sources": [
+        "yoshida2023_ankylosaur_larynx",
+        "riede2016_closed_mouth_vocalization"
+      ],
+      "notes": "Anatomie du larynx : FORTEMENT ÉTAYÉ. Fonction vocale : INFÉRÉ. Type de sons : SPÉCULATIF."
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Plaines interdunaires et zones à végétation xérique d'un bassin dunaire semi-aride, probablement à proximité de points d'eau temporaires.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "fastovsky1997_tugrikin",
+        "dashzeveg1995_ukhaa_tolgod"
+      ],
+      "notes": "Le cadre (dunes, interdunes, mares temporaires) est bien établi ; les préférences fines de l'espèce entre ces milieux sont inférées."
+    },
+    "climate": {
+      "summary": "Climat aride à semi-aride et saisonnier : grès éoliens à stratifications entrecroisées (dunes), dépôts interdunaires, paléosols carbonatés et mares ou cours d'eau temporaires. Les effondrements de dunes humidifiées par la pluie et les tempêtes de sable ont enseveli des animaux vivants ou fraîchement morts, d'où la fréquence de squelettes articulés en position de vie (Loope et al. 1998).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "jerzykiewicz1993_djadokhta",
+        "fastovsky1997_tugrikin",
+        "dashzeveg2005_djadokhta_age"
+      ],
+      "notes": "Température, précipitations et saisonnalité chiffrées : information insuffisante."
+    },
+    "interactions": {
+      "summary": "Coexistait avec Protoceratops (herbivore plus petit, peut-être concurrent pour la végétation basse), Velociraptor (prédateur potentiel des jeunes), Citipati et la petite faune de lézards et de mammifères.",
+      "confidence": "speculative",
+      "sources": [
+        "dashzeveg1995_ukhaa_tolgod"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Holotype décrit par Gilmore (1933) d'après du matériel des Central Asiatic Expeditions de l'AMNH. Un crâne d'Ukhaa Tolgod (IGM 100/1014) a précisé l'ontogenèse (Hill et al. 2003). Nombreux juvéniles en Mongolie (Alag Teeg) et en Chine (Bayan Mandahu).",
+      "confidence": "established",
+      "sources": [
+        "gilmore1933_pinacosaurus",
+        "hill2003_pinacosaurus",
+        "burns2011_pinacosaurus_juveniles"
+      ],
+      "notes": "Numéro IGM 100/1014 rapporté par une base bibliographique ; à confirmer."
+    },
+    "documented_behavior": {
+      "summary": "Juvéniles morts et enfouis ensemble en groupes, ce qui témoigne de leur association au moment de la mort.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "burns2011_pinacosaurus_juveniles",
+        "currie2011_pinacosaurus_hands_feet"
+      ]
+    },
+    "inferred_behavior": {
+      "summary": "Juvéniles grégaires, adultes peut-être plus solitaires ; usage défensif de la massue caudale par les adultes ; vocalisations modulées par le larynx.",
+      "confidence": "speculative",
+      "sources": [
+        "burns2011_pinacosaurus_juveniles",
+        "arbour2009_tail_club_impact",
+        "yoshida2023_ankylosaur_larynx"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Combien d'espèces de Pinacosaurus ?",
+      "positions": [
+        {
+          "summary": "P. mephistocephalus est une espèce valide de Mongolie-Intérieure.",
+          "sources": [
+            "godefroit1999_pinacosaurus_mephistocephalus"
+          ]
+        },
+        {
+          "summary": "Les différences relèvent de la variation individuelle ou ontogénétique : synonyme de P. grangeri.",
+          "sources": [
+            "burns2011_pinacosaurus_juveniles"
+          ]
+        },
+        {
+          "summary": "Révision de 2026 (non vérifiée) : « P. » mephistocephalus transféré dans Eopinacosaurus ; le crâne d'Ukhaa Tolgod devient l'holotype d'une nouvelle espèce, P. hilwitnorum.",
+          "sources": [
+            "penkalski2026_pinacosaurus"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "communication",
+      "summary": "Rôle du larynx ossifié.",
+      "positions": [
+        {
+          "summary": "Larynx capable de moduler les sons comme chez les oiseaux : vocalisations « aviennes » possibles chez des dinosaures non aviens.",
+          "sources": [
+            "yoshida2023_ankylosaur_larynx"
+          ]
+        },
+        {
+          "summary": "Le larynx sert d'abord à la respiration et à la déglutition chez tous les tétrapodes ; sans syrinx ni tissus mous, le répertoire vocal reste impossible à reconstituer.",
+          "sources": []
+        }
+      ]
+    },
+    {
+      "topic": "defense",
+      "summary": "Fonction de la massue caudale.",
+      "positions": [
+        {
+          "summary": "Arme défensive contre les prédateurs, capable de produire des impacts importants.",
+          "sources": [
+            "arbour2009_tail_club_impact"
+          ]
+        },
+        {
+          "summary": "Arme de combat intraspécifique (proposée pour d'autres ankylosauridés) ; non testée chez Pinacosaurus.",
+          "sources": []
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "quadruped_ankylosaur",
+    "adult_mass_kg": 1500,
+    "adult_length_m": 5.0,
+    "hip_height_m": 1.0,
+    "foot_length_m": 0.3,
+    "foot_width_m": 0.3,
+    "hatchling_mass_kg": 1.0,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 1500,
+      "max_growth_rate_kg_per_year": 150,
+      "inflection_age_years": 7,
+      "maturity_age_years": 10,
+      "max_lifespan_years": 30
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.0,
+      "max_speed_ms": 2.8,
+      "max_accel_ms2": 0.8,
+      "max_decel_ms2": 1.5,
+      "max_yaw_rate_dps": 30,
+      "max_slope_deg": 25,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.7,
+      "duty_factor_run": 0.55
+    },
+    "metabolism": {
+      "thermo_class": "mesotherm",
+      "max_fasting_days": 60,
+      "water_l_per_day_per_100kg": 3.0
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": {
+        "fern": 0.2,
+        "horsetail": 0.3,
+        "angio_herb": 0.5,
+        "angio_shrub": 0.5,
+        "angio_tree": 0,
+        "conifer": 0.2,
+        "palm": 0,
+        "cycadophyte": 0.3,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0.2,
+        "xeric_shrub": 1.0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 1.0,
+      "prey_mass_min_kg": 0,
+      "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 200,
+      "fov_deg": 280,
+      "binocular_deg": 20,
+      "low_light": 0.4,
+      "hearing_min_hz": 20,
+      "hearing_max_hz": 1500,
+      "hearing_best_hz": 400,
+      "hearing_threshold_db": 25,
+      "olfaction": 0.6,
+      "vibration": 0.4
+    },
+    "social": {
+      "group_size_mean": 3,
+      "group_size_max": 30,
+      "cohesion": 0.4,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "tail_club"
+      ],
+      "armor": 0.9,
+      "defense_strength": 0.85,
+      "flee_preference": 0.1
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.2,
+      "bite_force_n": 300,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 15,
+      "clutch_size_max": 25,
+      "incubation_days": 100,
+      "breeding_season_doy": [
+        110,
+        160
+      ],
+      "parental_care": 0.2,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 50,
+      "f0_max_hz": 800,
+      "call_types": [
+        {
+          "id": "contact",
+          "duration_s": 0.8,
+          "f0_hz": 200,
+          "source_level_db": 85,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "juvenile_contact",
+          "duration_s": 0.3,
+          "f0_hz": 600,
+          "source_level_db": 70,
+          "context": "juvenile_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "threat",
+          "duration_s": 1.2,
+          "f0_hz": 120,
+          "source_level_db": 90,
+          "context": "threat_display",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.6,
+        0.15
+      ],
+      "caution": [
+        0.4,
+        0.15
+      ],
+      "aggression": [
+        0.35,
+        0.15
+      ],
+      "curiosity": [
+        0.25,
+        0.1
+      ],
+      "sociability": [
+        0.4,
+        0.2
+      ],
+      "vigilance": [
+        0.35,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.6,
+        0.15
+      ],
+      "exploration": [
+        0.3,
+        0.15
+      ],
+      "flight_tendency": [
+        0.1,
+        0.05
+      ],
+      "dominance": [
+        0.6,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0,
+      "sandbar": 0,
+      "oxbow_lake": 0,
+      "backswamp": 0,
+      "riparian_forest": 0,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0.1,
+      "dune_field": 0.2,
+      "interdune_flat": 0.8,
+      "ephemeral_pond": 0.7,
+      "xeric_scrub": 1.0
+    },
+    "population": {
+      "initial_count": 20,
+      "regional_density_per_km2": 0.3
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: grand herbivore simulé individuellement (agent)",
+    "body_plan": "derived: ankylosauridé quadrupède cuirassé (hill2003_pinacosaurus)",
+    "adult_mass_kg": "game_assumption: aucune estimation publiée vérifiée ; ordre de grandeur (1–2 t) d'un ankylosauriné de ~5 m",
+    "adult_length_m": "game_assumption: longueur adulte ~5 m couramment citée (non vérifiée)",
+    "hip_height_m": "game_assumption: proportions d'ankylosauridé",
+    "foot_length_m": "game_assumption: proportions d'ankylosauridé ; aucune piste attribuée",
+    "foot_width_m": "game_assumption: proportions d'ankylosauridé ; aucune piste attribuée",
+    "hatchling_mass_kg": "game_assumption: aucun œuf ni nouveau-né connu",
+    "sexual_dimorphism_mass": "game_assumption: dimorphisme inconnu",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune histologie vérifiée ; courbe logistique plausible pour un herbivore d'environ 1,5 t, juvéniles nombreux (burns2011_pinacosaurus_juveniles)",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune histologie vérifiée ; courbe logistique plausible pour un herbivore d'environ 1,5 t, juvéniles nombreux (burns2011_pinacosaurus_juveniles)",
+    "growth.inflection_age_years": "game_assumption: aucune histologie vérifiée ; courbe logistique plausible pour un herbivore d'environ 1,5 t, juvéniles nombreux (burns2011_pinacosaurus_juveniles)",
+    "growth.maturity_age_years": "game_assumption: aucune histologie vérifiée ; courbe logistique plausible pour un herbivore d'environ 1,5 t, juvéniles nombreux (burns2011_pinacosaurus_juveniles)",
+    "growth.max_lifespan_years": "game_assumption: aucune histologie vérifiée ; courbe logistique plausible pour un herbivore d'environ 1,5 t, juvéniles nombreux (burns2011_pinacosaurus_juveniles)",
+    "locomotion.walk_speed_ms": "derived: nombre de Froude 0,1 avec hauteur de hanche 1,0 m, v = sqrt(0,1·9,81·1,0) ≈ 1,0 m/s",
+    "locomotion.max_speed_ms": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "locomotion.max_accel_ms2": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "locomotion.max_decel_ms2": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "locomotion.max_yaw_rate_dps": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "locomotion.max_slope_deg": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "locomotion.swim": "game_assumption: nage non simulée",
+    "locomotion.swim_speed_ms": "game_assumption: nage non simulée",
+    "locomotion.fly": "derived: quadrupède terrestre",
+    "locomotion.fly_speed_ms": "derived: quadrupède terrestre",
+    "locomotion.duty_factor_walk": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "locomotion.duty_factor_run": "game_assumption: quadrupède lourd et lent ; aucune estimation publiée vérifiée",
+    "metabolism.thermo_class": "game_assumption: métabolisme des ornithischiens débattu (grady2014_mesothermy ; wiemann2022_dinosaur_metabolism) ; mésotherme retenu",
+    "metabolism.max_fasting_days": "game_assumption: grand herbivore à faible métabolisme relatif",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: grand herbivore de milieu aride",
+    "diet.type": "derived: dents foliiformes et bec d'herbivore (hill2003_pinacosaurus)",
+    "diet.plant_preferences.fern": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.horsetail": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.angio_herb": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.angio_shrub": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.angio_tree": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.conifer": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.palm": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.cycadophyte": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.ginkgo": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: flore de Djadochta quasi inconnue ; préférence aux arbustes xérophiles (xeric_shrub), complétée par la végétation basse des mares temporaires",
+    "diet.browse_height_min_m": "game_assumption: brouteur bas",
+    "diet.browse_height_max_m": "game_assumption: hauteur de tête d'un ankylosauridé",
+    "diet.prey_mass_min_kg": "derived: herbivore — sans objet",
+    "diet.prey_mass_max_kg": "derived: herbivore — sans objet",
+    "diet.scavenges": "derived: herbivore",
+    "diet.eats_fish": "derived: herbivore",
+    "diet.eats_invertebrates": "game_assumption: non simulé",
+    "diet.eats_eggs": "derived: herbivore",
+    "senses.vision_range_m": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.fov_deg": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.binocular_deg": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.low_light": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.hearing_min_hz": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.hearing_max_hz": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.hearing_best_hz": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.hearing_threshold_db": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "senses.olfaction": "game_assumption: voies nasales complexes des ankylosaures (hill2003_pinacosaurus) — rôle olfactif non démontré",
+    "senses.vibration": "game_assumption: aucune mesure sensorielle vérifiée ; valeurs relatives",
+    "social.group_size_mean": "derived: agrégations de juvéniles (burns2011_pinacosaurus_juveniles ; currie2011_pinacosaurus_hands_feet) ; adultes supposés en petits groupes ou solitaires (game_assumption)",
+    "social.group_size_max": "derived: agrégations de juvéniles (burns2011_pinacosaurus_juveniles ; currie2011_pinacosaurus_hands_feet) ; adultes supposés en petits groupes ou solitaires (game_assumption)",
+    "social.cohesion": "derived: agrégations de juvéniles (burns2011_pinacosaurus_juveniles ; currie2011_pinacosaurus_hands_feet) ; adultes supposés en petits groupes ou solitaires (game_assumption)",
+    "social.territorial": "game_assumption: aucune preuve",
+    "social.territory_radius_m": "game_assumption: non territorial",
+    "social.alarm_calls": "game_assumption: aucune donnée ; activable par un profil spéculatif lié au larynx (yoshida2023_ankylosaur_larynx)",
+    "defense.weapons": "derived: massue caudale (arbour2015_tail_club_evolution ; arbour2009_tail_club_impact)",
+    "defense.armor": "derived: armure d'ostéodermes (hill2003_pinacosaurus) — valeur relative de jeu",
+    "defense.defense_strength": "game_assumption: valeur relative ; plus faible chez les juvéniles dans la logique de jeu (massue peu développée, burns2011_pinacosaurus_juveniles)",
+    "defense.flee_preference": "game_assumption: animal cuirassé et lent, préfère faire face",
+    "predation.hunt_style": "derived: herbivore non prédateur",
+    "predation.attack_strength": "derived: herbivore non prédateur",
+    "predation.bite_force_n": "game_assumption: aucune estimation ; morsure d'herbivore faible",
+    "predation.max_chase_s": "derived: herbivore non prédateur",
+    "reproduction.clutch_size_mean": "game_assumption: aucun œuf ni nid attribué à Pinacosaurus ; valeurs génériques d'ornithischien",
+    "reproduction.clutch_size_max": "game_assumption: aucun œuf ni nid attribué à Pinacosaurus ; valeurs génériques d'ornithischien",
+    "reproduction.incubation_days": "game_assumption: aucun œuf ni nid attribué à Pinacosaurus ; valeurs génériques d'ornithischien",
+    "reproduction.breeding_season_doy": "game_assumption: aucun œuf ni nid attribué à Pinacosaurus ; valeurs génériques d'ornithischien",
+    "reproduction.parental_care": "game_assumption: aucun œuf ni nid attribué à Pinacosaurus ; valeurs génériques d'ornithischien",
+    "reproduction.nest_type": "game_assumption: aucun œuf ni nid attribué à Pinacosaurus ; valeurs génériques d'ornithischien",
+    "vocal.closed_mouth": "game_assumption: larynx ossifié suggérant des sons modulés (yoshida2023_ankylosaur_larynx) ; sons à bouche fermée supposés (riede2016_closed_mouth_vocalization) ; fréquences, durées et niveaux entièrement hypothétiques",
+    "vocal.f0_min_hz": "game_assumption: larynx ossifié suggérant des sons modulés (yoshida2023_ankylosaur_larynx) ; sons à bouche fermée supposés (riede2016_closed_mouth_vocalization) ; fréquences, durées et niveaux entièrement hypothétiques",
+    "vocal.f0_max_hz": "game_assumption: larynx ossifié suggérant des sons modulés (yoshida2023_ankylosaur_larynx) ; sons à bouche fermée supposés (riede2016_closed_mouth_vocalization) ; fréquences, durées et niveaux entièrement hypothétiques",
+    "vocal.call_types": "game_assumption: larynx ossifié suggérant des sons modulés (yoshida2023_ankylosaur_larynx) ; sons à bouche fermée supposés (riede2016_closed_mouth_vocalization) ; fréquences, durées et niveaux entièrement hypothétiques",
+    "activity.pattern": "game_assumption: aucune donnée",
+    "personality.boldness": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.caution": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.aggression": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.curiosity": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.sociability": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.vigilance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.risk_tolerance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.exploration": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.flight_tendency": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.dominance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "habitat.channel": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.riverbank": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.sandbar": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.oxbow_lake": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.backswamp": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.riparian_forest": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.floodplain_open": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.levee_woodland": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.upland_conifer_forest": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.cutbank_cliff": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.dune_field": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.interdune_flat": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.ephemeral_pond": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "habitat.xeric_scrub": "game_assumption: préférences relatives déduites du cadre interdunaire ; habitats fluviaux absents de la carte (0)",
+    "population.initial_count": "derived: densité de jeu 0,3 ind./km² × 64 km² ≈ 19, arrondi à 20 (dont des groupes de juvéniles)",
+    "population.regional_density_per_km2": "game_assumption: grand herbivore moins abondant que Protoceratops dans le registre fossile ; densité réelle inconnue"
+  }
+}

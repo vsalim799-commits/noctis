@@ -1,0 +1,926 @@
+{
+  "schema": "noctis.methods/1",
+  "last_reviewed": "2026-10-03",
+  "methods": [
+    {
+      "id": "trackway_speed_alexander",
+      "domain": "ichnology_locomotion",
+      "name_fr": "Vitesse d'un traceur d'après sa piste (équation d'Alexander)",
+      "summary": "Alexander (1976) a établi, sur des animaux actuels (surtout des mammifères), une relation empirique entre la vitesse, la longueur de foulée SL et la hauteur de hanche h, fondée sur l'hypothèse de similitude dynamique (nombre de Froude). La hauteur de hanche n'étant pas mesurable sur une piste, on l'estime à partir de la longueur d'empreinte FL : h ≈ 4·FL (Alexander 1976). Henderson (2003) a testé ces prédictions sur des modèles numériques de dinosaures bipèdes : la règle simple h = 4·FL donne le meilleur accord pour théropodes et ornithopodes, alors que les formules morphométriques/allométriques surestiment systématiquement h (jusqu'à ~84 % dans les cas extrêmes, l'erreur croissant avec la taille). Thulborn (1990) proposait des rapports h/FL propres à chaque groupe (≈4,5 petits théropodes ; ≈4,9 grands théropodes ; ≈4,8 petits ornithopodes). La foulée relative SL/h sert à classer l'allure : < 2,0 marche ; 2,0–2,9 trot ; > 2,9 course (Thulborn 1982 ; Thulborn & Wade 1984). Ruiz & Torices (2013) proposent un coefficient de 0,226 au lieu de 0,25 (calibration sur coureurs humains). Prescott et al. (2025) montrent que, sur substrat meuble (oiseaux actuels marchant dans la boue), l'équation surestime fortement : vitesses mesurées 0,04–0,97 m/s (moyenne 0,29) contre 0,17–1,84 m/s calculées (moyenne 0,61), soit jusqu'à ~2,5 fois trop.",
+      "equation": "v = 0.25 · g^0.5 · SL^1.67 · h^-1.17  |  h = k_h · FL  |  λr = SL / h. v : vitesse (m/s) ; g = 9.81 m/s² ; SL : longueur de foulée = distance entre deux empreintes successives du MÊME pied (m) ; h : hauteur de l'acétabulum au-dessus du sol (m) ; FL : longueur d'empreinte (m) ; k_h : rapport h/FL (sans dimension). Variante Ruiz & Torices (2013) : coefficient 0.226 au lieu de 0.25. Équivalent dérivé (contrôle de cohérence, cf. froude_dynamic_similarity) : λr = 2.3 · Fr^0.3 ⇒ v = 2.3^(-1/0.3) · g^0.5 · SL^(1/0.3) · h^(1-1/0.3) ≈ 0.25 · g^0.5 · SL^1.67 · h^-1.17.",
+      "parameters": {
+        "coef_alexander": {
+          "value": 0.25,
+          "unit": "sans dimension",
+          "notes": "Alexander 1976 ; forme confirmée (doc. QuAnTeTrack, CRAN)."
+        },
+        "exp_stride": {
+          "value": 1.67,
+          "unit": "sans dimension",
+          "notes": "Alexander 1976."
+        },
+        "exp_hip": {
+          "value": -1.17,
+          "unit": "sans dimension",
+          "notes": "Alexander 1976."
+        },
+        "coef_ruiz_torices": {
+          "value": 0.226,
+          "unit": "sans dimension",
+          "notes": "Ruiz & Torices 2013 ; calibration sur coureurs humains (stade et plage)."
+        },
+        "hip_to_foot_ratio_default": {
+          "value": 4.0,
+          "unit": "sans dimension",
+          "notes": "Alexander 1976 ; meilleur prédicteur selon les modèles de Henderson 2003 pour bipèdes (théropodes, ornithopodes)."
+        },
+        "hip_to_foot_ratio_thulborn": {
+          "value": {
+            "small_theropod": 4.5,
+            "large_theropod": 4.9,
+            "small_ornithopod": 4.8
+          },
+          "unit": "sans dimension",
+          "notes": "Thulborn 1990, d'après des résumés secondaires (recherche web) ; le livre n'a pas été consulté directement. Henderson 2003 indique que les formules allométriques surestiment h."
+        },
+        "gait_walk_max_relative_stride": {
+          "value": 2.0,
+          "unit": "SL/h",
+          "notes": "Marche si SL/h < 2,0 (Thulborn 1982 ; Thulborn & Wade 1984)."
+        },
+        "gait_run_min_relative_stride": {
+          "value": 2.9,
+          "unit": "SL/h",
+          "notes": "Course si SL/h > 2,9 ; entre 2,0 et 2,9 : trot/allure intermédiaire (Thulborn & Wade 1984)."
+        },
+        "soft_substrate_overestimate_max": {
+          "value": 2.5,
+          "unit": "facteur",
+          "notes": "Prescott et al. 2025 : surestimation jusqu'à ~2,5× sur substrat meuble ; moyenne calculée 0,61 m/s vs 0,29 m/s mesurée."
+        }
+      },
+      "validity_limits": "Relation empirique calibrée sur des animaux actuels (majoritairement mammifères) en locomotion régulière sur sol ferme ; elle n'estime PAS la vitesse maximale, seulement la vitesse au moment du passage. L'incertitude sur h (exposant −1,17) se propage fortement : une erreur de ±20 % sur h donne environ −19 % à +30 % d'erreur sur v (dérivé). La règle h ≈ 4·FL est validée surtout pour les bipèdes (Henderson 2003) ; quadrupèdes (sauropodes, cératopsiens) et formes à pied très court/long demandent d'autres rapports. Sur substrat meuble ou collant, les animaux raccourcissent ou allongent la foulée sans changer de vitesse : l'équation peut surestimer d'un facteur ~2,5 (Prescott et al. 2025). La morphologie d'une empreinte (et donc FL) varie avec le substrat (voir track_formation_substrate). À présenter au joueur comme une estimation, avec intervalle.",
+      "confidence": "inferred",
+      "sources": [
+        "alexander1976_dinosaur_speeds",
+        "henderson2003_hip_heights",
+        "thulborn1982_speeds_gaits",
+        "thulborn1990_dinosaur_tracks",
+        "thulborn1984_winton_trackways",
+        "ruiz2013_trackway_speed_humans",
+        "prescott2025_trackway_speed_birds"
+      ],
+      "used_by": [
+        "PaleontologySystem",
+        "TrackSystem"
+      ]
+    },
+    {
+      "id": "froude_dynamic_similarity",
+      "domain": "locomotion",
+      "name_fr": "Similitude dynamique et nombre de Froude",
+      "summary": "Alexander & Jayes (1983) ont proposé que des animaux géométriquement semblables mais de tailles différentes se déplacent de façon dynamiquement semblable lorsqu'ils ont le même nombre de Froude Fr = v²/(g·h), h étant la longueur de patte (hauteur de hanche). Des rongeurs au rhinocéros, les mammifères suivent approximativement cette règle. Conséquences utiles pour la simulation : (1) à Fr égal, foulée relative et facteur de service (duty factor) sont semblables ; (2) la marche, assimilée à un pendule inversé, est mécaniquement impossible au-delà de Fr = 1 (la gravité ne peut plus fournir l'accélération centripète) ; (3) la transition marche → allure rapide se fait en pratique bien avant, vers Fr ≈ 0,5 chez les mammifères et les bipèdes actuels. Les seuils de foulée relative de Thulborn correspondent, via λr = 2,3·Fr^0,3 (relation sous-jacente à l'équation d'Alexander), à Fr ≈ 0,63 (SL/h = 2,0) et Fr ≈ 2,2 (SL/h = 2,9).",
+      "equation": "Fr = v² / (g · h)  ⇒  v = sqrt(Fr · g · h). Relation foulée–Froude (Alexander) : SL/h = 2.3 · Fr^0.3. v : vitesse (m/s) ; g = 9.81 m/s² ; h : hauteur de hanche (m) ; SL : longueur de foulée (m). Vitesse de transition marche/course : v_tr = sqrt(Fr_tr · g · h) ; ex. h = 3,0 m, Fr_tr = 0,5 → v_tr ≈ 3,8 m/s (dérivé).",
+      "parameters": {
+        "fr_walk_run_transition": {
+          "value": 0.5,
+          "unit": "sans dimension",
+          "notes": "Valeur classique de la littérature d'Alexander pour la transition marche–course/trot ; Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "fr_walk_theoretical_max": {
+          "value": 1.0,
+          "unit": "sans dimension",
+          "notes": "Dérivé : limite du pendule inversé (v²/h ≤ g)."
+        },
+        "stride_froude_coef": {
+          "value": 2.3,
+          "unit": "sans dimension",
+          "notes": "Dérivé algébriquement : 2.3^(-1/0.3) = 0.2495 ≈ 0.25 retrouve exactement le coefficient d'Alexander 1976."
+        },
+        "stride_froude_exp": {
+          "value": 0.3,
+          "unit": "sans dimension",
+          "notes": "Dérivé : 1/0.3 = 3.33 → exposants 1.67 (SL) et −1.17 (h) après réarrangement."
+        }
+      },
+      "validity_limits": "La similitude dynamique suppose la similitude géométrique et des propriétés de tissus comparables ; elle est approximative pour les très grands animaux (contraintes osseuses/musculaires qui croissent avec la taille) : un adulte de plusieurs tonnes n'atteint pas forcément le Fr d'un petit coureur. Pour les géants, la vitesse maximale doit être plafonnée par d'autres contraintes (résistance squelettique, masse musculaire), non par Fr. Le seuil Fr ≈ 0,5 est une moyenne d'animaux actuels ; varier de ±0,1 selon le plan corporel est une hypothèse de jeu.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "alexander1983_dynamic_similarity",
+        "alexander1976_dinosaur_speeds",
+        "thulborn1982_speeds_gaits"
+      ],
+      "used_by": [
+        "LocomotionSystem"
+      ]
+    },
+    {
+      "id": "metabolic_scaling",
+      "domain": "physiology",
+      "name_fr": "Allométrie du métabolisme et statut thermique des dinosaures",
+      "summary": "Kleiber (1932) a établi que le métabolisme de base croît comme la masse à la puissance ~3/4 ; la forme usuelle B ≈ 70·M^0,75 kcal/j (M en kg ; ≈ 3,4 W·kg^-0,75) provient de son ouvrage de 1961. White & Seymour (2003), en corrigeant température corporelle, état digestif et phylogénie sur 619 mammifères, trouvent un exposant de 2/3 plutôt que 3/4. Pour un animal en liberté, le métabolisme de terrain (FMR, eau doublement marquée) est plus pertinent : Nagy (2005) donne FMR = 4,82·M^0,734 (mammifères, 79 espèces), 10,5·M^0,681 (oiseaux, 95 espèces) et 0,196·M^0,889 (reptiles, 55 espèces : 48 lézards, 6 serpents, 1 tortue), FMR en kJ/j et M en g ; à ~100 g, mammifères et oiseaux dépensent ~12 et ~20 fois plus qu'un reptile de même masse. Les pentes différant, l'écart se réduit avec la masse (rapport mammifère/reptile ≈ 8,4 à 1 kg, ≈ 2,9 à 1 t, ≈ 2,1 à 7 t par extrapolation — calcul dérivé). Statut des dinosaures — débat ouvert : Grady et al. (2014), à partir des taux de croissance, les placent entre ectothermes et endothermes (« mésothermie ») ; D'Emic (2015) objecte que la croissance saisonnière impose de doubler ces taux, ce qui les rapproche des mammifères placentaires ; Wiemann et al. (2022), via les produits finaux de lipoxydation avancée (ALE) des os, infèrent un métabolisme élevé ancestral aux ornithodires, avec des taux faibles secondairement chez certains ornithischiens ; Motani et al. (2023) contestent cette inférence (confusion entre métabolisme de base, standard et d'exercice ; reconstruction d'états ancestraux peu contrainte), Wiemann et al. ont répondu (2023). Chiarenza et al. (2024), par modélisation de niches climatiques, situent l'acquisition d'une endothermie de type aviaire chez théropodes et ornithischiens dès le Jurassique inférieur, avec une diversité thermophysiologique (sauropodomorphes restant liés aux climats chauds).",
+      "equation": "Base (Kleiber) : B = 70 · M_kg^0.75 (kcal/j) ≈ 3.39 · M_kg^0.75 (W). Terrain (Nagy 2005), M en g, FMR en kJ/j : mammifère FMR = 4.82·M^0.734 ; oiseau FMR = 10.5·M^0.681 ; reptile FMR = 0.196·M^0.889. Interpolation de simulation (hypothèse de jeu, PAS un résultat publié) : log FMR_dino = (1−θ)·log FMR_reptile + θ·log FMR_endotherme, θ ∈ [0,1] selon thermo_class (ectotherm ≈ 0, mesotherm intermédiaire, endotherm ≈ 1).",
+      "parameters": {
+        "kleiber_coef": {
+          "value": 70,
+          "unit": "kcal/j pour M en kg",
+          "notes": "Kleiber 1961 (forme usuelle B ≈ 70 M^0.75) ; 70 kcal/j = 292,9 kJ/j ≈ 3,39 W."
+        },
+        "kleiber_exp": {
+          "value": 0.75,
+          "unit": "sans dimension",
+          "notes": "Kleiber 1932/1961 ; exposant arrondi à 3/4."
+        },
+        "bmr_exp_white_seymour": {
+          "value": 0.667,
+          "unit": "sans dimension",
+          "notes": "White & Seymour 2003 : BMR ∝ M^(2/3) après corrections (mammifères) ; coefficient non relevé."
+        },
+        "fmr_mammal": {
+          "value": {
+            "a": 4.82,
+            "b": 0.734,
+            "n_species": 79
+          },
+          "unit": "FMR kJ/j ; M en g",
+          "notes": "Nagy 2005 (r² = 0,950) ; pente 0,734 aussi dans Nagy et al. 1999."
+        },
+        "fmr_bird": {
+          "value": {
+            "a": 10.5,
+            "b": 0.681,
+            "n_species": 95
+          },
+          "unit": "FMR kJ/j ; M en g",
+          "notes": "Nagy 2005 (r² = 0,938)."
+        },
+        "fmr_reptile": {
+          "value": {
+            "a": 0.196,
+            "b": 0.889,
+            "n_species": 55
+          },
+          "unit": "FMR kJ/j ; M en g",
+          "notes": "Nagy 2005 (r² = 0,945) ; jeu de données dominé par de petits lézards."
+        },
+        "endo_to_ecto_ratio_100g": {
+          "value": {
+            "mammal": 12,
+            "bird": 20
+          },
+          "unit": "facteur",
+          "notes": "Nagy 2005 (« about 12 and 20 times ») ; recalcul dérivé à 100 g : 12,0 et 20,5."
+        },
+        "theta_mesotherm": {
+          "value": null,
+          "unit": "sans dimension",
+          "notes": "game_assumption : aucune valeur publiée ; à fixer par profil de reconstruction (ex. 0,5) et à documenter dans sim_basis."
+        }
+      },
+      "validity_limits": "Les équations de Nagy sont valides dans la gamme de masses des données (essentiellement < quelques dizaines de kg pour les reptiles) ; leur extrapolation à des animaux de plusieurs tonnes est hors domaine et doit être signalée comme dérivée. Les exposants de BMR (2/3 vs 3/4) restent débattus. Aucune méthode ne mesure directement le métabolisme d'un dinosaure : croissance, isotopes, ALE et niches climatiques sont des proxies indirects aux conclusions divergentes. Le statut thermique doit donc rester un paramètre de reconstruction (profil), jamais un fait affiché comme établi.",
+      "confidence": "inferred",
+      "sources": [
+        "kleiber1932_body_size",
+        "kleiber1961_fire_of_life",
+        "white2003_bmr_two_thirds",
+        "nagy1987_fmr_scaling",
+        "nagy1999_energetics_free_ranging",
+        "nagy2005_fmr_body_size",
+        "grady2014_mesothermy",
+        "demic2015_mesothermy_comment",
+        "wiemann2022_ale_metabolism",
+        "motani2023_amniote_metabolism",
+        "wiemann2023_reply_amniote",
+        "chiarenza2024_jurassic_endothermy"
+      ],
+      "used_by": [
+        "PhysiologySystem"
+      ]
+    },
+    {
+      "id": "gigantothermy_thermal_inertia",
+      "domain": "physiology",
+      "name_fr": "Inertie thermique, gigantothermie et températures corporelles mesurées",
+      "summary": "Plus un animal est massif, plus sa température corporelle (Tb) varie lentement : chez des crocodiles marins en liberté (32–1010 kg), l'amplitude journalière de Tb passe de 3,5 °C (32 kg) à 1,0 °C (660 kg) en été et de 3,5 °C (42 kg) à 1,4 °C (1010 kg) en hiver, tandis que la Tb moyenne augmente avec la masse (Grigg et al. 1998 ; Seebacher, Grigg & Beard 1999). Seebacher (2003) a appliqué ce modèle biophysique aux dinosaures : beaucoup pouvaient avoir une Tb élevée (≥ 30 °C) et stable (amplitude ≤ 2 °C) sans production de chaleur métabolique notable, la Tb diminuant avec la masse et la paléolatitude. Paladino et al. (1990) ont décrit la « gigantothermie » chez la tortue luth (> 900 kg), qui maintient ~25,5 °C dans une eau à 7,5 °C grâce à sa taille, une isolation périphérique et des ajustements circulatoires. Gillooly et al. (2006), à partir des courbes de croissance, prédisent une Tb croissant d'environ 25 °C (12 kg) à 41 °C (13 000 kg) (homéothermie inertielle). Mesures directes par thermométrie isotopique « clumped » (13C-18O) : dents de sauropodes jurassiques 36–38 °C (Brachiosaurus ~38,2 ± 1,0 °C), soit 4–7 °C de moins que le modèle de mise à l'échelle avec la masse (Eagle et al. 2011) ; coquilles d'œufs : titanosaure ~38 °C, oviraptoridé ~32 °C (Eagle et al. 2015) ; Troodon jusqu'à ~10 °C, Maiasaura ~15 °C et Megaloolithus 3–6 °C au-dessus de la température ambiante, suggérant une thermorégulation métabolique ancestrale chez Dinosauria (Dawson et al. 2020).",
+      "equation": "Modèle newtonien à un compartiment (dérivé, forme standard de biophysique) : M·c·dTb/dt = P_met − K·(Tb − Te) ; constante de temps τ = M·c / K. Avec la similitude géométrique (surface ∝ M^(2/3), K ∝ surface), τ ∝ M^(1/3) (dérivé). Forçage journalier sinusoïdal d'amplitude A_e et pulsation ω = 2π/86400 s⁻¹ : amplitude de Tb A = A_e / sqrt(1 + (ω·τ)²) (dérivé). Tb : température corporelle (°C) ; Te : température opérative de l'environnement (°C) ; P_met : production de chaleur métabolique (W, cf. metabolic_scaling) ; M : masse (kg) ; c : chaleur spécifique des tissus (J kg⁻¹ K⁻¹) ; K : conductance thermique globale (W/K).",
+      "parameters": {
+        "croc_daily_amplitude_summer": {
+          "value": {
+            "32kg": 3.5,
+            "660kg": 1.0
+          },
+          "unit": "°C",
+          "notes": "Grigg et al. 1998 (Crocodylus porosus, captivité naturaliste, N. Australie)."
+        },
+        "croc_daily_amplitude_winter": {
+          "value": {
+            "42kg": 3.5,
+            "1010kg": 1.4
+          },
+          "unit": "°C",
+          "notes": "Grigg et al. 1998."
+        },
+        "tau_mass_exponent": {
+          "value": 0.333,
+          "unit": "sans dimension",
+          "notes": "Dérivé (similitude géométrique) ; non mesuré directement sur dinosaures. À calibrer sur les données crocodiliennes."
+        },
+        "tissue_specific_heat": {
+          "value": 3500,
+          "unit": "J kg⁻¹ K⁻¹",
+          "notes": "Ordre de grandeur usuel pour des tissus animaux ; Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif. Traiter comme game_assumption."
+        },
+        "sauropod_tb_clumped": {
+          "value": [
+            36,
+            38
+          ],
+          "unit": "°C",
+          "notes": "Eagle et al. 2011 (émail dentaire, Jurassique supérieur)."
+        },
+        "eggshell_tb_titanosaur": {
+          "value": 38,
+          "unit": "°C",
+          "notes": "Eagle et al. 2015 (température de la femelle à l'ovulation)."
+        },
+        "eggshell_tb_oviraptorid": {
+          "value": 32,
+          "unit": "°C",
+          "notes": "Eagle et al. 2015."
+        },
+        "eggshell_tb_excess_over_ambient": {
+          "value": {
+            "Troodon": 10,
+            "Maiasaura": 15,
+            "Megaloolithus_min": 3,
+            "Megaloolithus_max": 6
+          },
+          "unit": "°C au-dessus de l'ambiant",
+          "notes": "Dawson et al. 2020 (« jusqu'à » pour Troodon)."
+        }
+      },
+      "validity_limits": "Le modèle à un compartiment ignore les gradients internes, le rayonnement solaire détaillé, le vent et le comportement (recherche d'ombre, bains) ; il suffit pour des variations journalières mais pas pour des stress thermiques aigus. Les températures isotopiques portent sur des tissus formés à un instant donné (dent, coquille à l'ovulation) et sur peu de spécimens ; la diagenèse peut biaiser le signal. Le modèle de Gillooly et al. 2006 repose sur l'hypothèse d'une physiologie reptilienne et a été critiqué ; les mesures directes (36–38 °C chez de très grands sauropodes) ne confirment pas la croissance continue de Tb avec la masse.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "grigg1998_crocodile_thermal_relations",
+        "seebacher1999_crocodiles_as_dinosaurs",
+        "seebacher2003_dino_body_temps",
+        "paladino1990_gigantothermy",
+        "gillooly2006_dino_body_temps",
+        "eagle2011_sauropod_body_temps",
+        "eagle2015_eggshell_clumped",
+        "dawson2020_eggshell_thermoregulation"
+      ],
+      "used_by": [
+        "PhysiologySystem"
+      ]
+    },
+    {
+      "id": "atmospheric_sound_attenuation",
+      "domain": "acoustics",
+      "name_fr": "Atténuation du son en plein air (divergence, absorption atmosphérique, végétation, sol, météo)",
+      "summary": "Le niveau d'un son diminue avec la distance par : (1) divergence sphérique, −6 dB par doublement de distance (Morton 1975 ; Marten & Marler 1977) ; (2) absorption atmosphérique, calculée par la norme ISO 9613-1:1993 (formulation de Bass, Sutherland et al.) en fonction de la fréquence, de la température, de l'humidité relative et de la pression — elle croît fortement avec la fréquence (≈ 0,22 dB/km à 100 Hz mais ≈ 23 dB/km à 4 kHz à 20 °C et 70 % HR) ; (3) atténuation « excédentaire » due à la végétation et au sol : ISO 9613-2 tabule l'atténuation à travers un feuillage dense (20–200 m de trajet : 0,02 dB/m à 63 Hz jusqu'à 0,12 dB/m à 8 kHz) et un terme d'effet de sol ; (4) effets météorologiques : le gradient de température (diminution avec l'altitude le jour) et le vent réfractent le son vers le haut (zones d'ombre acoustique, en particulier contre le vent), alors que les inversions nocturnes et la propagation sous le vent le rabattent vers le sol et allongent la portée (Embleton 1996). En milieu fermé, la réverbération et les fluctuations d'amplitude dégradent aussi les signaux (Wiley & Richards 1978) ; les basses fréquences portent plus loin en forêt (Morton 1975 ; Marten & Marler 1977).",
+      "equation": "L(r) = L(r0) − 20·log10(r/r0) − α(f)·(r − r0) − A_foliage(f, d_f) − A_ground − A_meteo. ISO 9613-1 (dB/m) : α = 8.686·f²·[1.84e-11·(pa/pr)^-1·(T/T0)^0.5 + (T/T0)^-2.5·(0.01275·exp(-2239.1/T)/(frO + f²/frO) + 0.1068·exp(-3352.0/T)/(frN + f²/frN))] ; frO = (pa/pr)·(24 + 4.04e4·h·(0.02 + h)/(0.391 + h)) ; frN = (pa/pr)·(T/T0)^-0.5·(9 + 280·h·exp(-4.170·((T/T0)^(-1/3) − 1))) ; h = hr·(psat/pr)/(pa/pr) ; psat/pr = 10^C, C = −6.8346·(T01/T)^1.261 + 4.6151. f : fréquence (Hz) ; T : température (K) ; T0 = 293.15 K ; T01 = 273.16 K ; pa : pression ambiante (kPa) ; pr = 101.325 kPa ; hr : humidité relative (%) ; h : concentration molaire de vapeur d'eau (%) ; frO, frN : fréquences de relaxation de O2 et N2 (Hz). Feuillage (ISO 9613-2, 20 ≤ d_f ≤ 200 m) : A_foliage = a_fol(f)·d_f ; au-delà de 200 m, utiliser la valeur à 200 m. Vitesse du son (pour délais/résonances) : c = 343.2·sqrt(T/293.15) m/s.",
+      "parameters": {
+        "spherical_spreading_per_doubling": {
+          "value": -6.02,
+          "unit": "dB",
+          "notes": "20·log10(2) ; −6 dB par doublement (Morton 1975 ; Marten & Marler 1977)."
+        },
+        "iso9613_T0": {
+          "value": 293.15,
+          "unit": "K",
+          "notes": "Température de référence ISO 9613-1."
+        },
+        "iso9613_pr": {
+          "value": 101.325,
+          "unit": "kPa",
+          "notes": "Pression de référence ISO 9613-1."
+        },
+        "iso9613_T01": {
+          "value": 273.16,
+          "unit": "K",
+          "notes": "Point triple de l'eau (ISO 9613-1)."
+        },
+        "alpha_ref_20C_70RH": {
+          "value": {
+            "50Hz": 0.057,
+            "100Hz": 0.22,
+            "250Hz": 1.124,
+            "500Hz": 2.791,
+            "1000Hz": 4.978,
+            "2000Hz": 9.039,
+            "4000Hz": 23.09,
+            "8000Hz": 77.63
+          },
+          "unit": "dB/km",
+          "notes": "Dérivé : valeurs calculées avec la formule ISO 9613-1 ci-dessus (20 °C, 70 % HR, 101,325 kPa) — à utiliser comme valeurs de test unitaire du C++."
+        },
+        "alpha_ref_10C_80RH": {
+          "value": {
+            "100Hz": 0.254,
+            "1000Hz": 3.566,
+            "4000Hz": 28.97
+          },
+          "unit": "dB/km",
+          "notes": "Dérivé (même formule, 10 °C, 80 % HR)."
+        },
+        "foliage_attenuation_20_200m": {
+          "value": {
+            "63Hz": 0.02,
+            "125Hz": 0.03,
+            "250Hz": 0.04,
+            "500Hz": 0.05,
+            "1000Hz": 0.06,
+            "2000Hz": 0.08,
+            "4000Hz": 0.09,
+            "8000Hz": 0.12
+          },
+          "unit": "dB/m",
+          "notes": "ISO 9613-2:1996, Annexe A (feuillage dense, trajet de 20 à 200 m) ; confirmé par recherche et deux implémentations indépendantes. Valeurs pour 10–20 m de feuillage non reconfirmées."
+        },
+        "habitat_linear_coef": {
+          "value": 0.02,
+          "unit": "dB/kHz/m",
+          "notes": "Valeur par défaut des logiciels scikit-maad et baRulho (forêt tropicale) — aucune source primaire citée par ces logiciels : game_assumption si utilisée."
+        },
+        "sound_speed_20C": {
+          "value": 343.2,
+          "unit": "m/s",
+          "notes": "c = 343.2·sqrt(T/293.15) (implémentation python-acoustics de l'ISO 9613-1)."
+        }
+      },
+      "validity_limits": "ISO 9613-1 s'applique à des sons purs dans un domaine de fréquences, températures, humidités et pressions défini par la norme (bornes exactes à relire dans le texte de la norme, non reconfirmées ici) ; hors de ce domaine il s'agit d'une extrapolation. Pour des signaux à large bande, intégrer par bandes de fréquence. Les infrasons (< 20 Hz) supposés pour certains grands dinosaures sont quasi pas absorbés : la divergence domine. Le tableau de feuillage ISO 9613-2 s'arrête à 8 kHz et décrit une végétation moderne dense ; l'appliquer à une flore crétacée est une hypothèse de jeu. L'effet de sol et la réfraction météo ne sont modélisés ici que qualitativement (ou par des coefficients de jeu) ; une modélisation physique complète (équation parabolique, rayons) dépasse ce cadre.",
+      "confidence": "established",
+      "sources": [
+        "iso1993_9613_1",
+        "bass1995_atmospheric_absorption",
+        "iso1996_9613_2",
+        "embleton1996_outdoor_propagation",
+        "morton1975_avian_sounds",
+        "marten1977_sound_transmission",
+        "wiley1978_acoustic_constraints"
+      ],
+      "used_by": [
+        "AcousticSystem",
+        "PerceptionSystem"
+      ]
+    },
+    {
+      "id": "archosaur_vocalization",
+      "domain": "acoustics_sensory",
+      "name_fr": "Production vocale et audition chez les archosaures (inférences pour les dinosaures)",
+      "summary": "Aucun dinosaure non avien n'a livré de syrinx : le plus ancien syrinx fossile est celui de l'oiseau Vegavis iaai (Maastrichtien, ~69–66 Ma), et ses descripteurs jugent improbable la présence de cet organe chez les dinosaures non aviens (Clarke et al. 2016). Senter (2008) envisageait des dinosaures non vocaux (sons mécaniques : sifflements, claquements) ; d'autres auteurs considèrent que la vocalisation laryngée est ancestrale. Riede et al. (2016) montrent que la vocalisation à bec/gueule fermée (roucoulements, « booms », hululements, par gonflement de l'œsophage ou de poches trachéales) est apparue indépendamment à de nombreuses reprises chez les archosaures actuels, en lien avec l'augmentation de la taille corporelle ; ils en infèrent que des dinosaures ont pu produire de tels sons. Le larynx fossile de l'ankylosaure Pinacosaurus (cartilages cricoïde et aryténoïdes ossifiés, articulation cricoaryténoïdienne mobile, aryténoïdes longs) suggère un contrôle du flux d'air comparable à celui des oiseaux (Yoshida et al. 2023). La crête creuse de Parasaurolophus a été modélisée comme résonateur : 48–240 Hz pour P. walkeri, 75–375 Hz pour la forme de crête « cyrtocristatus » (Weishampel 1981) ; un modèle numérique de P. tubicen résonne vers ~30 Hz (Diegert & Williamson 1998, résumé). Audition : la longueur de la papille basilaire/du conduit cochléaire est corrélée à la gamme auditive chez les oiseaux et reptiles actuels (Gleich et al. 2005 ; Walsh et al. 2009) ; les grands dinosaures auraient entendu surtout les basses fréquences, avec une limite haute de l'ordre de 3 kHz (Gleich et al. 2005, cité par Paulina-Carabajal et al. 2016). T. rex possède un conduit cochléaire très long, interprété comme une audition orientée vers les basses fréquences (Witmer & Ridgely 2009).",
+      "equation": "Résonateur tubulaire (physique, dérivé) : tube fermé à une extrémité f_n = (2n − 1)·c / (4·L_eff) ; tube ouvert aux deux bouts f_n = n·c / (2·L_eff) ; c = 343.2·sqrt(T/293.15) m/s ; L_eff : longueur acoustique effective du conduit (m) ; n = 1, 2, 3… Audition (Walsh et al. 2009) : fréquence moyenne d'audition et largeur de bande prédites par régression sur la longueur du conduit cochléaire rapportée à la longueur basicrânienne (coefficients non reconfirmés dans cette session).",
+      "parameters": {
+        "parasaurolophus_walkeri_band": {
+          "value": [
+            48,
+            240
+          ],
+          "unit": "Hz",
+          "notes": "Weishampel 1981 (via texte Wikipédia citant l'article)."
+        },
+        "parasaurolophus_cyrtocristatus_band": {
+          "value": [
+            75,
+            375
+          ],
+          "unit": "Hz",
+          "notes": "Weishampel 1981 (crête interprétée comme juvénile ou sexuellement différente)."
+        },
+        "parasaurolophus_tubicen_main_resonance": {
+          "value": 30,
+          "unit": "Hz",
+          "notes": "Diegert & Williamson 1998 (résumé SVP ; modèle numérique) — confiance faible (résumé)."
+        },
+        "large_dinosaur_hearing_upper_limit": {
+          "value": 3000,
+          "unit": "Hz",
+          "notes": "Gleich et al. 2005 (« maximum 3 kHz » pour les grands dinosaures, cité par Paulina-Carabajal et al. 2016)."
+        },
+        "walsh2009_regression": {
+          "value": null,
+          "unit": "Hz",
+          "notes": "Coefficients de régression non reconfirmés : Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "earliest_syrinx_age": {
+          "value": [
+            69,
+            66
+          ],
+          "unit": "Ma",
+          "notes": "Vegavis iaai (Clarke et al. 2016, via texte Wikipédia)."
+        }
+      },
+      "validity_limits": "Les cris de dinosaures non aviens ne sont connus par aucune preuve directe : tout signal vocal simulé est au mieux INFÉRÉ (cadre phylogénétique : crocodiliens et oiseaux) et souvent SPÉCULATIF (fréquences, durées, niveaux). Le modèle de résonateur donne des fréquences de résonance, pas la source sonore ni le timbre. Les prédictions auditives reposent sur des régressions extant-based et sur des longueurs mesurées sur moulages endocrâniens (incertitude de mesure).",
+      "confidence": "inferred",
+      "sources": [
+        "clarke2016_vegavis_syrinx",
+        "senter2008_voices_of_the_past",
+        "riede2016_closed_mouth_vocalization",
+        "yoshida2023_pinacosaurus_larynx",
+        "weishampel1981_lambeosaur_acoustics",
+        "diegert1998_parasaurolophus_model",
+        "gleich2005_basilar_papilla",
+        "walsh2009_inner_ear_hearing",
+        "witmer2009_tyrannosaur_braincase",
+        "paulinacarabajal2016_pawpawsaurus"
+      ],
+      "used_by": [
+        "VocalizationSystem",
+        "AcousticAnalysisSystem"
+      ]
+    },
+    {
+      "id": "olfactory_bulb_ratio",
+      "domain": "sensory",
+      "name_fr": "Ratio des bulbes olfactifs (acuité olfactive)",
+      "summary": "Le ratio olfactif (OR) compare le plus grand diamètre du bulbe olfactif à celui de l'hémisphère cérébral (×100), mesurés sur moulages endocrâniens ; chez les oiseaux actuels, il est corrélé au nombre de gènes de récepteurs olfactifs et à l'usage écologique de l'odorat. Zelenitsky et al. (2009) l'appliquent aux théropodes et rapportent des ratios relativement élevés chez les tyrannosauridés et les dromaéosauridés et plus faibles chez les ornithomimosaures et les oviraptorosaures (classement qualitatif ; valeurs numériques non reconfirmées dans cette session). Zelenitsky et al. (2011), sur un échantillon élargi, concluent que l'odorat ne s'est pas réduit lors de l'origine des oiseaux (bulbes relatifs maintenus, voire accrus, chez les premiers oiseaux). Valeurs publiées vérifiées pour des ankylosaures : Pawpawsaurus 46,2 ; Panoplosaurus 44,0 ; Euoplocephalus 52,0 — comparables aux cératosaures et à l'alligator selon Zelenitsky et al. (Paulina-Carabajal et al. 2016).",
+      "equation": "OR = 100 · D_bulbe / D_hémisphère (diamètres maximaux, mêmes unités). Comparaison inter-espèces : résidu de log10(OR) par rapport à la régression log10(OR) ~ log10(masse) du groupe de référence. Projection simulation (hypothèse de jeu) : olfaction ∈ [0,1] = rang normalisé du résidu parmi les espèces de la région.",
+      "parameters": {
+        "or_pawpawsaurus": {
+          "value": 46.2,
+          "unit": "×100 (sans dimension)",
+          "notes": "Paulina-Carabajal et al. 2016."
+        },
+        "or_panoplosaurus": {
+          "value": 44.0,
+          "unit": "×100 (sans dimension)",
+          "notes": "Paulina-Carabajal et al. 2016 (d'après une étude antérieure)."
+        },
+        "or_euoplocephalus": {
+          "value": 52.0,
+          "unit": "×100 (sans dimension)",
+          "notes": "Paulina-Carabajal et al. 2016."
+        },
+        "or_theropods": {
+          "value": null,
+          "unit": "×100 (sans dimension)",
+          "notes": "Valeurs par taxon (Tyrannosaurus, dromaéosauridés, ornithomimidés…) publiées dans Zelenitsky et al. 2009/2011 mais Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        }
+      },
+      "validity_limits": "Le moulage endocrânien ne reflète qu'imparfaitement le volume réel des bulbes (sinus, méninges) ; le ratio dépend de la taille corporelle et doit être comparé en résidus. Un grand ratio indique une capacité, pas un comportement (charognage vs chasse) ; la traduction en portée de détection d'odeurs dans le jeu est une hypothèse de jeu.",
+      "confidence": "inferred",
+      "sources": [
+        "zelenitsky2009_olfactory_acuity",
+        "zelenitsky2011_olfaction_evolution",
+        "paulinacarabajal2016_pawpawsaurus"
+      ],
+      "used_by": [
+        "PerceptionSystem"
+      ]
+    },
+    {
+      "id": "binocular_vision",
+      "domain": "sensory",
+      "name_fr": "Champ binoculaire des théropodes",
+      "summary": "Stevens (2006) a estimé le recouvrement binoculaire de plusieurs théropodes par une périmétrie modifiée appliquée à des reconstructions de têtes (orientation des orbites, obstruction par le museau). Tyrannosaurus aurait eu un champ binoculaire d'environ 55°, supérieur à celui des faucons actuels, et la lignée des tyrannosaures montre une augmentation progressive de ce recouvrement ; Allosaurus serait limité à ~20°, un peu moins que les crocodiliens actuels. Stevens a aussi avancé, de façon plus spéculative, une acuité jusqu'à ~13 fois celle de l'humain et un « point limite » de vision distincte à ~6 km pour T. rex.",
+      "equation": "Recouvrement binoculaire β ≈ 2·(θ_v − θ_o) borné par l'obstruction du museau, où θ_o est l'angle de l'axe optique par rapport au plan sagittal et θ_v la demi-ouverture du champ monoculaire (modèle géométrique simplifié, dérivé — Stevens a utilisé une périmétrie sur modèles 3D). Projection simulation : senses.binocular_deg = β ; senses.fov_deg = 2·(θ_o + θ_v) (champ total).",
+      "parameters": {
+        "binocular_tyrannosaurus": {
+          "value": 55,
+          "unit": "°",
+          "notes": "Stevens 2006 (via textes Wikipédia citant l'article)."
+        },
+        "binocular_allosaurus": {
+          "value": 20,
+          "unit": "°",
+          "notes": "Stevens 2006 (via texte Wikipédia, article Allosaurus)."
+        },
+        "binocular_dromaeosaurids_troodontids": {
+          "value": null,
+          "unit": "°",
+          "notes": "Valeurs de Stevens 2006 pour Velociraptor/Troodon : Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "trex_visual_acuity_vs_human": {
+          "value": 13,
+          "unit": "facteur",
+          "notes": "Stevens 2006 (via Wikipédia) — estimation SPÉCULATIVE, à ne pas utiliser comme fait."
+        },
+        "trex_limiting_far_point": {
+          "value": 6000,
+          "unit": "m",
+          "notes": "Stevens 2006 (via Wikipédia) — SPÉCULATIF."
+        }
+      },
+      "validity_limits": "Dépend fortement de la reconstruction des tissus mous (position et taille des yeux, paupières, joues) et de la posture de la tête. Recouvrement binoculaire ≠ stéréopsie fonctionnelle (la stéréopsie requiert un traitement neural non observable). Les valeurs d'acuité sont extrapolées et spéculatives.",
+      "confidence": "inferred",
+      "sources": [
+        "stevens2006_binocular_vision"
+      ],
+      "used_by": [
+        "PerceptionSystem"
+      ]
+    },
+    {
+      "id": "nocturnality_scleral_ring",
+      "domain": "sensory_activity",
+      "name_fr": "Rythme d'activité inféré (anneau sclérotique, orbite, lagena)",
+      "summary": "Schmitz & Motani (2011) ont inféré le rythme d'activité (diurne, nocturne, cathéméral) de dinosaures et ptérosaures à partir des dimensions de l'anneau sclérotique (diamètres interne et externe) et de l'orbite, par analyse discriminante calibrée sur oiseaux et squamates actuels avec correction phylogénétique. Résultats : petits prédateurs (dromaéosauridés, Juravenator, Megapnosaurus) probablement nocturnes ; herbivores et omnivores moyens à grands (cératopsiens, sauropodomorphes, hadrosauridés, ornithomimosaures) cathéméraux ; le petit ornithischien Agilisaurus diurne. Hall, Kirk, Kamilar & Carrano (2011) contestent la fiabilité de cette discrimination (forte influence de la phylogénie et chevauchement des morphologies oculaires entre catégories chez les espèces actuelles). Choiniere et al. (2021) combinent anneau sclérotique et longueur relative de la lagena (oreille interne) : l'alvarezsauridé Shuvuuia présente des yeux et une oreille interne comparables à ceux d'une effraie des clochers, indiquant une spécialisation nocturne.",
+      "equation": "Variables : ratio interne/externe de l'anneau sclérotique (proxy de l'ouverture pupillaire relative), diamètre de l'orbite, longueur relative de la lagena ; classification par analyse discriminante phylogénétique (probabilités a posteriori par catégorie). Projection simulation : activity.pattern = catégorie de probabilité maximale ; si p_max < 0,6 (seuil de jeu), marquer la catégorie comme 'speculative' dans le profil.",
+      "parameters": {
+        "classification_threshold": {
+          "value": 0.6,
+          "unit": "probabilité",
+          "notes": "game_assumption : seuil d'affichage de la confiance, sans base publiée."
+        },
+        "posterior_probabilities": {
+          "value": null,
+          "unit": "probabilité",
+          "notes": "Probabilités par taxon publiées dans Schmitz & Motani 2011 (matériel supplémentaire) : Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        }
+      },
+      "validity_limits": "Méthode contestée (Hall et al. 2011) ; l'anneau sclérotique n'est conservé que chez peu de spécimens et peut être déformé. Les catégories d'activité sont des probabilités, pas des certitudes ; l'activité réelle dépend aussi de la température, de la saison et de la latitude. Ne pas afficher plus que « INFÉRÉ ».",
+      "confidence": "inferred",
+      "sources": [
+        "schmitz2011_nocturnality",
+        "hall2011_nocturnality_comment",
+        "choiniere2021_vision_hearing"
+      ],
+      "used_by": [
+        "ActivitySystem"
+      ]
+    },
+    {
+      "id": "growth_curves",
+      "domain": "life_history",
+      "name_fr": "Courbes de croissance, maturité sexuelle et survie",
+      "summary": "Les lignes d'arrêt de croissance comptées dans les coupes osseuses donnent l'âge ; associées à une estimation de masse, elles permettent d'ajuster une courbe sigmoïde. Erickson et al. (2004) ajustent une logistique aux tyrannosauridés : T. rex atteint un taux maximal de ~2,07 kg/j (~760 kg/an) pendant une phase exponentielle d'environ 4 ans, commence la transition vers la maturité somatique vers 18,5 ans et vit jusqu'à ~28 ans ; les autres tyrannosauridés croissent à 0,31–0,48 kg/j. Lee & Werning (2008) identifient l'os médullaire (tissu de réserve calcique des femelles pondeuses) chez Tenontosaurus, Allosaurus et Tyrannosaurus : la maturité sexuelle survient pendant la croissance active, bien avant la taille asymptotique (ex. Allosaurus femelle de 10 ans), contrairement aux modèles de croissance reptiliens. Erickson et al. (2006) construisent des tables de survie de tyrannosaures : survie juvénile relativement élevée, mortalité accrue à mi-vie (entrée dans la population reproductrice) et près de la longévité maximale, comme chez les grands oiseaux et mammifères longévifs actuels.",
+      "equation": "Logistique : M(t) = M_A / (1 + exp(−k·(t − t_i))) ; taux max dM/dt = k·M_A/4 atteint à t = t_i. Gompertz : M(t) = M_A·exp(−exp(−k·(t − t_i))) ; taux max = k·M_A/e à t = t_i (inflexion à M_A/e). M_A : masse asymptotique (kg) ; k : constante de croissance (an⁻¹) ; t_i : âge d'inflexion (an). Calibration : k = 4·G_max/M_A (logistique). Exemple dérivé : M_A = 5650 kg, G_max = 760 kg/an → k ≈ 0,54 an⁻¹.",
+      "parameters": {
+        "trex_max_growth_rate": {
+          "value": 2.07,
+          "unit": "kg/j",
+          "notes": "Erickson et al. 2004 (texte de l'article) ; ≈ 756–767 kg/an selon arrondi."
+        },
+        "other_tyrannosaurid_max_growth": {
+          "value": [
+            0.31,
+            0.48
+          ],
+          "unit": "kg/j",
+          "notes": "Erickson et al. 2004 (Albertosaurus, Gorgosaurus, Daspletosaurus)."
+        },
+        "trex_exponential_phase_duration": {
+          "value": 4,
+          "unit": "an",
+          "notes": "Erickson et al. 2004."
+        },
+        "trex_somatic_maturity_onset_age": {
+          "value": 18.5,
+          "unit": "an",
+          "notes": "Erickson et al. 2004."
+        },
+        "trex_max_longevity_2004": {
+          "value": 28,
+          "unit": "an",
+          "notes": "Erickson et al. 2004 (révisions ultérieures non intégrées ici)."
+        },
+        "allosaurus_age_with_medullary_bone": {
+          "value": 10,
+          "unit": "an",
+          "notes": "Lee & Werning 2008 (via texte Wikipédia citant l'article)."
+        },
+        "logistic_k_from_gmax": {
+          "value": "k = 4·G_max/M_A",
+          "unit": "an⁻¹",
+          "notes": "Dérivé (dérivée de la logistique)."
+        }
+      },
+      "validity_limits": "Le choix du modèle (logistique, Gompertz, von Bertalanffy) et la méthode d'ajustement influencent fortement les taux maximaux ; les masses individuelles sont elles-mêmes estimées, et les premières lignes de croissance peuvent être effacées par le remodelage (rétrocalcul nécessaire). Échantillons de petite taille. Les âges de maturité sexuelle reposent sur peu d'individus porteurs d'os médullaire (femelles uniquement).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "erickson2004_tyrannosaurid_gigantism",
+        "lee2008_sexual_maturity",
+        "erickson2006_tyrannosaur_life_tables"
+      ],
+      "used_by": [
+        "GrowthSystem",
+        "ReproductionSystem"
+      ]
+    },
+    {
+      "id": "incubation_periods",
+      "domain": "life_history",
+      "name_fr": "Durée d'incubation des œufs",
+      "summary": "Erickson et al. (2017) ont compté les lignes de von Ebner (incréments journaliers de dentine) dans les dents d'embryons proches de l'éclosion et ajouté le temps de formation des dents précédentes : environ 3 mois pour Protoceratops (petits œufs) et environ 6 mois pour Hypacrosaurus (gros œufs), des durées de « niveau reptilien », plus longues que celles prédites par l'allométrie aviaire pour des œufs de même masse. Chez les oiseaux, la durée d'incubation croît avec la masse de l'œuf selon une loi de puissance de faible exposant (Rahn & Ar 1974).",
+      "equation": "Comptage : I ≈ N_lignes_von_Ebner (dent la plus ancienne + dents de remplacement antérieures) × 1 jour. Allométrie aviaire (Rahn & Ar 1974) : I = a·W^b (I en jours, W masse de l'œuf en g) — coefficients a, b non reconfirmés ici ; ces prédictions SOUS-estiment les durées mesurées chez les dinosaures.",
+      "parameters": {
+        "protoceratops_incubation": {
+          "value": 83,
+          "unit": "j",
+          "notes": "Erickson et al. 2017 ; valeur indiquée dans le cahier des charges et cohérente avec « ~3 mois » ; Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "hypacrosaurus_incubation": {
+          "value": 171,
+          "unit": "j",
+          "notes": "Erickson et al. 2017 ; valeur indiquée dans le cahier des charges et cohérente avec « ~6 mois » ; Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "rahn_ar_coefficients": {
+          "value": null,
+          "unit": "j, g",
+          "notes": "Rahn & Ar 1974 (oiseaux) : Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        }
+      },
+      "validity_limits": "Deux taxons ornithischiens seulement ; la durée dépend de la température d'incubation (nids enfouis vs couvés), non contrôlée. L'extrapolation aux théropodes (dont certains couvaient) est incertaine ; utiliser une durée par espèce dans le fichier espèce avec sim_basis explicite.",
+      "confidence": "inferred",
+      "sources": [
+        "erickson2017_incubation",
+        "rahn1974_avian_egg"
+      ],
+      "used_by": [
+        "ReproductionSystem"
+      ]
+    },
+    {
+      "id": "bite_force_and_marks",
+      "domain": "injury_taphonomy",
+      "name_fr": "Force de morsure et traces de dents sur os",
+      "summary": "Erickson et al. (1996) ont reproduit, avec une réplique de dent de T. rex montée sur une presse servo-hydraulique et des iliums de bœuf, la plus profonde des dizaines de morsures d'un bassin de Triceratops (ponction de 11,5 mm) : 6 410 N au minimum, jusqu'à 13 400 N en tenant compte de la vitesse de morsure, de l'absorption par la chair et de l'avantage mécanique des dents postérieures (chien 550 N, humain 749 N, loup 1 412 N, alligator 13 300 N). Erickson & Olson (1996) décrivent des traces attribuées à T. rex et un mode « ponction et traction » (puncture-and-pull). Gignac & Erickson (2017) estiment pour un T. rex adulte 8 526–34 522 N (8 526–17 769 N à l'avant, 18 014–34 522 N à l'arrière) et des pressions dentaires de 718–2 974 MPa, permettant de fragmenter finement les os (ostéophagie, attestée par des coprolithes riches en fragments osseux) grâce à des morsures répétées et localisées. Typologie taphonomique usuelle des traces : creux (pits, dépression superficielle), ponctions (punctures, perforation du cortex), stries (scores, traînées linéaires en surface) et sillons (furrows, stries profondes dans l'os spongieux) ; les tyrannosauridés ont strié, profondément ponctionné et même tranché des os.",
+      "equation": "Pression dentaire P = F / A_contact (Pa) ; F : force au point de contact (N) ; A_contact : aire de contact de la pointe à la profondeur considérée (m²). Règle de simulation (hypothèse de jeu) : trace = 'pit' si P < σ_os ; 'puncture' si P ≥ σ_os et profondeur < épaisseur corticale ; 'score/furrow' si déplacement tangentiel de la dent pendant le contact (> longueur seuil) ; σ_os : résistance de l'os cortical (valeur à sourcer).",
+      "parameters": {
+        "trex_bite_force_1996": {
+          "value": [
+            6410,
+            13400
+          ],
+          "unit": "N",
+          "notes": "Erickson et al. 1996."
+        },
+        "trex_bite_force_2017": {
+          "value": [
+            8526,
+            34522
+          ],
+          "unit": "N",
+          "notes": "Gignac & Erickson 2017 (adulte ; mésial 8 526–17 769 N, distal 18 014–34 522 N)."
+        },
+        "trex_tooth_pressure": {
+          "value": [
+            718,
+            2974
+          ],
+          "unit": "MPa",
+          "notes": "Gignac & Erickson 2017 (pression apicale pour 1 mm de hauteur de couronne)."
+        },
+        "triceratops_puncture_depth": {
+          "value": 0.0115,
+          "unit": "m",
+          "notes": "Erickson et al. 1996."
+        },
+        "cortical_bone_strength": {
+          "value": null,
+          "unit": "MPa",
+          "notes": "game_assumption tant que non sourcé (non vérifié dans cette session)."
+        }
+      },
+      "validity_limits": "Les forces sont estimées (modèles musculo-squelettiques ou indentation), pas mesurées ; elles varient avec la taille, la position de la dent et l'ouverture des mâchoires. Attribuer une trace à un taxon requiert la forme/espacement des dents ; des traces post-mortem (charognage) et ante-mortem (cicatrisées) doivent être distinguées (voir paleopathology_healing).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "erickson1996_trex_bite_force",
+        "erickson1996_trex_bite_marks",
+        "gignac2017_trex_osteophagy"
+      ],
+      "used_by": [
+        "InjurySystem",
+        "PaleontologySystem"
+      ]
+    },
+    {
+      "id": "paleopathology_healing",
+      "domain": "injury",
+      "name_fr": "Blessures, infections et cicatrisation chez les dinosaures",
+      "summary": "Les os fossiles montrent que des dinosaures ont survécu longtemps à des blessures graves. « Big Al » (Allosaurus fragilis MOR 693, subadulte) présente 19 os cassés ou infectés (côtes, vertèbres, os du pied), avec ostéomyélite ; l'infection du pied droit a probablement modifié la démarche (Hanna 2002). Un Dilophosaurus porte huit os pathologiques de la ceinture scapulaire et du membre antérieur (fractures, infections, tumeur possible) ; le remodelage montre qu'il a survécu des mois, voire des années, avec un doigt définitivement figé (Senter & Juengst 2016). Un hadrosaure du New Jersey présente la première arthrite septique diagnostiquée chez un dinosaure, chronique avant la mort (Anné et al. 2016). Des lésions lisses perforant les mâchoires de tyrannosauridés, longtemps prises pour des morsures, ressemblent à la trichomonose des rapaces actuels (Wolff et al. 2009). Les fractures de fatigue et avulsions tendineuses des théropodes renseignent sur leur activité (Rothschild et al. 2001). Une dent de tyrannosaure enchâssée dans des vertèbres caudales d'hadrosaure cicatrisées prouve qu'une proie a survécu à une attaque (DePalma et al. 2013).",
+      "equation": "Pas d'équation publiée de vitesse de cicatrisation chez les dinosaures. Modèle de simulation (hypothèse de jeu) : sévérité S ∈ [0,1] ; dS/dt = −r_heal·S·f(état) avec f = 0 si infection active ; probabilité d'infection par blessure ouverte p_inf ; une infection non résolue peut devenir chronique (ostéomyélite) et réduire la locomotion.",
+      "parameters": {
+        "big_al_pathological_bones": {
+          "value": 19,
+          "unit": "os",
+          "notes": "Hanna 2002 (via texte Wikipédia)."
+        },
+        "dilophosaurus_afflicted_bones": {
+          "value": 8,
+          "unit": "os",
+          "notes": "Senter & Juengst 2016."
+        },
+        "heal_rate": {
+          "value": null,
+          "unit": "1/j",
+          "notes": "game_assumption : aucune donnée de vitesse de cicatrisation chez les dinosaures ; s'inspirer d'analogues aviens/crocodiliens à sourcer."
+        }
+      },
+      "validity_limits": "Les fossiles enregistrent surtout les lésions osseuses ; blessures des tissus mous invisibles. La durée de survie n'est estimée qu'en ordre de grandeur (semaines → années) à partir du degré de remodelage. Le diagnostic d'agents infectieux (ex. trichomonose) est une inférence par analogie de lésions.",
+      "confidence": "established",
+      "sources": [
+        "hanna2002_big_al_pathology",
+        "senter2016_dilophosaurus_pathologies",
+        "anne2016_septic_arthritis",
+        "wolff2009_tyrannosaur_trichomonosis",
+        "rothschild2001_theropod_stress_fractures",
+        "depalma2013_trex_predation"
+      ],
+      "used_by": [
+        "InjurySystem"
+      ]
+    },
+    {
+      "id": "track_formation_substrate",
+      "domain": "ichnology",
+      "name_fr": "Formation des empreintes selon le substrat (effet « Boucle d'or », sous-traces)",
+      "summary": "Une empreinte ne se forme et ne se conserve que dans une gamme étroite de consistances du substrat : trop ferme, le pied ne laisse rien ; trop mou, l'empreinte s'effondre ou devient informe (effet « Goldilocks », simulations par éléments finis : Falkingham et al. 2011). Cette gamme dépend de la pression exercée par le pied, si bien qu'un même substrat enregistre certains traceurs et pas d'autres : les assemblages de pistes sont biaisés en taille et en taxons. Le choix du modèle de sol (élastoplastique, etc.) modifie la prédiction (Falkingham, Hage & Bäker 2014). Les déformations se transmettent sous la surface foulée : des « sous-traces » (undertracks) peuvent être conservées dans les couches inférieures avec une morphologie atténuée et élargie (Manning 2004). Falkingham (2014) rappelle que l'interprétation écologique des pistes (vitesse, grégarisme) doit intégrer ces effets de substrat.",
+      "equation": "Pression moyenne de contact p = m·g·a_dyn / A_pied (Pa) ; m : masse (kg), a_dyn : facteur dynamique (≈1 à l'arrêt, >1 en course ; hypothèse de jeu), A_pied : aire d'appui (m²). Règle de simulation (hypothèse de jeu) : empreinte si p_min_lisible(s) ≤ p ≤ p_effondrement(s) pour le substrat s ; profondeur d ≈ d_max(s)·clamp((p − p_min)/(p_eff − p_min), 0, 1) ; sous-trace à la profondeur z si p·A_pied/(A_pied + 2·z·sqrt(A_pied)) ≥ p_min_lisible (hypothèse de jeu : diffusion géométrique simplifiée de la charge, non calibrée).",
+      "parameters": {
+        "substrate_thresholds": {
+          "value": null,
+          "unit": "Pa",
+          "notes": "game_assumption : seuils par type de substrat (sable sec, sable humide, boue, argile) à définir ; aucune valeur générique publiée vérifiée ici."
+        },
+        "dynamic_load_factor_run": {
+          "value": null,
+          "unit": "sans dimension",
+          "notes": "game_assumption."
+        }
+      },
+      "validity_limits": "Modèle volontairement simplifié : la vraie réponse dépend de la teneur en eau, de la cohésion, de la stratification et de la cinématique du pied (enfoncement, rotation, retrait). Les sous-traces faussent les mesures de FL et donc les estimations de vitesse (trackway_speed_alexander).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "falkingham2011_goldilocks",
+        "falkingham2014_mitigating_goldilocks",
+        "manning2004_track_analysis",
+        "falkingham2014_track_ecology"
+      ],
+      "used_by": [
+        "TrackSystem"
+      ]
+    },
+    {
+      "id": "population_density_estimation",
+      "domain": "population",
+      "name_fr": "Densité de population (loi de Damuth, abondance de T. rex)",
+      "summary": "Damuth (1981) a montré que, chez les mammifères, la densité de population décroît avec la masse corporelle selon une pente d'environ −0,75, de sorte que l'énergie consommée par unité de surface est à peu près indépendante de la taille (« équivalence énergétique », miroir de l'exposant +0,75 du métabolisme). Marshall et al. (2021) ont combiné cette relation, la masse, une physiologie supposée et une courbe de survie pour estimer qu'environ 20 000 T. rex adultes vivaient à un instant donné (intervalle 1 300–328 000), soit ~2,5 milliards d'individus sur ~127 000 générations ; une surface comme la Californie en aurait abrité ~3 800 (une comme Washington D.C., ~2). Ces estimations ont été jugées trop précises par un commentaire ultérieur (Meiri 2022, non vérifié en détail ici), qui souligne les incertitudes sur le métabolisme, la survie et l'aire de répartition.",
+      "equation": "Damuth : D = a · M^-0.75 (individus/km², M en kg ; a dépend du groupe trophique et thermique). Densité T. rex dérivée de Marshall et al. : D ≈ 3 800 / 423 970 km² ≈ 0,009 adulte/km² (≈ 1 adulte / 110 km²) — calcul dérivé à partir de la superficie de la Californie. Effectif simulé (hypothèse de jeu) : N = D · S_carte, avec S_carte = (map_size_m/1000)² km².",
+      "parameters": {
+        "damuth_exponent": {
+          "value": -0.75,
+          "unit": "sans dimension",
+          "notes": "Damuth 1981 (pente confirmée par un résumé secondaire de la règle d'équivalence énergétique)."
+        },
+        "damuth_coefficient": {
+          "value": null,
+          "unit": "ind/km² · kg^0.75",
+          "notes": "Coefficient selon groupe trophique : Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "trex_standing_adults": {
+          "value": 20000,
+          "unit": "individus",
+          "notes": "Marshall et al. 2021 (intervalle 1 300–328 000)."
+        },
+        "trex_total_individuals": {
+          "value": 2500000000.0,
+          "unit": "individus",
+          "notes": "Marshall et al. 2021."
+        },
+        "trex_generations": {
+          "value": 127000,
+          "unit": "générations",
+          "notes": "Marshall et al. 2021."
+        },
+        "trex_adult_density_derived": {
+          "value": 0.009,
+          "unit": "ind/km²",
+          "notes": "Dérivé : 3 800 individus pour la superficie de la Californie (~423 970 km²) ; juvéniles exclus."
+        }
+      },
+      "validity_limits": "La loi de Damuth est une tendance statistique avec une dispersion d'un ordre de grandeur ou plus autour de la droite ; son application à des dinosaures suppose un statut métabolique (voir metabolic_scaling). Les chiffres de Marshall et al. concernent les adultes seulement ; les juvéniles occupaient d'autres niches. Pour une carte de jeu de ~67 km² (8 192 m de côté), la densité dérivée donne < 1 T. rex adulte : la présence d'individus dans la carte est donc un choix de jeu à signaler.",
+      "confidence": "inferred",
+      "sources": [
+        "damuth1981_density_body_size",
+        "marshall2021_trex_abundance"
+      ],
+      "used_by": [
+        "PopulationSystem"
+      ]
+    },
+    {
+      "id": "turning_performance",
+      "domain": "locomotion",
+      "name_fr": "Virage et inertie de rotation",
+      "summary": "Carrier, Walter & Lee (2001) ont augmenté expérimentalement l'inertie de rotation autour de l'axe vertical chez des humains (masses portées loin de l'axe) et mesuré une baisse de la performance de virage ; transposé aux théropodes, dont la masse est répartie le long d'un axe horizontal (tête et queue), cela implique des virages lents chez les grandes espèces : un T. rex aurait pu mettre une à deux secondes pour pivoter de 45° (estimation reprise dans la littérature de vulgarisation). L'inertie croît plus vite que la capacité musculaire à produire un couple quand la taille augmente.",
+      "equation": "Couple : Γ = I·α ; I = Σ m_i·r_i² (kg·m²) autour de l'axe vertical passant par le pied d'appui ou le centre de masse ; α : accélération angulaire (rad/s²). Temps pour pivoter d'un angle θ depuis l'arrêt à couple constant : t = sqrt(2·θ·I / Γ_max) (dérivé). Similitude géométrique (dérivé) : I ∝ M·L² ∝ M^(5/3) ; Γ_max ∝ force musculaire × bras de levier ∝ M^(2/3)·M^(1/3) = M ⇒ α_max ∝ M^(-2/3) ; taux de lacet moyen en simulation : ω_moy(θ_ref) = θ_ref / t(θ_ref) (paramétrisation de jeu ; ex. 45° en 1–2 s → 22–45 °/s).",
+      "parameters": {
+        "trex_turn_45deg_time": {
+          "value": [
+            1,
+            2
+          ],
+          "unit": "s",
+          "notes": "Carrier et al. 2001 (via texte Wikipédia citant l'article) ; ordre de grandeur."
+        },
+        "inertia_mass_exponent": {
+          "value": 1.667,
+          "unit": "sans dimension",
+          "notes": "Dérivé (similitude géométrique)."
+        },
+        "angular_accel_mass_exponent": {
+          "value": -0.667,
+          "unit": "sans dimension",
+          "notes": "Dérivé (similitude géométrique)."
+        }
+      },
+      "validity_limits": "Les estimations dépendent de la distribution de masse reconstituée (queue, tête, cou) et de la posture (rapprocher tête et queue réduit I). Des travaux ultérieurs suggèrent que les tyrannosauridés étaient relativement agiles pour leur taille ; garder max_yaw_rate_dps comme paramètre par espèce avec sim_basis.",
+      "confidence": "inferred",
+      "sources": [
+        "carrier2001_rotational_inertia"
+      ],
+      "used_by": [
+        "LocomotionSystem"
+      ]
+    },
+    {
+      "id": "herd_vigilance_selfish_herd",
+      "domain": "behavior",
+      "name_fr": "Troupeau égoïste et vigilance en groupe (analogues actuels)",
+      "summary": "Hamilton (1971) : si un prédateur attaque la proie la plus proche, chaque individu a un « domaine de danger » (zone plus proche de lui que de tout autre) ; se rapprocher des voisins réduit ce domaine, d'où l'agrégation, et les individus en périphérie restent plus exposés. Chez les oiseaux et mammifères actuels, la vigilance individuelle diminue généralement quand la taille du groupe augmente, mais Elgar (1989) souligne que de nombreuses études confondent d'autres facteurs (compétition alimentaire, distance au couvert, densité). Roberts (1996) passe en revue les explications : détection collective (« many eyes »), dilution du risque, et compétition intra-groupe. Pour les dinosaures, ces mécanismes sont des analogies tirées d'espèces actuelles (aucune mesure de vigilance fossile).",
+      "equation": "Domaine de danger : aire de la cellule de Voronoï de l'individu (bornée par un rayon de détection du prédateur). Détection collective (modèle « many eyes », hypothèse de balayages indépendants) : P_det = 1 − (1 − p_scan)^N. Dilution : risque individuel par attaque ≈ 1/N (pour un groupe détecté). Vigilance individuelle (forme de jeu) : v(N) = v_1 · N^(-b), b ∈ [0,1] à calibrer ; p_scan = v(N).",
+      "parameters": {
+        "vigilance_decline_exponent_b": {
+          "value": null,
+          "unit": "sans dimension",
+          "notes": "game_assumption : aucune valeur générale publiée retenue ; varier par espèce (personality.vigilance)."
+        },
+        "edge_risk_multiplier": {
+          "value": null,
+          "unit": "facteur",
+          "notes": "game_assumption : risque accru des individus périphériques (prédiction qualitative de Hamilton 1971)."
+        }
+      },
+      "validity_limits": "Modèles d'écologie comportementale d'animaux actuels ; leur transposition aux dinosaures est une inférence (grégarisme attesté chez certains taxons par des pistes et des bone beds, mais la vigilance elle-même est inobservable). L'indépendance des balayages est une simplification ; la coordination ou la contagion de l'alerte la contredisent.",
+      "confidence": "inferred",
+      "sources": [
+        "hamilton1971_selfish_herd",
+        "elgar1989_vigilance_group_size",
+        "roberts1996_vigilance"
+      ],
+      "used_by": [
+        "BehaviorSystem"
+      ]
+    },
+    {
+      "id": "carcass_decomposition",
+      "domain": "ecology_taphonomy",
+      "name_fr": "Décomposition des carcasses et charognage",
+      "summary": "Payne (1965), sur des porcelets en été, a défini des stades successifs de décomposition (frais, gonflement, décomposition active, décomposition avancée, dessiccation, restes). La vitesse dépend surtout de la température : Megyesi et al. (2005) relient un score de décomposition total (TBS, somme des scores tête/cou, tronc et membres) aux degrés-jours cumulés (ADD = somme des températures moyennes journalières positives, en °C·j). Les charognards vertébrés interceptent une part importante des carcasses et constituent une voie de transfert d'énergie majeure et sous-estimée dans les écosystèmes terrestres (DeVault et al. 2003).",
+      "equation": "ADD(t) = Σ_jours max(0, T_moy_jour) (°C·j). Megyesi et al. 2005 : ADD = 10^(0.002·TBS² + 1.81) ± 388.16 ; inverse : TBS = sqrt((log10(ADD) − 1.81)/0.002). Simulation (hypothèse de jeu) : stade = fonction seuil de TBS ; biomasse consommable B(t) décroît par décomposition microbienne (∝ ADD) et par consommation des charognards (prélèvement par visite, cf. diet.scavenges).",
+      "parameters": {
+        "megyesi_a": {
+          "value": 0.002,
+          "unit": "sans dimension",
+          "notes": "Megyesi et al. 2005 (recoupé par un support de cours de médecine légale)."
+        },
+        "megyesi_b": {
+          "value": 1.81,
+          "unit": "sans dimension",
+          "notes": "Megyesi et al. 2005."
+        },
+        "megyesi_error": {
+          "value": 388.16,
+          "unit": "°C·j",
+          "notes": "Megyesi et al. 2005 (± erreur de prédiction de l'ADD)."
+        },
+        "add_base_temperature": {
+          "value": 0,
+          "unit": "°C",
+          "notes": "Convention : seules les températures > 0 °C contribuent (Megyesi et al. 2005)."
+        },
+        "tbs_range": {
+          "value": null,
+          "unit": "points",
+          "notes": "Bornes du TBS (≈ 3–35) : Valeur NON reconfirmée par une source consultée dans cette session (quota de recherche épuisé) — à vérifier avant tout usage autre qu'indicatif."
+        },
+        "payne_stages": {
+          "value": [
+            "fresh",
+            "bloated",
+            "active_decay",
+            "advanced_decay",
+            "dry",
+            "remains"
+          ],
+          "unit": "stades",
+          "notes": "Payne 1965 (via texte Wikipédia citant l'article)."
+        }
+      },
+      "validity_limits": "Formule établie sur des restes humains en milieu tempéré (États-Unis), sans charognage important ; non testée sur des carcasses de plusieurs tonnes, sous climat crétacé, ni pour des animaux à plumes/écailles. Les grandes carcasses se décomposent de façon hétérogène (intérieur/extérieur). Utiliser comme ordre de grandeur, avec sim_basis 'derived'.",
+      "confidence": "inferred",
+      "sources": [
+        "payne1965_carrion_pig",
+        "megyesi2005_accumulated_degree_days",
+        "devault2003_vertebrate_scavenging"
+      ],
+      "used_by": [
+        "EcologySystem"
+      ]
+    }
+  ]
+}

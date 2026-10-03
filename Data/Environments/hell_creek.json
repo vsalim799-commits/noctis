@@ -1,0 +1,390 @@
+{
+  "schema": "noctis.environment/1",
+  "id": "hell_creek",
+  "reconstruction_version": "2026.10-a",
+  "name": {
+    "fr": "Formation de Hell Creek",
+    "en": "Hell Creek Formation"
+  },
+  "science": {
+    "geology": {
+      "summary": "La Formation de Hell Creek (Maastrichtien terminal) affleure dans l'est du Montana, l'ouest du Dakota du Nord et le nord-ouest du Dakota du Sud (bassin de Williston et régions voisines). Elle est composée de grès, siltstones et argilites d'origine fluviatile : corps de grès de chenaux à stratifications obliques, dépôts de levées et de crevasses (crevasse splays), argilites de plaine d'inondation, dépôts d'étangs et de chenaux abandonnés, avec des paléosols. Elle repose sur les grès littoraux régressifs de la Formation de Fox Hills et est surmontée par la Formation de Fort Union (Paléocène), dont la base est proche de la limite Crétacé–Paléogène. Localement, les dépôts de chenaux dominent la Hell Creek, alors que les dépôts d'étangs et de tourbières (lignites) dominent la Fort Union sus-jacente.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilf2003_kpg_climate",
+        "johnson2002_hellcreek_megaflora"
+      ],
+      "notes": "Épaisseur de l'ordre de la centaine de mètres dans le sud-ouest du Dakota du Nord (~110 m selon le résumé johnson1993_hellcreek_flora_nd, non vérifié) ; elle varie régionalement. La position du contact Hell Creek–Fort Union par rapport à la limite K–Pg varie selon les coupes."
+    },
+    "age": {
+      "summary": "Maastrichtien terminal. Le sommet de la formation se situe près de la limite Crétacé–Paléogène (≈66,0 Ma), calibrée dans la région de Hell Creek (Montana) par géochronologie 40Ar/39Ar sur téphras et par la calibration du chron magnétique C29r. Deux cendres datées par U-Pb (CA-ID-TIMS) sur zircons, à 66,929 ± 0,020 Ma et 66,850 ± 0,026 Ma, encadrent le site des « Dueling Dinosaurs » dans la partie inférieure de la formation. Le modèle âge-profondeur place la base de la formation vers 67,10 Ma (+0,71/−0,17 Ma), ou plus tôt, dans la zone étudiée. La formation couvre donc environ 1 à 2 millions d'années de la fin du Crétacé.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "sprain2015_hellcreek_chronostratigraphy",
+        "sprain2018_c29r",
+        "roberts2025_dueling_dinosaurs_age",
+        "fastovsky2016_hellcreek_primer"
+      ],
+      "value": 66.5,
+      "min": 66.0,
+      "max": 67.8,
+      "unit": "Ma",
+      "notes": "value = centre indicatif de l'intervalle, pas une date publiée. La base est diachrone et moins bien datée que le sommet. L'âge basal provient d'une prépublication (bioRxiv 2025), publiée ensuite dans PLOS ONE. Les âges de Wilf et al. (2003) suivent une ancienne échelle (K–Pg = 65,5 Ma) : il faut les décaler d'environ +0,5 Ma pour les comparer aux âges actuels."
+    },
+    "paleolatitude": {
+      "summary": "Environ 49° N pour la coupe de Marmarth (Dakota du Nord, bassin de Williston), selon Wilf et al. (2003). Les sites du Montana se trouvaient à une paléolatitude comparable. La valeur varie de quelques degrés selon le modèle de reconstitution des plaques et le référentiel paléomagnétique.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "wilf2003_kpg_climate"
+      ],
+      "value": 49,
+      "min": 46,
+      "max": 53,
+      "unit": "°N",
+      "notes": "Bornes min/max dérivées : incertitude de reconstitution estimée, non publiée comme telle."
+    },
+    "climate": {
+      "summary": "Climat tempéré chaud et humide, probablement sans gel prolongé. Pour une florule de la base de la formation (est du Montana), l'analyse des marges foliaires (LMA) donne une température moyenne annuelle (TMA) d'environ 7–11 °C (5–14 °C avec les erreurs) et CLAMP donne 11–12 ± 2 °C. Dans le Dakota du Nord, la séquence de Wilf et al. (2003) repose sur plus de 22 200 spécimens provenant de 161 carrières. Elle montre un réchauffement à la fin du Maastrichtien, puis un pic et un refroidissement avant la limite K–Pg, en phase avec les foraminifères marins. Selon la synthèse de Vajda & Bercovici (2014), le réchauffement terrestre est d'environ 4 °C. Johnson (2002) l'associe à une flore plus diversifiée (zone HCIII) durant les derniers 300–500 ka du Crétacé. Les isotopes agrégés des carbonates de paléosols indiquent une baisse apparente d'environ 8 °C des températures estivales pendant les ~300 derniers ka du Crétacé.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "arens2014_hellcreek_basal_florule",
+        "wilf2003_kpg_climate",
+        "vajda2014_kpg_vegetation",
+        "johnson2002_hellcreek_megaflora",
+        "tobin2014_hellcreek_clumped_isotopes",
+        "greenwood2022_cretaceous_palms"
+      ],
+      "value": 12,
+      "min": 7,
+      "max": 16,
+      "unit": "°C (TMA)",
+      "notes": "Les méthodes physionomiques (LMA, CLAMP) ont des erreurs de ±2–4 °C et dépendent de la calibration actuelle. La TMA a varié de plusieurs °C au cours de la formation : la valeur retenue est un état moyen. Plus au nord, des palmiers Sabalites sont présents dans le Campanien–Maastrichtien d'Alberta et de Saskatchewan (~55° N) ; avec les crocodyliens et tortues de la faune, ils plaident contre des gels sévères et prolongés."
+    },
+    "precipitation": {
+      "summary": "Climat humide. Pour la florule basale du Montana, l'analyse de la surface foliaire (leaf-area analysis) donne des précipitations annuelles moyennes d'environ 1 910–1 970 mm (197 cm +152/−86 ; 191 cm +161/−87). CLAMP estime les précipitations de la saison de croissance à 820–900 ± 480 mm. Ces valeurs viennent d'un seul niveau stratigraphique et ont de très larges marges d'erreur.",
+      "confidence": "inferred",
+      "sources": [
+        "arens2014_hellcreek_basal_florule"
+      ],
+      "value": 1940,
+      "min": 1040,
+      "max": 3520,
+      "unit": "mm/an",
+      "notes": "min/max dérivés des barres d'erreur publiées (bornes extrêmes des deux estimations). Les feuilles fossiles proviennent surtout de milieux de bord de chenal, ce qui peut surestimer les précipitations régionales."
+    },
+    "seasonality": {
+      "summary": "Saisonnalité réelle mais mal contrainte. À ~49° N, la photopériode et l'insolation variaient fortement au cours de l'année. CLAMP suggère une saisonnalité des températures et des précipitations à la base de la Hell Creek. Dans la Formation de Frenchman (Saskatchewan), contemporaine, McIver (2002) infère un climat mésotherme sans gel hivernal mais avec une sécheresse saisonnière, et une flore largement décidue. Le calendrier de la saison humide est inconnu.",
+      "confidence": "inferred",
+      "sources": [
+        "arens2014_hellcreek_basal_florule",
+        "mciver2002_frenchman_paleoenvironment"
+      ],
+      "notes": "La fenêtre de saison humide du jeu (wet_season_doy) est une hypothèse de travail, pas une donnée."
+    },
+    "hydrology": {
+      "summary": "Rivières à méandres (chenaux sinueux à barres de méandre), avec levées, crevasses (crevasse splays), plaines d'inondation, étangs et bras morts. Les rivières drainaient une plaine alluviale et côtière vers l'est, en direction de la Voie maritime intérieure de l'Ouest (Western Interior Seaway). Celle-ci était en retrait, comme le montre la régression de la Formation de Fox Hills sous-jacente. La mer est revenue rapidement au début du Paléocène (transgression de la « mer Cannonball »), et Johnson (2002) documente la réponse de la végétation à cette transgression. Les dépôts de crevasse et de débordement enregistrent des crues répétées.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "johnson2002_hellcreek_megaflora",
+        "wilf2003_kpg_climate"
+      ],
+      "notes": "La fréquence et l'ampleur des crues ne sont pas quantifiées. L'écoulement général vers l'est et la distance au rivage sont des inférences paléogéographiques, et le rivage a fluctué."
+    },
+    "flora": {
+      "summary": "Mégaflore très riche, dominée par les angiospermes. Dans l'ouest des Dakotas, la Hell Creek et la base de la Fort Union ont livré environ 380 espèces (morphotypes foliaires) provenant de 158 carrières. Les gymnospermes signalés comprennent Ginkgo, Metasequoia, Glyptostrobus et divers feuillages à écailles de Cupressaceae. La flore de « Seafood Salad » (Montana, ~65 m sous la limite K–Pg) est dominée par des arbres angiospermes, avec des conifères abondants mais peu diversifiés et relativement peu de ginkgos et de fougères. Des palmiers costapalmés (Sabalites) sont confirmés au Campanien–Maastrichtien plus au nord (Alberta, Saskatchewan). L'herbivorie par les insectes était diversifiée : 51 types d'associations plantes–insectes ont été relevés sur 13 441 spécimens du sud-ouest du Dakota du Nord. Les associations spécialisées, abondantes à la fin du Crétacé, disparaissent presque à la limite K–Pg. Il n'existait pas de prairies à graminées : les milieux ouverts étaient occupés par des fougères, des prêles, des herbacées et des arbustes.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "johnson2002_hellcreek_megaflora",
+        "wilson2021_seafood_salad_flora",
+        "labandeira2002_kpg_insect_herbivory",
+        "vajda2014_kpg_vegetation",
+        "greenwood2022_cretaceous_palms"
+      ],
+      "notes": "Détail par groupe. Arbres angiospermes : ÉTABLI. Conifères Cupressaceae s.l. : FORTEMENT ÉTAYÉ. Ginkgo : FORTEMENT ÉTAYÉ (Johnson 2002 ; Wilson et al. 2021). Fougères : FORTEMENT ÉTAYÉ. Prêles (sphénopsides) : INFÉRÉ (résumé johnson1993_hellcreek_flora_nd non vérifié, qui donne aussi ~90 % d'angiospermes). Palmiers dans la Hell Creek même : INFÉRÉ (mentionnés dans des synthèses, mais la présence de Sabalites dans la formation n'a pas été vérifiée dans la littérature primaire). Cycadophytes rares : INFÉRÉ. Plantes aquatiques flottantes (Quereuxia angulata, signalée dans des dépôts d'étang du Dakota du Sud) : INFÉRÉ, référence primaire non vérifiée. Les plantes herbacées sont sous-représentées dans les fossiles (biais taphonomique)."
+    },
+    "fauna": {
+      "summary": "Une des faunes de vertébrés les mieux connues de la fin du Crétacé. Dinosaures non aviens : Tyrannosaurus, Triceratops, Torosaurus, Edmontosaurus, Ankylosaurus, Pachycephalosaurus, Thescelosaurus, ornithomimidés, caenagnathidés, dromaeosauridés, troodontidés. On y trouve aussi des oiseaux, des mammifères (multituberculés, métathériens, euthériens), des crocodyliens, des champsosaures, des tortues, des squamates, des amphibiens et des poissons. Les espèces simulées sont décrites dans les fiches espèces.",
+      "confidence": "established",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_hellcreek_volume"
+      ]
+    },
+    "taphonomy": {
+      "summary": "Les vertébrés proviennent surtout de grès de chenaux (dépôts résiduels de fond de chenal, barres de méandre). On y trouve des concentrations de microvertébrés, des squelettes partiels ou articulés plus rares, et des restes dans les argilites de plaine d'inondation et de crevasse. Les plantes sont surtout conservées dans les argilites et siltstones de bord de chenal, de chenaux abandonnés et d'étangs. Les milieux bien drainés éloignés des chenaux sont sous-représentés, ce qui biaise la reconstitution de leur végétation.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilf2003_kpg_climate",
+        "johnson2002_hellcreek_megaflora"
+      ]
+    },
+    "landscape": {
+      "summary": "Plaine alluviale et côtière de faible relief, traversée par des rivières à méandres. La zonation reconstituée repose sur les faciès et sur des analogues actuels : chenal et barres sableuses, puis berges et levées boisées, puis plaine d'inondation avec forêts riveraines d'angiospermes et zones ouvertes perturbées (crevasses récentes), puis marais arrière (backswamps) et bras morts à conifères Cupressaceae et plantes aquatiques. Pas de prairies. Des interfluves mieux drainés existaient probablement, mais leur végétation est mal connue.",
+      "confidence": "inferred",
+      "sources": [
+        "johnson2002_hellcreek_megaflora",
+        "wilf2003_kpg_climate",
+        "fastovsky2016_hellcreek_primer"
+      ],
+      "notes": "Le cadre général (plaine alluviale à méandres) est FORTEMENT ÉTAYÉ ; la composition de chaque zone est INFÉRÉE. L'habitat de jeu « upland_conifer_forest » est SPÉCULATIF pour la Hell Creek. « cutbank_cliff » représente les berges concaves des méandres, hautes de quelques mètres."
+    },
+    "fire": {
+      "summary": "Les incendies faisaient probablement partie des perturbations naturelles des forêts de plaine alluviale. Du charbon de bois fossile est signalé dans la Formation de Frenchman (Saskatchewan), contemporaine, dans une étude consacrée à l'écologie des feux. Aucune fréquence d'incendie n'a pu être vérifiée pour la Hell Creek elle-même.",
+      "confidence": "inferred",
+      "sources": [
+        "bamforth2014_frenchman_fire"
+      ],
+      "notes": "Référence partiellement vérifiée (titre seulement). Le schéma sim ne comporte pas de paramètre d'incendie."
+    }
+  },
+  "sim": {
+    "latitude_deg": 49,
+    "axial_tilt_deg": 23.4,
+    "mean_annual_temp_c": 12,
+    "annual_temp_range_c": 16,
+    "diurnal_temp_range_c": 9,
+    "annual_precip_mm": 1600,
+    "wet_season_doy": [
+      100,
+      200
+    ],
+    "dry_season_strength": 0.3,
+    "relative_humidity_mean": 0.75,
+    "fog_morning_probability": 0.25,
+    "storm_probability_per_day": 0.07,
+    "mean_wind_ms": 3,
+    "prevailing_wind_deg": 270,
+    "terrain_generator": "meandering_floodplain",
+    "map_size_m": 8192,
+    "relief_m": 25,
+    "habitats": [
+      "channel",
+      "riverbank",
+      "sandbar",
+      "oxbow_lake",
+      "backswamp",
+      "riparian_forest",
+      "floodplain_open",
+      "levee_woodland",
+      "upland_conifer_forest",
+      "cutbank_cliff"
+    ],
+    "plant_functional_types": {
+      "fern": {
+        "present": true,
+        "max_biomass_kg_m2": 0.6,
+        "growth_rate_per_day": 0.015,
+        "height_m": 1.0,
+        "habitats": {
+          "floodplain_open": 0.7,
+          "riparian_forest": 0.7,
+          "backswamp": 0.6,
+          "levee_woodland": 0.5,
+          "riverbank": 0.4,
+          "upland_conifer_forest": 0.4
+        }
+      },
+      "horsetail": {
+        "present": true,
+        "max_biomass_kg_m2": 0.5,
+        "growth_rate_per_day": 0.02,
+        "height_m": 1.2,
+        "habitats": {
+          "riverbank": 1.0,
+          "backswamp": 0.7,
+          "sandbar": 0.6,
+          "oxbow_lake": 0.4,
+          "floodplain_open": 0.4,
+          "riparian_forest": 0.2
+        }
+      },
+      "angio_herb": {
+        "present": true,
+        "max_biomass_kg_m2": 0.35,
+        "growth_rate_per_day": 0.03,
+        "height_m": 0.5,
+        "habitats": {
+          "floodplain_open": 1.0,
+          "riverbank": 0.6,
+          "sandbar": 0.4,
+          "levee_woodland": 0.3,
+          "riparian_forest": 0.2,
+          "cutbank_cliff": 0.1
+        }
+      },
+      "angio_shrub": {
+        "present": true,
+        "max_biomass_kg_m2": 1.5,
+        "growth_rate_per_day": 0.006,
+        "height_m": 3.0,
+        "habitats": {
+          "levee_woodland": 0.8,
+          "floodplain_open": 0.7,
+          "riparian_forest": 0.5,
+          "riverbank": 0.5,
+          "upland_conifer_forest": 0.4,
+          "backswamp": 0.2
+        }
+      },
+      "angio_tree": {
+        "present": true,
+        "max_biomass_kg_m2": 20.0,
+        "growth_rate_per_day": 0.0012,
+        "height_m": 25.0,
+        "habitats": {
+          "riparian_forest": 1.0,
+          "levee_woodland": 1.0,
+          "upland_conifer_forest": 0.5,
+          "riverbank": 0.4,
+          "floodplain_open": 0.3,
+          "backswamp": 0.3
+        }
+      },
+      "conifer": {
+        "present": true,
+        "max_biomass_kg_m2": 25.0,
+        "growth_rate_per_day": 0.001,
+        "height_m": 30.0,
+        "habitats": {
+          "upland_conifer_forest": 1.0,
+          "backswamp": 0.9,
+          "riparian_forest": 0.5,
+          "levee_woodland": 0.4,
+          "riverbank": 0.3,
+          "oxbow_lake": 0.2
+        }
+      },
+      "palm": {
+        "present": true,
+        "max_biomass_kg_m2": 3.0,
+        "growth_rate_per_day": 0.003,
+        "height_m": 6.0,
+        "habitats": {
+          "riparian_forest": 0.25,
+          "levee_woodland": 0.25,
+          "backswamp": 0.2,
+          "floodplain_open": 0.15
+        }
+      },
+      "cycadophyte": {
+        "present": true,
+        "max_biomass_kg_m2": 0.8,
+        "growth_rate_per_day": 0.002,
+        "height_m": 1.5,
+        "habitats": {
+          "upland_conifer_forest": 0.2,
+          "levee_woodland": 0.15,
+          "riparian_forest": 0.1
+        }
+      },
+      "ginkgo": {
+        "present": true,
+        "max_biomass_kg_m2": 12.0,
+        "growth_rate_per_day": 0.0012,
+        "height_m": 20.0,
+        "habitats": {
+          "levee_woodland": 0.35,
+          "riverbank": 0.3,
+          "riparian_forest": 0.3
+        }
+      },
+      "aquatic_macrophyte": {
+        "present": true,
+        "max_biomass_kg_m2": 0.4,
+        "growth_rate_per_day": 0.04,
+        "height_m": 0.3,
+        "habitats": {
+          "oxbow_lake": 1.0,
+          "backswamp": 0.6,
+          "channel": 0.05
+        }
+      },
+      "xeric_shrub": {
+        "present": false,
+        "max_biomass_kg_m2": 0.0,
+        "growth_rate_per_day": 0.0,
+        "height_m": 0.0,
+        "habitats": {}
+      }
+    },
+    "species": []
+  },
+  "sim_basis": {
+    "latitude_deg": "wilf2003_kpg_climate",
+    "axial_tilt_deg": "game_assumption: obliquité moyenne actuelle ; l'obliquité oscille d'environ 22,1 à 24,5° sur des cycles de ~41 ka et sa valeur à un instant donné du Maastrichtien n'est pas contrainte.",
+    "mean_annual_temp_c": "derived: valeur centrale des estimations LMA/CLAMP de la base de la formation (7–12 °C, arens2014_hellcreek_basal_florule) relevée d'environ 1 °C pour tenir compte du réchauffement de ~4 °C de la fin du Maastrichtien (wilf2003_kpg_climate ; vajda2014_kpg_vegetation) ; état moyen, pas un instant précis.",
+    "annual_temp_range_c": "game_assumption: amplitude typique d'un climat tempéré humide actuel à 45–50° N (~13–20 °C) ; cohérente avec la saisonnalité suggérée par CLAMP (arens2014_hellcreek_basal_florule) et l'absence de gel prolongé ; aucune moyenne du mois le plus froid n'a été vérifiée.",
+    "diurnal_temp_range_c": "game_assumption: amplitude diurne d'un climat humide et boisé de latitude moyenne.",
+    "annual_precip_mm": "derived: estimations par surface foliaire de ~1 910–1 970 mm (arens2014_hellcreek_basal_florule, barres d'erreur ~1 040–3 520 mm), abaissées à 1 600 mm pour trois raisons : (1) un seul niveau étudié ; (2) les flores de bord de chenal surestiment probablement les précipitations ; (3) une sécheresse saisonnière est inférée dans la Formation de Frenchman, contemporaine (mciver2002_frenchman_paleoenvironment). Reste dans l'intervalle publié.",
+    "wet_season_doy": "game_assumption: le calendrier des pluies est inconnu (saisonnalité mal contrainte) ; on choisit une saison humide du printemps au début de l'été (jours 100–200), comme dans les climats continentaux humides actuels de l'hémisphère nord.",
+    "dry_season_strength": "game_assumption: saison sèche modérée ; une sécheresse saisonnière est inférée dans la Formation de Frenchman (mciver2002_frenchman_paleoenvironment), mais le climat reste humide (arens2014_hellcreek_basal_florule).",
+    "relative_humidity_mean": "game_assumption: plaine alluviale boisée et humide ; aucun indicateur direct.",
+    "fog_morning_probability": "game_assumption: brouillards de rayonnement fréquents au-dessus des chenaux, bras morts et marais par analogie avec les plaines alluviales humides actuelles ; aucune donnée fossile.",
+    "storm_probability_per_day": "game_assumption: ~25 jours d'orage par an, concentrés en saison chaude, par analogie avec les climats tempérés humides continentaux ; les crues sont attestées par les dépôts de crevasse (fastovsky2016_hellcreek_primer), mais pas leur fréquence.",
+    "mean_wind_ms": "game_assumption: vent moyen faible sous couvert forestier et en plaine ; aucune donnée.",
+    "prevailing_wind_deg": "game_assumption: vents d'ouest supposés à ~49° N (circulation générale de latitude moyenne) ; aucun indicateur de paléovent vérifié pour la Hell Creek.",
+    "terrain_generator": "derived: dépôts de rivières à méandres, levées, crevasses, plaine d'inondation et étangs (fastovsky2016_hellcreek_primer ; wilf2003_kpg_climate).",
+    "map_size_m": "game_assumption: taille de carte standard du moteur (8 192 m de côté).",
+    "relief_m": "game_assumption: plaine alluviale et côtière de très faible pente. Le relief local se limite à la profondeur des chenaux (quelques mètres à ~10 m), à la hauteur des levées (1–3 m) et à une faible pente régionale vers le rivage oriental (quelques mètres sur 8 km). 25 m couvrent l'écart entre le fond des chenaux et le sommet des interfluves.",
+    "habitats": "derived: correspondance faciès → habitats de jeu (chenal, berge, barre sableuse, bras mort, marais arrière, forêt riveraine, plaine ouverte, levée boisée ; fastovsky2016_hellcreek_primer ; johnson2002_hellcreek_megaflora). « upland_conifer_forest » est spéculatif (interfluves bien drainés, taphonomiquement sous-représentés) et « cutbank_cliff » = berge concave de méandre.",
+    "species": "game_assumption: liste remplie par l'intégrateur à partir des fiches espèces.",
+    "plant_functional_types.fern.present": "johnson2002_hellcreek_megaflora; wilson2021_seafood_salad_flora",
+    "plant_functional_types.fern.max_biomass_kg_m2": "game_assumption: strates de fougères de sous-bois tempérés humides actuels (~0,2–1 kg/m²) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.fern.growth_rate_per_day": "game_assumption: reprise saisonnière rapide des frondes ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.fern.height_m": "game_assumption: fougères de sous-bois actuelles de type Osmunda/Onoclea (~1 m).",
+    "plant_functional_types.fern.habitats": "game_assumption: sous-bois humides, plaines perturbées et marais, par analogie actuelle.",
+    "plant_functional_types.horsetail.present": "derived: sphénopsides signalées (johnson1993_hellcreek_flora_nd, non vérifié) — présence INFÉRÉE",
+    "plant_functional_types.horsetail.max_biomass_kg_m2": "game_assumption: peuplements denses d'Equisetum actuels en bord d'eau (~0,2–0,8 kg/m²) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.horsetail.growth_rate_per_day": "game_assumption: croissance rhizomateuse rapide ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.horsetail.height_m": "game_assumption: Equisetum actuels de grande taille (E. hyemale, E. fluviatile ~1–1,5 m) ; aucune prêle géante documentée.",
+    "plant_functional_types.horsetail.habitats": "game_assumption: milieux saturés en eau : berges, barres, marais.",
+    "plant_functional_types.angio_herb.present": "derived: angiospermes herbacées probables mais sous-représentées (biais taphonomique) — présence INFÉRÉE",
+    "plant_functional_types.angio_herb.max_biomass_kg_m2": "game_assumption: végétation herbacée non graminéenne de plaines perturbées actuelles ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.angio_herb.growth_rate_per_day": "game_assumption: colonisation rapide après crue ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.angio_herb.height_m": "game_assumption: herbacées pionnières actuelles (~0,5 m).",
+    "plant_functional_types.angio_herb.habitats": "game_assumption: colonisatrices des dépôts de crevasse récents et des berges ; aucune prairie.",
+    "plant_functional_types.angio_shrub.present": "derived: angiospermes ligneuses dominantes (johnson2002_hellcreek_megaflora) ; port arbustif inféré pour une partie des morphotypes",
+    "plant_functional_types.angio_shrub.max_biomass_kg_m2": "game_assumption: sous-bois et fourrés riverains actuels (~0,5–3 kg/m²) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.angio_shrub.growth_rate_per_day": "game_assumption: croissance d'arbustes décidus ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.angio_shrub.height_m": "game_assumption: arbustes riverains actuels (~2–4 m).",
+    "plant_functional_types.angio_shrub.habitats": "game_assumption: levées, plaine d'inondation, lisières.",
+    "plant_functional_types.angio_tree.present": "wilson2021_seafood_salad_flora; johnson2002_hellcreek_megaflora",
+    "plant_functional_types.angio_tree.max_biomass_kg_m2": "game_assumption: forêts tempérées décidues et riveraines actuelles (biomasse aérienne ~10–30 kg/m²) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.angio_tree.growth_rate_per_day": "game_assumption: croissance lente d'un peuplement forestier ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.angio_tree.height_m": "game_assumption: arbres de forêts riveraines tempérées actuelles (~20–30 m) ; hauteur non mesurée sur fossiles.",
+    "plant_functional_types.angio_tree.habitats": "game_assumption: forêts riveraines et levées, d'après la dominance des arbres angiospermes dans les flores de bord de chenal.",
+    "plant_functional_types.conifer.present": "johnson2002_hellcreek_megaflora; wilson2021_seafood_salad_flora",
+    "plant_functional_types.conifer.max_biomass_kg_m2": "game_assumption: forêts marécageuses actuelles à Taxodium/Glyptostrobus et peuplements de Metasequoia (~20–40 kg/m²) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.conifer.growth_rate_per_day": "game_assumption: croissance lente de conifères arborescents ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.conifer.height_m": "game_assumption: Metasequoia, Glyptostrobus et Taxodium actuels (~25–40 m).",
+    "plant_functional_types.conifer.habitats": "game_assumption: Cupressaceae de milieux humides (Glyptostrobus, Metasequoia) placées en marais arrière et forêt riveraine ; poids en « upland_conifer_forest » spéculatif.",
+    "plant_functional_types.palm.present": "derived: palmiers mentionnés dans des synthèses, Sabalites confirmé plus au nord (greenwood2022_cretaceous_palms) — présence INFÉRÉE, rare",
+    "plant_functional_types.palm.max_biomass_kg_m2": "game_assumption: palmiers en éventail actuels de type Sabal en faible densité ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.palm.growth_rate_per_day": "game_assumption: croissance lente des palmiers ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.palm.height_m": "game_assumption: valeur intermédiaire entre Sabal minor (~1–2 m) et Sabal palmetto (~15–20 m).",
+    "plant_functional_types.palm.habitats": "game_assumption: poids faibles reflétant la rareté supposée ; milieux humides boisés par analogie avec Sabal.",
+    "plant_functional_types.cycadophyte.present": "derived: cycadophytes rares (johnson1993_hellcreek_flora_nd, non vérifié) — présence INFÉRÉE",
+    "plant_functional_types.cycadophyte.max_biomass_kg_m2": "game_assumption: cycadales actuelles en sous-bois, faible densité ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.cycadophyte.growth_rate_per_day": "game_assumption: croissance très lente des cycadales actuelles ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.cycadophyte.height_m": "game_assumption: cycadales basses actuelles (~1–2 m).",
+    "plant_functional_types.cycadophyte.habitats": "game_assumption: très faibles poids (rareté) dans les milieux boisés mieux drainés.",
+    "plant_functional_types.ginkgo.present": "johnson2002_hellcreek_megaflora; wilson2021_seafood_salad_flora",
+    "plant_functional_types.ginkgo.max_biomass_kg_m2": "game_assumption: Ginkgo biloba en peuplement épars ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.ginkgo.growth_rate_per_day": "game_assumption: croissance lente d'un arbre décidu ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.ginkgo.height_m": "game_assumption: Ginkgo biloba actuel (~20–35 m), valeur basse retenue.",
+    "plant_functional_types.ginkgo.habitats": "game_assumption: milieux riverains et de levée perturbés, écologie proposée pour les Ginkgo fossiles (royer2003_ginkgo_ecology, non vérifié) ; poids faibles (rareté dans Wilson et al. 2021).",
+    "plant_functional_types.aquatic_macrophyte.present": "derived: Quereuxia angulata signalée dans des dépôts d'étang de la Hell Creek (référence primaire non vérifiée) — présence INFÉRÉE",
+    "plant_functional_types.aquatic_macrophyte.max_biomass_kg_m2": "game_assumption: herbiers flottants actuels de type Trapa/Nymphaea (~0,1–1 kg/m² de matière sèche) ; unité interprétée comme biomasse aérienne sèche maximale du type fonctionnel à saturation de la cellule (kg de matière sèche par m²).",
+    "plant_functional_types.aquatic_macrophyte.growth_rate_per_day": "game_assumption: croissance rapide des macrophytes flottants en saison chaude ; interprété comme taux intrinsèque de croissance logistique (fraction de la biomasse maximale régénérée par jour en conditions favorables).",
+    "plant_functional_types.aquatic_macrophyte.height_m": "game_assumption: rosettes flottantes ; hauteur = épaisseur de la canopée flottante.",
+    "plant_functional_types.aquatic_macrophyte.habitats": "game_assumption: eaux calmes : bras morts, marais ; quasi absente du chenal actif.",
+    "plant_functional_types.xeric_shrub.present": "derived: aucune végétation xérophile documentée dans la Hell Creek (climat humide)",
+    "plant_functional_types.xeric_shrub.max_biomass_kg_m2": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.xeric_shrub.growth_rate_per_day": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.xeric_shrub.height_m": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro.",
+    "plant_functional_types.xeric_shrub.habitats": "game_assumption: type fonctionnel absent (present=false) ; valeurs mises à zéro."
+  }
+}

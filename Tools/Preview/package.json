@@ -1,0 +1,9 @@
+{
+  "name": "noctis-preview",
+  "private": true,
+  "description": "WebGL preview / inspector of the Noctis simulation (debug tool, not the game renderer)",
+  "dependencies": {
+    "three": "0.169.0",
+    "playwright-core": "1.48.2"
+  }
+}

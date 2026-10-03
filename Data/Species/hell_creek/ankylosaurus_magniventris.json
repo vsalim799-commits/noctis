@@ -1,0 +1,405 @@
+{
+  "schema": "noctis.species/1",
+  "id": "ankylosaurus_magniventris",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Ankylosaurus magniventris",
+  "authority": "Brown, 1908",
+  "common_names": { "fr": "Ankylosaure", "en": "Ankylosaurus" },
+  "regions": ["hell_creek"],
+
+  "science": {
+    "taxonomy": {
+      "summary": "Ankylosauridé (Ankylosaurinae) ; espèce type et seule espèce du genre, décrite par Brown (1908) en même temps que la famille Ankylosauridae. Les analyses phylogénétiques le placent parmi les ankylosaurinés nord-américains de la fin du Crétacé, proche de genres comme Euoplocephalus ou Anodontosaurus (Arbour & Currie 2016).",
+      "confidence": "established",
+      "sources": ["brown1908_ankylosauridae", "carpenter2004_ankylosaurus_redescription", "arbour2016_ankylosaurid_systematics"]
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La formation de Hell Creek couvre approximativement 67,1 à 66,0 millions d'années.",
+      "confidence": "established",
+      "sources": ["brown1908_ankylosauridae", "carpenter2004_ankylosaurus_redescription", "roberts2025_dueling_dinosaurs_age", "sprain2015_hellcreek_chronostratigraphy"],
+      "min": 66.0, "max": 67.1, "unit": "Ma",
+      "notes": "Bornes d'âge de la formation de Hell Creek, pas de la durée d'existence de l'espèce."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana : holotype décrit par Brown en 1908) ; matériel également attribué dans des formations contemporaines de l'intérieur de l'Ouest nord-américain (Lance au Wyoming, Scollard en Alberta).",
+      "confidence": "strongly_supported",
+      "sources": ["brown1908_ankylosauridae", "carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy"],
+      "notes": "La liste précise des formations hors Hell Creek est donnée de mémoire d'après la littérature de redescription ; à confirmer dans Carpenter (2004) et Arbour & Mallon (2017)."
+    },
+    "location": {
+      "summary": "Intérieur de l'Ouest de l'Amérique du Nord (Laramidia) : Montana, Wyoming et Alberta.",
+      "confidence": "strongly_supported",
+      "sources": ["carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy"]
+    },
+    "size": {
+      "summary": "Le plus grand ankylosauridé connu, mais plus petit que dans les anciennes reconstructions (jusqu'à ~9–10 m). Arbour & Mallon (2017) ont réestimé la taille à partir des rares spécimens, par comparaison avec des ankylosaurinés plus complets : environ 6 à 8 m de long selon l'individu. Aucun squelette complet n'existe ; toute longueur est une extrapolation.",
+      "confidence": "inferred",
+      "sources": ["arbour2017_ankylosaurus_anatomy", "carpenter2004_ankylosaurus_redescription"],
+      "value": 7.0, "min": 6.0, "max": 8.0, "unit": "m",
+      "notes": "Valeurs numériques citées de mémoire (référence vérifiée, chiffres non relus dans cette session) ; ordre de grandeur fiable, décimales non."
+    },
+    "mass": {
+      "summary": "Masse estimée de l'ordre de ~5 à ~8 t pour les plus grands individus, par extrapolation à partir de spécimens fragmentaires (Arbour & Mallon 2017). Très incertaine.",
+      "confidence": "inferred",
+      "sources": ["arbour2017_ankylosaurus_anatomy"],
+      "value": 6000, "min": 4800, "max": 8000, "unit": "kg",
+      "notes": "Chiffres cités de mémoire, à vérifier dans Arbour & Mallon (2017)."
+    },
+    "morphology": {
+      "summary": "Quadrupède bas et très large, à corps couvert d'ostéodermes. Crâne plus large que long, avec des « cornes » squamosales et quadratojugales triangulaires ; narines orientées latéralement et passages nasaux contournés ; bec large et dents foliacées petites par rapport au crâne. Queue terminée par une massue faite d'ostéodermes fusionnés, portée par une « poignée » de vertèbres caudales distales rigidifiées. Arbour & Mallon (2017) soulignent plusieurs particularités crâniennes et postcrâniennes inhabituelles par rapport aux autres ankylosaurinés.",
+      "confidence": "strongly_supported",
+      "sources": ["carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy", "arbour2015_tailclub_evolution", "brown1908_ankylosauridae"]
+    },
+    "skeleton": {
+      "summary": "Connu seulement par quelques spécimens partiels : crânes (dont le plus grand connu), vertèbres, éléments de membres, ostéodermes et une massue caudale. Pas de squelette complet ni de juvénile ; une grande partie de l'anatomie postcrânienne est reconstituée d'après des ankylosaurinés apparentés.",
+      "confidence": "strongly_supported",
+      "sources": ["carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy", "brown1908_ankylosauridae"]
+    },
+    "musculature": {
+      "summary": "Reconstruite par encadrement phylogénétique et par comparaison avec d'autres ankylosauridés : musculature caudale puissante (notamment caudofémorale) pour balancer latéralement la queue et sa massue ; ceintures larges et membres robustes de quadrupède graviportal. Non reconstruite spécifiquement pour Ankylosaurus.",
+      "confidence": "inferred",
+      "sources": ["arbour2009_tailclub_impact", "arbour2015_tailclub_evolution"]
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun tissu mou connu chez Ankylosaurus. Chez le nodosauridé Borealopelta (parent éloigné, Crétacé inférieur), des gaines kératinisées sur les ostéodermes et un contenu stomacal sont préservés."
+    },
+    "integument": {
+      "summary": "Ostéodermes de tailles et formes variées couvrant le dos, les flancs et la tête, dont la microstructure osseuse a été étudiée chez divers ankylosaures (Hayashi et al. 2010). Par analogie avec le nodosauridé Borealopelta, chez qui les gaines kératinisées sont préservées, les ostéodermes d'Ankylosaurus étaient probablement recouverts de kératine et séparés par de petites écailles. Borealopelta présente une coloration à contre-ombre (dos sombre, ventre plus clair) ; l'appliquer à Ankylosaurus est spéculatif.",
+      "confidence": "inferred",
+      "sources": ["carpenter2004_ankylosaurus_redescription", "hayashi2010_ankylosaur_armor", "brown2017_borealopelta"]
+    },
+    "locomotion": {
+      "summary": "Quadrupède graviportal à membres courts et robustes, hanches très larges ; déplacement lent probable. Aucune piste attribuée à Ankylosaurus.",
+      "confidence": "inferred",
+      "sources": ["carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy"]
+    },
+    "speed": {
+      "summary": "Aucune mesure ni estimation biomécanique publiée connue pour Ankylosaurus ; les proportions graviportales suggèrent un animal lent. Valeurs de simulation = hypothèses de jeu.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivore. Dents petites et simples et bec large suggèrent un traitement oral limité et une alimentation peu sélective sur une végétation basse ; l'usure dentaire des ankylosaures de la formation de Dinosaur Park (analogie) indique un traitement oral moins élaboré que chez les hadrosauridés et cératopsidés (Mallon & Anderson 2014). Le seul contenu stomacal d'ankylosaure bien étudié (le nodosauridé Borealopelta, Crétacé inférieur) est dominé par des feuilles de fougères (Brown et al. 2020) — inférence phylogénétique et temporelle lointaine. Aucune graminée à Hell Creek.",
+      "confidence": "inferred",
+      "sources": ["mallon2014_tooth_wear", "brown2020_borealopelta_diet", "arbour2017_ankylosaurus_anatomy", "wilson2021_seafood_salad_flora"]
+    },
+    "feeding_strategy": {
+      "summary": "Brouteur de végétation basse : chez les ankylosaures de la formation de Dinosaur Park, la hauteur d'alimentation est estimée en dessous de ~1 m (Mallon et al. 2013, analogie). Le museau large d'Ankylosaurus évoque une prise alimentaire en vrac, peu sélective.",
+      "confidence": "inferred",
+      "sources": ["mallon2013_feeding_height", "arbour2017_ankylosaurus_anatomy"],
+      "notes": "Hauteur d'alimentation tirée d'une source non vérifiée dans cette session et d'une analogie."
+    },
+    "predation": {
+      "summary": "Aucune trace directe de prédation sur Ankylosaurus. Tyrannosaurus était le seul prédateur connu de taille suffisante pour attaquer un adulte (inférence). Chez Borealopelta, l'armure lourde associée à une coloration de camouflage a été interprétée comme le signe d'une forte pression de prédation, même sur de grands herbivores cuirassés (Brown et al. 2017).",
+      "confidence": "inferred",
+      "sources": ["brown2017_borealopelta"]
+    },
+    "defense": {
+      "summary": "Armure d'ostéodermes et massue caudale. Les modèles biomécaniques indiquent que les grandes massues pouvaient produire des impacts suffisants pour fracturer des os, contrairement aux petites (Arbour 2009). L'usage défensif contre les tyrannosaures est plausible mais non démontré ; l'usage en combat entre congénères est soutenu chez l'ankylosauriné Zuul (voir hypothèses concurrentes).",
+      "confidence": "inferred",
+      "sources": ["arbour2009_tailclub_impact", "arbour2022_ankylosaurid_combat", "hayashi2010_ankylosaur_armor"]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun regroupement d'Ankylosaurus connu. Les lésions de flanc chez Zuul suggèrent des affrontements entre congénères (inférence par parenté)."
+    },
+    "reproduction": {
+      "summary": "Ovipare (encadrement phylogénétique) ; œufs, nids et soins parentaux inconnus chez Ankylosaurus et très mal connus chez les ankylosaures en général.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "development": {
+      "summary": "Aucun juvénile d'Ankylosaurus connu. Chez les ankylosauridés, la « poignée » de la queue est apparue au cours de l'évolution avant la massue terminale (Arbour & Currie 2015) ; le calendrier ontogénétique de la massue chez Ankylosaurus reste inconnu.",
+      "confidence": "inferred",
+      "sources": ["arbour2015_tailclub_evolution"]
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Pas d'étude endocrânienne publiée pour Ankylosaurus à notre connaissance. Chez des ankylosaures apparentés, le rapport des bulbes olfactifs est relativement élevé (Euoplocephalus 52 ; nodosauridé Pawpawsaurus 46,2), comparable à celui de l'alligator, ce qui suggère un odorat développé (Paulina-Carabajal et al. 2016). Chez Euoplocephalus, la tomodensitométrie montre des passages nasaux très contournés et des sinus complexes (Miyashita et al. 2011). Audition probablement limitée aux basses fréquences (limite supérieure de ~3 kHz proposée pour les grands dinosaures).",
+      "confidence": "inferred",
+      "sources": ["paulinacarabajal2016_pawpawsaurus", "miyashita2011_euoplocephalus_ct", "gleich2005_basilar_papilla"]
+    },
+    "communication": {
+      "summary": "Aucune donnée directe. Le larynx ossifié de l'ankylosauridé Pinacosaurus (articulation crico-aryténoïdienne mobile, aryténoïdes longs) suggère un contrôle du flux d'air comparable à celui des oiseaux, donc une capacité de modulation vocale (Yoshida et al. 2023) ; les passages nasaux contournés ont aussi été proposés comme résonateurs. Toute vocalisation d'Ankylosaurus reste spéculative.",
+      "confidence": "speculative",
+      "sources": ["yoshida2023_pinacosaurus_larynx", "miyashita2011_euoplocephalus_ct", "riede2016_closed_mouth_vocalization"]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Rare dans les dépôts de Hell Creek, ce qui peut refléter une faible abondance réelle, une préférence pour des milieux peu représentés dans les sédiments (zones plus sèches ou éloignées des chenaux) ou un biais taphonomique ; aucune donnée ne permet de trancher. Plaine côtière boisée et plaine d'inondation probables, comme pour le reste de la faune.",
+      "confidence": "speculative",
+      "sources": ["carpenter2004_ankylosaurus_redescription", "fastovsky2016_hellcreek_primer"]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide et saisonnière (~49° N, température moyenne annuelle estimée ~7–12 °C). Chez les ankylosaures, les passages nasaux contournés ont été interprétés comme des échangeurs de chaleur et d'humidité efficaces, utiles pour un animal massif (Bourke et al. 2018, non vérifié) ; tolérance climatique propre inconnue.",
+      "confidence": "inferred",
+      "sources": ["arens2014_hellcreek_basal_florule", "wilf2003_kpg_climate", "bourke2018_ankylosaur_nasal", "miyashita2011_euoplocephalus_ct"]
+    },
+    "interactions": {
+      "summary": "Coexistait avec Tyrannosaurus (seul prédateur potentiel d'un adulte), Triceratops, Edmontosaurus, Pachycephalosaurus et Thescelosaurus. Partage probable de la strate d'alimentation basse avec Triceratops (analogie Dinosaur Park), atténué par des différences de denture et de comportement alimentaire (hypothèse).",
+      "confidence": "inferred",
+      "sources": ["mallon2013_feeding_height", "mallon2014_tooth_wear", "carpenter2004_ankylosaurus_redescription"]
+    },
+    "fossil_record": {
+      "summary": "Rare et fragmentaire : une poignée de spécimens partiels pour tout le genre (holotype de Hell Creek décrit par Brown en 1908, crânes dont le plus grand connu, une massue caudale, ostéodermes et dents isolés). Aucun squelette complet, aucun juvénile.",
+      "confidence": "strongly_supported",
+      "sources": ["brown1908_ankylosauridae", "carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy"]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun comportement directement documenté pour Ankylosaurus (ni pathologie publiée, ni piste, ni contenu stomacal)."
+    },
+    "inferred_behavior": {
+      "summary": "Utilisation de la massue caudale par coups latéraux, contre des prédateurs et/ou entre congénères (combats ritualisés ou rivalités, par analogie avec les lésions de flanc de Zuul) ; vie probablement solitaire ou en petits groupes ; alimentation lente et peu sélective au ras du sol. Ces comportements sont inférés de parents et de la biomécanique, jamais observés chez Ankylosaurus.",
+      "confidence": "inferred",
+      "sources": ["arbour2009_tailclub_impact", "arbour2022_ankylosaurid_combat", "mallon2013_feeding_height"]
+    }
+  },
+
+  "competing_hypotheses": [
+    {
+      "topic": "tail_club_function",
+      "summary": "À quoi servait la massue caudale ? (hypothèses non exclusives)",
+      "positions": [
+        {
+          "summary": "Arme anti-prédateurs : les grandes massues pouvaient produire des impacts capables de fracturer des os, ce qui en ferait une défense efficace contre les tyrannosaures.",
+          "sources": ["arbour2009_tailclub_impact"]
+        },
+        {
+          "summary": "Arme de combat intraspécifique : chez l'ankylosauriné Zuul, des ostéodermes de flanc cassés et cicatrisés, concentrés autour des hanches, sont compatibles avec des coups de massue portés par des congénères ; la massue aurait évolué au moins en partie sous sélection sexuelle ou sociale. Certaines analyses restent non concluantes et la fonction défensive n'est pas exclue.",
+          "sources": ["arbour2022_ankylosaurid_combat"]
+        }
+      ]
+    },
+    {
+      "topic": "size",
+      "summary": "Quelle était la taille réelle d'Ankylosaurus ?",
+      "positions": [
+        {
+          "summary": "Les reconstructions anciennes et populaires lui attribuaient jusqu'à ~9–10 m de long (estimations non sourcées dans cette fiche ; elles extrapolaient à partir de matériel très incomplet).",
+          "sources": []
+        },
+        {
+          "summary": "Les réestimations fondées sur les spécimens existants et sur des ankylosaurinés plus complets donnent environ 6 à 8 m et quelques tonnes, ce qui en fait toujours le plus grand ankylosauridé connu.",
+          "sources": ["carpenter2004_ankylosaurus_redescription", "arbour2017_ankylosaurus_anatomy"]
+        }
+      ]
+    },
+    {
+      "topic": "nasal_function",
+      "summary": "Fonction des passages nasaux contournés des ankylosaures.",
+      "positions": [
+        {
+          "summary": "Échangeurs de chaleur et d'humidité efficaces, permettant de refroidir le cerveau et d'économiser l'eau.",
+          "sources": ["bourke2018_ankylosaur_nasal"]
+        },
+        {
+          "summary": "Rôle olfactif et/ou de résonance vocale, compatible avec un odorat développé et un larynx d'ankylosauridé capable de modulation.",
+          "sources": ["miyashita2011_euoplocephalus_ct", "paulinacarabajal2016_pawpawsaurus", "yoshida2023_pinacosaurus_larynx"]
+        }
+      ]
+    }
+  ],
+
+  "sim": {
+    "role": "agent",
+    "body_plan": "quadruped_ankylosaur",
+    "adult_mass_kg": 6000,
+    "adult_length_m": 7.0,
+    "hip_height_m": 1.4,
+    "foot_length_m": 0.4,
+    "foot_width_m": 0.4,
+    "hatchling_mass_kg": 2.0,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 6000,
+      "max_growth_rate_kg_per_year": 750,
+      "inflection_age_years": 9,
+      "maturity_age_years": 15,
+      "max_lifespan_years": 35
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.0,
+      "max_speed_ms": 3.5,
+      "max_accel_ms2": 0.8,
+      "max_decel_ms2": 2.0,
+      "max_yaw_rate_dps": 25,
+      "max_slope_deg": 20,
+      "swim": false, "swim_speed_ms": 0,
+      "fly": false, "fly_speed_ms": 0,
+      "duty_factor_walk": 0.75,
+      "duty_factor_run": 0.6
+    },
+    "metabolism": {
+      "thermo_class": "mesotherm",
+      "max_fasting_days": 40,
+      "water_l_per_day_per_100kg": 3.5
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": { "fern": 0.9, "horsetail": 0.7, "angio_herb": 0.9, "angio_shrub": 0.7,
+                             "angio_tree": 0.1, "conifer": 0.2, "palm": 0.4, "cycadophyte": 0.5,
+                             "ginkgo": 0.1, "aquatic_macrophyte": 0.3, "xeric_shrub": 0 },
+      "browse_height_min_m": 0.0, "browse_height_max_m": 1.0,
+      "prey_mass_min_kg": 0, "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 600, "fov_deg": 300, "binocular_deg": 30, "low_light": 0.4,
+      "hearing_min_hz": 20, "hearing_max_hz": 3000, "hearing_best_hz": 400, "hearing_threshold_db": 25,
+      "olfaction": 0.7,
+      "vibration": 0.5
+    },
+    "social": {
+      "group_size_mean": 1, "group_size_max": 3, "cohesion": 0.1,
+      "territorial": false, "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": ["tail_club"],
+      "armor": 0.95, "defense_strength": 0.9, "flee_preference": 0.05
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.8,
+      "bite_force_n": 0,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 15, "clutch_size_max": 25,
+      "incubation_days": 150,
+      "breeding_season_doy": [100, 170],
+      "parental_care": 0.2,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 15, "f0_max_hz": 200,
+      "call_types": [
+        { "id": "contact_low", "duration_s": 1.5, "f0_hz": 50, "source_level_db": 90,
+          "context": "social_contact", "confidence": "speculative" },
+        { "id": "threat_huff", "duration_s": 0.8, "f0_hz": 80, "source_level_db": 95,
+          "context": "agonistic", "confidence": "speculative" }
+      ]
+    },
+    "activity": { "pattern": "cathemeral" },
+    "personality": {
+      "boldness": [0.7, 0.15], "caution": [0.4, 0.15], "aggression": [0.35, 0.15],
+      "curiosity": [0.2, 0.1], "sociability": [0.15, 0.1], "vigilance": [0.35, 0.15],
+      "risk_tolerance": [0.6, 0.15], "exploration": [0.3, 0.1], "flight_tendency": [0.05, 0.05],
+      "dominance": [0.5, 0.2]
+    },
+    "habitat": {
+      "channel": 0, "riverbank": 0.4, "sandbar": 0.2, "oxbow_lake": 0.1, "backswamp": 0.3,
+      "riparian_forest": 0.7, "floodplain_open": 0.6, "levee_woodland": 0.7,
+      "upland_conifer_forest": 0.6, "cutbank_cliff": 0.05,
+      "dune_field": 0, "interdune_flat": 0, "ephemeral_pond": 0.2, "xeric_scrub": 0
+    },
+    "population": { "initial_count": 3, "regional_density_per_km2": 0.045 }
+  },
+
+  "sim_basis": {
+    "role": "game_assumption: grand herbivore rare simulé individuellement",
+    "body_plan": "derived: ankylosauridé quadrupède (carpenter2004_ankylosaurus_redescription)",
+    "adult_mass_kg": "arbour2017_ankylosaurus_anatomy (ordre de grandeur, valeurs citées de mémoire) ; valeur centrale = game_assumption",
+    "adult_length_m": "arbour2017_ankylosaurus_anatomy (6–8 m, valeurs citées de mémoire) ; valeur centrale = game_assumption",
+    "hip_height_m": "game_assumption: membres courts d'ankylosauridé ; aucune mesure de hauteur de hanche pour Ankylosaurus",
+    "foot_length_m": "game_assumption: aucune piste attribuée",
+    "foot_width_m": "game_assumption: aucune piste attribuée",
+    "hatchling_mass_kg": "game_assumption: œufs d'ankylosaures inconnus",
+    "sexual_dimorphism_mass": "game_assumption: aucun dimorphisme connu",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg",
+    "growth.max_growth_rate_kg_per_year": "derived: logistique supposée (A = 6000 kg, inflexion 9 ans, 95 % à 15 ans → k ≈ 0,49/an → kA/4 ≈ 750 kg/an) ; aucune donnée histologique",
+    "growth.inflection_age_years": "game_assumption: aucune donnée de croissance",
+    "growth.maturity_age_years": "game_assumption: aucune donnée de croissance",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée",
+    "locomotion.walk_speed_ms": "game_assumption: quadrupède graviportal lent",
+    "locomotion.max_speed_ms": "game_assumption: valeur basse pour un animal à membres courts ; aucune donnée",
+    "locomotion.max_accel_ms2": "game_assumption",
+    "locomotion.max_decel_ms2": "game_assumption",
+    "locomotion.max_yaw_rate_dps": "game_assumption: pivotement lent mais suffisant pour orienter la massue",
+    "locomotion.max_slope_deg": "game_assumption: animal bas et lourd",
+    "locomotion.swim": "game_assumption: animal lourd et cuirassé ; capacité de nage non supposée",
+    "locomotion.swim_speed_ms": "game_assumption",
+    "locomotion.fly": "derived: non volant",
+    "locomotion.fly_speed_ms": "derived: non volant",
+    "locomotion.duty_factor_walk": "game_assumption",
+    "locomotion.duty_factor_run": "game_assumption: pas de phase aérienne",
+    "metabolism.thermo_class": "game_assumption: « mesotherm » — débat sur le métabolisme des ornithischiens (grady2014_mesothermy ; wiemann2022_ale_metabolism) ; échangeurs nasaux de chaleur (bourke2018_ankylosaur_nasal, non vérifié)",
+    "metabolism.max_fasting_days": "game_assumption",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: économie d'eau possible via les passages nasaux (bourke2018_ankylosaur_nasal, non vérifié)",
+    "diet.type": "mallon2014_tooth_wear; arbour2017_ankylosaurus_anatomy",
+    "diet.plant_preferences": "game_assumption: végétation basse et tendre privilégiée ; fougères élevées par analogie avec le contenu stomacal de Borealopelta (brown2020_borealopelta_diet) ; composition de la flore (johnson2002_hellcreek_megaflora ; wilson2021_seafood_salad_flora — pas de graminées)",
+    "diet.browse_height_min_m": "derived: alimentation au ras du sol (mallon2013_feeding_height, analogie)",
+    "diet.browse_height_max_m": "derived: ankylosaures ≲ 1 m (mallon2013_feeding_height, analogie, source non vérifiée)",
+    "diet.prey_mass_min_kg": "derived: herbivore",
+    "diet.prey_mass_max_kg": "derived: herbivore",
+    "diet.scavenges": "game_assumption",
+    "diet.eats_fish": "game_assumption",
+    "diet.eats_invertebrates": "game_assumption",
+    "diet.eats_eggs": "game_assumption",
+    "senses.vision_range_m": "game_assumption",
+    "senses.fov_deg": "game_assumption",
+    "senses.binocular_deg": "game_assumption",
+    "senses.low_light": "game_assumption",
+    "senses.hearing_min_hz": "game_assumption",
+    "senses.hearing_max_hz": "derived: limite supérieure ~3 kHz proposée pour les grands dinosaures (gleich2005_basilar_papilla, cité par paulinacarabajal2016_pawpawsaurus)",
+    "senses.hearing_best_hz": "game_assumption",
+    "senses.hearing_threshold_db": "game_assumption",
+    "senses.olfaction": "derived: rapports olfactifs élevés chez des ankylosaures apparentés (paulinacarabajal2016_pawpawsaurus) ; valeur 0..1 = game_assumption",
+    "senses.vibration": "game_assumption",
+    "social.group_size_mean": "game_assumption: aucun regroupement connu",
+    "social.group_size_max": "game_assumption",
+    "social.cohesion": "game_assumption",
+    "social.territorial": "game_assumption",
+    "social.territory_radius_m": "game_assumption",
+    "social.alarm_calls": "game_assumption: aucun indice",
+    "defense.weapons": "arbour2009_tailclub_impact; arbour2022_ankylosaurid_combat",
+    "defense.armor": "derived: ostéodermes couvrant le corps (carpenter2004_ankylosaurus_redescription ; hayashi2010_ankylosaur_armor) ; valeur 0..1 = game_assumption",
+    "defense.defense_strength": "derived: massue capable de fracturer des os (arbour2009_tailclub_impact) ; valeur = game_assumption",
+    "defense.flee_preference": "game_assumption: animal lent et cuirassé, faire face plutôt que fuir",
+    "predation.hunt_style": "derived: herbivore",
+    "predation.attack_strength": "game_assumption: force relative d'un coup de massue (arbour2009_tailclub_impact)",
+    "predation.bite_force_n": "derived: herbivore — pas de morsure offensive",
+    "predation.max_chase_s": "derived: herbivore",
+    "reproduction.clutch_size_mean": "game_assumption: pontes d'ankylosaures inconnues",
+    "reproduction.clutch_size_max": "game_assumption",
+    "reproduction.incubation_days": "game_assumption: borné par les valeurs connues chez d'autres ornithischiens (~83 à ~171 j, erickson2017_incubation)",
+    "reproduction.breeding_season_doy": "game_assumption",
+    "reproduction.parental_care": "game_assumption",
+    "reproduction.nest_type": "game_assumption: nid enfoui par analogie avec d'autres ornithischiens (norell2020_soft_eggs) ; non documenté",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF — larynx d'ankylosauridé de type aviaire (yoshida2023_pinacosaurus_larynx) et vocalisation bouche fermée des archosaures actuels (riede2016_closed_mouth_vocalization)",
+    "vocal.f0_min_hz": "game_assumption: spéculatif",
+    "vocal.f0_max_hz": "game_assumption: spéculatif",
+    "vocal.call_types": "game_assumption: tous les cris sont SPÉCULATIFS",
+    "activity.pattern": "game_assumption: aucune donnée ; comportement cathéméral supposé comme pour les autres grands herbivores",
+    "personality": "game_assumption: valeurs de personnalité toujours hypothétiques",
+    "habitat": "game_assumption: rareté dans les dépôts de chenaux et de plaine d'inondation (carpenter2004_ankylosaurus_redescription) ; préférences d'habitat inconnues",
+    "population.initial_count": "game_assumption: Ankylosaurus est rare dans les collections (carpenter2004_ankylosaurus_redescription ; arbour2017_ankylosaurus_anatomy) ; la loi de Damuth (damuth1981_density_body_size) prédirait pour sa masse une densité voisine de celle de Triceratops, mais la rareté fossile justifie une densité beaucoup plus faible : ~0,045 ind./km² × ~67 km² ≈ 3",
+    "population.regional_density_per_km2": "game_assumption: voir population.initial_count"
+  }
+}

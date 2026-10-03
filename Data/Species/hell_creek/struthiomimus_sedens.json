@@ -1,0 +1,591 @@
+{
+  "schema": "noctis.species/1",
+  "id": "struthiomimus_sedens",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Struthiomimus sedens",
+  "authority": "(Marsh, 1892)",
+  "common_names": {
+    "fr": "Struthiomimus",
+    "en": "Struthiomimus"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Struthiomimus sedens (Marsh, 1892) — Theropoda, Coelurosauria, Ornithomimosauria, Ornithomimidae. Décrit comme Ornithomimus sedens par Marsh (1892) sur un squelette partiel de la Formation de Lance (Wyoming), équivalente de Hell Creek, puis rapporté au genre Struthiomimus (créé par Osborn 1917 pour S. altus, du Campanien de l'Alberta). À Hell Creek, les ornithomimidés sont surtout connus par des restes isolés rapportés, selon les auteurs, à « Ornithomimus » sp., à Struthiomimus sp./S. sedens ou à Ornithomimidae indet. ; un squelette plus complet du Dakota du Sud, conservé au Black Hills Institute, a été rapporté à S. sedens mais, à notre connaissance, n'a pas été décrit en détail dans une publication évaluée par les pairs. Le genre Ornithomimus a par ailleurs été révisé (Claessens & Loewen 2016). Cette fiche représente donc « l'ornithomimidé de Hell Creek » sous le binôme le plus couramment employé, avec une attribution spécifique incertaine.",
+      "confidence": "speculative",
+      "sources": [
+        "marsh1892_ornithomimus_sedens",
+        "osborn1917_struthiomimus",
+        "claessens2016_ornithomimus_velox"
+      ],
+      "notes": "La présence d'ornithomimidés à Hell Creek est bien établie ; l'identité spécifique (une ou deux espèces, Struthiomimus ou Ornithomimus) ne l'est pas. Nom de fichier choisi faute de mieux ; aucune référence taxonomique primaire n'a été lue en texte intégral (numéro de spécimen BHI 1266 cité de mémoire, à vérifier). D'après des sources secondaires (Wikipédia, consultée via recherche de code GitHub) : holotype USNM 4736, squelette partiel récolté par J.B. Hatcher dans le Wyoming ; Russell (1972) n'a pas pu trancher entre plusieurs genres ; des fragments du Montana et de l'Alberta rapportés à Struthiomimus sedens n'ont pas encore été décrits ni comparés à l'holotype."
+    },
+    "period": {
+      "summary": "Fin du Maastrichtien (Crétacé supérieur), derniers millions d'années avant l'extinction Crétacé–Paléogène.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "marsh1892_ornithomimus_sedens",
+        "fowler2017_western_interior_geochronology",
+        "sprain2015_hellcreek_chronostratigraphy"
+      ],
+      "min": 66.0,
+      "max": 67.5,
+      "unit": "Ma"
+    },
+    "formation": {
+      "summary": "Formation de Lance (Wyoming, localité type de l'espèce) et Formation de Hell Creek (Montana, Dakotas), où les ornithomimidés figurent parmi les dinosaures de taille moyenne régulièrement récoltés.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "marsh1892_ornithomimus_sedens",
+        "horner2011_hellcreek_census"
+      ]
+    },
+    "location": {
+      "summary": "Ouest de l'Amérique du Nord (Laramidia) : Wyoming, Montana, Dakota du Nord et du Sud.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "marsh1892_ornithomimus_sedens",
+        "horner2011_hellcreek_census"
+      ]
+    },
+    "size": {
+      "summary": "Non établie pour S. sedens faute de squelette décrit. Struthiomimus altus, mieux connu, mesurait environ 4 m ; le matériel de Hell Creek suggère des animaux de taille comparable ou un peu supérieure.",
+      "confidence": "speculative",
+      "sources": [
+        "osborn1917_struthiomimus"
+      ],
+      "value": 4.0,
+      "min": 3.5,
+      "max": 5.0,
+      "unit": "m",
+      "notes": "Valeurs par analogie ; aucune mesure publiée pour S. sedens."
+    },
+    "mass": {
+      "summary": "Inconnue pour S. sedens. Par analogie avec Struthiomimus altus et d'autres ornithomimidés de taille comparable, de l'ordre de 100 à 250 kg.",
+      "confidence": "speculative",
+      "sources": [
+        "osborn1917_struthiomimus"
+      ],
+      "value": 160,
+      "min": 100,
+      "max": 250,
+      "unit": "kg",
+      "notes": "Aucune estimation publiée vérifiée pour S. sedens."
+    },
+    "morphology": {
+      "summary": "Plan corporel d'ornithomimidé (connu chez S. altus et les genres proches) : petite tête à bec édenté, long cou, bras longs à trois doigts griffus subégaux, membres postérieurs très longs à métatarse pincé (arctométatarse), queue longue. Allure générale « d'autruche ».",
+      "confidence": "inferred",
+      "sources": [
+        "osborn1917_struthiomimus",
+        "persons2016_cursorial_limbs"
+      ]
+    },
+    "skeleton": {
+      "summary": "Matériel de Hell Creek majoritairement fragmentaire (os des membres, vertèbres, griffes) ; le squelette complet du genre est connu par S. altus (Campanien). Le squelette rapporté à S. sedens du Dakota du Sud n'est pas décrit en détail dans la littérature vérifiée.",
+      "confidence": "speculative",
+      "sources": [
+        "osborn1917_struthiomimus",
+        "marsh1892_ornithomimus_sedens"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "soft_tissue": {
+      "summary": "Bec corné (ramphothèque) mis en évidence chez des ornithomimidés (Norell et al. 2001) et inféré pour Struthiomimus.",
+      "confidence": "inferred",
+      "sources": [
+        "norell2001_ornithomimid_beaks"
+      ]
+    },
+    "integument": {
+      "summary": "Des Ornithomimus d'Alberta conservent des plumes filamenteuses sur le corps, et les adultes portaient des structures plumeuses de type « aile » sur les bras, absentes chez les juvéniles (Zelenitsky et al. 2012 ; van der Reest et al. 2016). Un plumage comparable est très probable chez Struthiomimus.",
+      "confidence": "inferred",
+      "sources": [
+        "zelenitsky2012_ornithomimus_feathers",
+        "vanderreest2016_ornithomimus_feathers"
+      ]
+    },
+    "locomotion": {
+      "summary": "Bipède très cursorial : segments distaux des membres allongés et arctométatarse, parmi les proportions les plus « coureuses » des théropodes (Persons & Currie 2016 ; Dececchi et al. 2020).",
+      "confidence": "inferred",
+      "sources": [
+        "persons2016_cursorial_limbs",
+        "dececchi2020_theropod_limbs"
+      ]
+    },
+    "speed": {
+      "summary": "Probablement parmi les dinosaures les plus rapides de Hell Creek ; les estimations numériques anciennes ne reposent pas sur des modèles biomécaniques modernes vérifiés ici.",
+      "confidence": "speculative",
+      "sources": [
+        "persons2016_cursorial_limbs",
+        "dececchi2020_theropod_limbs"
+      ]
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Débattu : herbivore ou omnivore. Des gastrolithes chez l'ornithomimidé asiatique Sinornithomimus soutiennent une alimentation au moins partiellement végétale (Kobayashi et al. 1999) ; le bec édenté s'inscrit dans l'écomorphologie herbivore des théropodes (Zanno & Makovicky 2011). Petits animaux et invertébrés possibles. L'hypothèse d'un filtrage d'eau (Norell et al. 2001) reste minoritaire.",
+      "confidence": "inferred",
+      "sources": [
+        "kobayashi1999_ornithomimid_gastroliths",
+        "zanno2011_herbivorous_theropods",
+        "norell2001_ornithomimid_beaks"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Prélèvement au bec de végétaux, graines, fruits et petites proies ; broyage possible par moulin gastrique (gastrolithes chez des ornithomimidés apparentés). Non documenté chez S. sedens.",
+      "confidence": "speculative",
+      "sources": [
+        "kobayashi1999_ornithomimid_gastroliths",
+        "norell2001_ornithomimid_beaks"
+      ]
+    },
+    "predation": {
+      "summary": "Prédation éventuelle de petits animaux (invertébrés, petits vertébrés) ; non documentée.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2011_herbivorous_theropods"
+      ]
+    },
+    "defense": {
+      "summary": "Défense supposée principalement par la fuite rapide ; coups de pattes et griffes des mains possibles.",
+      "confidence": "speculative",
+      "sources": [
+        "persons2016_cursorial_limbs"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Inconnu pour S. sedens. Un gisement de nombreux Sinornithomimus juvéniles morts ensemble suggère des comportements grégaires chez certains ornithomimidés (Kobayashi & Lü 2003) ; l'extrapolation à Struthiomimus reste une hypothèse.",
+      "confidence": "speculative",
+      "sources": [
+        "kobayashi2003_sinornithomimus"
+      ]
+    },
+    "reproduction": {
+      "summary": "Ovipare (crochet phylogénétique). Aucun œuf ni nid d'ornithomimidé identifié avec certitude dans les références vérifiables ici ; les plumes alaires des adultes ont été interprétées comme liées à la parade ou à la couvaison (Zelenitsky et al. 2012).",
+      "confidence": "speculative",
+      "sources": [
+        "zelenitsky2012_ornithomimus_feathers"
+      ]
+    },
+    "development": {
+      "summary": "Chez Ornithomimus, les structures plumeuses des bras n'apparaissent que chez les individus âgés, ce qui suggère un rôle reproductif ou de parade ; transposable avec prudence à Struthiomimus.",
+      "confidence": "inferred",
+      "sources": [
+        "zelenitsky2012_ornithomimus_feathers"
+      ]
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune histologie de croissance de S. sedens vérifiée."
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Grands yeux typiques des ornithomimidés, mais aucune étude sensorielle vérifiée pour ce taxon."
+    },
+    "communication": {
+      "summary": "Parades visuelles plausibles (plumes alaires des adultes chez Ornithomimus) ; vocalisations à bouche fermée possibles par crochet phylogénétique. Aucune preuve directe.",
+      "confidence": "speculative",
+      "sources": [
+        "zelenitsky2012_ornithomimus_feathers",
+        "riede2016_closed_mouth_vocal"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Plaine côtière de Hell Creek ; un animal coureur est supposé fréquenter surtout les espaces ouverts de la plaine d'inondation, les bancs de sable et les lisières boisées.",
+      "confidence": "inferred",
+      "sources": [
+        "horner2011_hellcreek_census",
+        "persons2016_cursorial_limbs"
+      ]
+    },
+    "climate": {
+      "summary": "Climat chaud tempéré à subtropical, humide, à saisonnalité modérée (contexte de Hell Creek).",
+      "confidence": "inferred",
+      "sources": [
+        "wilf2003_kpg_climate"
+      ]
+    },
+    "interactions": {
+      "summary": "Proie potentielle de T. rex, de Nanotyrannus et, pour les jeunes, de petits théropodes comme Acheroraptor ; concurrent possible d'Anzu pour les ressources végétales basses.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "lamanna2014_anzu"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Restes d'ornithomimidés relativement fréquents mais généralement isolés à Hell Creek et Lance ; holotype de S. sedens = squelette partiel ; aucun squelette de Hell Creek publié en détail dans la littérature vérifiée.",
+      "confidence": "inferred",
+      "sources": [
+        "marsh1892_ornithomimus_sedens",
+        "horner2011_hellcreek_census",
+        "claessens2016_ornithomimus_velox"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun comportement directement documenté pour les ornithomimidés de Hell Creek."
+    },
+    "inferred_behavior": {
+      "summary": "Coureur rapide fuyant les prédateurs, omnivore à dominante végétale, possiblement grégaire, avec parades visuelles des adultes.",
+      "confidence": "speculative",
+      "sources": [
+        "kobayashi2003_sinornithomimus",
+        "persons2016_cursorial_limbs",
+        "zelenitsky2012_ornithomimus_feathers"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Quel(s) ornithomimidé(s) à Hell Creek ?",
+      "positions": [
+        {
+          "summary": "Struthiomimus sedens, décrit de la Formation de Lance, représente l'ornithomimidé de Hell Creek.",
+          "sources": [
+            "marsh1892_ornithomimus_sedens",
+            "osborn1917_struthiomimus"
+          ]
+        },
+        {
+          "summary": "Le matériel est mieux traité comme « Ornithomimus » sp. ou Ornithomimidae indet. ; une ou plusieurs espèces possibles.",
+          "sources": [
+            "claessens2016_ornithomimus_velox"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "diet",
+      "summary": "Régime alimentaire des ornithomimidés.",
+      "positions": [
+        {
+          "summary": "Herbivore avec moulin gastrique (gastrolithes).",
+          "sources": [
+            "kobayashi1999_ornithomimid_gastroliths",
+            "zanno2011_herbivorous_theropods"
+          ]
+        },
+        {
+          "summary": "Filtreur ou omnivore en milieu humide (lamelles du bec).",
+          "sources": [
+            "norell2001_ornithomimid_beaks"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "social_behavior",
+      "summary": "Grégarisme.",
+      "positions": [
+        {
+          "summary": "Grégaire, au moins chez les juvéniles (gisement de Sinornithomimus).",
+          "sources": [
+            "kobayashi2003_sinornithomimus"
+          ]
+        },
+        {
+          "summary": "Aucune preuve pour Struthiomimus ; les agrégations peuvent résulter de causes taphonomiques.",
+          "sources": []
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_ornithomimid",
+    "adult_mass_kg": 160,
+    "adult_length_m": 4.0,
+    "hip_height_m": 1.4,
+    "foot_length_m": 0.3,
+    "foot_width_m": 0.22,
+    "hatchling_mass_kg": 0.5,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 160,
+      "max_growth_rate_kg_per_year": 50,
+      "inflection_age_years": 3,
+      "maturity_age_years": 5,
+      "max_lifespan_years": 18
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.5,
+      "max_speed_ms": 13.0,
+      "max_accel_ms2": 4.0,
+      "max_decel_ms2": 5.0,
+      "max_yaw_rate_dps": 120,
+      "max_slope_deg": 35,
+      "swim": true,
+      "swim_speed_ms": 0.7,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.35
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 10,
+      "water_l_per_day_per_100kg": 4.0
+    },
+    "diet": {
+      "type": "omnivore",
+      "plant_preferences": {
+        "fern": 0.4,
+        "horsetail": 0.3,
+        "angio_herb": 0.6,
+        "angio_shrub": 0.6,
+        "angio_tree": 0.2,
+        "conifer": 0.2,
+        "palm": 0.2,
+        "cycadophyte": 0.2,
+        "ginkgo": 0.1,
+        "aquatic_macrophyte": 0.3,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 3.0,
+      "prey_mass_min_kg": 0.005,
+      "prey_mass_max_kg": 2,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": true,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 800,
+      "fov_deg": 300,
+      "binocular_deg": 30,
+      "low_light": 0.5,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 3000,
+      "hearing_best_hz": 800,
+      "hearing_threshold_db": 15,
+      "olfaction": 0.4,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 6,
+      "group_size_max": 25,
+      "cohesion": 0.6,
+      "territorial": false,
+      "territory_radius_m": 2000,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "kick",
+        "claws"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.2,
+      "flee_preference": 0.9
+    },
+    "predation": {
+      "hunt_style": "probe_forage",
+      "attack_strength": 0.05,
+      "bite_force_n": 200,
+      "max_chase_s": 3
+    },
+    "reproduction": {
+      "clutch_size_mean": 20,
+      "clutch_size_max": 30,
+      "incubation_days": 80,
+      "breeding_season_doy": [
+        90,
+        150
+      ],
+      "parental_care": 0.5,
+      "nest_type": "open_scrape"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 80,
+      "f0_max_hz": 800,
+      "call_types": [
+        {
+          "id": "flock_contact",
+          "duration_s": 0.6,
+          "f0_hz": 200,
+          "source_level_db": 80,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "display_call",
+          "duration_s": 1.5,
+          "f0_hz": 120,
+          "source_level_db": 85,
+          "context": "courtship_display",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.3,
+        0.15
+      ],
+      "caution": [
+        0.7,
+        0.15
+      ],
+      "aggression": [
+        0.15,
+        0.1
+      ],
+      "curiosity": [
+        0.45,
+        0.15
+      ],
+      "sociability": [
+        0.7,
+        0.15
+      ],
+      "vigilance": [
+        0.75,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.25,
+        0.1
+      ],
+      "exploration": [
+        0.5,
+        0.15
+      ],
+      "flight_tendency": [
+        0.85,
+        0.1
+      ],
+      "dominance": [
+        0.25,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0.7,
+      "sandbar": 0.6,
+      "oxbow_lake": 0.2,
+      "backswamp": 0.3,
+      "riparian_forest": 0.5,
+      "floodplain_open": 0.9,
+      "levee_woodland": 0.6,
+      "upland_conifer_forest": 0.4,
+      "cutbank_cliff": 0.05,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.3,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 15,
+      "regional_density_per_km2": 0.25
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: herbivore/omnivore de taille moyenne, proie importante des prédateurs simulés → agents individuels (troupeaux de petite taille)",
+    "body_plan": "derived: ornithomimidé (osborn1917_struthiomimus)",
+    "adult_mass_kg": "game_assumption: aucune estimation vérifiée pour S. sedens ; ordre de grandeur des ornithomimidés de ~4 m",
+    "adult_length_m": "game_assumption: par analogie avec Struthiomimus altus (~4 m ; osborn1917_struthiomimus)",
+    "hip_height_m": "game_assumption: proportions d'ornithomimidé à membres longs, aucune mesure vérifiée",
+    "foot_length_m": "game_assumption: pied tridactyle allongé, aucune donnée",
+    "foot_width_m": "game_assumption: aucune donnée",
+    "hatchling_mass_kg": "game_assumption: aucun œuf connu",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée → 1,0",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune histologie vérifiée",
+    "growth.inflection_age_years": "game_assumption: aucune histologie vérifiée",
+    "growth.maturity_age_years": "game_assumption: aucune histologie vérifiée",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.max_speed_ms": "game_assumption: proportions très cursoriales (persons2016_cursorial_limbs ; dececchi2020_theropod_limbs) ; valeur prudente inférieure à l'autruche actuelle",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée",
+    "locomotion.swim": "game_assumption: aucune donnée ; nage supposée possible",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.fly": "derived: ornithomimidé non volant (osborn1917_struthiomimus ; zelenitsky2012_ornithomimus_feathers)",
+    "locomotion.fly_speed_ms": "derived: sans objet",
+    "locomotion.duty_factor_walk": "game_assumption: valeur typique de marche bipède",
+    "locomotion.duty_factor_run": "game_assumption: course avec phase aérienne marquée",
+    "metabolism.thermo_class": "game_assumption: coelurosaurien emplumé — endothermie supposée (débat : grady2014_mesothermy vs wiemann2022_dinosaur_metabolism)",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée",
+    "diet.type": "derived: omnivore à dominante végétale (kobayashi1999_ornithomimid_gastroliths, non vérifiée ; zanno2011_herbivorous_theropods) — débattu",
+    "diet.plant_preferences": "game_assumption: préférences relatives choisies ; aucune donnée de contenu stomacal",
+    "diet.browse_height_min_m": "game_assumption: alimentation au sol possible",
+    "diet.browse_height_max_m": "game_assumption: hauteur de hanche + long cou → ~3 m",
+    "diet.prey_mass_min_kg": "game_assumption: invertébrés",
+    "diet.prey_mass_max_kg": "game_assumption: petits vertébrés seulement",
+    "diet.scavenges": "game_assumption: aucune preuve",
+    "diet.eats_fish": "game_assumption: hypothèse de filtrage minoritaire (norell2001_ornithomimid_beaks) non retenue",
+    "diet.eats_invertebrates": "game_assumption: plausible pour un omnivore",
+    "diet.eats_eggs": "game_assumption: aucune preuve",
+    "senses.vision_range_m": "game_assumption: grands yeux des ornithomimidés, acuité inconnue",
+    "senses.fov_deg": "game_assumption: yeux latéraux supposés, champ large",
+    "senses.binocular_deg": "game_assumption: aucune donnée",
+    "senses.low_light": "game_assumption: aucune donnée",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée",
+    "senses.olfaction": "game_assumption: aucune donnée",
+    "senses.vibration": "game_assumption: aucune donnée",
+    "social.group_size_mean": "game_assumption: grégarisme extrapolé depuis Sinornithomimus (kobayashi2003_sinornithomimus) — SPÉCULATIF",
+    "social.group_size_max": "game_assumption: SPÉCULATIF",
+    "social.cohesion": "game_assumption: SPÉCULATIF",
+    "social.territorial": "game_assumption: aucune donnée",
+    "social.territory_radius_m": "game_assumption: aucune donnée",
+    "social.alarm_calls": "game_assumption: cris d'alarme non démontrés ; désactivés dans la reconstruction de base",
+    "defense.weapons": "game_assumption: coups de pattes et griffes des mains, usage défensif non documenté",
+    "defense.armor": "game_assumption: aucun ostéoderme",
+    "defense.defense_strength": "game_assumption: défense faible, fuite privilégiée",
+    "defense.flee_preference": "game_assumption: animal coureur (persons2016_cursorial_limbs)",
+    "predation.hunt_style": "game_assumption: glaneur",
+    "predation.attack_strength": "game_assumption: valeur relative très faible",
+    "predation.bite_force_n": "game_assumption: bec édenté faible, aucune donnée",
+    "predation.max_chase_s": "game_assumption: pas de poursuite",
+    "reproduction.clutch_size_mean": "game_assumption: aucune ponte connue",
+    "reproduction.clutch_size_max": "game_assumption: aucune ponte connue",
+    "reproduction.incubation_days": "game_assumption: ordre de grandeur des incubations dinosauriennes (erickson2017_dinosaur_incubation)",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée",
+    "reproduction.parental_care": "game_assumption: aucune donnée",
+    "reproduction.nest_type": "game_assumption: aucun nid connu ; nid ouvert au sol supposé",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF (riede2016_closed_mouth_vocal)",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée",
+    "vocal.call_types": "game_assumption: répertoire entièrement SPÉCULATIF (aucun syrinx connu chez les non-aviens : clarke2016_mesozoic_syrinx)",
+    "activity.pattern": "game_assumption: aucune donnée",
+    "personality": "game_assumption: traits de personnalité toujours hypothétiques",
+    "habitat": "game_assumption: coureur supposé préférer les milieux ouverts",
+    "population.initial_count": "game_assumption: restes d'ornithomimidés relativement fréquents à Hell Creek (horner2011_hellcreek_census) ; ~15 individus (2–3 groupes) sur 64 km²",
+    "population.regional_density_per_km2": "game_assumption: aucune donnée"
+  }
+}

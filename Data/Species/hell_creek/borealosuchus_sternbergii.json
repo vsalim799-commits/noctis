@@ -1,0 +1,561 @@
+{
+  "schema": "noctis.species/1",
+  "id": "borealosuchus_sternbergii",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Borealosuchus sternbergii",
+  "authority": "(Gilmore, 1910)",
+  "common_names": {
+    "fr": "Borealosuchus de Sternberg",
+    "en": "Sternberg's Borealosuchus"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Crocodylia, genre Borealosuchus. Espèce décrite sous le nom de Leidyosuchus sternbergii par Gilmore (1910). Brochu (1997) a montré que plusieurs espèces jusque-là rangées dans Leidyosuchus forment un clade distinct, nommé Borealosuchus, apparenté mais extérieur au groupe réunissant alligatoroïdes et crocodyloïdes.",
+      "confidence": "established",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus"
+      ]
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La Formation de Hell Creek enregistre environ le dernier million et demi d'années du Mésozoïque et se termine à la limite Crétacé–Paléogène (~66 Ma).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "wilson2014_salamanders_kpg"
+      ],
+      "notes": "Wilson et al. (2014) situent la succession Hell Creek + membre de Tullock du comté de Garfield vers 67,5–65,3 Ma (calibration de l'époque)."
+    },
+    "formation": {
+      "summary": "Holotype provenant des « Ceratops beds » (Formation de Lance) du comté de Converse, Wyoming. L'espèce est couramment signalée dans la Formation de Hell Creek, où les crocodyliens figurent parmi les groupes dominants des microsites ; les occurrences de Hell Creek n'ont pas été recontrôlées une à une pendant cette session.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus",
+        "pearson2002_hellcreek_vertebrates"
+      ]
+    },
+    "location": {
+      "summary": "Ouest intérieur de l'Amérique du Nord : Wyoming (holotype), Montana et Dakotas (Formation de Hell Creek).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus"
+      ]
+    },
+    "size": {
+      "summary": "Crocodylien de taille moyenne. Des sources secondaires indiquent une longueur totale d'environ 2,5–3 m pour les grands individus ; aucune mesure publiée n'a pu être recontrôlée dans Gilmore (1910) ou Brochu (1997) pendant cette session.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus"
+      ],
+      "value": 2.8,
+      "min": 2.0,
+      "max": 3.2,
+      "unit": "m",
+      "notes": "Valeur d'ordre de grandeur à confirmer sur le squelette holotype."
+    },
+    "mass": {
+      "summary": "Aucune estimation publiée retrouvée. Par analogie avec des crocodyliens actuels de longueur comparable, une masse de l'ordre de 60–150 kg est plausible.",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 100,
+      "min": 60,
+      "max": 150,
+      "unit": "kg"
+    },
+    "morphology": {
+      "summary": "Crocodylien généraliste à museau de longueur moyenne et dents coniques, corps protégé d'ostéodermes dorsaux, silhouette proche des crocodyliens actuels généralistes.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus"
+      ]
+    },
+    "skeleton": {
+      "summary": "Le matériel type décrit par Gilmore (1910) comprend un crâne et une part importante du squelette, ce qui fait de l'espèce l'un des crocodyliens maastrichtiens nord-américains les mieux connus ; dans Hell Creek, le matériel est surtout constitué de dents, ostéodermes, vertèbres et éléments crâniens isolés.",
+      "confidence": "inferred",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus"
+      ]
+    },
+    "musculature": {
+      "summary": "Non préservée. Par encadrement phylogénétique (EPB) avec les crocodyliens actuels : adducteurs mandibulaires puissants (dont m. pterygoideus) et musculature caudale importante (m. caudofemoralis) pour la nage et la marche.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Aucun tissu mou fossilisé connu. Par EPB : palais secondaire et valve palatale permettant de saisir une proie sous l'eau, organes sensoriels tégumentaires des mâchoires, cœur à quatre cavités.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "integument": {
+      "summary": "Ostéodermes dorsaux connus chez Borealosuchus ; écailles cornées inférées par EPB (aucune empreinte cutanée connue).",
+      "confidence": "inferred",
+      "sources": [
+        "brochu1997_borealosuchus",
+        "witmer1995_epb"
+      ]
+    },
+    "locomotion": {
+      "summary": "Quadrupède semi-aquatique : nage par ondulations de la queue, marche à terre (posture « haute » ou rampante) par analogie avec les crocodyliens actuels.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée ; la simulation utilise une valeur de jeu inspirée des crocodyliens actuels."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée ; valeur de jeu."
+    },
+    "diet": {
+      "summary": "Carnivore généraliste probable : poissons, tortues, amphibiens, petits à moyens vertébrés et invertébrés. Déduit de la denture conique non spécialisée et de l'analogie avec les crocodyliens généralistes actuels ; aucun contenu stomacal connu.",
+      "confidence": "inferred",
+      "sources": [
+        "brochu1997_borealosuchus",
+        "erickson2012_crocodilian_bite"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Prédateur à l'affût en bordure d'eau : approche immergée, saisie rapide par morsure, puis secousses ou rotation pour démembrer — schéma inféré des crocodyliens actuels.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb",
+        "erickson2012_crocodilian_bite"
+      ]
+    },
+    "predation": {
+      "summary": "Prédateur de haut niveau trophique des milieux aquatiques et riverains, partageant cette niche avec l'alligatoroïde Brachychampsa montana (connu par un crâne remarquable de Hell Creek, Dakota du Nord) et avec Champsosaurus. La capture de jeunes dinosaures est plausible mais non documentée.",
+      "confidence": "inferred",
+      "sources": [
+        "norell1994_brachychampsa",
+        "pearson2002_hellcreek_vertebrates"
+      ]
+    },
+    "defense": {
+      "summary": "Ostéodermes dorsaux et grande taille à l'âge adulte ; les juvéniles restaient probablement très vulnérables, comme chez les crocodyliens actuels.",
+      "confidence": "inferred",
+      "sources": [
+        "brochu1997_borealosuchus",
+        "witmer1995_epb"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Non documenté. Les crocodyliens actuels sont surtout solitaires mais tolèrent des regroupements (sites de nourrissage, bains de soleil) structurés par la taille ; un comportement similaire est supposé.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Ovipare (EPB : tous les archosaures actuels pondent des œufs à coquille calcifiée). Construction d'un nid et garde parentale probables par analogie avec les crocodyliens actuels ; aucun œuf ni nid attribué au taxon.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "development": {
+      "summary": "Non documenté pour le taxon. Par analogie actuelle : nouveau-nés minuscules par rapport à l'adulte, croissance rapide les premières années puis ralentie après la maturité.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune étude histologique publiée retrouvée pour B. sternbergii."
+    },
+    "senses": {
+      "summary": "Par EPB : yeux et narines dorsaux permettant d'observer en restant immergé, bonne vision crépusculaire, organes sensoriels tégumentaires des mâchoires sensibles aux perturbations de l'eau, audition surtout de basse fréquence. Aucune étude neuroanatomique du taxon retrouvée.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "communication": {
+      "summary": "Probablement vocale (cris des nouveau-nés, beuglements des adultes) et visuelle/posturale, par EPB avec les crocodyliens actuels ; non documentée fossilement.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Inconnu. Les crocodyliens actuels thermorégulent souvent au soleil le jour et chassent volontiers la nuit (activité cathémérale).",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Milieux fluviatiles et palustres : chenaux, bras morts, marécages de plaine d'inondation ; les crocodyliens sont parmi les vertébrés les plus représentés des microsites fluviatiles de Hell Creek.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates",
+        "fastovsky2016_hellcreek_primer"
+      ]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide au climat chaud-tempéré à subtropical, sans gel prolongé, avec des fluctuations de température au cours du Maastrichtien terminal ; la composition des faunes (ex. tortues) a varié avec ces changements climatiques. Aucune donnée de tolérance climatique propre au taxon.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "fastovsky2016_hellcreek_primer",
+        "holroyd2014_turtles_kpg",
+        "wilf2003_climate"
+      ],
+      "notes": "Affirmation au niveau de l'environnement de dépôt, pas de l'espèce."
+    },
+    "interactions": {
+      "summary": "Partage les milieux aquatiques avec Brachychampsa montana, Champsosaurus, des lépisostéidés et de nombreuses tortues. Proies potentielles : poissons, tortues, amphibiens, petits mammifères, jeunes dinosaures ; prédateurs potentiels des juvéniles : autres crocodyliens, grands poissons, théropodes.",
+      "confidence": "inferred",
+      "sources": [
+        "pearson2002_hellcreek_vertebrates",
+        "norell1994_brachychampsa"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Holotype de la Formation de Lance (Gilmore 1910) ; restes isolés fréquents dans la Formation de Hell Creek. Le genre Borealosuchus franchit la limite K–Pg et persiste au Paléogène (révision de Brochu 1997, Crétacé à Éocène).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "gilmore1910_leidyosuchus",
+        "brochu1997_borealosuchus"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune trace (morsure, contenu stomacal, piste) attribuée spécifiquement à B. sternbergii n'a été vérifiée."
+    },
+    "inferred_behavior": {
+      "summary": "Chasse à l'affût en bordure d'eau, thermorégulation comportementale (bains de soleil), garde du nid et réponse aux cris des petits — tous inférés par EPB à partir des crocodyliens actuels.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer1995_epb"
+      ]
+    }
+  },
+  "competing_hypotheses": [],
+  "sim": {
+    "role": "agent",
+    "body_plan": "quadruped_crocodylian",
+    "adult_mass_kg": 100,
+    "adult_length_m": 2.8,
+    "hip_height_m": 0.3,
+    "foot_length_m": 0.15,
+    "foot_width_m": 0.1,
+    "hatchling_mass_kg": 0.06,
+    "sexual_dimorphism_mass": 0.7,
+    "growth": {
+      "asymptotic_mass_kg": 100,
+      "max_growth_rate_kg_per_year": 10,
+      "inflection_age_years": 10,
+      "maturity_age_years": 10,
+      "max_lifespan_years": 50
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.5,
+      "max_speed_ms": 3.0,
+      "max_accel_ms2": 3.0,
+      "max_decel_ms2": 4.0,
+      "max_yaw_rate_dps": 90,
+      "max_slope_deg": 30,
+      "swim": true,
+      "swim_speed_ms": 1.0,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.7,
+      "duty_factor_run": 0.55
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 180,
+      "water_l_per_day_per_100kg": 0.5
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.05,
+      "prey_mass_max_kg": 150,
+      "scavenges": true,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 200,
+      "fov_deg": 270,
+      "binocular_deg": 25,
+      "low_light": 0.7,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 4000,
+      "hearing_best_hz": 1000,
+      "hearing_threshold_db": 30,
+      "olfaction": 0.6,
+      "vibration": 0.9
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 4,
+      "cohesion": 0.1,
+      "territorial": true,
+      "territory_radius_m": 300,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite",
+        "tail_whip"
+      ],
+      "armor": 0.6,
+      "defense_strength": 0.6,
+      "flee_preference": 0.5
+    },
+    "predation": {
+      "hunt_style": "ambush",
+      "attack_strength": 0.5,
+      "bite_force_n": 4000,
+      "max_chase_s": 5
+    },
+    "reproduction": {
+      "clutch_size_mean": 25,
+      "clutch_size_max": 45,
+      "incubation_days": 65,
+      "breeding_season_doy": [
+        150,
+        200
+      ],
+      "parental_care": 0.6,
+      "nest_type": "mound"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 20,
+      "f0_max_hz": 600,
+      "call_types": [
+        {
+          "id": "juvenile_distress",
+          "duration_s": 0.3,
+          "f0_hz": 400,
+          "source_level_db": 70,
+          "context": "juvenile_distress",
+          "confidence": "inferred"
+        },
+        {
+          "id": "adult_bellow",
+          "duration_s": 2.0,
+          "f0_hz": 40,
+          "source_level_db": 90,
+          "context": "territorial_courtship",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "cathemeral"
+    },
+    "personality": {
+      "boldness": [
+        0.6,
+        0.15
+      ],
+      "caution": [
+        0.5,
+        0.15
+      ],
+      "aggression": [
+        0.5,
+        0.15
+      ],
+      "curiosity": [
+        0.3,
+        0.1
+      ],
+      "sociability": [
+        0.2,
+        0.1
+      ],
+      "vigilance": [
+        0.6,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.4,
+        0.15
+      ],
+      "exploration": [
+        0.3,
+        0.1
+      ],
+      "flight_tendency": [
+        0.4,
+        0.15
+      ],
+      "dominance": [
+        0.6,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0.8,
+      "riverbank": 1.0,
+      "sandbar": 0.8,
+      "oxbow_lake": 0.9,
+      "backswamp": 0.8,
+      "riparian_forest": 0.3,
+      "floodplain_open": 0.1,
+      "levee_woodland": 0.2,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0.2,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.3,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 24,
+      "regional_density_per_km2": 0.4
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: activité cathémérale de crocodyliens actuels (bains de soleil le jour, chasse nocturne)",
+    "adult_length_m": "game_assumption: ordre de grandeur (~2,5–3 m) rapporté par des sources secondaires, non recontrôlé dans gilmore1910_leidyosuchus",
+    "adult_mass_kg": "game_assumption: analogie avec des crocodyliens actuels de longueur comparable ; aucune estimation publiée pour le taxon",
+    "body_plan": "brochu1997_borealosuchus",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "derived: analogie avec les crocodyliens généralistes actuels",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "derived: denture conique généraliste (brochu1997_borealosuchus) et analogie actuelle",
+    "foot_length_m": "game_assumption: proportions d'un crocodylien actuel de ~2,8 m",
+    "foot_width_m": "game_assumption: proportions d'un crocodylien actuel de ~2,8 m",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg (croissance non étudiée)",
+    "growth.inflection_age_years": "game_assumption: aucune donnée histologique",
+    "growth.maturity_age_years": "game_assumption: maturité de ~10 ans comme chez de grands crocodyliens actuels",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée histologique ; ordre de grandeur crocodylien actuel",
+    "growth.max_lifespan_years": "game_assumption: longévité de crocodyliens actuels",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (pearson2002_hellcreek_vertebrates ; fastovsky2016_hellcreek_primer)",
+    "hatchling_mass_kg": "game_assumption: EPB — nouveau-nés de crocodyliens actuels de quelques dizaines de grammes",
+    "hip_height_m": "game_assumption: proportions d'un crocodylien actuel de ~2,8 m",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: courtes pointes à terre comme chez les crocodyliens actuels",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "derived: mode de vie semi-aquatique inféré (EPB, witmer1995_epb ; contexte de dépôt pearson2002_hellcreek_vertebrates)",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "derived: EPB — tous les crocodyliens actuels sont ectothermes (witmer1995_epb)",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~24 adultes/subadultes pour un réseau de chenaux de ~8 km × 8 km ; densité non mesurable fossilement",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: ordre de grandeur compatible avec les mesures sur crocodyliens actuels de taille comparable (erickson2003_alligator_bite ; erickson2012_crocodilian_bite), non dérivé formellement",
+    "predation.hunt_style": "derived: chasse à l'affût inférée par EPB (crocodyliens actuels) ; demande explicite du cahier des charges",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: pontes de crocodyliens actuels de taille comparable",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "game_assumption: nid-monticule de type alligator ; les crocodyliens actuels font aussi des nids-trous (choix arbitraire)",
+    "reproduction.parental_care": "derived: EPB — garde du nid et des petits chez les crocodyliens actuels (witmer1995_epb)",
+    "role": "game_assumption: grand prédateur riverain simulé individuellement (choix de conception)",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: EPB — mâles plus grands chez les crocodyliens actuels ; ratio non mesuré chez le taxon",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: répertoire inspiré des crocodyliens actuels (EPB) ; niveaux sonores non mesurables",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

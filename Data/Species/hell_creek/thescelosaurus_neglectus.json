@@ -1,0 +1,404 @@
+{
+  "schema": "noctis.species/1",
+  "id": "thescelosaurus_neglectus",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Thescelosaurus neglectus",
+  "authority": "Gilmore, 1913",
+  "common_names": { "fr": "Thescélosaure", "en": "Thescelosaurus" },
+  "regions": ["hell_creek"],
+
+  "science": {
+    "taxonomy": {
+      "summary": "Néornithischien de la famille des Thescelosauridae, décrit par Gilmore (1913) d'après un squelette de la formation de Lance. Bugenasaura infernalis est considéré comme synonyme de T. neglectus (Boyd et al. 2009) ; une seconde espèce, T. assiniboiensis, a été décrite dans la formation de Frenchman en Saskatchewan (Brown et al. 2011).",
+      "confidence": "established",
+      "sources": ["gilmore1913_thescelosaurus", "boyd2009_thescelosaurus_revision", "brown2011_thescelosaurus_frenchman", "boyd2014_thescelosaurus_cranium"]
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La formation de Hell Creek couvre approximativement 67,1 à 66,0 millions d'années.",
+      "confidence": "established",
+      "sources": ["boyd2009_thescelosaurus_revision", "roberts2025_dueling_dinosaurs_age", "sprain2015_hellcreek_chronostratigraphy"],
+      "min": 66.0, "max": 67.1, "unit": "Ma",
+      "notes": "Bornes d'âge de la formation de Hell Creek."
+    },
+    "formation": {
+      "summary": "Formations de Hell Creek (Montana, Dakotas : spécimen « Willo » du Dakota du Sud) et de Lance (Wyoming : holotype), et formations contemporaines du Canada pour le genre.",
+      "confidence": "established",
+      "sources": ["gilmore1913_thescelosaurus", "fisher2000_willo_heart", "boyd2009_thescelosaurus_revision", "brown2011_thescelosaurus_frenchman"]
+    },
+    "location": {
+      "summary": "Intérieur de l'Ouest de l'Amérique du Nord (Laramidia) : Montana, Dakota du Sud, Dakota du Nord, Wyoming ; le genre est aussi présent en Saskatchewan.",
+      "confidence": "established",
+      "sources": ["boyd2009_thescelosaurus_revision", "brown2011_thescelosaurus_frenchman"]
+    },
+    "size": {
+      "summary": "Ornithischien de taille moyenne pour un « petit » herbivore : environ 3 à 4 m de long pour les grands individus, dont une longue queue. Ordre de grandeur de la littérature générale.",
+      "confidence": "inferred",
+      "sources": [],
+      "value": 3.5, "min": 2.5, "max": 4.0, "unit": "m",
+      "notes": "Aucune mesure de longueur totale vérifiée dans cette session."
+    },
+    "mass": {
+      "summary": "Quelques centaines de kilogrammes pour un adulte de 3 à 4 m (ordre de grandeur ; aucune estimation publiée vérifiée dans cette session).",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 250, "min": 150, "max": 350, "unit": "kg"
+    },
+    "morphology": {
+      "summary": "Bipède robuste à large cage thoracique, membres relativement courts et longue queue rigidifiée par des tendons ossifiés. Crâne long et bas avec bec corné, dents prémaxillaires et dents jugales foliacées ; os palpébraux au-dessus des yeux. De fines plaques minéralisées sont présentes le long des côtes (plaques intercostales), de fonction inconnue.",
+      "confidence": "established",
+      "sources": ["gilmore1915_thescelosaurus_osteology", "boyd2014_thescelosaurus_cranium", "fisher2000_willo_heart"]
+    },
+    "skeleton": {
+      "summary": "Plusieurs squelettes partiels à presque complets : holotype de Lance décrit par Gilmore (1913, 1915), « Willo » (NCSM 15728, Dakota du Sud), crânes décrits en détail par Boyd (2014). Chez Thescelosaurus, le fémur est plus long que le tibia, à l'inverse des petits ornithischiens coureurs.",
+      "confidence": "established",
+      "sources": ["gilmore1913_thescelosaurus", "gilmore1915_thescelosaurus_osteology", "boyd2014_thescelosaurus_cranium", "fisher2000_willo_heart"]
+    },
+    "musculature": {
+      "summary": "Reconstruite par encadrement phylogénétique ; aucune étude myologique spécifique connue. Membres robustes et queue rigide suggèrent une musculature de bipède trapu plutôt que de coureur spécialisé.",
+      "confidence": "inferred",
+      "sources": ["gilmore1915_thescelosaurus_osteology"]
+    },
+    "soft_tissue": {
+      "summary": "Le spécimen « Willo » contient dans la cage thoracique une concrétion ferrugineuse que Fisher et al. (2000) ont interprétée, d'après la tomodensitométrie, comme un cœur à quatre cavités avec une seule aorte systémique. Cette interprétation a été contestée (Rowe et al. 2001) puis réexaminée par histologie, chimie et morphologie : la structure est une concrétion d'origine sédimentaire sans tissu cardiaque identifiable (Cleland et al. 2011). Aucun organe interne de Thescelosaurus n'est donc démontré.",
+      "confidence": "speculative",
+      "sources": ["fisher2000_willo_heart", "rowe2001_heart_of_stone", "cleland2011_willo_reexamination"],
+      "notes": "Le niveau SPÉCULATIF porte sur l'existence d'un cœur fossilisé ; la réfutation est l'interprétation dominante."
+    },
+    "integument": {
+      "summary": "Nature du tégument inconnue. Gilmore (1915) a décrit près des épaules des plages de matière carbonisée à texture ponctuée, possible épiderme, sans motif d'écailles régulier. Par encadrement phylogénétique, des écailles sont probables ; des filaments, documentés chez le néornithischien jurassique Kulindadromeus (Godefroit et al. 2014), sont possibles mais spéculatifs.",
+      "confidence": "inferred",
+      "sources": ["gilmore1915_thescelosaurus_osteology", "godefroit2014_kulindadromeus"]
+    },
+    "locomotion": {
+      "summary": "Bipède. La construction trapue et le fémur plus long que le tibia indiquent un animal moins coureur que les petits ornithischiens à longues jambes ; la neuroanatomie (lobes flocculaires réduits) est également interprétée comme peu compatible avec une locomotion très agile (Button & Zanno 2023).",
+      "confidence": "inferred",
+      "sources": ["gilmore1915_thescelosaurus_osteology", "button2023_thescelosaurus_neuroanatomy"]
+    },
+    "speed": {
+      "summary": "Aucune mesure ; probablement plus lent que des ornithischiens cursoriaux de taille comparable (proportions des membres). Valeurs de simulation = hypothèses de jeu.",
+      "confidence": "inferred",
+      "sources": ["gilmore1915_thescelosaurus_osteology"]
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivore probable : bec corné, dents jugales foliacées et dents prémaxillaires (Boyd 2014). Un régime partiellement omnivore est parfois évoqué pour les petits ornithischiens à dents prémaxillaires, sans preuve directe. Aucune graminée à Hell Creek.",
+      "confidence": "inferred",
+      "sources": ["boyd2014_thescelosaurus_cranium"],
+      "notes": "L'omnivorie relève du niveau SPÉCULATIF."
+    },
+    "feeding_strategy": {
+      "summary": "Brouteur sélectif de végétation basse (feuilles tendres, pousses, fruits et graines possibles), au ras du sol et jusqu'à environ 1 m. Un odorat développé (Button & Zanno 2023) pourrait avoir servi à localiser la nourriture ; la recherche de racines ou d'organes souterrains est une hypothèse.",
+      "confidence": "speculative",
+      "sources": ["button2023_thescelosaurus_neuroanatomy"]
+    },
+    "predation": {
+      "summary": "Aucune trace directe de prédation publiée connue. Proie plausible de Tyrannosaurus (notamment juvéniles) et de dromaéosauridés (inférence écologique).",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Aucune arme ni armure ; fuite, dissimulation dans le couvert végétal et éventuellement refuge dans un terrier (hypothèse) sont les défenses probables.",
+      "confidence": "speculative",
+      "sources": ["button2023_thescelosaurus_neuroanatomy", "varricchio2007_oryctodromeus"]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun lit d'ossements ni accumulation de plusieurs individus signalé à notre connaissance."
+    },
+    "reproduction": {
+      "summary": "Ovipare (encadrement phylogénétique) ; œufs et nids de Thescelosaurus inconnus. Chez l'orodrominé Oryctodromeus, autre néornithischien, un adulte a été trouvé avec deux juvéniles dans un terrier, indice de nidification ou de soins en terrier chez certains parents (Varricchio et al. 2007) ; l'extension à Thescelosaurus est spéculative.",
+      "confidence": "inferred",
+      "sources": ["varricchio2007_oryctodromeus"]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "La neuroanatomie de Thescelosaurus, reconstruite par tomodensitométrie, montre des bulbes olfactifs développés (odorat fin), une oreille interne compatible avec une audition limitée aux basses fréquences et des lobes flocculaires réduits ; les auteurs y voient des spécialisations écologiques inédites parmi les dinosaures (Button & Zanno 2023).",
+      "confidence": "inferred",
+      "sources": ["button2023_thescelosaurus_neuroanatomy"],
+      "notes": "Résultats cités d'après la littérature secondaire ; chiffres de l'article non relus dans cette session."
+    },
+    "communication": {
+      "summary": "Aucune donnée. Une audition centrée sur les basses fréquences suggère, si des vocalisations existaient, des sons graves ; spéculatif.",
+      "confidence": "speculative",
+      "sources": ["button2023_thescelosaurus_neuroanatomy", "riede2016_closed_mouth_vocalization"]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Ses restes sont relativement plus abondants dans les grès de chenaux que dans les argilites de plaine d'inondation, ce qui a été interprété comme une préférence pour les abords des cours d'eau (Pearson et al. 2002 ; Lyson & Longrich 2011), mais cette interprétation n'est pas unanime et peut refléter un biais de conservation. Probablement sous-bois des forêts riveraines et levées boisées.",
+      "confidence": "inferred",
+      "sources": ["lyson2011_niche_partitioning", "pearson2002_hellcreek_vertebrates"]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide et saisonnière (~49° N, température moyenne annuelle estimée ~7–12 °C) ; tolérance climatique propre inconnue. Un mode de vie partiellement fouisseur, s'il existait, aurait permis de s'abriter des extrêmes (spéculatif).",
+      "confidence": "inferred",
+      "sources": ["arens2014_hellcreek_basal_florule", "wilf2003_kpg_climate"]
+    },
+    "interactions": {
+      "summary": "Coexistait avec Tyrannosaurus, des dromaéosauridés, Triceratops, Edmontosaurus, Ankylosaurus et Pachycephalosaurus ; concurrence alimentaire possible avec Pachycephalosaurus et les juvéniles des grands herbivores dans la strate basse (hypothèse).",
+      "confidence": "inferred",
+      "sources": ["lyson2011_niche_partitioning", "fastovsky2016_hellcreek_primer"]
+    },
+    "fossil_record": {
+      "summary": "Relativement fréquent pour un dinosaure de petite taille ; spécimens majeurs : holotype de Lance, « Willo » (Dakota du Sud), crânes étudiés en détail.",
+      "confidence": "strongly_supported",
+      "sources": ["gilmore1915_thescelosaurus_osteology", "boyd2014_thescelosaurus_cranium", "fisher2000_willo_heart", "lyson2011_niche_partitioning"]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune piste, pathologie comportementale ou contenu digestif publié connu pour Thescelosaurus."
+    },
+    "inferred_behavior": {
+      "summary": "Herbivore discret de sous-bois, se nourrissant au sol en s'aidant de l'odorat, plutôt fuyant que rapide ; utilisation de terriers (creusés ou empruntés) envisagée par analogie avec Oryctodromeus et d'après la neuroanatomie — SPÉCULATIF pour le fouissage.",
+      "confidence": "speculative",
+      "sources": ["button2023_thescelosaurus_neuroanatomy", "varricchio2007_oryctodromeus"]
+    }
+  },
+
+  "competing_hypotheses": [
+    {
+      "topic": "soft_tissue_heart",
+      "summary": "Le « cœur » de Willo est-il un organe fossilisé ?",
+      "positions": [
+        {
+          "summary": "Oui : la tomodensitométrie de la concrétion thoracique révèle des structures évoquant un cœur à quatre cavités et une seule aorte systémique, suggérant un métabolisme intermédiaire à élevé.",
+          "sources": ["fisher2000_willo_heart"]
+        },
+        {
+          "summary": "Non : la structure est une concrétion sédimentaire (« cœur de pierre ») ; l'examen histologique, chimique et morphologique ne révèle aucun tissu cardiaque. C'est l'interprétation aujourd'hui dominante.",
+          "sources": ["rowe2001_heart_of_stone", "cleland2011_willo_reexamination"]
+        }
+      ]
+    },
+    {
+      "topic": "lifestyle_burrowing",
+      "summary": "Thescelosaurus était-il fouisseur ?",
+      "positions": [
+        {
+          "summary": "Possiblement : sa neuroanatomie (odorat développé, audition de basses fréquences, faible spécialisation pour l'agilité) évoque des animaux fouisseurs actuels ; un néornithischien apparenté, Oryctodromeus, a été trouvé dans un terrier.",
+          "sources": ["button2023_thescelosaurus_neuroanatomy", "varricchio2007_oryctodromeus"]
+        },
+        {
+          "summary": "Non démontré : aucun terrier ni spécialisation squelettique fouisseuse claire n'a été décrit chez Thescelosaurus ; l'anatomie est compatible avec un herbivore terrestre trapu et généraliste.",
+          "sources": ["gilmore1915_thescelosaurus_osteology", "boyd2014_thescelosaurus_cranium"]
+        }
+      ]
+    },
+    {
+      "topic": "habitat",
+      "summary": "Préférence pour les chenaux ou pour la plaine d'inondation ?",
+      "positions": [
+        {
+          "summary": "Abords des chenaux : abondance relative plus forte dans les grès de chenaux que dans les argilites de plaine d'inondation.",
+          "sources": ["lyson2011_niche_partitioning", "pearson2002_hellcreek_vertebrates"]
+        },
+        {
+          "summary": "Biais taphonomique possible : des carcasses de petite taille proches des cours d'eau sont plus facilement enfouies ; d'autres auteurs ont proposé une préférence inverse (références non retrouvées dans cette session).",
+          "sources": []
+        }
+      ]
+    }
+  ],
+
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_small_ornithischian",
+    "adult_mass_kg": 250,
+    "adult_length_m": 3.5,
+    "hip_height_m": 0.9,
+    "foot_length_m": 0.22,
+    "foot_width_m": 0.18,
+    "hatchling_mass_kg": 0.3,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 250,
+      "max_growth_rate_kg_per_year": 45,
+      "inflection_age_years": 4,
+      "maturity_age_years": 8,
+      "max_lifespan_years": 15
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.2,
+      "max_speed_ms": 7.0,
+      "max_accel_ms2": 3.5,
+      "max_decel_ms2": 5.0,
+      "max_yaw_rate_dps": 120,
+      "max_slope_deg": 40,
+      "swim": true, "swim_speed_ms": 0.6,
+      "fly": false, "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.4
+    },
+    "metabolism": {
+      "thermo_class": "mesotherm",
+      "max_fasting_days": 15,
+      "water_l_per_day_per_100kg": 5.0
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": { "fern": 0.7, "horsetail": 0.6, "angio_herb": 0.9, "angio_shrub": 0.8,
+                             "angio_tree": 0.2, "conifer": 0.2, "palm": 0.4, "cycadophyte": 0.4,
+                             "ginkgo": 0.4, "aquatic_macrophyte": 0.3, "xeric_shrub": 0 },
+      "browse_height_min_m": 0.0, "browse_height_max_m": 1.0,
+      "prey_mass_min_kg": 0, "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 500, "fov_deg": 300, "binocular_deg": 40, "low_light": 0.5,
+      "hearing_min_hz": 50, "hearing_max_hz": 2000, "hearing_best_hz": 600, "hearing_threshold_db": 25,
+      "olfaction": 0.85,
+      "vibration": 0.6
+    },
+    "social": {
+      "group_size_mean": 1, "group_size_max": 3, "cohesion": 0.2,
+      "territorial": false, "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": ["kick"],
+      "armor": 0.05, "defense_strength": 0.15, "flee_preference": 0.9
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.1,
+      "bite_force_n": 0,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 12, "clutch_size_max": 20,
+      "incubation_days": 90,
+      "breeding_season_doy": [100, 160],
+      "parental_care": 0.5,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 60, "f0_max_hz": 600,
+      "call_types": [
+        { "id": "contact_low", "duration_s": 0.6, "f0_hz": 150, "source_level_db": 75,
+          "context": "social_contact", "confidence": "speculative" },
+        { "id": "distress", "duration_s": 0.4, "f0_hz": 300, "source_level_db": 85,
+          "context": "alarm", "confidence": "speculative" }
+      ]
+    },
+    "activity": { "pattern": "cathemeral" },
+    "personality": {
+      "boldness": [0.25, 0.1], "caution": [0.75, 0.1], "aggression": [0.1, 0.05],
+      "curiosity": [0.45, 0.15], "sociability": [0.2, 0.1], "vigilance": [0.8, 0.1],
+      "risk_tolerance": [0.25, 0.1], "exploration": [0.45, 0.15], "flight_tendency": [0.85, 0.1],
+      "dominance": [0.2, 0.1]
+    },
+    "habitat": {
+      "channel": 0, "riverbank": 0.7, "sandbar": 0.3, "oxbow_lake": 0.2, "backswamp": 0.4,
+      "riparian_forest": 0.9, "floodplain_open": 0.5, "levee_woodland": 0.9,
+      "upland_conifer_forest": 0.6, "cutbank_cliff": 0.4,
+      "dune_field": 0, "interdune_flat": 0, "ephemeral_pond": 0.3, "xeric_scrub": 0
+    },
+    "population": { "initial_count": 20, "regional_density_per_km2": 0.3 }
+  },
+
+  "sim_basis": {
+    "role": "game_assumption: petit herbivore assez fréquent, simulé individuellement pour permettre l'observation",
+    "body_plan": "derived: néornithischien bipède (gilmore1915_thescelosaurus_osteology ; boyd2014_thescelosaurus_cranium)",
+    "adult_mass_kg": "game_assumption: aucune estimation publiée vérifiée ; ordre de grandeur pour 3–4 m",
+    "adult_length_m": "game_assumption: ordre de grandeur de la littérature générale (3–4 m)",
+    "hip_height_m": "game_assumption: proportions d'un bipède trapu de 3,5 m (fémur plus long que le tibia, gilmore1915_thescelosaurus_osteology)",
+    "foot_length_m": "game_assumption: aucune piste attribuée",
+    "foot_width_m": "game_assumption: aucune piste attribuée",
+    "hatchling_mass_kg": "game_assumption: œufs inconnus",
+    "sexual_dimorphism_mass": "game_assumption: dimorphisme non démontré",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg",
+    "growth.max_growth_rate_kg_per_year": "derived: logistique supposée (A = 250 kg, inflexion 4 ans, 95 % à 8 ans → k ≈ 0,74/an → kA/4 ≈ 45 kg/an) ; aucune donnée histologique vérifiée",
+    "growth.inflection_age_years": "game_assumption",
+    "growth.maturity_age_years": "game_assumption",
+    "growth.max_lifespan_years": "game_assumption",
+    "locomotion.walk_speed_ms": "game_assumption",
+    "locomotion.max_speed_ms": "game_assumption: valeur modérée pour un bipède trapu, moins cursorial que d'autres petits ornithischiens (gilmore1915_thescelosaurus_osteology ; button2023_thescelosaurus_neuroanatomy)",
+    "locomotion.max_accel_ms2": "game_assumption",
+    "locomotion.max_decel_ms2": "game_assumption",
+    "locomotion.max_yaw_rate_dps": "game_assumption: petit animal maniable, mais agilité réduite selon button2023_thescelosaurus_neuroanatomy",
+    "locomotion.max_slope_deg": "game_assumption",
+    "locomotion.swim": "game_assumption: nage occasionnelle supposée près des chenaux",
+    "locomotion.swim_speed_ms": "game_assumption",
+    "locomotion.fly": "derived: non volant",
+    "locomotion.fly_speed_ms": "derived: non volant",
+    "locomotion.duty_factor_walk": "game_assumption",
+    "locomotion.duty_factor_run": "game_assumption",
+    "metabolism.thermo_class": "game_assumption: « mesotherm » — le « cœur » invoqué pour un métabolisme élevé est réfuté (cleland2011_willo_reexamination) ; débat général (grady2014_mesothermy ; wiemann2022_ale_metabolism)",
+    "metabolism.max_fasting_days": "game_assumption",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: besoins relatifs plus élevés chez un petit animal",
+    "diet.type": "derived: bec et dents foliacées d'herbivore (boyd2014_thescelosaurus_cranium) ; omnivorie SPÉCULATIVE non activée",
+    "diet.plant_preferences": "game_assumption: végétation basse et tendre, fruits et pousses d'angiospermes ; composition de la flore (johnson2002_hellcreek_megaflora ; wilson2021_seafood_salad_flora — pas de graminées)",
+    "diet.browse_height_min_m": "game_assumption: alimentation au sol",
+    "diet.browse_height_max_m": "game_assumption: hauteur de tête d'un petit bipède ; aucune analyse publiée",
+    "diet.prey_mass_min_kg": "derived: herbivore",
+    "diet.prey_mass_max_kg": "derived: herbivore",
+    "diet.scavenges": "game_assumption",
+    "diet.eats_fish": "game_assumption",
+    "diet.eats_invertebrates": "game_assumption: omnivorie spéculative non activée",
+    "diet.eats_eggs": "game_assumption",
+    "senses.vision_range_m": "game_assumption: animal de sous-bois",
+    "senses.fov_deg": "game_assumption",
+    "senses.binocular_deg": "game_assumption",
+    "senses.low_light": "game_assumption",
+    "senses.hearing_min_hz": "derived: audition orientée basses fréquences (button2023_thescelosaurus_neuroanatomy) ; valeur = game_assumption",
+    "senses.hearing_max_hz": "derived: audition limitée aux basses fréquences (button2023_thescelosaurus_neuroanatomy) ; plafond = game_assumption",
+    "senses.hearing_best_hz": "game_assumption",
+    "senses.hearing_threshold_db": "game_assumption",
+    "senses.olfaction": "derived: bulbes olfactifs développés (button2023_thescelosaurus_neuroanatomy) ; valeur 0..1 = game_assumption",
+    "senses.vibration": "game_assumption: sensibilité aux vibrations du sol plausible pour un animal possiblement fouisseur (spéculatif)",
+    "social.group_size_mean": "game_assumption: aucun regroupement connu",
+    "social.group_size_max": "game_assumption",
+    "social.cohesion": "game_assumption",
+    "social.territorial": "game_assumption",
+    "social.territory_radius_m": "game_assumption",
+    "social.alarm_calls": "game_assumption: aucun indice",
+    "defense.weapons": "game_assumption: aucune arme ; coup de patte supposé",
+    "defense.armor": "derived: pas d'armure démontrée (les scutes signalées jadis restent douteuses ; gilmore1915_thescelosaurus_osteology pour le tégument) ; valeur = game_assumption",
+    "defense.defense_strength": "game_assumption",
+    "defense.flee_preference": "game_assumption: petit herbivore sans arme",
+    "predation.hunt_style": "derived: herbivore",
+    "predation.attack_strength": "game_assumption",
+    "predation.bite_force_n": "derived: herbivore — pas de morsure offensive",
+    "predation.max_chase_s": "derived: herbivore",
+    "reproduction.clutch_size_mean": "game_assumption: pontes inconnues",
+    "reproduction.clutch_size_max": "game_assumption",
+    "reproduction.incubation_days": "game_assumption: proche de la valeur de Protoceratops (~83 j, erickson2017_incubation) pour des œufs de taille comparable supposée",
+    "reproduction.breeding_season_doy": "game_assumption",
+    "reproduction.parental_care": "derived: adulte et juvéniles réunis dans un terrier chez Oryctodromeus (varricchio2007_oryctodromeus) — inférence phylogénétique ; valeur = game_assumption",
+    "reproduction.nest_type": "game_assumption: nid enfoui ou en terrier, par analogie (varricchio2007_oryctodromeus ; norell2020_soft_eggs)",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF — petit animal, vocalisation bouche ouverte supposée (riede2016_closed_mouth_vocalization associe la vocalisation bouche fermée surtout aux espèces plus grandes)",
+    "vocal.f0_min_hz": "game_assumption: spéculatif, cohérent avec une audition de basses fréquences",
+    "vocal.f0_max_hz": "game_assumption: spéculatif",
+    "vocal.call_types": "game_assumption: tous les cris sont SPÉCULATIFS",
+    "activity.pattern": "game_assumption: aucune donnée ; cathéméral par défaut",
+    "personality": "game_assumption: valeurs de personnalité toujours hypothétiques",
+    "habitat": "derived: abondance relative dans les dépôts de chenaux (lyson2011_niche_partitioning ; pearson2002_hellcreek_vertebrates) ; pondérations = game_assumption",
+    "population.initial_count": "game_assumption: taxon relativement fréquent (lyson2011_niche_partitioning) ; la loi de Damuth (damuth1981_density_body_size) prédirait pour 250 kg plusieurs individus par km², mais la charge de simulation et l'incertitude justifient ~0,3 ind./km² × ~67 km² ≈ 20",
+    "population.regional_density_per_km2": "game_assumption: voir population.initial_count"
+  }
+}

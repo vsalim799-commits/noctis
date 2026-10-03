@@ -1,0 +1,405 @@
+{
+  "schema": "noctis.species/1",
+  "id": "pachycephalosaurus_wyomingensis",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Pachycephalosaurus wyomingensis",
+  "authority": "(Gilmore, 1931)",
+  "common_names": { "fr": "Pachycéphalosaure", "en": "Pachycephalosaurus" },
+  "regions": ["hell_creek"],
+
+  "science": {
+    "taxonomy": {
+      "summary": "Pachycéphalosauridé (Pachycephalosaurinae), marginocéphale à dôme crânien. L'espèce a été décrite sous le nom de Troodon wyomingensis (Gilmore, 1931) ; le genre Pachycephalosaurus a été créé par Brown & Schlaikjer (1943). Dracorex hogwartsia (Bakker et al. 2006) et Stygimoloch spinifer (Galton & Sues 1983), du même âge et de la même région, pourraient être des juvéniles et subadultes de P. wyomingensis (Horner & Goodwin 2009) — hypothèse débattue.",
+      "confidence": "strongly_supported",
+      "sources": ["brown1943_troodonts", "gilmore1931_troodon_wyomingensis", "horner2009_pachycephalosaurus_ontogeny", "bakker2006_dracorex", "galton1983_pachycephalosaurids"],
+      "notes": "Les noms Pachycephalosaurus Brown & Schlaikjer, 1943 et Troodon wyomingensis Gilmore, 1931 ont fait l'objet d'une décision de conservation de la CIZN (Opinion 1371, titre retrouvé par recherche secondaire)."
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La formation de Hell Creek couvre approximativement 67,1 à 66,0 millions d'années.",
+      "confidence": "established",
+      "sources": ["horner2009_pachycephalosaurus_ontogeny", "bakker2006_dracorex", "roberts2025_dueling_dinosaurs_age", "sprain2015_hellcreek_chronostratigraphy"],
+      "min": 66.0, "max": 67.1, "unit": "Ma",
+      "notes": "Bornes d'âge de la formation de Hell Creek."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakotas) et formation de Lance (Wyoming, localité de l'holotype de Gilmore).",
+      "confidence": "strongly_supported",
+      "sources": ["horner2009_pachycephalosaurus_ontogeny", "bakker2006_dracorex", "gilmore1931_troodon_wyomingensis"]
+    },
+    "location": {
+      "summary": "Intérieur de l'Ouest de l'Amérique du Nord (Laramidia) : Montana, Dakota du Sud, Dakota du Nord, Wyoming.",
+      "confidence": "strongly_supported",
+      "sources": ["horner2009_pachycephalosaurus_ontogeny", "bakker2006_dracorex"]
+    },
+    "size": {
+      "summary": "Plus grand pachycéphalosaure connu. Le squelette postcrânien étant pratiquement inconnu, la longueur (souvent citée vers ~4,5 m) est extrapolée à partir de la taille du crâne et de pachycéphalosaures plus complets ; très incertaine.",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 4.5, "min": 3.5, "max": 5.0, "unit": "m",
+      "notes": "Aucune estimation publiée vérifiée dans cette session."
+    },
+    "mass": {
+      "summary": "Masse inconnue faute de postcrâne ; ordre de grandeur de quelques centaines de kilogrammes par extrapolation (hypothèse).",
+      "confidence": "speculative",
+      "sources": [],
+      "value": 400, "min": 250, "max": 500, "unit": "kg",
+      "notes": "Valeur indicative pour la simulation, sans estimation publiée vérifiée."
+    },
+    "morphology": {
+      "summary": "Bipède à crâne surmonté d'un dôme frontopariétal très épais et arrondi, bordé de nodosités et de protubérances osseuses à l'arrière (squamosaux) et de petites bosses sur le museau. Dents petites, foliacées et denticulées ; dents prémaxillaires présentes. Chez les spécimens attribués aux stades « Dracorex » et « Stygimoloch », le crâne est plat ou faiblement bombé et porte de longues épines.",
+      "confidence": "strongly_supported",
+      "sources": ["brown1943_troodonts", "horner2009_pachycephalosaurus_ontogeny", "bakker2006_dracorex", "goodwin2004_pachy_histology"]
+    },
+    "skeleton": {
+      "summary": "Connu presque exclusivement par des crânes et surtout par des dômes isolés ; le squelette postcrânien est très mal connu et reconstruit d'après d'autres pachycéphalosaures (par ex. Stegoceras).",
+      "confidence": "strongly_supported",
+      "sources": ["brown1943_troodonts", "horner2009_pachycephalosaurus_ontogeny", "maryanska2004_pachycephalosauria"]
+    },
+    "musculature": {
+      "summary": "Reconstruite par encadrement phylogénétique et par comparaison : chez Stegoceras, la structure du crâne et du cou présente des corrélats fonctionnels partagés avec des artiodactyles qui se battent en se heurtant la tête, ce qui suggère une musculature cervicale capable d'encaisser des chocs (Snively & Theodor 2011). Non reconstruite spécifiquement pour Pachycephalosaurus.",
+      "confidence": "inferred",
+      "sources": ["snively2011_stegoceras_headstrike"]
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Aucune empreinte de peau connue. Par encadrement phylogénétique (peau écailleuse chez les hadrosauridés et les cératopsiens), une peau surtout écailleuse est probable ; le dôme et les nodosités étaient vraisemblablement recouverts de kératine ou d'une peau épaisse. La présence de filaments, documentée chez le néornithischien jurassique Kulindadromeus (Godefroit et al. 2014), est possible mais spéculative.",
+      "confidence": "inferred",
+      "sources": ["godefroit2014_kulindadromeus", "goodwin2004_pachy_histology"]
+    },
+    "locomotion": {
+      "summary": "Bipède obligatoire (encadrement phylogénétique des pachycéphalosaures) ; proportions des membres de Pachycephalosaurus inconnues.",
+      "confidence": "inferred",
+      "sources": ["maryanska2004_pachycephalosauria"]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Membres postérieurs de Pachycephalosaurus inconnus ; les valeurs de simulation sont des hypothèses de jeu."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Probablement herbivore : dents petites, foliacées et denticulées comparables à celles d'autres ornithischiens herbivores. La présence de dents prémaxillaires a fait évoquer un régime plus varié (fruits, graines, voire petits invertébrés), mais cette hypothèse d'omnivorie n'a pas été testée par l'usure dentaire ou des contenus digestifs. Aucune graminée à Hell Creek.",
+      "confidence": "inferred",
+      "sources": ["maryanska2004_pachycephalosauria", "brown1943_troodonts"],
+      "notes": "L'omnivorie relève du niveau SPÉCULATIF."
+    },
+    "feeding_strategy": {
+      "summary": "Brouteur sélectif probable de végétation basse (feuilles tendres, pousses, fruits) à hauteur de tête d'un bipède de taille moyenne (≲ 1,5 m). Aucune étude d'usure dentaire ou de hauteur d'alimentation spécifique n'est connue.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "predation": {
+      "summary": "Aucune trace directe de prédation. Proie plausible de Tyrannosaurus (juvéniles comme adultes) et, pour les jeunes, de dromaéosauridés (inférence écologique).",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "defense": {
+      "summary": "Probablement la fuite et la vigilance ; l'utilisation du dôme contre des prédateurs est une hypothèse non testée.",
+      "confidence": "speculative",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Les lésions crâniennes concentrées au sommet des dômes de pachycéphalosauridés sont interprétées comme des traces de combats entre congénères (Peterson et al. 2013), ce qui implique des interactions sociales agonistiques. Taille et structure des groupes inconnues.",
+      "confidence": "inferred",
+      "sources": ["peterson2013_pachy_pathologies", "peterson2012_pachycephalosaurus_pathologies"]
+    },
+    "reproduction": {
+      "summary": "Ovipare (encadrement phylogénétique) ; œufs, nids et soins parentaux inconnus chez les pachycéphalosaures.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "development": {
+      "summary": "Selon Horner & Goodwin (2009), le crâne subit une ontogenèse extrême : les juveniles à tête plate et longues épines (« Dracorex ») deviendraient des subadultes à dôme naissant et épines allongées (« Stygimoloch »), puis des adultes à grand dôme et épines réduites par résorption (Pachycephalosaurus). L'histologie montre un tissu du dôme très vascularisé et remanié au cours de la croissance (Goodwin & Horner 2004). Interprétation débattue.",
+      "confidence": "inferred",
+      "sources": ["horner2009_pachycephalosaurus_ontogeny", "goodwin2004_pachy_histology"]
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune courbe de croissance corporelle ; seuls les changements histologiques du dôme sont décrits (Goodwin & Horner 2004)."
+    },
+    "senses": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune étude endocrânienne de Pachycephalosaurus connue dans cette session ; valeurs de simulation = hypothèses de jeu."
+    },
+    "communication": {
+      "summary": "Le dôme, les nodosités et les épines sont interprétés comme des signaux visuels (reconnaissance de l'espèce, statut, sélection sociale ou sexuelle), avec ou sans rôle mécanique (Goodwin & Horner 2004 ; Padian & Horner 2011). Vocalisations inconnues.",
+      "confidence": "inferred",
+      "sources": ["goodwin2004_pachy_histology", "padian2011_bizarre_structures", "horner2009_pachycephalosaurus_ontogeny"]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Rare dans les dépôts de Hell Creek, surtout sous forme de dômes isolés souvent usés par le transport. Une hypothèse ancienne place les pachycéphalosaures dans des milieux plus élevés ou éloignés des cours d'eau, d'où leurs restes auraient été charriés ; elle n'est pas démontrée.",
+      "confidence": "speculative",
+      "sources": ["fastovsky2016_hellcreek_primer"]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide et saisonnière (~49° N, température moyenne annuelle estimée ~7–12 °C) ; tolérance climatique propre inconnue.",
+      "confidence": "inferred",
+      "sources": ["arens2014_hellcreek_basal_florule", "wilf2003_kpg_climate"]
+    },
+    "interactions": {
+      "summary": "Coexistait avec Tyrannosaurus, Triceratops, Edmontosaurus, Ankylosaurus et Thescelosaurus ; concurrence alimentaire probable avec Thescelosaurus dans la strate basse (hypothèse). Interactions agonistiques entre congénères attestées par les pathologies crâniennes.",
+      "confidence": "inferred",
+      "sources": ["peterson2013_pachy_pathologies", "fastovsky2016_hellcreek_primer"]
+    },
+    "fossil_record": {
+      "summary": "Rare : surtout des dômes isolés, quelques crânes plus complets (dont celui décrit par Brown & Schlaikjer en 1943) et très peu de restes postcrâniens. Les spécimens à tête plate et épineux de Hell Creek (« Dracorex », « Stygimoloch ») sont tout aussi rares.",
+      "confidence": "strongly_supported",
+      "sources": ["brown1943_troodonts", "horner2009_pachycephalosaurus_ontogeny", "bakker2006_dracorex"]
+    },
+    "documented_behavior": {
+      "summary": "Un spécimen de Pachycephalosaurus porte des lésions crâniennes interprétées comme des traumatismes cicatrisés et/ou infectés (Peterson & Vittore 2012). À l'échelle de la famille, la fréquence et la répartition des lésions, concentrées au sommet du dôme, sont jugées compatibles avec des coups de tête (Peterson et al. 2013). Ces lésions documentent des traumatismes, pas directement le comportement qui les a causés.",
+      "confidence": "strongly_supported",
+      "sources": ["peterson2012_pachycephalosaurus_pathologies", "peterson2013_pachy_pathologies"]
+    },
+    "inferred_behavior": {
+      "summary": "Combats ritualisés tête contre tête ou contre les flancs entre congénères, parades visuelles du dôme et des épines ; alimentation sélective au sol ; fuite face aux grands prédateurs. Inférés de la mécanique du crâne, des pathologies et de la morphologie ; débattus.",
+      "confidence": "inferred",
+      "sources": ["snively2008_pachy_mechanics", "snively2011_stegoceras_headstrike", "peterson2013_pachy_pathologies", "padian2011_bizarre_structures"]
+    }
+  },
+
+  "competing_hypotheses": [
+    {
+      "topic": "dome_function",
+      "summary": "Le dôme servait-il à se heurter la tête ?",
+      "positions": [
+        {
+          "summary": "Oui (combat) : les modèles mécaniques montrent que le crâne pouvait supporter des chocs tête contre tête ; les corrélats fonctionnels de Stegoceras rappellent ceux d'artiodactyles combattants ; les lésions crâniennes, concentrées au sommet du dôme, sont compatibles avec des impacts répétés. Des variantes proposent des coups portés contre les flancs plutôt que tête contre tête.",
+          "sources": ["snively2008_pachy_mechanics", "snively2011_stegoceras_headstrike", "peterson2013_pachy_pathologies", "peterson2012_pachycephalosaurus_pathologies"]
+        },
+        {
+          "summary": "Non, ou pas principalement (signal) : l'histologie du dôme révèle des structures transitoires très vascularisées, jugées incompatibles avec des chocs répétés ; dôme et épines serviraient surtout à la reconnaissance et à la signalisation sociale ou sexuelle.",
+          "sources": ["goodwin2004_pachy_histology", "padian2011_bizarre_structures"]
+        }
+      ]
+    },
+    {
+      "topic": "ontogeny",
+      "summary": "Dracorex et Stygimoloch sont-ils des stades de croissance de Pachycephalosaurus ?",
+      "positions": [
+        {
+          "summary": "Oui : série de croissance unique dans laquelle le dôme se forme et les épines se résorbent ; les trois noms désigneraient une seule espèce.",
+          "sources": ["horner2009_pachycephalosaurus_ontogeny", "goodwin2004_pachy_histology"]
+        },
+        {
+          "summary": "Taxons distincts tels que décrits à l'origine : Stygimoloch spinifer et Dracorex hogwartsia (crâne plat, grandes fenêtres supratemporales, individu décrit comme proche de la maturité d'après l'ossification des vertèbres cervicales).",
+          "sources": ["galton1983_pachycephalosaurids", "bakker2006_dracorex"]
+        }
+      ]
+    },
+    {
+      "topic": "diet",
+      "summary": "Herbivore strict ou omnivore ?",
+      "positions": [
+        {
+          "summary": "Herbivore : dents foliacées denticulées comparables à celles d'autres ornithischiens herbivores.",
+          "sources": ["maryanska2004_pachycephalosauria", "brown1943_troodonts"]
+        },
+        {
+          "summary": "Omnivore opportuniste (fruits, graines, petits animaux), évoqué à cause des dents prémaxillaires : hypothèse non testée, SPÉCULATIVE.",
+          "sources": []
+        }
+      ]
+    }
+  ],
+
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_pachycephalosaur",
+    "adult_mass_kg": 400,
+    "adult_length_m": 4.5,
+    "hip_height_m": 1.3,
+    "foot_length_m": 0.25,
+    "foot_width_m": 0.2,
+    "hatchling_mass_kg": 0.5,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 400,
+      "max_growth_rate_kg_per_year": 60,
+      "inflection_age_years": 5,
+      "maturity_age_years": 10,
+      "max_lifespan_years": 20
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.3,
+      "max_speed_ms": 7.5,
+      "max_accel_ms2": 3.0,
+      "max_decel_ms2": 4.0,
+      "max_yaw_rate_dps": 90,
+      "max_slope_deg": 35,
+      "swim": true, "swim_speed_ms": 0.6,
+      "fly": false, "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.4
+    },
+    "metabolism": {
+      "thermo_class": "mesotherm",
+      "max_fasting_days": 20,
+      "water_l_per_day_per_100kg": 4.0
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": { "fern": 0.6, "horsetail": 0.4, "angio_herb": 0.9, "angio_shrub": 0.9,
+                             "angio_tree": 0.3, "conifer": 0.3, "palm": 0.4, "cycadophyte": 0.5,
+                             "ginkgo": 0.4, "aquatic_macrophyte": 0.1, "xeric_shrub": 0 },
+      "browse_height_min_m": 0.0, "browse_height_max_m": 1.5,
+      "prey_mass_min_kg": 0, "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 800, "fov_deg": 290, "binocular_deg": 50, "low_light": 0.4,
+      "hearing_min_hz": 50, "hearing_max_hz": 3000, "hearing_best_hz": 800, "hearing_threshold_db": 20,
+      "olfaction": 0.6,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 3, "group_size_max": 10, "cohesion": 0.4,
+      "territorial": false, "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": ["head_butt", "kick"],
+      "armor": 0.2, "defense_strength": 0.45, "flee_preference": 0.6
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.4,
+      "bite_force_n": 0,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 10, "clutch_size_max": 15,
+      "incubation_days": 100,
+      "breeding_season_doy": [100, 160],
+      "parental_care": 0.3,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 50, "f0_max_hz": 400,
+      "call_types": [
+        { "id": "contact", "duration_s": 0.8, "f0_hz": 150, "source_level_db": 85,
+          "context": "social_contact", "confidence": "speculative" },
+        { "id": "display_rumble", "duration_s": 1.2, "f0_hz": 80, "source_level_db": 90,
+          "context": "agonistic", "confidence": "speculative" }
+      ]
+    },
+    "activity": { "pattern": "diurnal" },
+    "personality": {
+      "boldness": [0.5, 0.15], "caution": [0.5, 0.15], "aggression": [0.45, 0.15],
+      "curiosity": [0.4, 0.15], "sociability": [0.45, 0.15], "vigilance": [0.6, 0.15],
+      "risk_tolerance": [0.45, 0.15], "exploration": [0.5, 0.15], "flight_tendency": [0.55, 0.15],
+      "dominance": [0.55, 0.2]
+    },
+    "habitat": {
+      "channel": 0, "riverbank": 0.4, "sandbar": 0.2, "oxbow_lake": 0.1, "backswamp": 0.2,
+      "riparian_forest": 0.7, "floodplain_open": 0.6, "levee_woodland": 0.7,
+      "upland_conifer_forest": 0.8, "cutbank_cliff": 0.2,
+      "dune_field": 0, "interdune_flat": 0, "ephemeral_pond": 0.2, "xeric_scrub": 0
+    },
+    "population": { "initial_count": 8, "regional_density_per_km2": 0.12 }
+  },
+
+  "sim_basis": {
+    "role": "game_assumption: herbivore moyen simulé individuellement",
+    "body_plan": "derived: pachycéphalosauridé bipède (maryanska2004_pachycephalosauria, non vérifié ; brown1943_troodonts)",
+    "adult_mass_kg": "game_assumption: postcrâne inconnu ; ordre de grandeur de quelques centaines de kg",
+    "adult_length_m": "game_assumption: longueur couramment citée (~4,5 m), extrapolée",
+    "hip_height_m": "game_assumption: proportions d'un pachycéphalosaure bipède de ~4,5 m",
+    "foot_length_m": "game_assumption: aucune piste attribuée",
+    "foot_width_m": "game_assumption: aucune piste attribuée",
+    "hatchling_mass_kg": "game_assumption: œufs inconnus",
+    "sexual_dimorphism_mass": "game_assumption: dimorphisme non démontré",
+    "growth.asymptotic_mass_kg": "game_assumption: égal à adult_mass_kg",
+    "growth.max_growth_rate_kg_per_year": "derived: logistique supposée (A = 400 kg, inflexion 5 ans, 95 % à 10 ans → k ≈ 0,59/an → kA/4 ≈ 60 kg/an) ; aucune donnée histologique corporelle",
+    "growth.inflection_age_years": "game_assumption",
+    "growth.maturity_age_years": "game_assumption: dôme adulte tardif dans l'ontogenèse (horner2009_pachycephalosaurus_ontogeny) mais âges inconnus",
+    "growth.max_lifespan_years": "game_assumption",
+    "locomotion.walk_speed_ms": "game_assumption",
+    "locomotion.max_speed_ms": "game_assumption: bipède de taille moyenne ; membres inconnus",
+    "locomotion.max_accel_ms2": "game_assumption",
+    "locomotion.max_decel_ms2": "game_assumption",
+    "locomotion.max_yaw_rate_dps": "game_assumption",
+    "locomotion.max_slope_deg": "game_assumption",
+    "locomotion.swim": "game_assumption: nage occasionnelle supposée",
+    "locomotion.swim_speed_ms": "game_assumption",
+    "locomotion.fly": "derived: non volant",
+    "locomotion.fly_speed_ms": "derived: non volant",
+    "locomotion.duty_factor_walk": "game_assumption",
+    "locomotion.duty_factor_run": "game_assumption: course bipède avec phase aérienne",
+    "metabolism.thermo_class": "game_assumption: « mesotherm » — débat sur le métabolisme des ornithischiens (grady2014_mesothermy ; wiemann2022_ale_metabolism)",
+    "metabolism.max_fasting_days": "game_assumption",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption",
+    "diet.type": "derived: dents foliacées d'herbivore (brown1943_troodonts ; maryanska2004_pachycephalosauria, non vérifié) ; l'omnivorie SPÉCULATIVE n'est pas activée",
+    "diet.plant_preferences": "game_assumption: feuilles tendres, pousses et fruits d'angiospermes privilégiés ; composition de la flore (johnson2002_hellcreek_megaflora ; wilson2021_seafood_salad_flora — pas de graminées)",
+    "diet.browse_height_min_m": "game_assumption: alimentation au sol",
+    "diet.browse_height_max_m": "game_assumption: hauteur de tête d'un bipède de taille moyenne ; aucune analyse publiée",
+    "diet.prey_mass_min_kg": "derived: herbivore",
+    "diet.prey_mass_max_kg": "derived: herbivore",
+    "diet.scavenges": "game_assumption",
+    "diet.eats_fish": "game_assumption",
+    "diet.eats_invertebrates": "game_assumption: omnivorie spéculative non activée (voir competing_hypotheses)",
+    "diet.eats_eggs": "game_assumption",
+    "senses.vision_range_m": "game_assumption",
+    "senses.fov_deg": "game_assumption",
+    "senses.binocular_deg": "game_assumption",
+    "senses.low_light": "game_assumption",
+    "senses.hearing_min_hz": "game_assumption",
+    "senses.hearing_max_hz": "game_assumption: plafond de ~3 kHz cohérent avec les grands dinosaures (gleich2005_basilar_papilla), animal plus petit",
+    "senses.hearing_best_hz": "game_assumption",
+    "senses.hearing_threshold_db": "game_assumption",
+    "senses.olfaction": "game_assumption",
+    "senses.vibration": "game_assumption",
+    "social.group_size_mean": "game_assumption: aucune donnée de groupe ; interactions agonistiques inférées (peterson2013_pachy_pathologies)",
+    "social.group_size_max": "game_assumption",
+    "social.cohesion": "game_assumption",
+    "social.territorial": "game_assumption",
+    "social.territory_radius_m": "game_assumption",
+    "social.alarm_calls": "game_assumption: aucun indice",
+    "defense.weapons": "derived: coups de tête inférés (snively2008_pachy_mechanics ; peterson2013_pachy_pathologies) ; coup de patte = game_assumption",
+    "defense.armor": "game_assumption: dôme épais et nodosités, pas d'armure corporelle",
+    "defense.defense_strength": "game_assumption",
+    "defense.flee_preference": "game_assumption",
+    "predation.hunt_style": "derived: herbivore",
+    "predation.attack_strength": "game_assumption: force relative d'un coup de tête (snively2008_pachy_mechanics)",
+    "predation.bite_force_n": "derived: herbivore — pas de morsure offensive",
+    "predation.max_chase_s": "derived: herbivore",
+    "reproduction.clutch_size_mean": "game_assumption: pontes inconnues",
+    "reproduction.clutch_size_max": "game_assumption",
+    "reproduction.incubation_days": "game_assumption: borné par les valeurs connues chez d'autres ornithischiens (~83 à ~171 j, erickson2017_incubation), œufs probablement plus petits",
+    "reproduction.breeding_season_doy": "game_assumption",
+    "reproduction.parental_care": "game_assumption",
+    "reproduction.nest_type": "game_assumption: nid enfoui par analogie avec d'autres ornithischiens (norell2020_soft_eggs)",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF (riede2016_closed_mouth_vocalization, analogie)",
+    "vocal.f0_min_hz": "game_assumption: spéculatif",
+    "vocal.f0_max_hz": "game_assumption: spéculatif",
+    "vocal.call_types": "game_assumption: tous les cris sont SPÉCULATIFS",
+    "activity.pattern": "game_assumption: aucune donnée (anneau sclérotique non étudié pour ce taxon)",
+    "personality": "game_assumption: valeurs de personnalité toujours hypothétiques",
+    "habitat": "game_assumption: pondérations favorisant les boisements et les zones plus élevées, d'après l'hypothèse SPÉCULATIVE d'un habitat éloigné des chenaux",
+    "population.initial_count": "game_assumption: taxon rare dans les collections de Hell Creek ; la loi de Damuth (damuth1981_density_body_size) prédirait pour 400 kg une densité bien supérieure à celle des grands herbivores, mais la rareté fossile et la charge de simulation justifient une valeur basse : ~0,12 ind./km² × ~67 km² ≈ 8",
+    "population.regional_density_per_km2": "game_assumption: voir population.initial_count"
+  }
+}

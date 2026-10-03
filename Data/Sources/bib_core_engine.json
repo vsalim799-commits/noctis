@@ -1,0 +1,103 @@
+{
+  "schema": "noctis.bibliography/1",
+  "entries": [
+    {
+      "id": "taylor1982_energetics_locomotion",
+      "authors": "Taylor, C.R.; Heglund, N.C.; Maloiy, G.M.O.",
+      "year": 1982,
+      "title": "Energetics and mechanics of terrestrial locomotion. I. Metabolic energy consumption as a function of speed and body size in birds and mammals",
+      "container": "Journal of Experimental Biology",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    },
+    {
+      "id": "langbein1966_meanders",
+      "authors": "Langbein, W.B.; Leopold, L.B.",
+      "year": 1966,
+      "title": "River meanders — theory of minimum variance",
+      "container": "U.S. Geological Survey Professional Paper",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    },
+    {
+      "id": "leopold1953_hydraulic_geometry",
+      "authors": "Leopold, L.B.; Maddock, T.",
+      "year": 1953,
+      "title": "The hydraulic geometry of stream channels and some physiographic implications",
+      "container": "U.S. Geological Survey Professional Paper",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    },
+    {
+      "id": "bekker1969_land_locomotion",
+      "authors": "Bekker, M.G.",
+      "year": 1969,
+      "title": "Introduction to terrain-vehicle systems",
+      "container": "University of Michigan Press",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "book",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    },
+    {
+      "id": "wong2008_ground_vehicles",
+      "authors": "Wong, J.Y.",
+      "year": 2008,
+      "title": "Theory of Ground Vehicles (4th edition)",
+      "container": "Wiley",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "book",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    },
+    {
+      "id": "fletcher2004_frequency_scaling",
+      "authors": "Fletcher, N.H.",
+      "year": 2004,
+      "title": "A simple frequency-scaling rule for animal communication",
+      "container": "Journal of the Acoustical Society of America",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    },
+    {
+      "id": "behrensmeyer1978_bone_weathering",
+      "authors": "Behrensmeyer, A.K.",
+      "year": 1978,
+      "title": "Taphonomic and ecologic information from bone weathering",
+      "container": "Paleobiology",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": false,
+      "verification": "Citée de mémoire par l'équipe moteur (quota de recherche épuisé) — à vérifier avant toute utilisation au-delà d'« inféré »."
+    }
+  ]
+}

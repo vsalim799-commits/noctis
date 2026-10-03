@@ -1,0 +1,641 @@
+{
+  "schema": "noctis.species/1",
+  "id": "nanotyrannus_lancensis",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Nanotyrannus lancensis",
+  "authority": "(Gilmore, 1946)",
+  "common_names": {
+    "fr": "Nanotyrannus",
+    "en": "Nanotyrannus"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Nanotyrannus lancensis (Gilmore, 1946) — Tyrannosauroidea. Décrit comme Gorgosaurus lancensis par Gilmore (1946) sur un crâne (holotype CMNH 7541), puis placé dans le genre Nanotyrannus par Bakker, Williams & Currie (1988). De la fin des années 1990 à 2020, l'opinion majoritaire en faisait un T. rex juvénile : débat sur le sillon dentaire (Schmerge & Rothschild 2016 vs Brusatte et al. 2016), série de croissance de 44 spécimens où CMNH 7541 apparaît comme un juvénile de moins de 13 ans (Carr 2020), histologie de Jane et Petey montrant des individus immatures (Woodward et al. 2020). Depuis 2024, plusieurs études indépendantes concluent à un taxon distinct : Longrich & Saitta (2024) ; Zanno & Napoli (2025, Nature), qui décrivent un squelette quasi complet et presque mature (NCSM 40000, « Dueling Dinosaurs ») partageant les autapomorphies de l'holotype, et nomment une seconde espèce, N. lethaeus, pour le spécimen « Jane » (BMRP 2002.4.1) ; Griffin et al. (2025, Science), dont l'histologie du cératobranchial de l'holotype indique un individu proche ou à maturité squelettique. Une Perspective de Science (Farke 2026) considère le débat largement tranché en faveur d'un taxon distinct. Restent discutés : le rang (genre propre ou espèce de Tyrannosaurus), l'attribution de Jane et d'autres spécimens, et la position phylogénétique exacte.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "longrich2024_nanotyrannus",
+        "farke2026_nanotyrannus_perspective",
+        "gilmore1946_gorgosaurus_lancensis",
+        "bakker1988_nanotyrannus",
+        "carr2020_trex_growth",
+        "woodward2020_trex_ontogeny",
+        "schmerge2016_dentary_groove",
+        "brusatte2016_dentary_groove_comment"
+      ],
+      "notes": "État au 2026-10-03. La distinction d'un petit tyrannosaure adulte coexistant avec T. rex est fortement étayée ; la taxonomie infragénérique (N. lethaeus, « Stygivenator », nouveaux genres proposés en prépublication par Sancarlo & Paul) ne l'est pas. Un commentaire technique publié en 2026 conteste la valeur du cératobranchial comme indicateur de maturité (auteurs non vérifiés dans cette session) ; les auteurs y ont répondu. Le paléontologue T. Carr, selon la presse (oct. 2025), admet que NCSM 40000 est un adulte d'une petite espèce mais considère Jane comme un T. rex juvénile — propos non cités formellement."
+    },
+    "period": {
+      "summary": "Fin du Maastrichtien (Crétacé supérieur) ; contemporain de T. rex dans le dernier million d'années environ avant l'extinction Crétacé–Paléogène.",
+      "confidence": "established",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "fowler2017_western_interior_geochronology",
+        "sprain2015_hellcreek_chronostratigraphy"
+      ],
+      "min": 66.0,
+      "max": 67.5,
+      "unit": "Ma",
+      "notes": "Bornes indicatives de la Formation de Hell Creek (Sprain et al. 2015 ; Fowler 2017)."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana). L'holotype (1942) provient de couches alors rapportées à la « Lance Formation », aujourd'hui attribuées à Hell Creek ; NCSM 40000 et BMRP 2002.4.1 proviennent également de Hell Creek au Montana. D'autres restes de petits tyrannosaures de formations équivalentes ont été rapportés au taxon, avec des attributions plus discutées.",
+      "confidence": "established",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "gilmore1946_gorgosaurus_lancensis",
+        "griffin2025_nanotyrannus_hyoid"
+      ]
+    },
+    "location": {
+      "summary": "Montana (États-Unis), ouest de l'Amérique du Nord (Laramidia). NCSM 40000 a été découvert en 2006 près de Jordan (Montana).",
+      "confidence": "established",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "gilmore1946_gorgosaurus_lancensis"
+      ]
+    },
+    "size": {
+      "summary": "Tyrannosaure de taille moyenne : environ 5,5 à 6 m de long à l'âge adulte (≈5,5 m rapporté pour N. lancensis ; ≈6 m pour NCSM 40000 d'après les comptes rendus de l'étude de 2025), soit environ la moitié de la longueur d'un T. rex adulte.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid"
+      ],
+      "value": 5.5,
+      "min": 5.0,
+      "max": 6.0,
+      "unit": "m",
+      "notes": "Valeurs issues des communiqués et résumés des articles (texte intégral non consulté : accès bloqué)."
+    },
+    "mass": {
+      "summary": "Environ 700 kg pour NCSM 40000, soit ~10 % de la masse d'un T. rex adulte (≈7 t), d'après Zanno & Napoli (2025) tels que rapportés. Les estimations diffusées varient (~700 à ~1 200 kg) selon les méthodes et les spécimens.",
+      "confidence": "inferred",
+      "sources": [
+        "zanno2025_nanotyrannus"
+      ],
+      "value": 700,
+      "min": 500,
+      "max": 1200,
+      "unit": "kg",
+      "notes": "Masse = estimation de modèle ; plage min/max indicative."
+    },
+    "morphology": {
+      "summary": "Tyrannosaure gracile au museau étroit. Par rapport à des T. rex de taille comparable : membres antérieurs nettement plus longs aux mains et griffes plus grandes, dents maxillaires plus nombreuses (15 chez l'holotype, 16–17 chez NCSM 40000), moins de vertèbres caudales, trajets différents de nerfs crâniens. Zanno & Napoli (2025) considèrent ces caractères comme fixés tôt dans le développement et incompatibles avec la trajectoire de croissance de T. rex ; les partisans de la synonymie avaient interprété certains d'entre eux (nombre de dents) comme variables au cours de la croissance (Carr 2020).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "longrich2024_nanotyrannus",
+        "carr2020_trex_growth"
+      ]
+    },
+    "skeleton": {
+      "summary": "Holotype CMNH 7541 : crâne complet avec mandibules et cératobranchiaux. NCSM 40000 : squelette quasi complet (crâne, membres, vertèbres, queue), le plus complet connu pour ce taxon. BMRP 2002.4.1 (« Jane ») : squelette partiel bien préservé, holotype de N. lethaeus selon Zanno & Napoli (2025).",
+      "confidence": "established",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "longrich2024_nanotyrannus"
+      ]
+    },
+    "musculature": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune reconstruction musculaire spécifique publiée et vérifiée. Par crochet phylogénétique, musculature générale de tyrannosauroïde ; les longs bras suggèrent une musculature antérieure moins réduite que chez T. rex (inférence non publiée)."
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Le bloc « Dueling Dinosaurs » est réputé contenir des tissus mous ou des empreintes, mais aucune analyse publiée vérifiée ne les décrit pour le tyrannosaure."
+    },
+    "integument": {
+      "summary": "Non documenté directement pour Nanotyrannus. Par crochet phylogénétique, une peau en grande partie écailleuse comme chez les tyrannosauridés (Bell et al. 2017) est plausible ; un plumage filamenteux partiel ne peut être exclu (Xu et al. 2012).",
+      "confidence": "speculative",
+      "sources": [
+        "bell2017_tyrannosaur_integument",
+        "xu2012_yutyrannus"
+      ]
+    },
+    "locomotion": {
+      "summary": "Bipède strict. Proportions plus graciles et membres relativement longs : décrit comme un prédateur plus léger, plus rapide et plus agile que T. rex. Persons & Currie (2016) avaient déjà relevé que les spécimens rapportés à Nanotyrannus présentaient des proportions de membres différemment cursoriales de celles de T. rex (résultat discuté en raison de la petite taille de l'échantillon).",
+      "confidence": "inferred",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "persons2016_cursorial_limbs"
+      ]
+    },
+    "speed": {
+      "summary": "Aucune estimation biomécanique publiée vérifiée. Probablement nettement plus rapide qu'un T. rex adulte, compte tenu de sa masse ~10 fois plus faible et de ses proportions graciles.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "persons2016_cursorial_limbs"
+      ]
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Carnivore. Dents dentelées plus nombreuses et plus comprimées latéralement que celles d'un T. rex adulte, suggérant des proies de taille petite à moyenne (jeunes ornithischiens, petits dinosaures) plutôt que le broyage d'os de très grands animaux.",
+      "confidence": "inferred",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "longrich2024_nanotyrannus"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Morsure tranchante plutôt qu'écrasante (inférée de la denture). Les longs bras munis de grandes griffes ont pu servir à saisir les proies, rôle qu'ils ne pouvaient plus jouer chez T. rex — hypothèse non testée. Les estimations de force de morsure obtenues sur de « jeunes T. rex » (Peterson et al. 2021) concernent peut-être en partie des spécimens aujourd'hui rapportés à Nanotyrannus.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "peterson2021_juvenile_trex_bite"
+      ]
+    },
+    "predation": {
+      "summary": "Prédateur de taille moyenne de Hell Creek ; mode de chasse non documenté. Le comportement de chasse plus agile évoqué par Zanno & Napoli (2025) est une inférence anatomique.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus"
+      ]
+    },
+    "defense": {
+      "summary": "Aucune donnée directe. Les T. rex adultes représentaient vraisemblablement une menace (concurrence, prédation possible) ; défense par la morsure et peut-être les griffes, et par la fuite.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus"
+      ]
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune association de plusieurs individus publiée et vérifiée."
+    },
+    "reproduction": {
+      "summary": "Ovipare par crochet phylogénétique (des os embryonnaires de tyrannosauridés sont connus : Funston et al. 2021). Aucun œuf, nid ni os médullaire connu pour Nanotyrannus.",
+      "confidence": "inferred",
+      "sources": [
+        "funston2021_baby_tyrannosaurids"
+      ]
+    },
+    "development": {
+      "summary": "NCSM 40000 avait environ 20 ans (fin de l'adolescence à début de la vingtaine) et approchait la maturité somatique d'après les lignes de croissance, la fusion vertébrale et l'anatomie (Zanno & Napoli 2025). L'histologie du cératobranchial de l'holotype montre des marqueurs de maturité squelettique proche ou atteinte (Griffin et al. 2025 ; Longrich & Saitta 2024). Jane (N. lethaeus) était encore en croissance à sa mort.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "longrich2024_nanotyrannus"
+      ],
+      "notes": "La validité du cératobranchial comme indicateur de maturité a été contestée dans un commentaire technique (2026), auquel les auteurs ont répondu."
+    },
+    "growth": {
+      "summary": "Croissance atteignant un plateau à une taille adulte bien inférieure à celle de T. rex (≈0,7 t vers ~20 ans). Aucune courbe de croissance quantitative complète publiée et vérifiée.",
+      "confidence": "inferred",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid"
+      ]
+    },
+    "senses": {
+      "summary": "Le crâne holotype a été étudié par tomodensitométrie (Witmer & Ridgely 2010) : cerveau et oreille interne de type tyrannosauridé. Zanno & Napoli (2025) signalent des différences de trajets de nerfs crâniens par rapport à T. rex. Les performances sensorielles (odorat, vision binoculaire, audition) ne sont pas quantifiées.",
+      "confidence": "inferred",
+      "sources": [
+        "witmer2010_cleveland_tyrannosaur",
+        "zanno2025_nanotyrannus"
+      ]
+    },
+    "communication": {
+      "summary": "Aucune preuve directe. Vocalisations à bouche fermée possibles par crochet phylogénétique (Riede et al. 2016) ; aucun syrinx connu chez les dinosaures non aviens (Clarke et al. 2016).",
+      "confidence": "speculative",
+      "sources": [
+        "riede2016_closed_mouth_vocal",
+        "clarke2016_mesozoic_syrinx"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Plaine côtière humide de Hell Creek, avec chenaux, forêts riveraines et plaines d'inondation. Aucune préférence d'habitat propre n'est documentée.",
+      "confidence": "inferred",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "horner2011_hellcreek_census"
+      ]
+    },
+    "climate": {
+      "summary": "Climat chaud tempéré à subtropical, humide, à saisonnalité modérée, identique à celui de T. rex à Hell Creek.",
+      "confidence": "inferred",
+      "sources": [
+        "wilf2003_kpg_climate"
+      ]
+    },
+    "interactions": {
+      "summary": "Coexistait avec T. rex (Zanno & Napoli 2025 ; Griffin et al. 2025). Les auteurs suggèrent une concurrence avec les T. rex juvéniles pour des proies de taille moyenne et une partition de niche avec les adultes. Si le taxon est valide, l'idée que les juvéniles de mégathéropodes occupaient seuls la niche des carnivores moyens (Schroeder et al. 2021) doit être nuancée pour Hell Creek. NCSM 40000 a été préservé en association étroite avec un Triceratops (NCSM 40001) ; la nature de cette association (combat, charognage, accumulation taphonomique) n'est pas établie.",
+      "confidence": "inferred",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "longrich2024_nanotyrannus",
+        "schroeder2021_juvenile_dinosaurs"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Matériel attribué de façon solide : holotype CMNH 7541 (crâne, collecté en 1942) et NCSM 40000 (squelette quasi complet). Attribution discutée : BMRP 2002.4.1 (« Jane », N. lethaeus pour Zanno & Napoli ; T. rex juvénile pour d'autres), LACM 28471 (« Stygivenator » pour Longrich & Saitta 2024) et d'autres petits spécimens. Une prépublication non évaluée (Sancarlo & Paul 2025) propose de répartir ce matériel entre plusieurs genres (dont « Gilmorelarsontyrannus lethaeus » et « Elegansvenator zannoae »).",
+      "confidence": "established",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid",
+        "longrich2024_nanotyrannus",
+        "sancarlo2025_eutyrannosaur_preprint"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Aucun comportement directement documenté et publié de façon vérifiée. L'association de NCSM 40000 avec un Triceratops est souvent présentée comme un « duel », mais cette interprétation reste à démontrer.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus"
+      ]
+    },
+    "inferred_behavior": {
+      "summary": "Prédateur agile de taille moyenne, probablement capable de poursuites plus longues que T. rex, utilisant peut-être ses bras dans la capture ; évitement probable des T. rex adultes. Socialité et soins parentaux inconnus.",
+      "confidence": "speculative",
+      "sources": [
+        "zanno2025_nanotyrannus",
+        "griffin2025_nanotyrannus_hyoid"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Nanotyrannus est-il un taxon distinct ou un T. rex juvénile ?",
+      "positions": [
+        {
+          "summary": "Taxon distinct, adulte à ~0,7 t, coexistant avec T. rex ; deux espèces (N. lancensis, N. lethaeus) selon Zanno & Napoli.",
+          "sources": [
+            "zanno2025_nanotyrannus",
+            "griffin2025_nanotyrannus_hyoid",
+            "longrich2024_nanotyrannus",
+            "farke2026_nanotyrannus_perspective",
+            "schmerge2016_dentary_groove",
+            "persons2016_cursorial_limbs"
+          ]
+        },
+        {
+          "summary": "Les petits tyrannosaures de Hell Creek sont des T. rex immatures (position majoritaire 1999–2023) ; position aujourd'hui minoritaire, maintenue au moins pour Jane par certains auteurs.",
+          "sources": [
+            "carr2020_trex_growth",
+            "woodward2020_trex_ontogeny",
+            "brusatte2016_dentary_groove_comment"
+          ]
+        },
+        {
+          "summary": "Diversité encore plus grande : plusieurs genres de petits tyrannosaures (« Stygivenator », « Gilmorelarsontyrannus », « Elegansvenator ») — prépublication non évaluée par les pairs.",
+          "sources": [
+            "sancarlo2025_eutyrannosaur_preprint",
+            "longrich2024_nanotyrannus"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "development",
+      "summary": "L'holotype était-il mature ?",
+      "positions": [
+        {
+          "summary": "L'histologie du cératobranchial montre une maturité squelettique proche ou atteinte.",
+          "sources": [
+            "griffin2025_nanotyrannus_hyoid",
+            "longrich2024_nanotyrannus"
+          ]
+        },
+        {
+          "summary": "Le cératobranchial n'est pas un indicateur de maturité validé ; seul NCSM 40000 aurait une maturité soutenue par un indicateur histologique validé (commentaire technique 2026, auteurs non vérifiés — pas de référence enregistrée).",
+          "sources": []
+        }
+      ]
+    },
+    {
+      "topic": "taxonomy",
+      "summary": "Rang générique : Nanotyrannus ou espèce de Tyrannosaurus ?",
+      "positions": [
+        {
+          "summary": "Genre distinct, ne se situant pas sur la trajectoire de croissance de Tyrannosaurus.",
+          "sources": [
+            "zanno2025_nanotyrannus",
+            "longrich2024_nanotyrannus"
+          ]
+        },
+        {
+          "summary": "Petite espèce à longs bras éventuellement apparentée de près à T. rex (opinion rapportée dans la presse, non publiée formellement à notre connaissance).",
+          "sources": []
+        }
+      ]
+    },
+    {
+      "topic": "interactions",
+      "summary": "Signification de l'association NCSM 40000 – Triceratops.",
+      "positions": [
+        {
+          "summary": "Interaction réelle entre les deux animaux (combat ou alimentation) avant leur enfouissement.",
+          "sources": []
+        },
+        {
+          "summary": "Association taphonomique fortuite ou charognage ; aucune démonstration publiée vérifiée d'un combat.",
+          "sources": [
+            "zanno2025_nanotyrannus"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_large_theropod",
+    "adult_mass_kg": 700,
+    "adult_length_m": 5.5,
+    "hip_height_m": 1.6,
+    "foot_length_m": 0.42,
+    "foot_width_m": 0.35,
+    "hatchling_mass_kg": 2,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 700,
+      "max_growth_rate_kg_per_year": 80,
+      "inflection_age_years": 10,
+      "maturity_age_years": 18,
+      "max_lifespan_years": 25
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.4,
+      "max_speed_ms": 8.0,
+      "max_accel_ms2": 2.5,
+      "max_decel_ms2": 3.5,
+      "max_yaw_rate_dps": 60,
+      "max_slope_deg": 30,
+      "swim": true,
+      "swim_speed_ms": 0.8,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.65,
+      "duty_factor_run": 0.45
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 25,
+      "water_l_per_day_per_100kg": 3.0
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 5,
+      "prey_mass_max_kg": 1500,
+      "scavenges": true,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 800,
+      "fov_deg": 260,
+      "binocular_deg": 40,
+      "low_light": 0.4,
+      "hearing_min_hz": 30,
+      "hearing_max_hz": 1500,
+      "hearing_best_hz": 400,
+      "hearing_threshold_db": 20,
+      "olfaction": 0.8,
+      "vibration": 0.3
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 2,
+      "cohesion": 0.1,
+      "territorial": true,
+      "territory_radius_m": 2500,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite",
+        "claws"
+      ],
+      "armor": 0.1,
+      "defense_strength": 0.6,
+      "flee_preference": 0.4
+    },
+    "predation": {
+      "hunt_style": "pursuit",
+      "attack_strength": 0.6,
+      "bite_force_n": 5000,
+      "max_chase_s": 40
+    },
+    "reproduction": {
+      "clutch_size_mean": 16,
+      "clutch_size_max": 25,
+      "incubation_days": 100,
+      "breeding_season_doy": [
+        90,
+        160
+      ],
+      "parental_care": 0.4,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 30,
+      "f0_max_hz": 400,
+      "call_types": [
+        {
+          "id": "contact_boom",
+          "duration_s": 1.2,
+          "f0_hz": 60,
+          "source_level_db": 90,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "threat_rumble",
+          "duration_s": 1.0,
+          "f0_hz": 50,
+          "source_level_db": 95,
+          "context": "agonistic_threat",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "cathemeral"
+    },
+    "personality": {
+      "boldness": [
+        0.55,
+        0.15
+      ],
+      "caution": [
+        0.5,
+        0.15
+      ],
+      "aggression": [
+        0.5,
+        0.15
+      ],
+      "curiosity": [
+        0.45,
+        0.15
+      ],
+      "sociability": [
+        0.2,
+        0.1
+      ],
+      "vigilance": [
+        0.6,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.45,
+        0.15
+      ],
+      "exploration": [
+        0.55,
+        0.15
+      ],
+      "flight_tendency": [
+        0.35,
+        0.15
+      ],
+      "dominance": [
+        0.5,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0.05,
+      "riverbank": 0.6,
+      "sandbar": 0.5,
+      "oxbow_lake": 0.2,
+      "backswamp": 0.3,
+      "riparian_forest": 0.8,
+      "floodplain_open": 0.8,
+      "levee_woodland": 0.8,
+      "upland_conifer_forest": 0.6,
+      "cutbank_cliff": 0.1,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.2,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 2,
+      "regional_density_per_km2": 0.03
+    }
+  },
+  "sim_basis": {
+    "role": "derived: la littérature évaluée par les pairs la plus récente (zanno2025_nanotyrannus ; griffin2025_nanotyrannus_hyoid ; longrich2024_nanotyrannus ; farke2026_nanotyrannus_perspective) soutient un taxon distinct, adulte, coexistant avec T. rex → simulé comme agent. Dissidence résiduelle (commentaire technique 2026 ; position de T. Carr rapportée par la presse) : prévoir un profil de reconstruction « Nanotyrannus = T. rex juvénile » qui désactive l'espèce",
+    "body_plan": "derived: tyrannosauroïde bipède de ~0,7 t (zanno2025_nanotyrannus) ; pas de plan intermédiaire dans l'énumération",
+    "adult_mass_kg": "zanno2025_nanotyrannus",
+    "adult_length_m": "derived: ≈5,5 m (communiqué de griffin2025_nanotyrannus_hyoid) à ≈6 m (NCSM 40000, comptes rendus de zanno2025_nanotyrannus) ; valeur basse retenue",
+    "hip_height_m": "derived: similitude géométrique depuis T. rex (3,1 m × (700/7000)^(1/3) ≈ 1,44 m) majorée d'environ 10 % pour des membres relativement plus longs (zanno2025_nanotyrannus) — majoration = game_assumption",
+    "foot_length_m": "derived: mise à l'échelle depuis T. rex (0,8 m × 1,6/3,1 ≈ 0,41 m)",
+    "foot_width_m": "derived: même mise à l'échelle que foot_length_m, pied plus étroit (game_assumption)",
+    "hatchling_mass_kg": "game_assumption: aucun œuf ni nouveau-né connu ; valeur inférieure à celle de T. rex en raison d'une taille adulte bien plus faible",
+    "sexual_dimorphism_mass": "game_assumption: aucune donnée → 1,0",
+    "growth.asymptotic_mass_kg": "zanno2025_nanotyrannus",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune courbe publiée vérifiée ; valeur logistique compatible avec ~0,7 t atteintes vers 15–20 ans",
+    "growth.inflection_age_years": "game_assumption: aucune courbe publiée vérifiée",
+    "growth.maturity_age_years": "derived: NCSM 40000 proche de la maturité somatique vers ~20 ans (zanno2025_nanotyrannus) ; 18 ans retenu",
+    "growth.max_lifespan_years": "derived: individu mature d'environ 20 ans (zanno2025_nanotyrannus) ; marge de quelques années (game_assumption)",
+    "locomotion.walk_speed_ms": "game_assumption: proche de T. rex (vanbijlert2021_trex_walking) pour un animal plus petit mais plus long de pattes",
+    "locomotion.max_speed_ms": "game_assumption: aucune estimation publiée ; décrit comme plus rapide que T. rex (zanno2025_nanotyrannus) → valeur modérée de 8 m/s",
+    "locomotion.max_accel_ms2": "game_assumption: plus agile que T. rex, aucune donnée",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée",
+    "locomotion.max_yaw_rate_dps": "game_assumption: inertie rotationnelle bien plus faible que T. rex ; aucune donnée",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée",
+    "locomotion.swim": "game_assumption: aucune donnée ; nage supposée possible pour franchir les chenaux",
+    "locomotion.swim_speed_ms": "game_assumption: aucune donnée",
+    "locomotion.fly": "derived: incapable de voler (anatomie ; zanno2025_nanotyrannus)",
+    "locomotion.fly_speed_ms": "derived: sans objet",
+    "locomotion.duty_factor_walk": "game_assumption: valeur typique de marche bipède",
+    "locomotion.duty_factor_run": "game_assumption: course possible avec phase aérienne courte",
+    "metabolism.thermo_class": "game_assumption: même choix que T. rex (débat grady2014_mesothermy vs wiemann2022_dinosaur_metabolism)",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée",
+    "diet.type": "derived: denture de carnivore (zanno2025_nanotyrannus ; longrich2024_nanotyrannus)",
+    "diet.plant_preferences": "derived: carnivore — aucune plante",
+    "diet.browse_height_min_m": "derived: sans objet",
+    "diet.browse_height_max_m": "derived: sans objet",
+    "diet.prey_mass_min_kg": "game_assumption: petites proies possibles",
+    "diet.prey_mass_max_kg": "game_assumption: proies jusqu'à environ deux fois sa masse (jeunes hadrosaures et cératopsiens)",
+    "diet.scavenges": "game_assumption: charognage opportuniste plausible pour tout grand carnivore",
+    "diet.eats_fish": "game_assumption: aucune preuve",
+    "diet.eats_invertebrates": "game_assumption: aucune preuve",
+    "diet.eats_eggs": "game_assumption: aucune preuve",
+    "senses.vision_range_m": "game_assumption: aucune donnée",
+    "senses.fov_deg": "game_assumption: museau étroit, champ total non publié",
+    "senses.binocular_deg": "game_assumption: museau étroit mais champ binoculaire non mesuré ; inférieur à T. rex par défaut",
+    "senses.low_light": "game_assumption: aucune donnée",
+    "senses.hearing_min_hz": "game_assumption: oreille interne de type tyrannosauridé (witmer2010_cleveland_tyrannosaur) ; valeur choisie",
+    "senses.hearing_max_hz": "game_assumption: un animal plus petit est supposé entendre un peu plus aigu que T. rex",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée",
+    "senses.olfaction": "game_assumption: odorat développé comme chez les tyrannosauridés, non quantifié pour ce taxon",
+    "senses.vibration": "game_assumption: aucune donnée",
+    "social.group_size_mean": "game_assumption: aucune preuve de groupe → solitaire",
+    "social.group_size_max": "game_assumption: aucune donnée",
+    "social.cohesion": "game_assumption: aucune donnée",
+    "social.territorial": "game_assumption: aucune donnée",
+    "social.territory_radius_m": "game_assumption: domaine plus petit que T. rex en raison de la masse",
+    "social.alarm_calls": "game_assumption: aucune donnée",
+    "defense.weapons": "derived: morsure ; griffes des bras longs (zanno2025_nanotyrannus) — usage défensif non démontré",
+    "defense.armor": "game_assumption: peau supposée écailleuse, sans ostéodermes",
+    "defense.defense_strength": "game_assumption: aucune donnée",
+    "defense.flee_preference": "game_assumption: fuite face aux T. rex adultes",
+    "predation.hunt_style": "game_assumption: anatomie gracile et cursoriale (zanno2025_nanotyrannus) → poursuite courte",
+    "predation.attack_strength": "game_assumption: valeur relative intermédiaire",
+    "predation.bite_force_n": "game_assumption: aucune estimation propre au taxon ; ordre de grandeur des estimations obtenues pour de « jeunes T. rex » (peterson2021_juvenile_trex_bite, non vérifiée — échantillon peut-être en partie Nanotyrannus)",
+    "predation.max_chase_s": "game_assumption: aucune donnée",
+    "reproduction.clutch_size_mean": "game_assumption: aucune donnée",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée",
+    "reproduction.incubation_days": "game_assumption: ordre de grandeur des incubations dinosauriennes (erickson2017_dinosaur_incubation)",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée",
+    "reproduction.parental_care": "game_assumption: aucune donnée",
+    "reproduction.nest_type": "game_assumption: aucune donnée",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF — hypothèse de vocalisation à bouche fermée (riede2016_closed_mouth_vocal)",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée",
+    "vocal.call_types": "game_assumption: répertoire entièrement SPÉCULATIF (aucun syrinx connu chez les non-aviens : clarke2016_mesozoic_syrinx) ; sons graves à bouche fermée, pas de rugissement",
+    "activity.pattern": "game_assumption: aucune donnée",
+    "personality": "game_assumption: traits de personnalité toujours hypothétiques",
+    "habitat": "game_assumption: généraliste de la plaine de Hell Creek, légère préférence pour les milieux boisés (hypothèse de partition avec T. rex)",
+    "population.initial_count": "game_assumption: abondance inconnue ; fossiles plus rares que ceux de T. rex, mais densité attendue plus élevée pour une masse ~10 fois plus faible → 2 individus sur 64 km²",
+    "population.regional_density_per_km2": "game_assumption: ≈ 3 × la densité retenue pour T. rex (0,009/km², marshall2021_trex_abundance), compromis entre l'effet de taille et la rareté des fossiles"
+  }
+}

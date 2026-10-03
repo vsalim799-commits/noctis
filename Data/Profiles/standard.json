@@ -1,0 +1,33 @@
+{
+  "schema": "noctis.profile/1",
+  "id": "standard",
+  "version": "2026.10-a",
+  "name": {
+    "fr": "Reconstruction standard"
+  },
+  "description_fr": "Profil par défaut : comportements inférés activés, quelques hypothèses spéculatives utiles au jeu activées et signalées comme telles.",
+  "toggles": [
+    {
+      "id": "contact_calls",
+      "enabled": true,
+      "confidence": "inferred",
+      "sources": [],
+      "description_fr": "Vocalisations de contact entre membres d'un groupe social. L'existence de vocalisations est inférée par encadrement phylogénétique (crocodiliens et oiseaux vocalisent) ; leurs propriétés acoustiques sont des hypothèses."
+    },
+    {
+      "id": "alarm_calls",
+      "enabled": true,
+      "confidence": "speculative",
+      "sources": [],
+      "description_fr": "Cris d'alarme émis par les espèces sociales lorsqu'une menace est détectée, entraînant le regroupement des congénères. Analogie avec des oiseaux et mammifères actuels ; aucune preuve directe chez les dinosaures non aviens."
+    },
+    {
+      "id": "individual_markings",
+      "enabled": true,
+      "confidence": "speculative",
+      "sources": [],
+      "description_fr": "Variation individuelle des motifs tégumentaires permettant la photo-identification. La variation individuelle est attendue par analogie avec les animaux actuels ; les motifs eux-mêmes sont inconnus."
+    }
+  ],
+  "excluded_species": []
+}

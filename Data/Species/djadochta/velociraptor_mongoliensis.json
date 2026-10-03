@@ -1,0 +1,730 @@
+{
+  "schema": "noctis.species/1",
+  "id": "velociraptor_mongoliensis",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Velociraptor mongoliensis",
+  "authority": "Osborn, 1924",
+  "common_names": {
+    "fr": "Vélociraptor",
+    "en": "Velociraptor"
+  },
+  "regions": [
+    "djadochta"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Velociraptor mongoliensis Osborn, 1924 : théropode dromaeosauridé (Paraves, Dromaeosauridae, généralement placé parmi les Velociraptorinae), décrit à partir d'un crâne et d'une griffe de la main récoltés à Bayn Dzak (Flaming Cliffs). Une seconde espèce, V. osmolskae Godefroit et al., 2008, a été nommée sur du matériel crânien de Bayan Mandahu (Mongolie-Intérieure, Chine) ; des analyses phylogénétiques ultérieures la rapprochent plutôt de Linheraptor et son rattachement au genre est aujourd'hui considéré comme douteux (« Velociraptor » osmolskae, en attente d'un nouveau genre).",
+      "confidence": "established",
+      "sources": [
+        "osborn1924_three_theropoda",
+        "godefroit2008_velociraptor_osmolskae",
+        "bindellini2025_velociraptor_review"
+      ],
+      "notes": "Le statut générique de V. osmolskae relève de l'INFÉRÉ (voir competing_hypotheses) ; seule l'espèce type est simulée."
+    },
+    "period": {
+      "summary": "Crétacé supérieur, Campanien. L'âge de la Formation de Djadochta n'est pas fixé par une datation radiométrique directe des couches fossilifères ; les estimations (magnétostratigraphie, corrélations) le placent généralement vers la fin du Campanien, autour de ~75–71 millions d'années, et il n'est pas certain qu'un même âge s'applique à toute la formation dans la région.",
+      "confidence": "inferred",
+      "sources": [
+        "dashzeveg2005_djadokhta_age",
+        "dingus2008_ukhaa_geology"
+      ],
+      "value": 73,
+      "min": 71,
+      "max": 75,
+      "unit": "Ma",
+      "notes": "Attribution au Campanien bien admise ; la fourchette chiffrée (~75–71 Ma) n'a pas été relue dans le texte intégral de Dashzeveg et al. (2005) ni de Dingus et al. (2008) — à confirmer."
+    },
+    "formation": {
+      "summary": "Formation de Djadochta (Djadokhta) : localité type de Bayn Dzak, ainsi que Tugrikin Shireh (spécimen des « Fighting Dinosaurs ») et Ukhaa Tolgod (nouveaux spécimens des expéditions AMNH–Académie mongole des sciences). Des vélociraptorinés proches proviennent de la formation corrélée de Bayan Mandahu en Chine.",
+      "confidence": "established",
+      "sources": [
+        "osborn1924_three_theropoda",
+        "kielanjaworowska1972_narrative",
+        "norell1999_velociraptor_skeleton",
+        "godefroit2008_velociraptor_osmolskae"
+      ]
+    },
+    "location": {
+      "summary": "Désert de Gobi, sud de la Mongolie (province d'Ömnögovi) : Bayn Dzak / Flaming Cliffs, Tugrikin Shireh, Ukhaa Tolgod. « V. » osmolskae : Bayan Mandahu, Mongolie-Intérieure (Chine).",
+      "confidence": "established",
+      "sources": [
+        "osborn1924_three_theropoda",
+        "kielanjaworowska1972_narrative",
+        "godefroit2008_velociraptor_osmolskae"
+      ]
+    },
+    "size": {
+      "summary": "Animal de la taille d'un grand dindon, très loin des « raptors » géants de Jurassic Park (dont la taille correspond plutôt à Deinonychus). Le spécimen IGM 100/981, porteur des tubercules de plumes, correspond à un individu d'environ 1,5 m de long queue comprise ; les plus grands individus sont estimés vers ~2 m. Hauteur debout de l'ordre de 1 m (tête), hauteur au bassin de l'ordre de 0,5 m ; la longue queue représente une grande part de la longueur totale.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "turner2007_velociraptor_quill_knobs",
+        "bindellini2025_velociraptor_review"
+      ],
+      "value": 1.5,
+      "min": 1.5,
+      "max": 2.0,
+      "unit": "m",
+      "notes": "La borne haute (~2 m) et la hauteur au bassin (~0,5 m) proviennent de synthèses secondaires non vérifiées ici ; les 1,5 m d'IGM 100/981 sont rapportés pour Turner et al. (2007)."
+    },
+    "mass": {
+      "summary": "Masse estimée à environ 15 kg pour IGM 100/981 (Turner et al. 2007). Les estimations allométriques citées dans la littérature secondaire vont d'environ 14 à 20 kg selon le spécimen et la méthode. Aucune n'est une mesure directe : ce sont des modèles fondés sur les dimensions des os des membres ou sur des volumes reconstruits.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "turner2007_velociraptor_quill_knobs"
+      ],
+      "value": 15,
+      "min": 14,
+      "max": 20,
+      "unit": "kg",
+      "notes": "Fourchette 14–20 kg issue de synthèses secondaires ; seule la valeur ~15 kg est rattachée à une référence vérifiée."
+    },
+    "morphology": {
+      "summary": "Petit théropode bipède à l'allure d'oiseau terrestre : crâne long et bas au museau légèrement concave, dents recourbées et dentelées ; cou en S ; bras repliables portant de grandes plumes rémiges sur l'avant-bras ; main à trois doigts griffus ; pied dont le deuxième orteil, relevé, porte une grande griffe en faucille ; longue queue raidie par des prolongements osseux des zygapophyses et des chevrons. Rien à voir avec le reptile écailleux à tête massive du cinéma.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "barsbold1999_velociraptor_skull",
+        "norell1999_velociraptor_skeleton",
+        "turner2007_velociraptor_quill_knobs",
+        "bindellini2025_velociraptor_review"
+      ]
+    },
+    "skeleton": {
+      "summary": "Connu par plusieurs crânes bien préservés et des squelettes presque complets, dont celui des « Fighting Dinosaurs ». La région temporale et d'autres caractères crâniens le distinguent de Deinonychus (Barsbold & Osmólska 1999). Les spécimens récoltés à partir des années 1990 documentent des traits très aviens : fourchette (furcula), plaques sternales ossifiées, processus uncinés sur les côtes, carpe semi-lunaire permettant de replier la main, pubis orienté vers l'arrière, queue rigidifiée.",
+      "confidence": "established",
+      "sources": [
+        "barsbold1999_velociraptor_skull",
+        "norell1999_velociraptor_skeleton",
+        "norell1997_velociraptor_furcula"
+      ]
+    },
+    "musculature": {
+      "summary": "Aucun muscle n'est préservé. Les reconstitutions reposent sur l'encadrement phylogénétique (crocodiliens et oiseaux) : muscles caudofémoraux ancrés sur la queue pour la propulsion, adducteurs mandibulaires dans la fosse temporale, fléchisseurs puissants du deuxième orteil pour actionner la griffe en faucille, muscles pectoraux modestes compatibles avec des battements d'ailes stabilisateurs mais pas avec le vol. Les valeurs quantitatives propres à Velociraptor restent peu documentées.",
+      "confidence": "inferred",
+      "sources": [
+        "fowler2011_deinonychus_rpr",
+        "manning2006_killer_claws"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Aucun tissu mou préservé chez Velociraptor. Un système respiratoire à sacs aériens de type aviaire est inféré chez les dromaeosauridés (os pneumatisés, processus uncinés), sans preuve directe chez cette espèce. Les gaines cornées des griffes, plus longues que le noyau osseux, sont inférées par comparaison avec les oiseaux.",
+      "confidence": "inferred",
+      "sources": [
+        "norell1999_velociraptor_skeleton"
+      ]
+    },
+    "integument": {
+      "summary": "Plumage démontré : l'ulna de IGM 100/981 porte une rangée de tubercules d'insertion des plumes (« quill knobs »), témoins de grandes plumes pennacées (rémiges secondaires) ancrées par des ligaments, comme chez les oiseaux actuels. Un plumage corporel complet (plumes de contour, éventail de plumes caudales) est inféré par comparaison avec des dromaeosauridés à plumes préservées. La couleur est inconnue. Les écailles du dessous des pieds sont probables.",
+      "confidence": "established",
+      "sources": [
+        "turner2007_velociraptor_quill_knobs",
+        "bindellini2025_velociraptor_review"
+      ],
+      "notes": "ÉTABLI : plumes de l'avant-bras. INFÉRÉ : reste du plumage. INCONNU : couleurs et motifs."
+    },
+    "locomotion": {
+      "summary": "Bipède coureur. Le deuxième orteil, porteur de la griffe en faucille, était tenu relevé : l'animal marchait sur les orteils III et IV, ce qui produit des empreintes didactyles comme celles attribuées à des deinonychosaures en Chine (Crétacé inférieur, autres taxons). Le vol est exclu (ailes trop petites pour la masse) ; un usage des ailes pour l'équilibre lors de la maîtrise d'une proie est proposé. La queue rigide servait probablement de balancier.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "norell1999_velociraptor_skeleton",
+        "fowler2011_deinonychus_rpr",
+        "li2008_deinonychosaur_trackways"
+      ],
+      "notes": "Aucune empreinte attribuée à Velociraptor n'est connue dans la Formation de Djadochta."
+    },
+    "speed": {
+      "summary": "Une simulation de robotique évolutive (Sellers & Manning 2007) estime une vitesse de pointe d'environ 10,8 m/s (~39 km/h) pour Velociraptor. C'est une sortie de modèle, sensible aux hypothèses sur la masse musculaire et la posture ; aucune piste ne permet de la contraindre.",
+      "confidence": "inferred",
+      "sources": [
+        "sellers2007_running_speeds"
+      ],
+      "value": 10.8,
+      "unit": "m/s",
+      "notes": "Valeur 38,9 km/h rapportée par des sources secondaires citant Sellers & Manning (2007) ; tableau du texte intégral non consulté."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée d'accélération pour Velociraptor n'a été trouvée."
+    },
+    "diet": {
+      "summary": "Carnivore. Preuves directes : (1) individu figé en combat avec un Protoceratops ; (2) traces de dents de dromaeosauridé sur des os de Protoceratops à Bayan Mandahu (Hone et al. 2010) ; (3) os de ptérosaure azhdarchidé dans la cavité corporelle d'un Velociraptor (Hone et al. 2012). Petits vertébrés (lézards, mammifères, jeunes dinosaures) probables mais non démontrés directement.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "kielanjaworowska1972_narrative",
+        "hone2010_velociraptor_protoceratops",
+        "hone2012_pterosaur_food",
+        "carpenter1998_predatory_behavior"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Débattue. Le modèle « Raptor Prey Restraint » (Fowler et al. 2011) propose que les dromaeosauridés maintenaient au sol, sous leur poids, des proies plus petites qu'eux à l'aide des griffes en faucille (comme les rapaces actuels), battaient des ailes pour garder l'équilibre et commençaient à les dépecer à la gueule. L'hypothèse ancienne d'une griffe « éventreuse » qui tranche est rejetée : la griffe perce mais ne découpe pas (Manning et al. 2006), qui suggèrent plutôt un usage de crampon pour s'agripper à de grandes proies. Carpenter (1998) voit dans le spécimen des « Fighting Dinosaurs » des coups perforants visant la gorge et note que le bord interne du noyau osseux de la griffe est arrondi, peu compatible avec une action tranchante. Les traces de dents tardives sur des carcasses de Protoceratops montrent aussi l'exploitation de carcasses déjà largement consommées (Hone et al. 2010).",
+      "confidence": "inferred",
+      "sources": [
+        "fowler2011_deinonychus_rpr",
+        "manning2006_killer_claws",
+        "carpenter1998_predatory_behavior",
+        "hone2010_velociraptor_protoceratops"
+      ]
+    },
+    "predation": {
+      "summary": "Seule preuve d'attaque d'une proie vivante : les « Fighting Dinosaurs » (Tugrikin Shireh, découverts en 1971). La griffe en faucille gauche du Velociraptor est engagée dans la région du cou/de la gorge d'un Protoceratops, qui serre l'avant-bras droit du prédateur dans son bec. Carpenter (1998) y voit une tentative de prédation ; Barsbold (2016) analyse les positions des corps avant et après la mort. Protoceratops, de masse comparable ou supérieure, était une proie risquée.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "kielanjaworowska1972_narrative",
+        "carpenter1998_predatory_behavior",
+        "barsbold2016_fighting_dinosaurs"
+      ]
+    },
+    "defense": {
+      "summary": "Aucune armure. Défense probablement fondée sur la vigilance et la fuite, puis sur la morsure, les griffes et les coups de pied si l'animal est acculé. Aucun grand prédateur n'est clairement documenté dans la Formation de Djadochta (pas de grand tyrannosauridé connu ici, contrairement à la Formation de Nemegt) ; les juvéniles pouvaient être exposés à d'autres petits théropodes.",
+      "confidence": "speculative",
+      "sources": [],
+      "notes": "L'absence de grand prédateur repose sur les listes fauniques non vérifiées dans cette passe."
+    },
+    "social_behavior": {
+      "summary": "Aucune preuve directe de chasse en meute : les spécimens connus sont des individus isolés (hors le couple avec Protoceratops). Roach & Brinkman (2007) jugent la chasse coopérative de type mammifère peu parcimonieuse chez les deinonychosaures et proposent comme hypothèse nulle des chasseurs solitaires ou des rassemblements lâches et conflictuels autour des carcasses (comme chez les varans ou les crocodiles). Des pistes parallèles de deinonychosaures en Chine suggèrent des déplacements en petits groupes chez d'autres taxons, sans implication directe pour Velociraptor. La synthèse du centenaire confirme que des preuves directes de chasse en groupe font défaut.",
+      "confidence": "inferred",
+      "sources": [
+        "roach2007_pack_hunting",
+        "li2008_deinonychosaur_trackways",
+        "bindellini2025_velociraptor_review"
+      ]
+    },
+    "reproduction": {
+      "summary": "Aucun œuf, nid ni embryon n'est attribué à Velociraptor. Par encadrement phylogénétique (oviraptoridés et troodontidés trouvés couvant leurs pontes ; oiseaux), la ponte d'œufs à coquille rigide et une couvaison par un adulte sont plausibles mais non démontrées.",
+      "confidence": "speculative",
+      "sources": [
+        "varricchio2008_paternal_care"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucun juvénile ni embryon de Velociraptor n'a pu être identifié dans la littérature vérifiée."
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Pas de courbe de croissance histologique propre à Velociraptor vérifiée ; par analogie avec d'autres petits théropodes, une croissance rapide jusqu'à la taille adulte en quelques années est plausible (hypothèse de jeu)."
+    },
+    "senses": {
+      "summary": "La tomographie de l'endocrâne (King et al. 2020) montre un flocculus très développé (stabilisation du regard, agilité, suivi de proies) et une oreille interne indiquant, selon les auteurs, une gamme auditive estimée à 2 368–3 965 Hz, relativement élevée pour un théropode. Les dromaeosauridés figurent parmi les théropodes aux plus grands bulbes olfactifs relatifs, suggérant un odorat fin (Zelenitsky et al. 2009). Grandes orbites ; la vision nocturne est discutée sous activity_pattern.",
+      "confidence": "inferred",
+      "sources": [
+        "king2020_velociraptor_endocranium",
+        "zelenitsky2009_theropod_olfaction"
+      ],
+      "notes": "La signification exacte des bornes 2 368 et 3 965 Hz (fréquence de meilleure sensibilité vs limite haute) doit être confirmée dans le texte intégral de King et al. (2020)."
+    },
+    "communication": {
+      "summary": "Aucune donnée directe. Les grandes plumes des bras et de la queue pouvaient servir à des parades visuelles (inféré par comparaison avec les oiseaux et les dromaeosauridés à plumes préservées). Les vocalisations sont inconnues ; des sons à bec fermé (roucoulements, sifflements) sont plausibles chez les archosaures, mais restent spéculatifs.",
+      "confidence": "speculative",
+      "sources": [
+        "turner2007_velociraptor_quill_knobs"
+      ]
+    },
+    "activity_pattern": {
+      "summary": "Débattu. D'après la morphologie de l'anneau sclérotique et de l'orbite, Schmitz & Motani (2011) classent Velociraptor parmi les formes nocturnes. Hall et al. (2011) ont montré un fort chevauchement entre catégories d'activité chez les espèces actuelles et contestent la fiabilité de la méthode. Une activité nocturne ou crépusculaire est plausible dans un désert chaud, mais non démontrée.",
+      "confidence": "speculative",
+      "sources": [
+        "schmitz2011_nocturnality",
+        "hall2011_comment_nocturnality"
+      ]
+    },
+    "habitat": {
+      "summary": "Champs de dunes éoliennes, plaines interdunaires, abords de mares temporaires et zones à végétation xérique d'un bassin semi-aride. Les spécimens proviennent de grès éoliens et interdunaires.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "fastovsky1997_tugrikin",
+        "dashzeveg1995_ukhaa_tolgod"
+      ],
+      "notes": "Le cadre (dunes, interdunes, mares temporaires) est bien établi ; les préférences fines de l'espèce entre ces milieux sont inférées."
+    },
+    "climate": {
+      "summary": "Climat aride à semi-aride et saisonnier : grès éoliens à stratifications entrecroisées (dunes), dépôts interdunaires, paléosols carbonatés et mares ou cours d'eau temporaires. Les effondrements de dunes humidifiées par la pluie et les tempêtes de sable ont enseveli des animaux vivants ou fraîchement morts, d'où la fréquence de squelettes articulés en position de vie (Loope et al. 1998).",
+      "confidence": "strongly_supported",
+      "sources": [
+        "loope1998_dune_field",
+        "dingus2008_ukhaa_geology",
+        "jerzykiewicz1993_djadokhta",
+        "fastovsky1997_tugrikin",
+        "dashzeveg2005_djadokhta_age"
+      ],
+      "notes": "Température, précipitations et saisonnalité chiffrées : information insuffisante."
+    },
+    "interactions": {
+      "summary": "Prédateur et charognard de Protoceratops (combat, traces de dents) ; consommateur occasionnel de ptérosaures, probablement charognés selon Hone et al. (2012). Cohabitait avec Citipati, Pinacosaurus, d'autres petits théropodes, des lézards et des mammifères multituberculés de la même formation.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "kielanjaworowska1972_narrative",
+        "hone2010_velociraptor_protoceratops",
+        "hone2012_pterosaur_food",
+        "dashzeveg1995_ukhaa_tolgod"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Holotype AMNH 6515 (crâne et griffe de la main), récolté en 1923 par les Central Asiatic Expeditions de l'AMNH à Bayn Dzak et décrit en 1924. Spécimen des « Fighting Dinosaurs » (découvert en 1971 par l'expédition polono-mongole). IGM 100/981 (ulna à tubercules de plumes). Nombreux squelettes récoltés depuis les années 1990 (Ukhaa Tolgod, Tugrikin Shireh). Le centenaire de la description a donné lieu à une synthèse (Bindellini et al. 2025).",
+      "confidence": "established",
+      "sources": [
+        "osborn1924_three_theropoda",
+        "kielanjaworowska1972_narrative",
+        "turner2007_velociraptor_quill_knobs",
+        "norell1999_velociraptor_skeleton",
+        "bindellini2025_velociraptor_review"
+      ],
+      "notes": "Le numéro GIN/IGM 100/25 (Fighting Dinosaurs) est confirmé par des sources secondaires ; le numéro d'holotype AMNH 6515 est cité de mémoire."
+    },
+    "documented_behavior": {
+      "summary": "(1) Combat avec un Protoceratops, les deux animaux figés par un ensevelissement soudain (« Fighting Dinosaurs », GIN/IGM 100/25). Une noyade avait d'abord été envisagée ; la préservation dans des dépôts dunaires fait aujourd'hui privilégier un ensevelissement par du sable (dune effondrée ou tempête). Les deux membres antérieurs et un membre postérieur du Protoceratops manquent, ce qui a été interprété comme la trace d'un charognage ultérieur par d'autres animaux (Carpenter 1998). (2) Exploitation tardive de carcasses de Protoceratops (traces de dents, Hone et al. 2010). (3) Ingestion d'un os de ptérosaure (Hone et al. 2012). Ces observations ne permettent pas toujours de distinguer prédation et charognage.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "kielanjaworowska1972_narrative",
+        "carpenter1998_predatory_behavior",
+        "hone2010_velociraptor_protoceratops",
+        "hone2012_pterosaur_food"
+      ]
+    },
+    "inferred_behavior": {
+      "summary": "Maîtrise de proies petites à moyennes en les clouant au sol avec les pieds (modèle RPR), avec battements d'ailes stabilisateurs ; charognage opportuniste ; activité possiblement nocturne ou crépusculaire ; couvaison possible (encadrement phylogénétique). La chasse en meute coordonnée n'est PAS soutenue par les données (spéculative au mieux).",
+      "confidence": "inferred",
+      "sources": [
+        "fowler2011_deinonychus_rpr",
+        "hone2012_pterosaur_food",
+        "schmitz2011_nocturnality",
+        "roach2007_pack_hunting"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "feeding_strategy",
+      "summary": "Fonction de la griffe en faucille.",
+      "positions": [
+        {
+          "summary": "Modèle « Raptor Prey Restraint » : la griffe maintient au sol une proie plus petite que le prédateur, comme chez les rapaces ; battements d'ailes stabilisateurs.",
+          "sources": [
+            "fowler2011_deinonychus_rpr"
+          ]
+        },
+        {
+          "summary": "Crampon d'escalade et d'agrippement : la griffe perce et s'ancre (sur de grandes proies, voire des supports), mais ne tranche pas.",
+          "sources": [
+            "manning2006_killer_claws"
+          ]
+        },
+        {
+          "summary": "Arme perforante dirigée vers la gorge d'une grande proie, d'après les « Fighting Dinosaurs ».",
+          "sources": [
+            "carpenter1998_predatory_behavior"
+          ]
+        },
+        {
+          "summary": "Hypothèse historique de la griffe « éventreuse » qui tranche le ventre des proies : aujourd'hui rejetée par les tests biomécaniques.",
+          "sources": []
+        }
+      ]
+    },
+    {
+      "topic": "activity_pattern",
+      "summary": "Velociraptor était-il nocturne ?",
+      "positions": [
+        {
+          "summary": "Nocturne d'après les dimensions de l'anneau sclérotique et de l'orbite.",
+          "sources": [
+            "schmitz2011_nocturnality"
+          ]
+        },
+        {
+          "summary": "La méthode ne permet pas de trancher : fort chevauchement entre espèces diurnes et nocturnes actuelles.",
+          "sources": [
+            "hall2011_comment_nocturnality"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "social_behavior",
+      "summary": "Chasse en meute ou chasseur solitaire ?",
+      "positions": [
+        {
+          "summary": "Hypothèse nulle : chasseurs solitaires ou rassemblements lâches et compétitifs (modèle varan/crocodile).",
+          "sources": [
+            "roach2007_pack_hunting"
+          ]
+        },
+        {
+          "summary": "Déplacements en petits groupes possibles chez certains deinonychosaures (pistes parallèles en Chine) ; aucune preuve pour Velociraptor lui-même.",
+          "sources": [
+            "li2008_deinonychosaur_trackways"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "documented_behavior",
+      "summary": "Interprétation des « Fighting Dinosaurs ».",
+      "positions": [
+        {
+          "summary": "Combat réel entre deux animaux vivants, interrompu par un ensevelissement brutal (dune effondrée ou tempête de sable).",
+          "sources": [
+            "kielanjaworowska1972_narrative",
+            "loope1998_dune_field"
+          ]
+        },
+        {
+          "summary": "Tentative de prédation dirigée vers la gorge du Protoceratops.",
+          "sources": [
+            "carpenter1998_predatory_behavior"
+          ]
+        },
+        {
+          "summary": "Les positions actuelles des corps résultent en partie de déplacements après la mort ; reconstitution des positions avant et après la mort.",
+          "sources": [
+            "barsbold2016_fighting_dinosaurs"
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "taxonomy",
+      "summary": "Statut de Velociraptor osmolskae.",
+      "positions": [
+        {
+          "summary": "Seconde espèce du genre Velociraptor (Bayan Mandahu).",
+          "sources": [
+            "godefroit2008_velociraptor_osmolskae"
+          ]
+        },
+        {
+          "summary": "Plus proche de Linheraptor ; mérite probablement un genre distinct (« Velociraptor » osmolskae).",
+          "sources": [
+            "bindellini2025_velociraptor_review"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "biped_small_theropod",
+    "adult_mass_kg": 15,
+    "adult_length_m": 1.5,
+    "hip_height_m": 0.5,
+    "foot_length_m": 0.12,
+    "foot_width_m": 0.07,
+    "hatchling_mass_kg": 0.07,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 18,
+      "max_growth_rate_kg_per_year": 10,
+      "inflection_age_years": 1.2,
+      "maturity_age_years": 2,
+      "max_lifespan_years": 12
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.1,
+      "max_speed_ms": 10.8,
+      "max_accel_ms2": 6.0,
+      "max_decel_ms2": 8.0,
+      "max_yaw_rate_dps": 200,
+      "max_slope_deg": 35,
+      "swim": false,
+      "swim_speed_ms": 0,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.6,
+      "duty_factor_run": 0.35
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 12,
+      "water_l_per_day_per_100kg": 6.0
+    },
+    "diet": {
+      "type": "carnivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.02,
+      "prey_mass_max_kg": 80,
+      "scavenges": true,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": true
+    },
+    "senses": {
+      "vision_range_m": 400,
+      "fov_deg": 260,
+      "binocular_deg": 55,
+      "low_light": 0.7,
+      "hearing_min_hz": 50,
+      "hearing_max_hz": 3965,
+      "hearing_best_hz": 2368,
+      "hearing_threshold_db": 15,
+      "olfaction": 0.75,
+      "vibration": 0.2
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 3,
+      "cohesion": 0.1,
+      "territorial": true,
+      "territory_radius_m": 1500,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "claws",
+        "bite",
+        "kick"
+      ],
+      "armor": 0.0,
+      "defense_strength": 0.35,
+      "flee_preference": 0.6
+    },
+    "predation": {
+      "hunt_style": "stalk_rush",
+      "attack_strength": 0.3,
+      "bite_force_n": 1500,
+      "max_chase_s": 15
+    },
+    "reproduction": {
+      "clutch_size_mean": 14,
+      "clutch_size_max": 24,
+      "incubation_days": 70,
+      "breeding_season_doy": [
+        100,
+        160
+      ],
+      "parental_care": 0.6,
+      "nest_type": "brooded"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 150,
+      "f0_max_hz": 2500,
+      "call_types": [
+        {
+          "id": "contact",
+          "duration_s": 0.4,
+          "f0_hz": 900,
+          "source_level_db": 70,
+          "context": "social_contact",
+          "confidence": "speculative"
+        },
+        {
+          "id": "threat_hiss",
+          "duration_s": 1.0,
+          "f0_hz": 400,
+          "source_level_db": 75,
+          "context": "threat_display",
+          "confidence": "speculative"
+        },
+        {
+          "id": "distress",
+          "duration_s": 0.6,
+          "f0_hz": 1800,
+          "source_level_db": 85,
+          "context": "distress",
+          "confidence": "speculative"
+        }
+      ]
+    },
+    "activity": {
+      "pattern": "nocturnal"
+    },
+    "personality": {
+      "boldness": [
+        0.6,
+        0.15
+      ],
+      "caution": [
+        0.5,
+        0.15
+      ],
+      "aggression": [
+        0.55,
+        0.15
+      ],
+      "curiosity": [
+        0.55,
+        0.15
+      ],
+      "sociability": [
+        0.15,
+        0.1
+      ],
+      "vigilance": [
+        0.6,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.45,
+        0.15
+      ],
+      "exploration": [
+        0.6,
+        0.15
+      ],
+      "flight_tendency": [
+        0.35,
+        0.1
+      ],
+      "dominance": [
+        0.5,
+        0.2
+      ]
+    },
+    "habitat": {
+      "channel": 0,
+      "riverbank": 0,
+      "sandbar": 0,
+      "oxbow_lake": 0,
+      "backswamp": 0,
+      "riparian_forest": 0,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0.3,
+      "dune_field": 0.5,
+      "interdune_flat": 0.9,
+      "ephemeral_pond": 0.6,
+      "xeric_scrub": 0.8
+    },
+    "population": {
+      "initial_count": 10,
+      "regional_density_per_km2": 0.15
+    }
+  },
+  "sim_basis": {
+    "role": "game_assumption: animal de taille moyenne simulé individuellement (agent)",
+    "body_plan": "derived: petit théropode bipède (barsbold1999_velociraptor_skull ; norell1999_velociraptor_skeleton)",
+    "adult_mass_kg": "turner2007_velociraptor_quill_knobs",
+    "adult_length_m": "turner2007_velociraptor_quill_knobs",
+    "hip_height_m": "game_assumption: ~0,5 m, valeur courante des synthèses (non vérifiée), cohérente avec une hauteur debout ~1 m (bindellini2025_velociraptor_review)",
+    "foot_length_m": "game_assumption: empreinte fonctionnellement didactyle (orteils III–IV) calée sur un animal de ~15 kg ; aucune piste de Velociraptor connue",
+    "foot_width_m": "game_assumption: empreinte didactyle étroite ; aucune piste de Velociraptor connue",
+    "hatchling_mass_kg": "game_assumption: aucun œuf ni nouveau-né connu ; ordre de grandeur de petits théropodes",
+    "sexual_dimorphism_mass": "game_assumption: dimorphisme sexuel inconnu (ratio 1,0)",
+    "growth.asymptotic_mass_kg": "game_assumption: légèrement au-dessus des ~15 kg d'IGM 100/981 (turner2007_velociraptor_quill_knobs) pour représenter les individus de ~2 m",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée histologique vérifiée pour Velociraptor ; croissance rapide de petit théropode supposée, maturité sexuelle avant la taille maximale comme chez Citipati (erickson2007_brooding_growth)",
+    "growth.inflection_age_years": "game_assumption: aucune donnée histologique vérifiée pour Velociraptor ; croissance rapide de petit théropode supposée, maturité sexuelle avant la taille maximale comme chez Citipati (erickson2007_brooding_growth)",
+    "growth.maturity_age_years": "game_assumption: aucune donnée histologique vérifiée pour Velociraptor ; croissance rapide de petit théropode supposée, maturité sexuelle avant la taille maximale comme chez Citipati (erickson2007_brooding_growth)",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée histologique vérifiée pour Velociraptor ; croissance rapide de petit théropode supposée, maturité sexuelle avant la taille maximale comme chez Citipati (erickson2007_brooding_growth)",
+    "locomotion.walk_speed_ms": "derived: nombre de Froude 0,25 avec hauteur de hanche 0,5 m, v = sqrt(0,25·9,81·0,5) ≈ 1,1 m/s",
+    "locomotion.max_speed_ms": "sellers2007_running_speeds",
+    "locomotion.max_accel_ms2": "game_assumption: aucune mesure ; valeurs choisies pour un petit coureur agile",
+    "locomotion.max_decel_ms2": "game_assumption: aucune mesure ; valeurs choisies pour un petit coureur agile",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune mesure ; valeurs choisies pour un petit coureur agile",
+    "locomotion.max_slope_deg": "game_assumption: aucune mesure ; valeurs choisies pour un petit coureur agile",
+    "locomotion.swim": "game_assumption: aucune adaptation à la nage ; peut traverser des mares peu profondes",
+    "locomotion.swim_speed_ms": "game_assumption: pas de nage simulée",
+    "locomotion.fly": "derived: ailes trop petites pour une masse de ~15 kg (turner2007_velociraptor_quill_knobs) — vol impossible",
+    "locomotion.fly_speed_ms": "derived: vol impossible",
+    "locomotion.duty_factor_walk": "game_assumption: aucune mesure ; valeurs choisies pour un petit coureur agile",
+    "locomotion.duty_factor_run": "game_assumption: aucune mesure ; valeurs choisies pour un petit coureur agile",
+    "metabolism.thermo_class": "game_assumption: métabolisme débattu chez les dinosaures non aviens (mésothermie selon grady2014_mesothermy ; métabolisme aviaire ancestral selon wiemann2022_dinosaur_metabolism) ; endotherme retenu pour un petit théropode emplumé",
+    "metabolism.max_fasting_days": "game_assumption: petit carnivore endotherme ; réserves limitées",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: besoins relatifs élevés d'un petit endotherme, en partie couverts par l'eau des proies en milieu aride",
+    "diet.type": "hone2010_velociraptor_protoceratops; hone2012_pterosaur_food",
+    "diet.plant_preferences.fern": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.horsetail": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.angio_herb": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.angio_shrub": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.angio_tree": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.conifer": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.palm": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.cycadophyte": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.ginkgo": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.aquatic_macrophyte": "derived: carnivore strict — aucune consommation végétale",
+    "diet.plant_preferences.xeric_shrub": "derived: carnivore strict — aucune consommation végétale",
+    "diet.browse_height_min_m": "derived: carnivore — sans objet",
+    "diet.browse_height_max_m": "derived: carnivore — sans objet",
+    "diet.prey_mass_min_kg": "game_assumption: petits vertébrés (lézards, mammifères) probables mais non documentés",
+    "diet.prey_mass_max_kg": "game_assumption: Protoceratops subadulte à adulte, attaqué d'après les « Fighting Dinosaurs » (kielanjaworowska1972_narrative)",
+    "diet.scavenges": "hone2010_velociraptor_protoceratops; hone2012_pterosaur_food",
+    "diet.eats_fish": "game_assumption: milieu désertique pauvre en poissons ; aucune preuve",
+    "diet.eats_invertebrates": "game_assumption: aucune preuve ; non simulé pour l'adulte",
+    "diet.eats_eggs": "game_assumption: opportunisme plausible d'un petit prédateur ; aucune preuve directe",
+    "senses.vision_range_m": "game_assumption: aucune mesure directe ; valeurs relatives choisies",
+    "senses.fov_deg": "game_assumption: aucune mesure directe ; valeurs relatives choisies",
+    "senses.binocular_deg": "game_assumption: champ binoculaire modéré des dromaeosauridés d'après l'analyse des orientations orbitaires de stevens2006_binocular_vision (valeur exacte pour Velociraptor non relue)",
+    "senses.low_light": "game_assumption: reflète l'hypothèse nocturne de schmitz2011_nocturnality, contestée par hall2011_comment_nocturnality",
+    "senses.hearing_min_hz": "game_assumption: aucune mesure directe ; valeurs relatives choisies",
+    "senses.hearing_max_hz": "derived: borne haute de la gamme 2 368–3 965 Hz estimée par king2020_velociraptor_endocranium",
+    "senses.hearing_best_hz": "derived: borne basse de la gamme 2 368–3 965 Hz de king2020_velociraptor_endocranium, interprétée ici comme fréquence de meilleure sensibilité (à confirmer dans le texte intégral)",
+    "senses.hearing_threshold_db": "game_assumption: aucune mesure directe ; valeurs relatives choisies",
+    "senses.olfaction": "game_assumption: valeur relative élevée justifiée qualitativement par zelenitsky2009_theropod_olfaction (grands bulbes olfactifs des dromaeosauridés)",
+    "senses.vibration": "game_assumption: aucune mesure directe ; valeurs relatives choisies",
+    "social.group_size_mean": "game_assumption: hypothèse nulle de chasseurs solitaires ou d'agrégations lâches (roach2007_pack_hunting) ; aucune preuve de meute",
+    "social.group_size_max": "game_assumption: hypothèse nulle de chasseurs solitaires ou d'agrégations lâches (roach2007_pack_hunting) ; aucune preuve de meute",
+    "social.cohesion": "game_assumption: hypothèse nulle de chasseurs solitaires ou d'agrégations lâches (roach2007_pack_hunting) ; aucune preuve de meute",
+    "social.territorial": "game_assumption: territorialité inconnue ; activée pour répartir les individus",
+    "social.territory_radius_m": "game_assumption: rayon choisi pour une densité ~0,15 ind./km²",
+    "social.alarm_calls": "game_assumption: aucune donnée",
+    "defense.weapons": "game_assumption: animal léger sans armure ; armes déduites de l'anatomie et de l'usage des griffes dans les « Fighting Dinosaurs » (kielanjaworowska1972_narrative)",
+    "defense.armor": "game_assumption: animal léger sans armure ; armes déduites de l'anatomie et de l'usage des griffes dans les « Fighting Dinosaurs » (kielanjaworowska1972_narrative)",
+    "defense.defense_strength": "game_assumption: animal léger sans armure ; armes déduites de l'anatomie et de l'usage des griffes dans les « Fighting Dinosaurs » (kielanjaworowska1972_narrative)",
+    "defense.flee_preference": "game_assumption: animal léger sans armure ; armes déduites de l'anatomie et de l'usage des griffes dans les « Fighting Dinosaurs » (kielanjaworowska1972_narrative)",
+    "predation.hunt_style": "game_assumption: approche puis bond et immobilisation au sol, compatible avec le modèle RPR (fowler2011_deinonychus_rpr)",
+    "predation.attack_strength": "game_assumption: valeur relative inter-espèces",
+    "predation.bite_force_n": "derived: aucune estimation pour Velociraptor ; 4 100–8 200 N estimés pour Deinonychus (~70 kg) par gignac2010_deinonychus_bite, réduits par (15/70)^(2/3) ≈ 0,36 -> ~1 500–2 900 N ; borne basse retenue",
+    "predation.max_chase_s": "game_assumption: poursuites courtes d'un prédateur à l'affût",
+    "reproduction.clutch_size_mean": "game_assumption: aucun œuf ni nid attribué à Velociraptor ; valeurs calquées sur des pararaptoriens couveurs",
+    "reproduction.clutch_size_max": "game_assumption: aucun œuf ni nid attribué à Velociraptor ; valeurs calquées sur des pararaptoriens couveurs",
+    "reproduction.incubation_days": "game_assumption: aucun œuf ni nid attribué à Velociraptor ; valeurs calquées sur des pararaptoriens couveurs",
+    "reproduction.breeding_season_doy": "game_assumption: aucun œuf ni nid attribué à Velociraptor ; valeurs calquées sur des pararaptoriens couveurs",
+    "reproduction.parental_care": "game_assumption: couvaison inférée par encadrement phylogénétique (varricchio2008_paternal_care) — spéculatif",
+    "reproduction.nest_type": "game_assumption: nid couvé par encadrement phylogénétique (oviraptoridés et troodontidés couveurs, varricchio2008_paternal_care) — spéculatif",
+    "vocal.closed_mouth": "game_assumption: aucune donnée sur les vocalisations ; sons à bec fermé supposés (vocalisations à bouche fermée apparues plusieurs fois chez les archosaures, riede2016_closed_mouth_vocalization), f0 compatibles avec la gamme auditive de king2020_velociraptor_endocranium",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée sur les vocalisations ; sons à bec fermé supposés (vocalisations à bouche fermée apparues plusieurs fois chez les archosaures, riede2016_closed_mouth_vocalization), f0 compatibles avec la gamme auditive de king2020_velociraptor_endocranium",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée sur les vocalisations ; sons à bec fermé supposés (vocalisations à bouche fermée apparues plusieurs fois chez les archosaures, riede2016_closed_mouth_vocalization), f0 compatibles avec la gamme auditive de king2020_velociraptor_endocranium",
+    "vocal.call_types": "game_assumption: aucune donnée sur les vocalisations ; sons à bec fermé supposés (vocalisations à bouche fermée apparues plusieurs fois chez les archosaures, riede2016_closed_mouth_vocalization), f0 compatibles avec la gamme auditive de king2020_velociraptor_endocranium",
+    "activity.pattern": "game_assumption: hypothèse nocturne de schmitz2011_nocturnality retenue, malgré la critique méthodologique de hall2011_comment_nocturnality",
+    "personality.boldness": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.caution": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.aggression": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.curiosity": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.sociability": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.vigilance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.risk_tolerance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.exploration": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.flight_tendency": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "personality.dominance": "game_assumption: traits de personnalité non mesurables sur des fossiles ; valeurs choisies pour produire des comportements plausibles et de la variabilité individuelle",
+    "habitat.channel": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.riverbank": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.sandbar": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.oxbow_lake": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.backswamp": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.riparian_forest": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.floodplain_open": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.levee_woodland": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.upland_conifer_forest": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.cutbank_cliff": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.dune_field": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.interdune_flat": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.ephemeral_pond": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "habitat.xeric_scrub": "game_assumption: préférences relatives déduites du cadre dunaire/interdunaire des gisements ; habitats fluviaux absents de la carte (0)",
+    "population.initial_count": "derived: densité de jeu 0,15 ind./km² × carte de 64 km² ≈ 10 individus",
+    "population.regional_density_per_km2": "game_assumption: densité d'un carnivore endotherme de ~15 kg extrapolée des carnivores actuels de taille comparable ; aucune donnée fossile de densité"
+  }
+}

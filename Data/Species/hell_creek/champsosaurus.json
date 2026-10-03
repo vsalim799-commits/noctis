@@ -1,0 +1,538 @@
+{
+  "schema": "noctis.species/1",
+  "id": "champsosaurus",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Champsosaurus sp. (cf. C. laramiensis)",
+  "authority": "Cope, 1876 (genre)",
+  "common_names": {
+    "fr": "Champsosaure",
+    "en": "Champsosaurus"
+  },
+  "regions": [
+    "hell_creek"
+  ],
+  "science": {
+    "taxonomy": {
+      "summary": "Choristodera, Champsosauridae. Dans la Formation de Hell Creek, Champsosaurus est surtout représenté par des restes isolés (dents, vertèbres). Les deux squelettes presque complets décrits par Brown (1905) sous les noms C. laramiensis et C. ambulator proviennent de la région de Hell Creek (Montana), mais Katsura (2004) les rapporte à la Formation de Tullock (Paléocène inférieur) : l'attribution spécifique du matériel crétacé de Hell Creek reste incertaine.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "brown1905_champsosaurus",
+        "katsura2004_champsosaurus",
+        "matsumoto2010_choristoderes"
+      ],
+      "notes": "Autorité générique « Cope, 1876 » non revérifiée pendant cette session."
+    },
+    "period": {
+      "summary": "Genre connu du Crétacé supérieur au Paléocène en Amérique du Nord ; présent dans le Maastrichtien terminal de Hell Creek et l'un des rares reptiles aquatiques à franchir la limite K–Pg.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "matsumoto2010_choristoderes",
+        "katsura2004_champsosaurus"
+      ]
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (restes isolés des microsites) ; squelettes de référence de C. laramiensis/C. ambulator rapportés à la Formation (membre) de Tullock sus-jacente.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "katsura2004_champsosaurus",
+        "brown1905_champsosaurus"
+      ]
+    },
+    "location": {
+      "summary": "Montana et Dakotas pour Hell Creek ; genre largement répandu dans l'ouest de l'Amérique du Nord.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "matsumoto2010_choristoderes"
+      ]
+    },
+    "size": {
+      "summary": "Les squelettes presque complets décrits par Brown (1905) indiquent un animal d'environ 1,5 m de long ; valeur non recontrôlée dans le texte original pendant cette session.",
+      "confidence": "inferred",
+      "sources": [
+        "brown1905_champsosaurus"
+      ],
+      "value": 1.5,
+      "min": 1.0,
+      "max": 1.8,
+      "unit": "m"
+    },
+    "mass": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée retrouvée."
+    },
+    "morphology": {
+      "summary": "Silhouette de gavial : museau très long et étroit garni de petites dents coniques, crâne élargi à l'arrière (très grandes fenêtres temporales supérieures), narines terminales, membres courts, longue queue.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "brown1905_champsosaurus",
+        "matsumoto2010_choristoderes"
+      ]
+    },
+    "skeleton": {
+      "summary": "Squelettes presque complets connus (dont AMNH 982 et AMNH 981) décrits en détail par Brown (1905) ; matériel de Hell Creek essentiellement isolé.",
+      "confidence": "established",
+      "sources": [
+        "brown1905_champsosaurus",
+        "katsura2004_champsosaurus"
+      ]
+    },
+    "musculature": {
+      "summary": "Très grandes fenêtres temporales suggérant une musculature adductrice volumineuse, favorable à une fermeture rapide des mâchoires.",
+      "confidence": "inferred",
+      "sources": [
+        "brown1905_champsosaurus"
+      ]
+    },
+    "soft_tissue": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "integument": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "locomotion": {
+      "summary": "Nageur surtout aquatique (ondulations du corps et de la queue), membres courts. Katsura (2004) interprète des membres plus robustes chez certains individus comme une adaptation à la marche à terre liée à la ponte (femelles).",
+      "confidence": "inferred",
+      "sources": [
+        "katsura2004_champsosaurus",
+        "matsumoto2010_choristoderes"
+      ]
+    },
+    "speed": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune estimation publiée ; valeurs de jeu."
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Piscivore probable (petits poissons, invertébrés aquatiques), déduit du museau long et étroit à nombreuses petites dents, analogue fonctionnel du gavial actuel.",
+      "confidence": "inferred",
+      "sources": [
+        "matsumoto2010_choristoderes"
+      ]
+    },
+    "feeding_strategy": {
+      "summary": "Capture par balayage latéral rapide de la tête sous l'eau (analogie avec le gavial).",
+      "confidence": "inferred",
+      "sources": [
+        "matsumoto2010_choristoderes"
+      ]
+    },
+    "predation": {
+      "summary": "Prédateur de petites proies aquatiques ; aucun contenu stomacal vérifié.",
+      "confidence": "inferred",
+      "sources": [
+        "matsumoto2010_choristoderes"
+      ]
+    },
+    "defense": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "social_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "reproduction": {
+      "summary": "Katsura (2004) propose que les femelles se rendaient à terre pour pondre, ce qui expliquerait leurs membres plus robustes ; d'autres études (non vérifiées ici) rapportent la viviparité chez certains choristodères asiatiques, de sorte que le mode de reproduction de Champsosaurus reste débattu.",
+      "confidence": "speculative",
+      "sources": [
+        "katsura2004_champsosaurus"
+      ]
+    },
+    "development": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "growth": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "senses": {
+      "summary": "Narines terminales et orbites orientées vers le haut, compatibles avec une vie près de la surface de l'eau ; aucune donnée neurosensorielle.",
+      "confidence": "inferred",
+      "sources": [
+        "brown1905_champsosaurus"
+      ]
+    },
+    "communication": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "activity_pattern": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "habitat": {
+      "summary": "Eaux douces calmes à modérément courantes : chenaux, bras morts, lacs de méandre ; restes fréquents dans les microsites fluviatiles.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "matsumoto2010_choristoderes",
+        "fastovsky2016_hellcreek_primer"
+      ]
+    },
+    "climate": {
+      "summary": "Les champsosaures sont souvent considérés comme indicateurs de climats doux, sans gel prolongé (ectothermie supposée) ; Hell Creek : climat chaud-tempéré à subtropical humide.",
+      "confidence": "inferred",
+      "sources": [
+        "matsumoto2010_choristoderes",
+        "fastovsky2016_hellcreek_primer"
+      ]
+    },
+    "interactions": {
+      "summary": "Concurrent probable des crocodyliens (Borealosuchus, Brachychampsa) et des lépisostéidés pour les petits poissons ; juvéniles exposés aux crocodyliens et aux grands poissons.",
+      "confidence": "inferred",
+      "sources": [
+        "matsumoto2010_choristoderes",
+        "norell1994_brachychampsa"
+      ]
+    },
+    "fossil_record": {
+      "summary": "Genre abondant dans les microsites crétacés et paléocènes d'Amérique du Nord ; squelettes complets surtout paléocènes ; survivant de la crise K–Pg.",
+      "confidence": "strongly_supported",
+      "sources": [
+        "matsumoto2010_choristoderes",
+        "katsura2004_champsosaurus"
+      ]
+    },
+    "documented_behavior": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": [],
+      "notes": "Aucune trace comportementale directe vérifiée."
+    },
+    "inferred_behavior": {
+      "summary": "Chasse de petits poissons par mouvements latéraux de la tête ; sorties à terre pour la ponte (hypothèse de Katsura 2004).",
+      "confidence": "speculative",
+      "sources": [
+        "katsura2004_champsosaurus"
+      ]
+    }
+  },
+  "competing_hypotheses": [
+    {
+      "topic": "taxonomy",
+      "summary": "Statut de C. laramiensis et C. ambulator.",
+      "positions": [
+        {
+          "summary": "Deux espèces distinctes, différant notamment par la robustesse des membres.",
+          "sources": [
+            "brown1905_champsosaurus"
+          ]
+        },
+        {
+          "summary": "Dimorphisme sexuel d'une même espèce : membres robustes (« ambulator ») chez les femelles qui pondaient à terre.",
+          "sources": [
+            "katsura2004_champsosaurus"
+          ]
+        }
+      ]
+    }
+  ],
+  "sim": {
+    "role": "agent",
+    "body_plan": "aquatic_reptile",
+    "adult_mass_kg": 12,
+    "adult_length_m": 1.5,
+    "hip_height_m": 0.12,
+    "foot_length_m": 0.08,
+    "foot_width_m": 0.05,
+    "hatchling_mass_kg": 0.02,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 12,
+      "max_growth_rate_kg_per_year": 1.5,
+      "inflection_age_years": 5,
+      "maturity_age_years": 6,
+      "max_lifespan_years": 25
+    },
+    "locomotion": {
+      "walk_speed_ms": 0.3,
+      "max_speed_ms": 1.0,
+      "max_accel_ms2": 2.0,
+      "max_decel_ms2": 3.0,
+      "max_yaw_rate_dps": 90,
+      "max_slope_deg": 20,
+      "swim": true,
+      "swim_speed_ms": 1.5,
+      "fly": false,
+      "fly_speed_ms": 0,
+      "duty_factor_walk": 0.75,
+      "duty_factor_run": 0.6
+    },
+    "metabolism": {
+      "thermo_class": "ectotherm",
+      "max_fasting_days": 120,
+      "water_l_per_day_per_100kg": 0.5
+    },
+    "diet": {
+      "type": "piscivore",
+      "plant_preferences": {
+        "fern": 0,
+        "horsetail": 0,
+        "angio_herb": 0,
+        "angio_shrub": 0,
+        "angio_tree": 0,
+        "conifer": 0,
+        "palm": 0,
+        "cycadophyte": 0,
+        "ginkgo": 0,
+        "aquatic_macrophyte": 0,
+        "xeric_shrub": 0
+      },
+      "browse_height_min_m": 0,
+      "browse_height_max_m": 0,
+      "prey_mass_min_kg": 0.005,
+      "prey_mass_max_kg": 1,
+      "scavenges": false,
+      "eats_fish": true,
+      "eats_invertebrates": true,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 50,
+      "fov_deg": 200,
+      "binocular_deg": 30,
+      "low_light": 0.5,
+      "hearing_min_hz": 100,
+      "hearing_max_hz": 2000,
+      "hearing_best_hz": 500,
+      "hearing_threshold_db": 35,
+      "olfaction": 0.4,
+      "vibration": 0.6
+    },
+    "social": {
+      "group_size_mean": 1,
+      "group_size_max": 4,
+      "cohesion": 0.1,
+      "territorial": false,
+      "territory_radius_m": 0,
+      "alarm_calls": false
+    },
+    "defense": {
+      "weapons": [
+        "bite"
+      ],
+      "armor": 0.05,
+      "defense_strength": 0.3,
+      "flee_preference": 0.8
+    },
+    "predation": {
+      "hunt_style": "ambush",
+      "attack_strength": 0.2,
+      "bite_force_n": 300,
+      "max_chase_s": 5
+    },
+    "reproduction": {
+      "clutch_size_mean": 15,
+      "clutch_size_max": 25,
+      "incubation_days": 70,
+      "breeding_season_doy": [
+        140,
+        190
+      ],
+      "parental_care": 0.1,
+      "nest_type": "buried"
+    },
+    "vocal": {
+      "closed_mouth": false,
+      "f0_min_hz": 0,
+      "f0_max_hz": 0,
+      "call_types": []
+    },
+    "activity": {
+      "pattern": "diurnal"
+    },
+    "personality": {
+      "boldness": [
+        0.4,
+        0.15
+      ],
+      "caution": [
+        0.6,
+        0.15
+      ],
+      "aggression": [
+        0.3,
+        0.1
+      ],
+      "curiosity": [
+        0.4,
+        0.15
+      ],
+      "sociability": [
+        0.2,
+        0.1
+      ],
+      "vigilance": [
+        0.5,
+        0.15
+      ],
+      "risk_tolerance": [
+        0.3,
+        0.1
+      ],
+      "exploration": [
+        0.4,
+        0.15
+      ],
+      "flight_tendency": [
+        0.7,
+        0.15
+      ],
+      "dominance": [
+        0.3,
+        0.15
+      ]
+    },
+    "habitat": {
+      "channel": 0.9,
+      "riverbank": 0.5,
+      "sandbar": 0.4,
+      "oxbow_lake": 1.0,
+      "backswamp": 0.8,
+      "riparian_forest": 0.1,
+      "floodplain_open": 0,
+      "levee_woodland": 0,
+      "upland_conifer_forest": 0,
+      "cutbank_cliff": 0,
+      "dune_field": 0,
+      "interdune_flat": 0,
+      "ephemeral_pond": 0.2,
+      "xeric_scrub": 0
+    },
+    "population": {
+      "initial_count": 40,
+      "regional_density_per_km2": 0.6
+    }
+  },
+  "sim_basis": {
+    "activity.pattern": "game_assumption: activité diurne d'ectotherme thermorégulant ; aucune donnée",
+    "adult_length_m": "brown1905_champsosaurus",
+    "adult_mass_kg": "game_assumption: masse plausible pour un reptile élancé de ~1,5 m ; aucune estimation publiée",
+    "body_plan": "matsumoto2010_choristoderes",
+    "defense.armor": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.defense_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.flee_preference": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "defense.weapons": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_max_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.browse_height_min_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_eggs": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_fish": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.eats_invertebrates": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_herb": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.angio_tree": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.aquatic_macrophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.conifer": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.cycadophyte": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.fern": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.ginkgo": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.horsetail": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.palm": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.plant_preferences.xeric_shrub": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_max_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.prey_mass_min_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.scavenges": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "diet.type": "derived: museau longirostre à petites dents (matsumoto2010_choristoderes)",
+    "foot_length_m": "game_assumption: valeur extrapolée",
+    "foot_width_m": "game_assumption: valeur extrapolée",
+    "growth.asymptotic_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.inflection_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.maturity_age_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_growth_rate_kg_per_year": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "growth.max_lifespan_years": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "habitat.backswamp": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.channel": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.cutbank_cliff": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.dune_field": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.ephemeral_pond": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.floodplain_open": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.interdune_flat": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.levee_woodland": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.oxbow_lake": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.riparian_forest": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.riverbank": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.sandbar": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.upland_conifer_forest": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "habitat.xeric_scrub": "derived: pondération qualitative à partir de science.habitat (matsumoto2010_choristoderes)",
+    "hatchling_mass_kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "hip_height_m": "game_assumption: membres courts (brown1905_champsosaurus), valeur extrapolée",
+    "locomotion.duty_factor_run": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.duty_factor_walk": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.fly_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_accel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_decel_ms2": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_slope_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.max_yaw_rate_dps": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "locomotion.swim": "matsumoto2010_choristoderes",
+    "locomotion.swim_speed_ms": "game_assumption: aucune estimation publiée",
+    "locomotion.walk_speed_ms": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.max_fasting_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "metabolism.thermo_class": "game_assumption: ectothermie supposée (reptile diapside ; usage paléoclimatique du genre), non démontrée",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "personality.aggression": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.boldness": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.caution": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.curiosity": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.dominance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.exploration": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.flight_tendency": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.risk_tolerance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.sociability": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "personality.vigilance": "game_assumption: personnalité non observable dans le registre fossile ; valeurs de réglage",
+    "population.initial_count": "game_assumption: ~40 individus dans les eaux de la vallée (genre fréquent dans les microsites)",
+    "population.regional_density_per_km2": "game_assumption: cohérent avec initial_count / 64 km²",
+    "predation.attack_strength": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "predation.bite_force_n": "game_assumption: aucune donnée ; mâchoires rapides mais peu puissantes",
+    "predation.hunt_style": "game_assumption: balayage latéral de type gavial assimilé à une embuscade",
+    "predation.max_chase_s": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.breeding_season_doy": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.clutch_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.incubation_days": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "reproduction.nest_type": "derived: hypothèse de ponte à terre de katsura2004_champsosaurus (spéculative ; viviparité non exclue)",
+    "reproduction.parental_care": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "role": "game_assumption: reptile aquatique emblématique simulé individuellement",
+    "senses.binocular_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.fov_deg": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_best_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.hearing_threshold_db": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.low_light": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.olfaction": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vibration": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "senses.vision_range_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "sexual_dimorphism_mass": "game_assumption: katsura2004_champsosaurus propose un dimorphisme des membres, sans ratio de masse — 1,0",
+    "social.alarm_calls": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.cohesion": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_max": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.group_size_mean": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territorial": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "social.territory_radius_m": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.call_types": "game_assumption: aucune donnée vocale — aucun cri simulé",
+    "vocal.closed_mouth": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_max_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation",
+    "vocal.f0_min_hz": "game_assumption: aucune donnée publiée pour ce taxon ; valeur de réglage choisie pour la simulation"
+  }
+}

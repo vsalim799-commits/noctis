@@ -1,0 +1,428 @@
+{
+  "schema": "noctis.species/1",
+  "id": "edmontosaurus_annectens",
+  "reconstruction_version": "2026.10-a",
+  "last_reviewed": "2026-10-03",
+  "scientific_name": "Edmontosaurus annectens",
+  "authority": "(Marsh, 1892)",
+  "common_names": { "fr": "Edmontosaure", "en": "Edmontosaurus" },
+  "regions": ["hell_creek"],
+
+  "science": {
+    "taxonomy": {
+      "summary": "Hadrosauridé saurolophiné (Edmontosaurini), décrit à l'origine sous le nom de Claosaurus annectens (Marsh, 1892). Selon l'analyse de la croissance et de la variation crâniennes, seules deux espèces d'Edmontosaurus sont valides : E. regalis (Campanien supérieur) et E. annectens (Maastrichtien supérieur) ; « Anatotitan copei » et d'autres noms correspondent à des stades de croissance ou à des variants d'E. annectens (Campione & Evans 2011).",
+      "confidence": "established",
+      "sources": ["campione2011_edmontosaur_growth", "marsh1892_claosaurus_annectens"]
+    },
+    "period": {
+      "summary": "Maastrichtien supérieur (Crétacé terminal). La formation de Hell Creek couvre approximativement 67,1 à 66,0 millions d'années, jusqu'à la limite Crétacé–Paléogène.",
+      "confidence": "established",
+      "sources": ["campione2011_edmontosaur_growth", "horner2011_hellcreek_census", "roberts2025_dueling_dinosaurs_age", "sprain2015_hellcreek_chronostratigraphy"],
+      "min": 66.0, "max": 67.1, "unit": "Ma",
+      "notes": "Bornes d'âge de la formation de Hell Creek."
+    },
+    "formation": {
+      "summary": "Formation de Hell Creek (Montana, Dakotas : momie « Dakota », lit d'ossements de Ruth Mason, squelette de nichée), formation de Lance (Wyoming : momies étudiées en 2025) et formations contemporaines.",
+      "confidence": "established",
+      "sources": ["horner2011_hellcreek_census", "manning2009_hadrosaur_mummy", "drumheller2022_edmontosaurus_mummy", "wosik2022_edmontosaurus_growth", "wosik2017_edmontosaurus_nestling", "sereno2025_edmontosaurus_mummies"]
+    },
+    "location": {
+      "summary": "Intérieur de l'Ouest de l'Amérique du Nord (Laramidia) : Montana, Dakota du Nord, Dakota du Sud, Wyoming et formations contemporaines plus au nord.",
+      "confidence": "established",
+      "sources": ["campione2011_edmontosaur_growth", "wosik2022_edmontosaurus_growth", "sereno2025_edmontosaurus_mummies"]
+    },
+    "size": {
+      "summary": "L'un des plus grands hadrosauridés : adultes d'environ 9 à 12 m de long, les plus grands individus correspondant aux spécimens autrefois nommés « Anatotitan » (Campione & Evans 2011).",
+      "confidence": "inferred",
+      "sources": ["campione2011_edmontosaur_growth"],
+      "value": 10.0, "min": 9.0, "max": 12.0, "unit": "m",
+      "notes": "Longueurs issues de la littérature générale ; aucune mesure standardisée vérifiée dans cette session."
+    },
+    "mass": {
+      "summary": "La courbe de croissance histologique du lit d'ossements de Ruth Mason donne une masse asymptotique moyenne d'environ 5,6 t ; les plus grands individus pouvaient la dépasser (Wosik & Evans 2022).",
+      "confidence": "strongly_supported",
+      "sources": ["wosik2022_edmontosaurus_growth"],
+      "value": 5600, "min": 5000, "max": 7000, "unit": "kg",
+      "notes": "Valeur maximale (~7 t) indicative pour les plus grands spécimens."
+    },
+    "morphology": {
+      "summary": "Grand hadrosauridé sans crête osseuse : museau large et aplati (« bec de canard ») prolongé par un bec kératinisé, grande dépression circumnariale autour des narines, batteries dentaires complexes à six tissus permettant un broyage fin (Erickson et al. 2012). En chair, E. annectens portait une crête charnue au-dessus du cou et du tronc, une rangée d'épines au-dessus de la queue et des sabots aux doigts des pieds (Sereno et al. 2025).",
+      "confidence": "established",
+      "sources": ["sereno2025_edmontosaurus_mummies", "erickson2012_hadrosaur_dentition", "campione2011_edmontosaur_growth"]
+    },
+    "skeleton": {
+      "summary": "Très bien connu par de nombreux squelettes articulés, des momies et des lits d'ossements. Colonne dorsale et caudale rigidifiée par des tendons ossifiés en treillis ; membres antérieurs plus grêles que les postérieurs. Chez les nichées, les proportions des membres sont déjà compatibles avec une locomotion quadrupède (Wosik et al. 2017).",
+      "confidence": "established",
+      "sources": ["wosik2017_edmontosaurus_nestling", "wosik2022_edmontosaurus_growth", "sereno2025_edmontosaurus_mummies"]
+    },
+    "musculature": {
+      "summary": "Reconstruite par encadrement phylogénétique (crocodiliens, oiseaux) : muscles caudofémoraux massifs pour la propulsion des membres postérieurs ; musculature masticatrice puissante. La microusure dentaire indique une course de puissance quasi verticale et des mouvements propalinaux contrôlés, avec une charnière pleurokinétique (Williams et al. 2009).",
+      "confidence": "inferred",
+      "sources": ["williams2009_hadrosaur_microwear"]
+    },
+    "soft_tissue": {
+      "summary": "Plusieurs « momies » : « Dakota » (Hell Creek, Dakota du Nord) conserve une peau minéralisée dont la microstructure épidermique suit les limites cellulaires (Manning et al. 2009) et des lambeaux de peau desséchée et dégonflée portant des marques de morsures non cicatrisées (Drumheller et al. 2022) ; deux spécimens du Wyoming conservent, sous forme de « masque » d'argile très fin, la crête charnue dorsale, les épines caudales et les sabots (Sereno et al. 2025). Le bec kératinisé (rhamphothèque), plus étendu que le support osseux, est connu sur certains spécimens (Morris 1970).",
+      "confidence": "established",
+      "sources": ["manning2009_hadrosaur_mummy", "drumheller2022_edmontosaurus_mummy", "sereno2025_edmontosaurus_mummies", "morris1970_hadrosaur_bills"]
+    },
+    "integument": {
+      "summary": "Peau écailleuse à écailles polygonales non imbriquées de tailles variées ; crête charnue médio-dorsale (cou et tronc) et rangée d'épines caudales chez E. annectens (Sereno et al. 2025). Chez un Edmontosaurin momifié du Canada, une crête crânienne entièrement charnue (« crête de coq ») a été décrite (Bell et al. 2014), mais une réévaluation récente conclut que ce spécimen ne peut être attribué ni à E. regalis ni à E. annectens (Sharpe et al. 2025). Couleur inconnue.",
+      "confidence": "established",
+      "sources": ["sereno2025_edmontosaurus_mummies", "manning2009_hadrosaur_mummy", "bell2014_edmontosaurus_comb", "sharpe2025_edmontosaurin_crest"],
+      "notes": "Présence d'une crête crânienne charnue chez E. annectens non confirmée (voir competing_hypotheses)."
+    },
+    "locomotion": {
+      "summary": "Quadrupède facultatif : marche quadrupède habituelle, bipédie probable à allure rapide ou en se dressant. Les sabots enveloppant les doigts des pieds et la posture différente des membres antérieurs et postérieurs sont documentés par les momies du Wyoming, dont les sabots ont été comparés à des empreintes (Sereno et al. 2025). Les nichées étaient anatomiquement capables de locomotion quadrupède et aucun changement de démarche au cours de la croissance n'est démontré (Wosik et al. 2017).",
+      "confidence": "strongly_supported",
+      "sources": ["sereno2025_edmontosaurus_mummies", "wosik2017_edmontosaurus_nestling"]
+    },
+    "speed": {
+      "summary": "Aucune mesure directe de vitesse maximale. Les proportions des membres postérieurs, plus longues et plus cursoriales que celles des cératopsidés, suggèrent une capacité de course bipède modérée. Les valeurs de la simulation sont des hypothèses de jeu.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "acceleration": {
+      "summary": "Information insuffisante — recherche nécessaire.",
+      "confidence": "unknown",
+      "sources": []
+    },
+    "diet": {
+      "summary": "Herbivore. La microusure dentaire, dominée par des stries, indique une alimentation sur une végétation basse et abrasive, qualifiée de « grazing » (Williams et al. 2009) — mais les graminées n'existaient pas à Hell Creek : prêles, fougères, angiospermes herbacées et arbustives et rameaux de conifères sont des candidats. Les restes végétaux (aiguilles et rameaux de conifères, feuilles, graines) trouvés dans la momie de Senckenberg (Kräusel 1922) sont contestés comme débris charriés par l'eau. Chez des hadrosauridés apparentés : contenu intestinal probable de Brachylophosaurus (Tweet et al. 2008), coprolithes contenant du bois décomposé (Chin 2007) et des fragments de crustacés (Chin et al. 2017).",
+      "confidence": "inferred",
+      "sources": ["williams2009_hadrosaur_microwear", "erickson2012_hadrosaur_dentition", "kraeusel1922_trachodon_diet", "tweet2008_brachylophosaurus_gut", "chin2007_coprolites_wood", "chin2017_crustaceans", "wilson2021_seafood_salad_flora"]
+    },
+    "feeding_strategy": {
+      "summary": "Généraliste de végétation basse à moyenne au bec large peu sélectif, broyant efficacement les végétaux fibreux grâce à ses batteries dentaires. Par analogie avec les hadrosauridés de la formation de Dinosaur Park, l'alimentation se faisait surtout jusqu'à ~2 m en posture quadrupède, et plus haut (~4–5 m) en se dressant (Mallon et al. 2013).",
+      "confidence": "inferred",
+      "sources": ["mallon2013_feeding_height", "williams2009_hadrosaur_microwear", "erickson2012_hadrosaur_dentition"],
+      "notes": "Hauteurs d'alimentation tirées d'une analogie (autre formation, autres genres) et d'une source non vérifiée dans cette session."
+    },
+    "predation": {
+      "summary": "Proie de Tyrannosaurus. Deux vertèbres caudales d'hadrosauridé du Hell Creek (Dakota du Sud) sont fusionnées par une cicatrisation osseuse autour d'une couronne dentaire de T. rex, preuve d'une attaque sur un animal vivant qui a survécu (DePalma et al. 2013) ; une autre queue d'Edmontosaurus porte une morsure de tyrannosaure cicatrisée (Carpenter 1998). La peau de « Dakota » porte des marques de morsures non cicatrisées laissées par des carnivores sur la carcasse (Drumheller et al. 2022).",
+      "confidence": "established",
+      "sources": ["depalma2013_trex_predation", "drumheller2022_edmontosaurus_mummy", "carpenter1998_predatory_behavior"]
+    },
+    "defense": {
+      "summary": "Aucune arme spécialisée ; défense probable par la taille, la vigilance de groupe et la fuite. La survie à une morsure de T. rex (DePalma et al. 2013) montre qu'une fuite pouvait réussir. Des coups de pattes défensifs sont une hypothèse.",
+      "confidence": "inferred",
+      "sources": ["depalma2013_trex_predation"]
+    },
+    "social_behavior": {
+      "summary": "Le lit d'ossements de Ruth Mason (Dakota du Sud), monodominant et interprété comme une mortalité catastrophique, indique des regroupements d'Edmontosaurus ; sa structure d'âge suggère une ségrégation ontogénétique entre juvéniles et adultes (Wosik & Evans 2022). La taille et la permanence des troupeaux restent inconnues.",
+      "confidence": "strongly_supported",
+      "sources": ["wosik2022_edmontosaurus_growth"]
+    },
+    "reproduction": {
+      "summary": "Œufs et nids attribués avec certitude à Edmontosaurus inconnus (à notre connaissance). Par encadrement phylogénétique chez les hadrosauridés : nid de juvéniles et indices de soins parentaux chez Maiasaura (Horner & Makela 1979) ; incubation d'environ 171 jours chez Hypacrosaurus d'après les lignes de croissance des dents embryonnaires (Erickson et al. 2017).",
+      "confidence": "inferred",
+      "sources": ["horner1979_maiasaura_nest", "erickson2017_incubation"]
+    },
+    "development": {
+      "summary": "Un squelette de la taille d'une nichée (fémur de 148 mm) est connu dans le Hell Creek du nord-est du Montana ; l'allométrie des membres est globalement isométrique entre membres antérieurs et postérieurs (Wosik et al. 2017). Le crâne subit d'importants changements allométriques au cours de la croissance, ce qui explique les anciens noms de genres distincts (Campione & Evans 2011).",
+      "confidence": "established",
+      "sources": ["wosik2017_edmontosaurus_nestling", "campione2011_edmontosaur_growth"]
+    },
+    "growth": {
+      "summary": "Croissance rapide : environ 95 % de la masse adulte (~5,6 t) atteints vers 9 ans, selon une trajectoire semblable à celle de Maiasaura mais vers une taille asymptotique bien plus grande, compatible selon les auteurs avec un métabolisme élevé (Wosik & Evans 2022).",
+      "confidence": "strongly_supported",
+      "sources": ["wosik2022_edmontosaurus_growth", "woodward2015_maiasaura_growth"],
+      "value": 9, "unit": "ans (âge à ~95 % de la masse adulte)"
+    },
+    "senses": {
+      "summary": "Grandes orbites latérales ; les capacités auditives et olfactives d'E. annectens n'ont pas été quantifiées (à notre connaissance). Par encadrement phylogénétique et taille corporelle, audition probablement sensible aux basses fréquences.",
+      "confidence": "inferred",
+      "sources": []
+    },
+    "communication": {
+      "summary": "Signaux visuels probables : crête charnue dorsale et épines caudales (Sereno et al. 2025), et éventuellement crête crânienne charnue chez certains edmontosaurins (Bell et al. 2014). Vocalisations : l'hypothèse d'un sac nasal gonflable logé dans la dépression circumnariale (Hopson 1975) et celle d'une vocalisation à bouche fermée de basse fréquence, par analogie avec des archosaures actuels (Riede et al. 2016), restent spéculatives.",
+      "confidence": "inferred",
+      "sources": ["sereno2025_edmontosaurus_mummies", "bell2014_edmontosaurus_comb", "hopson1975_hadrosaur_display", "riede2016_closed_mouth_vocalization"],
+      "notes": "La signalisation visuelle est INFÉRÉE ; toute vocalisation est SPÉCULATIVE."
+    },
+    "activity_pattern": {
+      "summary": "Aucune donnée propre à Edmontosaurus. D'après l'anneau sclérotique et l'orbite, Schmitz & Motani (2011) ont classé les hadrosauridés et autres herbivores moyens à grands comme cathéméraux (actifs de jour comme de nuit) ; la fiabilité de cette méthode est contestée (Hall et al. 2011).",
+      "confidence": "inferred",
+      "sources": ["schmitz2011_nocturnality", "hall2011_nocturnality_comment"]
+    },
+    "habitat": {
+      "summary": "Plaines d'inondation, levées boisées et forêts riveraines d'une plaine côtière. Les fossiles se rencontrent notamment dans des dépôts de chenaux (lit d'ossements de Ruth Mason) ; des préférences spatiales distinctes de celles des cératopsidés ont été proposées d'après les faciès d'enfouissement (Lyson & Longrich 2011).",
+      "confidence": "inferred",
+      "sources": ["wosik2022_edmontosaurus_growth", "horner2011_hellcreek_census", "lyson2011_niche_partitioning"]
+    },
+    "climate": {
+      "summary": "Plaine côtière humide et saisonnière à ~49° N, température moyenne annuelle estimée d'environ 7–12 °C et précipitations élevées ; réchauffement puis refroidissement à la fin du Maastrichtien.",
+      "confidence": "inferred",
+      "sources": ["arens2014_hellcreek_basal_florule", "wilf2003_kpg_climate", "johnson2002_hellcreek_megaflora"]
+    },
+    "interactions": {
+      "summary": "Proie de Tyrannosaurus (attaques survécues et carcasses consommées). Coexistait avec Triceratops, avec une compétition probablement atténuée par des différences de hauteur d'alimentation (analogie Dinosaur Park), ainsi qu'avec Ankylosaurus, Pachycephalosaurus et Thescelosaurus. Aussi commun que Tyrannosaurus dans le recensement de la partie supérieure de Hell Creek.",
+      "confidence": "strongly_supported",
+      "sources": ["depalma2013_trex_predation", "drumheller2022_edmontosaurus_mummy", "horner2011_hellcreek_census", "mallon2013_feeding_height"]
+    },
+    "fossil_record": {
+      "summary": "Abondant : nombreux squelettes et crânes, lits d'ossements (Ruth Mason), squelette de nichée, momies (« Dakota » dans Hell Creek ; spécimens de Lance). Dans le recensement du Hell Creek Project, Edmontosaurus est moins fréquent que Triceratops et à peu près aussi fréquent que Tyrannosaurus (partie supérieure : 5 Edmontosaurus, 5 Tyrannosaurus, 22 Triceratops).",
+      "confidence": "established",
+      "sources": ["horner2011_hellcreek_census", "wosik2022_edmontosaurus_growth", "wosik2017_edmontosaurus_nestling", "manning2009_hadrosaur_mummy", "drumheller2022_edmontosaurus_mummy", "sereno2025_edmontosaurus_mummies"]
+    },
+    "documented_behavior": {
+      "summary": "Survie à une attaque de T. rex sur la queue (dent enchâssée dans un os cicatrisé, DePalma et al. 2013). Mortalité de masse d'un groupe à Ruth Mason, avec ségrégation des classes d'âge (Wosik & Evans 2022). Des empreintes de pas ont été appariées aux sabots des momies (Sereno et al. 2025).",
+      "confidence": "strongly_supported",
+      "sources": ["depalma2013_trex_predation", "wosik2022_edmontosaurus_growth", "sereno2025_edmontosaurus_mummies"]
+    },
+    "inferred_behavior": {
+      "summary": "Vie en groupes, au moins temporaires ; vigilance collective face aux tyrannosaures ; soins aux jeunes au nid par analogie avec Maiasaura ; signaux visuels via les crêtes charnues. Des migrations saisonnières et des cris d'alarme sont des hypothèses non démontrées pour Hell Creek (SPÉCULATIF).",
+      "confidence": "inferred",
+      "sources": ["wosik2022_edmontosaurus_growth", "horner1979_maiasaura_nest", "sereno2025_edmontosaurus_mummies"]
+    }
+  },
+
+  "competing_hypotheses": [
+    {
+      "topic": "diet",
+      "summary": "Que mangeait Edmontosaurus ? Débat sur les « contenus stomacaux » et sur l'interprétation de la microusure.",
+      "positions": [
+        {
+          "summary": "Les restes végétaux de la momie de Senckenberg (aiguilles et rameaux de conifères, feuillage, petites graines ou fruits) représentent le contenu stomacal et indiquent un brouteur de conifères et d'arbustes.",
+          "sources": ["kraeusel1922_trachodon_diet"]
+        },
+        {
+          "summary": "Ces restes ont probablement été charriés dans la carcasse par l'eau ; le régime doit être inféré de la microusure (végétation basse et abrasive), de la mécanique dentaire et de restes d'hadrosauridés apparentés (contenu intestinal de Brachylophosaurus, coprolithes à bois décomposé et à crustacés suggérant une flexibilité alimentaire).",
+          "sources": ["williams2009_hadrosaur_microwear", "erickson2012_hadrosaur_dentition", "tweet2008_brachylophosaurus_gut", "chin2007_coprolites_wood", "chin2017_crustaceans"]
+        }
+      ]
+    },
+    {
+      "topic": "integument_crest",
+      "summary": "E. annectens portait-il une crête crânienne charnue (« crête de coq ») ?",
+      "positions": [
+        {
+          "summary": "Oui, probablement : un edmontosaurin momifié du Canada (initialement attribué à E. regalis) porte une crête crânienne entièrement charnue, suggérant que des hadrosauridés « sans crête » pouvaient avoir des ornements mous.",
+          "sources": ["bell2014_edmontosaurus_comb"]
+        },
+        {
+          "summary": "Non démontré : le spécimen à crête molle ne peut être attribué ni à E. regalis ni à E. annectens ; les momies d'E. annectens du Wyoming documentent une crête charnue dorsale (cou–tronc) et des épines caudales, sans confirmer une crête crânienne.",
+          "sources": ["sharpe2025_edmontosaurin_crest", "sereno2025_edmontosaurus_mummies"]
+        }
+      ]
+    },
+    {
+      "topic": "mummification",
+      "summary": "Les « momies » d'Edmontosaurus exigent-elles des conditions exceptionnelles ?",
+      "positions": [
+        {
+          "summary": "Non : la carcasse de « Dakota » a été exposée aux charognards (morsures non cicatrisées), puis la peau s'est desséchée et dégonflée sur le squelette avant l'enfouissement — un processus relativement banal.",
+          "sources": ["drumheller2022_edmontosaurus_mummy"]
+        },
+        {
+          "summary": "Un enfouissement rapide a permis la formation d'un « masque » d'argile extrêmement fin moulant la surface externe pendant la décomposition (« clay template »), préservant en 3D crête, épines et sabots.",
+          "sources": ["sereno2025_edmontosaurus_mummies"]
+        },
+        {
+          "summary": "La peau peut être minéralisée en conservant la microstructure épidermique et des composés organiques, ce qui suppose une minéralisation précoce.",
+          "sources": ["manning2009_hadrosaur_mummy"]
+        }
+      ]
+    },
+    {
+      "topic": "metabolism",
+      "summary": "Niveau métabolique (utile pour metabolism.thermo_class).",
+      "positions": [
+        {
+          "summary": "Croissance très rapide (≈95 % de 5,6 t vers 9 ans), jugée compatible avec un métabolisme endotherme.",
+          "sources": ["wosik2022_edmontosaurus_growth"]
+        },
+        {
+          "summary": "Les dinosaures auraient eu en général des taux métaboliques intermédiaires (mésothermie).",
+          "sources": ["grady2014_mesothermy"]
+        },
+        {
+          "summary": "Signatures biomoléculaires suggérant des taux métaboliques secondairement abaissés chez plusieurs ornithischiens.",
+          "sources": ["wiemann2022_ale_metabolism"]
+        }
+      ]
+    }
+  ],
+
+  "sim": {
+    "role": "agent",
+    "body_plan": "facultative_quadruped_hadrosaur",
+    "adult_mass_kg": 5600,
+    "adult_length_m": 10.0,
+    "hip_height_m": 2.6,
+    "foot_length_m": 0.6,
+    "foot_width_m": 0.55,
+    "hatchling_mass_kg": 3.0,
+    "sexual_dimorphism_mass": 1.0,
+    "growth": {
+      "asymptotic_mass_kg": 5600,
+      "max_growth_rate_kg_per_year": 1000,
+      "inflection_age_years": 5,
+      "maturity_age_years": 9,
+      "max_lifespan_years": 25
+    },
+    "locomotion": {
+      "walk_speed_ms": 1.4,
+      "max_speed_ms": 8.0,
+      "max_accel_ms2": 1.8,
+      "max_decel_ms2": 3.0,
+      "max_yaw_rate_dps": 40,
+      "max_slope_deg": 30,
+      "swim": true, "swim_speed_ms": 0.8,
+      "fly": false, "fly_speed_ms": 0,
+      "duty_factor_walk": 0.65,
+      "duty_factor_run": 0.45
+    },
+    "metabolism": {
+      "thermo_class": "endotherm",
+      "max_fasting_days": 25,
+      "water_l_per_day_per_100kg": 5.0
+    },
+    "diet": {
+      "type": "herbivore",
+      "plant_preferences": { "fern": 0.7, "horsetail": 0.9, "angio_herb": 0.8, "angio_shrub": 0.8,
+                             "angio_tree": 0.5, "conifer": 0.6, "palm": 0.3, "cycadophyte": 0.3,
+                             "ginkgo": 0.3, "aquatic_macrophyte": 0.6, "xeric_shrub": 0 },
+      "browse_height_min_m": 0.0, "browse_height_max_m": 4.0,
+      "prey_mass_min_kg": 0, "prey_mass_max_kg": 0,
+      "scavenges": false,
+      "eats_fish": false,
+      "eats_invertebrates": false,
+      "eats_eggs": false
+    },
+    "senses": {
+      "vision_range_m": 1000, "fov_deg": 320, "binocular_deg": 30, "low_light": 0.45,
+      "hearing_min_hz": 20, "hearing_max_hz": 3000, "hearing_best_hz": 500, "hearing_threshold_db": 25,
+      "olfaction": 0.6,
+      "vibration": 0.4
+    },
+    "social": {
+      "group_size_mean": 15, "group_size_max": 60, "cohesion": 0.7,
+      "territorial": false, "territory_radius_m": 0,
+      "alarm_calls": true
+    },
+    "defense": {
+      "weapons": ["kick"],
+      "armor": 0.05, "defense_strength": 0.3, "flee_preference": 0.85
+    },
+    "predation": {
+      "hunt_style": "none",
+      "attack_strength": 0.2,
+      "bite_force_n": 0,
+      "max_chase_s": 0
+    },
+    "reproduction": {
+      "clutch_size_mean": 20, "clutch_size_max": 35,
+      "incubation_days": 170,
+      "breeding_season_doy": [90, 150],
+      "parental_care": 0.6,
+      "nest_type": "mound"
+    },
+    "vocal": {
+      "closed_mouth": true,
+      "f0_min_hz": 10, "f0_max_hz": 200,
+      "call_types": [
+        { "id": "contact_low", "duration_s": 2.0, "f0_hz": 35, "source_level_db": 100,
+          "context": "social_contact", "confidence": "speculative" },
+        { "id": "alarm_bellow", "duration_s": 1.2, "f0_hz": 60, "source_level_db": 110,
+          "context": "alarm", "confidence": "speculative" },
+        { "id": "juvenile_contact", "duration_s": 0.6, "f0_hz": 180, "source_level_db": 80,
+          "context": "parent_offspring", "confidence": "speculative" }
+      ]
+    },
+    "activity": { "pattern": "cathemeral" },
+    "personality": {
+      "boldness": [0.3, 0.1], "caution": [0.7, 0.15], "aggression": [0.15, 0.1],
+      "curiosity": [0.35, 0.1], "sociability": [0.85, 0.1], "vigilance": [0.75, 0.1],
+      "risk_tolerance": [0.3, 0.1], "exploration": [0.4, 0.15], "flight_tendency": [0.8, 0.1],
+      "dominance": [0.3, 0.15]
+    },
+    "habitat": {
+      "channel": 0.05, "riverbank": 0.8, "sandbar": 0.5, "oxbow_lake": 0.4, "backswamp": 0.6,
+      "riparian_forest": 0.9, "floodplain_open": 0.8, "levee_woodland": 0.8,
+      "upland_conifer_forest": 0.4, "cutbank_cliff": 0.05,
+      "dune_field": 0, "interdune_flat": 0, "ephemeral_pond": 0.5, "xeric_scrub": 0
+    },
+    "population": { "initial_count": 45, "regional_density_per_km2": 0.67 }
+  },
+
+  "sim_basis": {
+    "role": "game_assumption: grand herbivore grégaire simulé individuellement",
+    "body_plan": "derived: hadrosauridé quadrupède facultatif (wosik2017_edmontosaurus_nestling; sereno2025_edmontosaurus_mummies)",
+    "adult_mass_kg": "wosik2022_edmontosaurus_growth",
+    "adult_length_m": "game_assumption: adulte moyen (9–12 m selon la littérature générale ; campione2011_edmontosaur_growth pour l'inclusion des grands « Anatotitan »)",
+    "hip_height_m": "game_assumption: somme approximative fémur + tibia + métatarse d'un grand hadrosauridé",
+    "foot_length_m": "game_assumption: empreinte tridactyle de grand hadrosauridé ; sabots appariés à des empreintes (sereno2025_edmontosaurus_mummies) mais dimensions non récupérées",
+    "foot_width_m": "game_assumption: idem foot_length_m",
+    "hatchling_mass_kg": "game_assumption: ordre de grandeur pour un œuf d'hadrosauridé ; le plus petit squelette connu (fémur 148 mm, wosik2017_edmontosaurus_nestling) est déjà plus grand qu'un nouveau-né",
+    "sexual_dimorphism_mass": "game_assumption: aucun dimorphisme démontré",
+    "growth.asymptotic_mass_kg": "wosik2022_edmontosaurus_growth",
+    "growth.max_growth_rate_kg_per_year": "derived: courbe logistique supposée calée sur wosik2022_edmontosaurus_growth (95 % de 5,6 t vers 9 ans) avec une inflexion supposée à 5 ans → k ≈ 0,74/an → kA/4 ≈ 1000 kg/an",
+    "growth.inflection_age_years": "game_assumption: inflexion supposée, cohérente avec une trajectoire de type Maiasaura (wosik2022_edmontosaurus_growth ; woodward2015_maiasaura_growth)",
+    "growth.maturity_age_years": "wosik2022_edmontosaurus_growth",
+    "growth.max_lifespan_years": "game_assumption: longévité maximale inconnue",
+    "locomotion.walk_speed_ms": "game_assumption: marche quadrupède d'un grand herbivore",
+    "locomotion.max_speed_ms": "game_assumption: course bipède modérée ; aucune donnée de piste de course",
+    "locomotion.max_accel_ms2": "game_assumption",
+    "locomotion.max_decel_ms2": "game_assumption",
+    "locomotion.max_yaw_rate_dps": "game_assumption",
+    "locomotion.max_slope_deg": "game_assumption",
+    "locomotion.swim": "game_assumption: la plupart des grands vertébrés terrestres peuvent nager ; l'ancienne hypothèse d'hadrosaures aquatiques est abandonnée",
+    "locomotion.swim_speed_ms": "game_assumption",
+    "locomotion.fly": "derived: non volant",
+    "locomotion.fly_speed_ms": "derived: non volant",
+    "locomotion.duty_factor_walk": "game_assumption",
+    "locomotion.duty_factor_run": "game_assumption: course bipède avec courte phase aérienne",
+    "metabolism.thermo_class": "wosik2022_edmontosaurus_growth (croissance compatible avec l'endothermie selon les auteurs) — débattu (grady2014_mesothermy ; wiemann2022_ale_metabolism), voir competing_hypotheses",
+    "metabolism.max_fasting_days": "game_assumption",
+    "metabolism.water_l_per_day_per_100kg": "game_assumption: métabolisme plus élevé que celui des autres ornithischiens de la fiche",
+    "diet.type": "williams2009_hadrosaur_microwear; erickson2012_hadrosaur_dentition",
+    "diet.plant_preferences": "game_assumption: pondérations guidées par une alimentation basse et abrasive (williams2009_hadrosaur_microwear — sans graminées à Hell Creek, d'où prêles et fougères élevées), par les restes de conifères discutés (kraeusel1922_trachodon_diet) et par la flore (johnson2002_hellcreek_megaflora ; wilson2021_seafood_salad_flora)",
+    "diet.browse_height_min_m": "derived: alimentation au ras du sol (williams2009_hadrosaur_microwear)",
+    "diet.browse_height_max_m": "derived: mallon2013_feeding_height (hadrosauridés ~2 m quadrupèdes, ~4–5 m dressés ; analogie, source non vérifiée) — valeur prudente de 4 m",
+    "diet.prey_mass_min_kg": "derived: herbivore",
+    "diet.prey_mass_max_kg": "derived: herbivore",
+    "diet.scavenges": "game_assumption",
+    "diet.eats_fish": "game_assumption",
+    "diet.eats_invertebrates": "game_assumption: des crustacés ont été trouvés dans des coprolithes d'hadrosauridés (chin2017_crustaceans), mais l'ingestion délibérée n'est pas démontrée ; laissé désactivé",
+    "diet.eats_eggs": "game_assumption",
+    "senses.vision_range_m": "game_assumption",
+    "senses.fov_deg": "game_assumption: orbites latérales d'un herbivore proie",
+    "senses.binocular_deg": "game_assumption",
+    "senses.low_light": "game_assumption",
+    "senses.hearing_min_hz": "game_assumption: audition basse fréquence supposée (taille, phylogénie)",
+    "senses.hearing_max_hz": "derived: limite supérieure ~3 kHz proposée pour les grands dinosaures (gleich2005_basilar_papilla)",
+    "senses.hearing_best_hz": "game_assumption",
+    "senses.hearing_threshold_db": "game_assumption",
+    "senses.olfaction": "game_assumption",
+    "senses.vibration": "game_assumption",
+    "social.group_size_mean": "derived: regroupements attestés par le lit d'ossements catastrophique de Ruth Mason (wosik2022_edmontosaurus_growth) ; taille moyenne des troupeaux inconnue → game_assumption",
+    "social.group_size_max": "game_assumption: limité par la taille de la carte (8 × 8 km)",
+    "social.cohesion": "game_assumption",
+    "social.territorial": "game_assumption",
+    "social.territory_radius_m": "game_assumption: non territorial",
+    "social.alarm_calls": "game_assumption: SPÉCULATIF — aucun indice direct ; analogie avec les herbivores grégaires actuels ; à piloter par profil de reconstruction",
+    "defense.weapons": "game_assumption: aucune arme spécialisée ; coup de patte supposé",
+    "defense.armor": "derived: peau écailleuse sans ostéodermes (sereno2025_edmontosaurus_mummies)",
+    "defense.defense_strength": "game_assumption",
+    "defense.flee_preference": "derived: survie par fuite documentée (depalma2013_trex_predation) ; valeur = game_assumption",
+    "predation.hunt_style": "derived: herbivore",
+    "predation.attack_strength": "game_assumption: coups de pattes défensifs faibles",
+    "predation.bite_force_n": "derived: herbivore — pas de morsure offensive",
+    "predation.max_chase_s": "derived: herbivore",
+    "reproduction.clutch_size_mean": "game_assumption: pontes d'Edmontosaurus inconnues",
+    "reproduction.clutch_size_max": "game_assumption",
+    "reproduction.incubation_days": "derived: Hypacrosaurus ~171 j (erickson2017_incubation), hadrosauridé de taille comparable — inférence phylogénétique",
+    "reproduction.breeding_season_doy": "game_assumption: printemps dans un climat saisonnier",
+    "reproduction.parental_care": "derived: soins aux jeunes au nid chez Maiasaura (horner1979_maiasaura_nest) — inférence phylogénétique",
+    "reproduction.nest_type": "game_assumption: nid-monticule couvert de végétation, inféré des hadrosauridés apparentés ; non documenté chez Edmontosaurus",
+    "vocal.closed_mouth": "game_assumption: SPÉCULATIF — analogie avec la vocalisation bouche fermée (riede2016_closed_mouth_vocalization) ; sac nasal hypothétique (hopson1975_hadrosaur_display)",
+    "vocal.f0_min_hz": "game_assumption: spéculatif",
+    "vocal.f0_max_hz": "game_assumption: spéculatif",
+    "vocal.call_types": "game_assumption: tous les cris sont SPÉCULATIFS",
+    "activity.pattern": "schmitz2011_nocturnality (hadrosauridés classés cathéméraux ; méthode contestée, hall2011_nocturnality_comment)",
+    "personality": "game_assumption: valeurs de personnalité toujours hypothétiques",
+    "habitat": "derived: forêts riveraines, levées et plaine d'inondation (wosik2022_edmontosaurus_growth : dépôt de chenal ; lyson2011_niche_partitioning) ; pondérations = game_assumption",
+    "population.initial_count": "game_assumption: Edmontosaurus est moins fréquent que Triceratops dans le recensement de Hell Creek (horner2011_hellcreek_census, biais taphonomiques possibles) ; herbivore grégaire : ~3 troupeaux de ~15 individus ; densité supposée ~0,67 ind./km² × ~67 km² (carte de 8,192 km de côté) ≈ 45 ; la loi de Damuth (densité ∝ masse^−0,75, damuth1981_density_body_size) prédirait ~1,3 fois la densité de Triceratops pour sa masse, valeur respectée en ordre de grandeur, soit ~250 t de biomasse contre ~320 t pour Triceratops (qui reste l'herbivore dominant en biomasse)",
+    "population.regional_density_per_km2": "game_assumption: voir population.initial_count"
+  }
+}
