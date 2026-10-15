@@ -15,9 +15,17 @@
 #define NOCTIS_API
 #include <cassert>
 #define NOCTIS_ASSERT(cond) assert(cond)
-#else
+#elif defined(NOCTISCORE_API)
+// Unreal build. UBT defines NOCTISCORE_API as DLLEXPORT/DLLIMPORT (modular builds) or empty (monolithic);
+// DLLEXPORT/DLLIMPORT come from CoreTypes.h and checkSlow from AssertionMacros.h. The module is compiled
+// without a shared PCH (see NoctisCore.Build.cs), so these two light headers are all of UE a core TU sees.
+// Logging is bridged by NoctisCoreModule.cpp, which installs a LogSink that forwards to UE_LOG.
+#include "CoreTypes.h"
+#include "Misc/AssertionMacros.h"
 #define NOCTIS_API NOCTISCORE_API
 #define NOCTIS_ASSERT(cond) checkSlow(cond)
+#else
+#error "Noctis core: define NOCTIS_STANDALONE (CMake) or build it as the Unreal module NoctisCore (UBT defines NOCTISCORE_API)."
 #endif
 
 namespace noctis

@@ -56,9 +56,9 @@ const KNEE = [0.56, 1.83, 0.48];
 const ANKLE = [0.18, 0.74, 0.44];
 const MTP = [0.42, 0.18, 0.43];        // metatarsophalangeal joint = head of the toes bone
 // Forelimb: humerus ~0.38 m, forearm ~0.21 m (Sue-sized adult); folded under the chest.
-const SHOULDER = [2.3, 2.42, 0.4];     // glenoid, low on the front of the ribcage
-const ELBOW = [2.36, 2.05, 0.47];
-const WRIST = [2.56, 1.98, 0.49];
+const SHOULDER = [2.28, 2.5, 0.4];     // glenoid, low on the front of the ribcage
+const ELBOW = [2.33, 2.13, 0.48];
+const WRIST = [2.53, 2.05, 0.5];
 
 // Head frame: origin at the jaw joint (quadrate-articular), u along the skull towards the snout,
 // v up, w = z. Head carried ~7 deg nose-down (plausible relaxed carriage; living animals vary it).
@@ -141,7 +141,7 @@ function makeShapes(bones) {
     }
   };
   // Neck skin folds: bands across the neck axis, only on the flanks (not on the nape or throat).
-  const neckFolds = { amp: 0.016, wavelength: 0.17, axis: [0.8, 0.6, 0], lateral: 0.35 };
+  const neckFolds = { amp: 0.013, wavelength: 0.19, axis: [0.8, 0.6, 0], lateral: 0.35 };
 
   // ===== 1. HEAD ================================================================================
   // Skull ~1.45 m from the back of the quadratojugal (u ~ -0.05) to the snout tip (u ~1.47); dorsal
@@ -152,8 +152,9 @@ function makeShapes(bones) {
   const HRC = (bone, region, a, b, ra, rb, blend = 0.05, extra = {}) => RC(bone, region, H(...a), H(...b), ra, rb, blend, extra);
   // Upper head (skull bone).
   HRC('skull', 'head', [1.33, 0.37], [0.74, 0.56], 0.115, 0.165, 0.12);                          // nasal ridge
-  HRC('skull', 'head', [1.32, 0.25], [0.52, 0.34], 0.135, 0.215, 0.1, { scale: [1, 1, 1.18] });  // maxillary face
-  HE('skull', 'head', [1.37, 0.3, 0], [0.11, 0.17, 0.14], [0, 0, 0.1], 0.08);                   // premaxilla (blunt snout tip)
+  // Maxillary face: centred near the lip line so the lip cutter below slices it where it is broad.
+  HRC('skull', 'head', [1.3, 0.2], [0.5, 0.25], 0.15, 0.23, 0.1, { scale: [1, 1, 1.08] });
+  HE('skull', 'head', [1.36, 0.3, 0], [0.12, 0.2, 0.14], [0, 0, 0.12], 0.08);                    // premaxilla (deep, blunt snout tip)
   HE('skull', 'head', [0.5, 0.66, 0], [0.3, 0.13, 0.2], [0, 0, 0], 0.12);                       // skull roof between the orbits
   HE('skull', 'head', [0.16, 0.56, 0], [0.26, 0.24, 0.24], [0, 0, 0], 0.14);                    // parietal / braincase
   HE('skull', 'head', [-0.02, 0.42, 0], [0.13, 0.3, 0.28], [0, 0, 0], 0.14);                    // occiput (merges into the neck)
@@ -166,39 +167,41 @@ function makeShapes(bones) {
   // Lip cutter: squares off the bottom of the upper head along the closed-mouth line, leaving a
   // rounded upper-lip edge (the smooth-subtraction radius). Flat-topped ellipsoids chained along the
   // sinuous tooth row: higher at the premaxilla, lowest under the maxilla, rising to the rictus.
-  const lipCut = [[1.5, 0.21, 0.16], [1.22, 0.16, 0.24], [0.92, 0.125, 0.26], [0.66, 0.13, 0.22], [0.47, 0.17, 0.12]];
-  for (const [u, top, ru] of lipCut) HE('skull', 'head', [u, top - 0.4, 0], [ru, 0.4, 0.6], [0, 0, 0], 0.035, { sign: -1 });
-  // Lower jaw (jaw bone): dentary hull narrower than the upper lip so the upper lip overhangs it.
-  HRC('jaw', 'jaw', [1.3, 0.06], [0.5, -0.06], 0.115, 0.185, 0.08, { scale: [1, 1, 1.12] });    // mandible + lower lips
-  HE('jaw', 'jaw', [1.31, 0.065, 0], [0.11, 0.11, 0.13], [0, 0, 0], 0.06);                      // chin
-  HE('jaw', 'jaw', [0.5, -0.17, 0], [0.42, 0.13, 0.2], [0, 0, 0.05], 0.12);                      // throat skin between the rami
-  both((s, m, mr) => {
-    HE('jaw', 'jaw', m([0.34, -0.02, 0.25]), [0.32, 0.17, 0.1], mr([0, 0.35, 0.08]), 0.1);       // surangular
-    HE('jaw', 'jaw', m([0.1, -0.1, 0.29]), [0.17, 0.19, 0.13], mr([0, 0.15, 0]), 0.12);          // M. pterygoideus bulge
+  const lipCut = [[1.5, 0.21, 0.16], [1.22, 0.16, 0.24], [0.92, 0.13, 0.26], [0.66, 0.135, 0.22], [0.47, 0.16, 0.12]];
+  for (const [u, top, ru] of lipCut) HE('skull', 'head', [u, top - 0.4, 0], [ru, 0.4, 0.6], [0, 0, 0], 0.022, { sign: -1 });
+  // Lower jaw (jaw bone): two rami with the lower lips, flattened sideways and set ~2 cm inside
+  // the upper lip so the upper lip overhangs them; their tops hide inside the upper head.
+  both((s, m) => {
+    HRC('jaw', 'jaw', m([1.3, 0.08, 0.06]), m([0.95, 0.03, 0.085]), 0.1, 0.13, 0.05, { scale: [1, 1, 0.8] });    // dentary, front
+    HRC('jaw', 'jaw', m([0.95, 0.03, 0.085]), m([0.45, -0.02, 0.17]), 0.13, 0.18, 0.05, { scale: [1, 1, 0.7] });  // dentary, back
+    HE('jaw', 'jaw', m([0.3, -0.03, 0.26]), [0.3, 0.2, 0.1], [0, 0.35, 0.06], 0.1);                              // surangular
+    HE('jaw', 'jaw', m([0.1, -0.1, 0.29]), [0.17, 0.19, 0.13], [0, 0.15, 0], 0.12);                              // M. pterygoideus bulge
   });
+  HE('jaw', 'jaw', [1.3, 0.05, 0], [0.11, 0.11, 0.12], [0, 0, 0], 0.06);                        // chin
+  HE('jaw', 'jaw', [0.62, -0.12, 0], [0.55, 0.12, 0.17], [0, 0, 0.08], 0.12);                    // throat skin between the rami
 
   // ===== 2. BODY ================================================================================
   // ---- trunk -----------------------------------------------------------------------------------
-  // Deep, short trunk: back ~3.8 m over the ilia, gastral belly ~1.85 m, ribcage ~1.15 m wide
+  // Deep, short trunk: back ~3.8 m over the ilia, gastral belly ~1.95 m, ribcage ~1.05 m wide
   // (plausible soft tissue over the skeleton). The pubic boot is the lowest point, near knee height.
   const trunk = [
-    { x: -0.85, top: 3.74, bot: 2.6, hw: 0.5 },
-    { x: -0.3, top: 3.8, bot: 2.42, hw: 0.52 },
-    { x: 0.35, top: 3.79, bot: 2.2, hw: 0.5 },
-    { x: 1.0, top: 3.73, bot: 1.98, hw: 0.52 },
-    { x: 1.65, top: 3.64, bot: 1.95, hw: 0.53 },
-    { x: 2.2, top: 3.54, bot: 2.06, hw: 0.47 },
+    { x: -0.85, top: 3.72, bot: 2.62, hw: 0.44 },
+    { x: -0.3, top: 3.77, bot: 2.5, hw: 0.42 },
+    { x: 0.35, top: 3.75, bot: 2.36, hw: 0.42 },
+    { x: 1.0, top: 3.7, bot: 2.16, hw: 0.49 },
+    { x: 1.65, top: 3.62, bot: 2.1, hw: 0.5 },
+    { x: 2.2, top: 3.5, bot: 2.2, hw: 0.4 },
   ];
   loft((i) => ['pelvis', 'pelvis', 'spine1', 'spine2', 'spine3'][i], 'torso', trunk, 0.14);
-  E('spine2', 'torso', [1.05, 3.52, 0], [1.55, 0.24, 0.33], [0, 0, 0.04], 0.2);               // epaxial muscles along the back
-  E('pelvis', 'torso', [-0.15, 3.52, 0], [0.95, 0.27, 0.36], [0, 0, 0], 0.18);                // ilia + sacrum
-  E('spine1', 'belly', [1.15, 2.12, 0], [0.95, 0.3, 0.46], [0, 0, 0.03], 0.24);               // gut over the gastralia
-  E('spine3', 'belly', [2.12, 2.18, 0], [0.42, 0.25, 0.36], [0, 0, 0.12], 0.2);               // chest floor (coracoids, furcula)
-  RC('pelvis', 'belly', [0.12, 2.65, 0], [0.42, 1.98, 0], 0.26, 0.15, 0.2, { scale: [1, 1, 1.2] }); // pubic apron
-  E('pelvis', 'belly', [0.45, 1.94, 0], [0.32, 0.1, 0.17], [0, 0, -0.08], 0.18);              // pubic boot (keel under the skin)
+  E('spine2', 'torso', [1.05, 3.47, 0], [1.5, 0.22, 0.3], [0, 0, 0.04], 0.18);                // epaxial muscles along the back
+  E('pelvis', 'torso', [-0.15, 3.5, 0], [0.92, 0.26, 0.34], [0, 0, 0], 0.16);                 // ilia + sacrum
+  E('spine2', 'belly', [1.45, 2.2, 0], [0.8, 0.26, 0.4], [0, 0, 0.06], 0.22);                // gut over the gastralia (deepest mid-trunk)
+  E('spine3', 'belly', [2.12, 2.26, 0], [0.4, 0.22, 0.32], [0, 0, 0.12], 0.18);               // chest floor (coracoids, furcula)
+  RC('pelvis', 'belly', [0.12, 2.65, 0], [0.42, 2.06, 0], 0.24, 0.14, 0.2, { scale: [1, 1, 1.15] }); // pubic apron
+  E('pelvis', 'belly', [0.45, 2.02, 0], [0.3, 0.09, 0.15], [0, 0, -0.08], 0.18);              // pubic boot (keel under the skin)
   E('pelvis', 'torso', [-0.6, 2.72, 0], [0.45, 0.3, 0.3], [0, 0, 0.35], 0.18);                // ischia / cloaca
   both((s, m, mr) => {
-    E('spine2', 'torso', m([1.3, 2.62, 0.22]), [1.0, 0.55, 0.36], mr([0, 0, 0.02]), 0.2);      // ribcage flank
+    E('spine2', 'torso', m([1.4, 2.72, 0.22]), [0.85, 0.5, 0.3], mr([0, 0, 0.02]), 0.18);       // ribcage flank (widest mid-trunk)
     E('spine3', 'torso', m([2.02, 3.0, 0.34]), [0.5, 0.42, 0.17], mr([0, 0, -0.5]), 0.16);      // scapular muscles
     E('spine3', 'torso', m([2.3, 2.45, 0.26]), [0.3, 0.32, 0.2], [0, 0, 0], 0.16);              // pectoralis
   });
@@ -222,40 +225,41 @@ function makeShapes(bones) {
   // ---- neck ------------------------------------------------------------------------------------
   // Short, deep S-curved neck: thick at the shoulders, rising steeply behind the broad head.
   const neck = [
-    { x: 2.2, top: 3.54, bot: 2.06, hw: 0.47 },
-    { x: 2.62, top: 3.62, bot: 2.3, hw: 0.43 },
-    { x: 2.98, top: 3.8, bot: 2.62, hw: 0.38 },
-    { x: 3.28, top: 3.98, bot: 2.9, hw: 0.35 },
+    { x: 2.2, top: 3.5, bot: 2.2, hw: 0.4 },
+    { x: 2.6, top: 3.56, bot: 2.52, hw: 0.35 },
+    { x: 2.95, top: 3.74, bot: 2.8, hw: 0.31 },
+    { x: 3.25, top: 3.95, bot: 3.02, hw: 0.29 },
   ];
   loft((i) => ['neck1', 'neck2', 'neck3'][i], 'neck', neck, 0.14);
-  E('neck2', 'neck', [2.92, 3.62, 0], [0.55, 0.2, 0.25], [0, 0, 0.55], 0.16);                 // nape muscles
+  E('neck2', 'neck', [2.9, 3.6, 0], [0.55, 0.18, 0.22], [0, 0, 0.55], 0.14);                  // nape muscles
   both((s, m, mr) => {
-    E('neck1', 'neck', m([2.62, 2.96, 0.18]), [0.42, 0.5, 0.26], mr([0, 0, 0.7]), 0.16, { folds: neckFolds });
-    E('neck2', 'neck', m([2.98, 3.24, 0.15]), [0.38, 0.46, 0.24], mr([0, 0, 0.75]), 0.16, { folds: neckFolds });
-    E('neck3', 'neck', m([3.28, 3.42, 0.14]), [0.32, 0.42, 0.22], mr([0, 0, 0.6]), 0.16, { folds: neckFolds });
+    // Lateral neck muscles carrying the skin folds (M. longus colli / cervicalis, plausible).
+    E('neck1', 'neck', m([2.6, 3.02, 0.13]), [0.38, 0.44, 0.22], mr([0, 0, 0.7]), 0.14, { folds: neckFolds });
+    E('neck2', 'neck', m([2.96, 3.27, 0.12]), [0.34, 0.42, 0.2], mr([0, 0, 0.75]), 0.14, { folds: neckFolds });
+    E('neck3', 'neck', m([3.26, 3.46, 0.11]), [0.3, 0.4, 0.19], mr([0, 0, 0.6]), 0.14, { folds: neckFolds });
   });
-  E('neck3', 'neck', [3.36, 3.0, 0], [0.42, 0.22, 0.28], [0, 0, 0.5], 0.16, { folds: neckFolds }); // throat
+  E('neck3', 'neck', [3.36, 3.08, 0], [0.4, 0.2, 0.25], [0, 0, 0.5], 0.14, { folds: neckFolds }); // throat
 
   // ---- legs ------------------------------------------------------------------------------------
   both((sfx, m, mr) => {
     const th = `thigh${sfx}`, sh = `shin${sfx}`, mt = `meta${sfx}`, to = `toes${sfx}`;
     // Thigh: drumstick of M. iliotibialis / femorotibialis / ambiens (plausible volumes), standing
     // proud of the flank with small blends so its outline reads as in life.
-    E(th, 'thigh', m([0.2, 2.52, 0.56]), [0.52, 0.86, 0.3], [0, 0, 0.44], 0.12);              // main mass along the femur
-    E(th, 'thigh', m([0.0, 3.02, 0.52]), [0.85, 0.5, 0.31], [0, 0, 0.12], 0.16);              // iliotibialis fan under the ilium
-    E(th, 'thigh', m([0.56, 2.25, 0.55]), [0.2, 0.5, 0.2], [0, 0, 0.42], 0.1);                // anterior thigh edge
-    E(th, 'thigh', m([-0.2, 2.42, 0.5]), [0.3, 0.6, 0.24], [0, 0, 0.6], 0.12);                // flexors behind the femur
-    E(th, 'thigh', m([0.45, 2.0, 0.52]), [0.26, 0.36, 0.22], [0, 0, 0.44], 0.1);              // lower thigh into the knee
-    E(sh, 'shin', m([0.58, 1.84, 0.49]), [0.21, 0.2, 0.19], [0, 0, 0], 0.09);                 // knee
+    E(th, 'thigh', m([0.2, 2.52, 0.55]), [0.47, 0.84, 0.28], [0, 0, 0.44], 0.08);             // main mass along the femur
+    E(th, 'thigh', m([0.0, 3.02, 0.5]), [0.8, 0.46, 0.29], [0, 0, 0.12], 0.12);               // iliotibialis fan under the ilium
+    E(th, 'thigh', m([0.55, 2.27, 0.54]), [0.18, 0.48, 0.19], [0, 0, 0.42], 0.1);             // anterior thigh edge
+    E(th, 'thigh', m([-0.2, 2.45, 0.48]), [0.28, 0.56, 0.22], [0, 0, 0.6], 0.12);             // flexors behind the femur
+    E(th, 'thigh', m([0.45, 2.02, 0.52]), [0.29, 0.4, 0.24], [0, 0, 0.44], 0.1);              // lower thigh into the knee
+    E(sh, 'shin', m([0.58, 1.84, 0.49]), [0.23, 0.22, 0.2], [0, 0, 0], 0.09);                 // knee
     // Shank: tibia + fibula, heavy gastrocnemius behind the upper half, tibialis in front.
-    RC(sh, 'shin', m([0.52, 1.76, 0.48]), m([0.21, 0.86, 0.44]), 0.21, 0.135, 0.08, { scale: [1, 1, 0.95] });
-    E(sh, 'shin', m([0.3, 1.46, 0.48]), [0.25, 0.5, 0.2], [0, 0, -0.34], 0.09);               // gastrocnemius
-    E(sh, 'shin', m([0.5, 1.4, 0.49]), [0.12, 0.42, 0.13], [0, 0, -0.34], 0.07);              // tibialis anterior
-    E(mt, 'foot', m([0.18, 0.76, 0.44]), [0.15, 0.14, 0.14], [0, 0, 0], 0.07);                // ankle
+    RC(sh, 'shin', m([0.52, 1.76, 0.48]), m([0.21, 0.86, 0.44]), 0.23, 0.14, 0.08, { scale: [1, 1, 0.95] });
+    E(sh, 'shin', m([0.3, 1.45, 0.48]), [0.28, 0.54, 0.22], [0, 0, -0.34], 0.09);             // gastrocnemius
+    E(sh, 'shin', m([0.51, 1.42, 0.49]), [0.13, 0.44, 0.14], [0, 0, -0.34], 0.07);            // tibialis anterior
+    E(mt, 'foot', m([0.18, 0.76, 0.44]), [0.16, 0.15, 0.15], [0, 0, 0], 0.07);                // ankle
     // Metatarsus: long arctometatarsalian block, broadest at the toe joints.
-    RC(mt, 'foot', m([0.19, 0.73, 0.44]), m([0.4, 0.22, 0.43]), 0.115, 0.13, 0.05, { scale: [1, 1, 1.15] });
-    E(mt, 'foot', m([0.3, 0.48, 0.44]), [0.06, 0.24, 0.12], [0, 0, 0.4], 0.05);               // flat front (scute plate)
-    E(to, 'foot', m([0.37, 0.115, 0.43]), [0.2, 0.11, 0.17], [0, 0, 0], 0.05);                // metatarsal (heel) pad
+    RC(mt, 'foot', m([0.19, 0.73, 0.44]), m([0.4, 0.22, 0.43]), 0.13, 0.145, 0.05, { scale: [1, 1, 1.15] });
+    E(mt, 'foot', m([0.31, 0.48, 0.44]), [0.06, 0.25, 0.13], [0, 0, 0.4], 0.05);              // flat front (scute plate)
+    E(to, 'foot', m([0.37, 0.12, 0.43]), [0.22, 0.12, 0.19], [0, 0, 0], 0.05);                // metatarsal (heel) pad
     // Toes II-IV splay ~28 deg from digit III (II medial = towards the midline = -z on the right
     // foot). Each toe: phalanges as round cones with a knuckle on top and a digital pad under each
     // joint, then a broad, blunt tyrannosaurid claw curving to the ground. Digit III ~0.55 m incl.
@@ -276,9 +280,9 @@ function makeShapes(bones) {
       RC(to, 'foot', at(uc, yc + 0.01), at(uc + 0.13, yc - 0.02), rc * 0.8, rc * 0.45, 0.012, { feature: 'claw' });
       RC(to, 'foot', at(uc + 0.13, yc - 0.02), at(uc + 0.24, 0.012), rc * 0.45, 0.01, 0.008, { feature: 'claw' });
     };
-    toe(-0.5, 0.44, 0.075, 3);   // digit II
-    toe(0, 0.52, 0.085, 4);      // digit III
-    toe(0.5, 0.46, 0.074, 4);    // digit IV
+    toe(-0.5, 0.44, 0.08, 3);    // digit II
+    toe(0, 0.52, 0.09, 4);       // digit III
+    toe(0.5, 0.46, 0.078, 4);    // digit IV
     // Hallux (digit I): small, raised off the ground, on the medial back of the metatarsus.
     RC(mt, 'foot', m([0.29, 0.42, 0.36]), m([0.24, 0.28, 0.31]), 0.045, 0.032, 0.03);
     RC(mt, 'foot', m([0.24, 0.28, 0.31]), m([0.27, 0.18, 0.3]), 0.027, 0.008, 0.01, { feature: 'claw' });
@@ -288,13 +292,14 @@ function makeShapes(bones) {
   both((sfx, m) => {
     const ua = `upperArm${sfx}`, fa = `foreArm${sfx}`, ha = `hand${sfx}`;
     RC(ua, 'arm', m(SHOULDER), m(ELBOW), 0.1, 0.065, 0.07);
-    E(ua, 'arm', m([2.31, 2.25, 0.44]), [0.08, 0.17, 0.085], [0, 0, -0.15], 0.04);            // biceps / triceps
+    E(ua, 'arm', m([2.3, 2.33, 0.44]), [0.08, 0.17, 0.085], [0, 0, -0.15], 0.04);             // biceps / triceps
     RC(fa, 'arm', m(ELBOW), m(WRIST), 0.065, 0.048, 0.03);
     // Two functional fingers (I and II), claws curled down; metacarpal III vestigial (omitted).
-    RC(ha, 'arm', m(WRIST), m([2.64, 1.93, 0.51]), 0.042, 0.03, 0.02);
-    RC(ha, 'arm', m([2.64, 1.93, 0.51]), m([2.67, 1.84, 0.52]), 0.028, 0.008, 0.01, { feature: 'claw' });
-    RC(ha, 'arm', m([2.6, 1.97, 0.45]), m([2.66, 1.9, 0.44]), 0.032, 0.024, 0.02);
-    RC(ha, 'arm', m([2.66, 1.9, 0.44]), m([2.68, 1.81, 0.44]), 0.022, 0.006, 0.01, { feature: 'claw' });
+    RC(ha, 'arm', m(WRIST), m([2.61, 2.0, 0.52]), 0.045, 0.034, 0.02);                      // metacarpus
+    RC(ha, 'arm', m([2.61, 2.0, 0.52]), m([2.67, 1.94, 0.53]), 0.03, 0.026, 0.012);          // digit I
+    RC(ha, 'arm', m([2.67, 1.94, 0.53]), m([2.7, 1.85, 0.535]), 0.026, 0.007, 0.008, { feature: 'claw' });
+    RC(ha, 'arm', m([2.6, 2.02, 0.48]), m([2.68, 1.97, 0.47]), 0.03, 0.025, 0.012);          // digit II
+    RC(ha, 'arm', m([2.68, 1.97, 0.47]), m([2.72, 1.88, 0.465]), 0.024, 0.006, 0.008, { feature: 'claw' });
   });
 
   // ===== 3. SURFACE DETAILS =====================================================================
@@ -326,34 +331,33 @@ function makeShapes(bones) {
 
   both((s, m, mr, sg) => {
     // ---- eye: high in the skull, looking forward-outward over the narrow snout (binocular) ------
-    // Eyeball ~10 cm across (plausible; orbit ~13 cm). A swelling of lid tissue around it is cut by
-    // an almond-shaped opening; the eyeball sits in the opening (meshed separately, finer).
+    // Eyeball ~10 cm across (plausible; orbit ~13 cm), meshed separately (finer). Around it: a
+    // mound of lid tissue cut by an almond-shaped palpebral opening, a crease above the upper lid,
+    // and the brow ridge overhanging the whole eye.
     const eyeDir = norm(HD([0.55, 0.05, 0.83 * sg]));
     const eyeP = cast(add(H(0.6, 0.6, 0.27 * sg), eyeDir, 0.6), eyeDir.map((v) => -v));
     const en = normal(eyeP);
-    // Lid frame: x along the fissure (forward, tilted slightly up at the front), z = surface normal.
+    // Lid frame: x along the fissure (forward, tilted slightly up at the front), y up, z = normal.
     const fwd = norm(HD([1, 0.12, 0]));
-    const bz = en, by = norm(cross(bz, fwd)), bx = norm(cross(by, bz));
-    const lidRot = basisToEuler(bx, by.map((v) => v * sg), bz.map((v) => v * sg));
-    const eyeC = add(eyeP, en, -0.03);
+    const bz = en, by0 = norm(cross(bz, fwd)), by = by0[1] < 0 ? by0.map((v) => -v) : by0;
+    const bx = norm(cross(by, bz));
+    const lidRot = basisToEuler(bx, by, cross(bx, by));
+    const L = (x, y, z) => add(add(add(eyeP, bx, x), by, y), bz, z);     // point in the lid frame
     details.push(() => {
-      E('skull', 'head', add(eyeP, en, -0.012), [0.115, 0.085, 0.045], lidRot, 0.04);           // lid swelling
-      E('skull', 'head', add(eyeP, en, 0.012), [0.072, 0.03, 0.05], lidRot, 0.014, { sign: -1 }); // palpebral opening
-      E('skull', 'head', add(add(eyeP, en, 0.006), by, -0.06 * sg), [0.07, 0.016, 0.02], lidRot, 0.03, { sign: -1 }); // fold under the lower lid
-      E('skull', 'head', eyeC, [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
+      E('skull', 'head', L(0, 0.008, -0.01), [0.1, 0.075, 0.045], lidRot, 0.03);                  // lid mound
+      E('skull', 'head', L(0.005, -0.004, 0.045), [0.085, 0.024, 0.058], lidRot, 0.01, { sign: -1 }); // palpebral opening
+      CAP('skull', 'head', L(-0.085, 0.05, 0.036), L(0.075, 0.054, 0.032), 0.01, 0.01, { sign: -1 });  // crease above the upper lid
+      E('skull', 'head', L(0.0, 0.0, -0.022), [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
+      // Brow ridge: lacrimal (front) to postorbital (back), over the eye, overhanging it.
+      CAP('skull', 'head', L(0.2, 0.105, -0.015), L(-0.16, 0.125, -0.005), 0.068, 0.05);
     });
-    // ---- brow: postorbital boss above-behind the eye, lacrimal horn above-in-front of it, and the
-    // brow ridge between them: the overhang that keeps the eye in shadow.
-    const po = castAt(H(0.5, 0.74, 0.22 * sg), HD([-0.1, -0.7, -sg]));
-    const la = castAt(H(0.8, 0.71, 0.13 * sg), HD([0, -0.85, -0.5 * sg]));
+    // ---- brow bosses: postorbital boss above-behind the eye, lacrimal horn above-in-front of it.
+    const po = castAt(H(0.48, 0.76, 0.2 * sg), HD([-0.1, -0.6, -sg]));
+    const la = castAt(H(0.82, 0.72, 0.12 * sg), HD([0, -0.85, -0.5 * sg]));
     details.push(() => {
-      E('skull', 'head', add(po, normal(po), -0.03), [0.12, 0.075, 0.1], mr(HR([0, 0.3, 0.15])), 0.05);   // postorbital boss
-      E('skull', 'head', add(la, normal(la), -0.025), [0.13, 0.055, 0.07], mr(HR([0, 0.25, -0.2])), 0.05); // lacrimal horn
-      CAP('skull', 'head', add(la, normal(la), -0.04), add(po, normal(po), -0.04), 0.05, 0.05);        // brow ridge
+      E('skull', 'head', add(po, normal(po), -0.035), [0.13, 0.08, 0.1], mr(HR([0, 0.3, 0.15])), 0.05);   // postorbital boss
+      E('skull', 'head', add(la, normal(la), -0.03), [0.14, 0.06, 0.075], mr(HR([0, 0.25, -0.2])), 0.05); // lacrimal horn
     });
-    // ---- jugal ridge ("cheekbone") from below the orbit back towards the jaw joint ----------------
-    const j0 = castAt(H(0.78, 0.36, 0.22 * sg), [0, 0, -sg]), j1 = castAt(H(0.25, 0.3, 0.35 * sg), [0, 0, -sg]);
-    details.push(() => CAP('skull', 'head', add(j0, normal(j0), -0.04), add(j1, normal(j1), -0.045), 0.05, 0.06));
     // ---- nostril: external naris near the top front of the snout, opening forward-outward --------
     const na = castAt(H(1.3, 0.45, 0.09 * sg), HD([0.35, 0.1, -sg]));
     const nn = normal(na);
@@ -362,21 +366,26 @@ function makeShapes(bones) {
       E('skull', 'head', add(na, nn, 0.012), [0.042, 0.016, 0.03], mr(HR([0, 0.45, -0.3])), 0.012, { sign: -1 }); // opening
     });
     // ---- lip groove: a shallow crease where the upper lip overhangs the lower one ------------------
-    const lip = [[1.4, 0.2], [1.25, 0.165], [1.05, 0.135], [0.85, 0.125], [0.68, 0.13], [0.54, 0.15], [0.44, 0.17]];
-    const hits = lip.map(([u, v]) => cast(H(u, v, 0.9 * sg), [0, 0, -sg]));
+    // Sampled just under the cutter line, i.e. on the lower jaw just below the upper-lip edge.
+    const lip = [[1.4, 0.19], [1.25, 0.155], [1.05, 0.13], [0.85, 0.125], [0.68, 0.128], [0.56, 0.14], [0.48, 0.152]];
+    const hits = lip.map(([u, v]) => cast(H(u, v - 0.012, 0.9 * sg), [0, 0, -sg]));
     for (let k = 0; k + 1 < hits.length; k++) {
-      const a = hits[k], b = hits[k + 1], r = k >= hits.length - 2 ? 0.012 : 0.016;
-      details.push(() => CAP('skull', 'head', add(a, normal(a), r - 0.006), add(b, normal(b), r - 0.006), r, 0.012, { sign: -1 }));
+      const a = hits[k], b = hits[k + 1], r = 0.011;
+      details.push(() => CAP('skull', 'head', add(a, normal(a), r - 0.005), add(b, normal(b), r - 0.005), r, 0.008, { sign: -1 }));
     }
     // Front of the mouth: the groove wraps round the premaxilla.
-    const f0 = cast(H(2.0, 0.205, 0.07 * sg), HD([-1, 0, 0])), f1 = cast(H(2.0, 0.21, 0.0), HD([-1, 0, 0]));
-    details.push(() => CAP('skull', 'head', add(hits[0], normal(hits[0]), 0.01), add(f0, normal(f0), 0.01), 0.016, 0.012, { sign: -1 }));
-    details.push(() => CAP('skull', 'head', add(f0, normal(f0), 0.01), add(f1, normal(f1), 0.01), 0.016, 0.012, { sign: -1 }));
+    const f0 = cast(H(2.0, 0.195, 0.07 * sg), HD([-1, 0, 0])), f1 = cast(H(2.0, 0.2, 0.0), HD([-1, 0, 0]));
+    details.push(() => CAP('skull', 'head', add(hits[0], normal(hits[0]), 0.006), add(f0, normal(f0), 0.006), 0.011, 0.008, { sign: -1 }));
+    details.push(() => CAP('skull', 'head', add(f0, normal(f0), 0.006), add(f1, normal(f1), 0.006), 0.011, 0.008, { sign: -1 }));
 
     // ---- dermal bumps: rugose skin over the nasals, around the orbit and on the jugal --------------
     const R = rng(sg > 0 ? 17 : 29);
     const bump = (p, r) => { const n = normal(p); details.push(() => E('skull', 'head', add(p, n, -0.65 * r), [r * 1.2, r, r * 1.1], [0, 0, 0], 0.018)); };
-    for (let k = 0; k < 8; k++) bump(castAt(H(0.9 + 0.45 * R(), 0.7, (0.03 + 0.08 * R()) * sg), HD([0, -1, 0])), 0.02 + 0.012 * R());
+    // Row of rugosities along each side of the nasals, from the nostril back to the lacrimal horn.
+    for (let k = 0; k < 7; k++) {
+      const u = 1.18 - 0.055 * k + 0.02 * R();
+      bump(castAt(H(u, 0.75, (0.075 + 0.012 * k + 0.015 * R()) * sg), HD([0, -1, -0.25 * sg])), 0.018 + 0.008 * R());
+    }
     for (let k = 0; k < 6; k++) {
       const a = Math.PI * (0.1 + 1.0 * R());
       bump(castAt(add(eyeP, HD([Math.cos(a), Math.sin(a), 0]), 0.13), eyeDir.map((v) => -v)), 0.014 + 0.008 * R());
@@ -389,3 +398,11 @@ function makeShapes(bones) {
 
 export const TREX_BONES = makeBones();
 export const TREX_SHAPES = makeShapes(TREX_BONES);
+// Detail zones read by sdf_mesher.js (a property of the shape list, so callers need not pass them):
+// boxes meshed with voxel * scale. Their faces cross the body only on smooth surfaces (back of the
+// head, metatarsus, forearm), where the coarse and fine meshes overlap invisibly.
+TREX_SHAPES.zones = [
+  { name: 'head', min: [3.56, 2.7, -0.8], max: [5.3, 4.7, 0.8], scale: 0.5 },
+  { name: 'feet', min: [-0.25, -0.1, -1.0], max: [1.35, 0.5, 1.0], scale: 0.6 },
+  { name: 'hands', min: [2.46, 1.7, -0.75], max: [2.9, 2.1, 0.75], scale: 0.6 },
+];

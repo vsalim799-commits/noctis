@@ -269,10 +269,10 @@ std::vector<u32> PaleontologySystem::extractTrackway(u32 seedFootprint, const Tr
     {
         return out;
     }
-    std::vector<const Footprint*> near;
-    tracks.query(seed->position, 30.0f, near);
+    std::vector<const Footprint*> nearbyPrints;
+    tracks.query(seed->position, 30.0f, nearbyPrints);
     const Vec2 dir = Vec2::fromHeading(seed->heading);
-    for (const Footprint* f : near)
+    for (const Footprint* f : nearbyPrints)
     {
         if (!tracks.visible(*f) || f->manus)
         {

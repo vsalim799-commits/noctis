@@ -200,7 +200,7 @@ bool WorldSimulation::initialize(const SimConfig& config, std::unique_ptr<FileSy
     return true;
 }
 
-Vec2 WorldSimulation::findHabitatPoint(int speciesIndex, Rng& rng, const Vec2* near, float radius) const
+Vec2 WorldSimulation::findHabitatPoint(int speciesIndex, Rng& rng, const Vec2* nearPoint, float radius) const
 {
     const SpeciesSim& s = db_.speciesAt(speciesIndex).sim;
     Vec2 best = terrain_.bounds().center();
@@ -209,9 +209,9 @@ Vec2 WorldSimulation::findHabitatPoint(int speciesIndex, Rng& rng, const Vec2* n
     for (int i = 0; i < 40; ++i)
     {
         Vec2 p;
-        if (near)
+        if (nearPoint)
         {
-            p = *near + Vec2::fromHeading(rng.range(0.0f, kTwoPi)) * radius * std::sqrt(rng.uniform());
+            p = *nearPoint + Vec2::fromHeading(rng.range(0.0f, kTwoPi)) * radius * std::sqrt(rng.uniform());
         }
         else
         {

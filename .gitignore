@@ -10,3 +10,4 @@ DerivedDataCache/
 .idea/
 Output/
 node_modules/
+Build/

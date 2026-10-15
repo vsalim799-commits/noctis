@@ -577,10 +577,10 @@ void ResearchSystem::updateSensors(float dt, WorldContext& ctx, CreatureSystem& 
             {
                 continue;
             }
-            std::vector<u32> near;
-            creatures.neighbours(s.position.xy(), 20.0f, near);
+            std::vector<u32> nearbyAnimals;
+            creatures.neighbours(s.position.xy(), 20.0f, nearbyAnimals);
             const float air = ctx.weather->state().temperatureC;
-            for (const u32 i : near)
+            for (const u32 i : nearbyAnimals)
             {
                 const Creature& c = creatures.creatures()[i];
                 const Vec2 rel = c.pos2() - s.position.xy();

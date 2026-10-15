@@ -97,7 +97,7 @@ public:
     // Spawns the initial populations (called by initialize when config.spawnPopulation).
     void spawnInitialPopulations();
     // Finds a spawn point suited to a species (habitat preference, dry ground).
-    Vec2 findHabitatPoint(int speciesIndex, Rng& rng, const Vec2* near = nullptr, float radius = 0.0f) const;
+    Vec2 findHabitatPoint(int speciesIndex, Rng& rng, const Vec2* nearPoint = nullptr, float radius = 0.0f) const;
 
     // Persistence (JSON + binary arrays). Returns false on I/O error.
     bool save(const std::string& basePath) const;

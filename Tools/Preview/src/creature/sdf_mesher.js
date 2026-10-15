@@ -20,6 +20,7 @@ export const FEATURES = ['skin', 'eye', 'claw'];
 const STRIDE = 20;          // floats per compiled shape
 const BLOCK = 8;            // block edge, in grid cells, for narrow-band culling
 const AO_REACH = 0.6;       // metres; longest occlusion probe along the normal
+const ZONE_TUCK = 0.004;    // metres; how far the main mesh hides under a detail-zone mesh
 
 // ---------------------------------------------------------------------------------------------
 // Shape compilation: everything that does not depend on the sample point is precomputed into
@@ -360,6 +361,47 @@ function meshSeparate(S, si, h) {
   return { shape: si, pos: P, nrm: N, index };
 }
 
+// Dense narrow-band sampling of the field on a block-aligned grid covering [lo, hi] (+ padding).
+// Blocks whose centre is farther than R from the surface are skipped (left at +R, or filled
+// with -R when deep inside), so the cost follows the surface area, not the volume.
+function sampleGrid(S, lo, hi, h, withWide) {
+  const pad = 3 * h;
+  const nbx = Math.ceil((hi[0] - lo[0] + 2 * pad) / (BLOCK * h));
+  const nby = Math.ceil((hi[1] - lo[1] + 2 * pad) / (BLOCK * h));
+  const nbz = Math.ceil((hi[2] - lo[2] + 2 * pad) / (BLOCK * h));
+  const nx = nbx * BLOCK, ny = nby * BLOCK, nz = nbz * BLOCK;   // grid points per axis
+  const grid = { ox: lo[0] - pad, oy: lo[1] - pad, oz: lo[2] - pad, h, nbx, nby, nbz };
+  const { ox, oy, oz } = grid;
+  // 1.3 = slack for the non-exact ellipsoid/smooth-min distances.
+  const R = 1.3 * 0.5 * Math.sqrt(3) * BLOCK * h + 2 * h;
+  const fine = buildBlockLists(S, grid, (i) => S.k[i] + R + S.foldAmp[i] + h);
+  const wide = withWide ? buildBlockLists(S, grid, (i) => Math.max(S.k[i] + 0.05, AO_REACH) + S.foldAmp[i]) : null;
+  const field = new Float32Array(nx * ny * nz).fill(R);
+  const scratch = new Float64Array(256);
+  let evaluated = 0;
+  for (let bz = 0; bz < nbz; bz++) for (let by = 0; by < nby; by++) for (let bx = 0; bx < nbx; bx++) {
+    const b = bx + nbx * (by + nby * bz);
+    const s0 = fine.off[b], s1 = fine.off[b + 1];
+    if (s0 === s1) continue;
+    const cx = ox + (bx * BLOCK + (BLOCK - 1) / 2) * h, cy = oy + (by * BLOCK + (BLOCK - 1) / 2) * h, cz = oz + (bz * BLOCK + (BLOCK - 1) / 2) * h;
+    const dc = evalList(S, fine.list, s0, s1, cx, cy, cz, scratch);
+    if (dc > R) continue;
+    const far = dc < -R;
+    for (let k = 0; k < BLOCK; k++) {
+      const gk = bz * BLOCK + k, z = oz + gk * h;
+      for (let j = 0; j < BLOCK; j++) {
+        const gj = by * BLOCK + j, y = oy + gj * h;
+        let idx = bx * BLOCK + nx * (gj + ny * gk);
+        for (let i = 0; i < BLOCK; i++, idx++) {
+          field[idx] = far ? -R : evalList(S, fine.list, s0, s1, ox + (bx * BLOCK + i) * h, y, z, scratch);
+        }
+      }
+    }
+    if (!far) evaluated++;
+  }
+  return { field, nx, ny, nz, ox, oy, oz, grid, fine, wide, R, evaluated };
+}
+
 // Unculled field evaluator (debugging, measuring the sculpt, placing details on the surface).
 export function createSdf(bones, shapes) {
   const S = compileShapes(shapes, new Map(bones.map((b, i) => [b.name, i])));
@@ -389,7 +431,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   const boneIndex = new Map(bones.map((b, i) => [b.name, i]));
   const S = compileShapes(shapes, boneIndex);
 
-  // ---- grid ----------------------------------------------------------------------------------
+  // ---- grids -----------------------------------------------------------------------------------
   const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
   for (let i = 0; i < S.n; i++) {
     if (S.sign[i] < 0 || S.separate[i]) continue;
@@ -398,49 +440,15 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
       hi[r] = Math.max(hi[r], S.box[i * 6 + 3 + r] + S.k[i] + S.foldAmp[i]);
     }
   }
-  const pad = 3 * voxel;
   const h = voxel;
-  const nbx = Math.ceil((hi[0] - lo[0] + 2 * pad) / (BLOCK * h)) ;
-  const nby = Math.ceil((hi[1] - lo[1] + 2 * pad) / (BLOCK * h));
-  const nbz = Math.ceil((hi[2] - lo[2] + 2 * pad) / (BLOCK * h));
-  const nx = nbx * BLOCK, ny = nby * BLOCK, nz = nbz * BLOCK;   // grid points per axis
-  const grid = { ox: lo[0] - pad, oy: lo[1] - pad, oz: lo[2] - pad, h, nbx, nby, nbz };
-  const { ox, oy, oz } = grid;
-
-  // Narrow band: a block whose centre is farther than R from the surface cannot contain it
-  // (1.3 = slack for the non-exact ellipsoid/smooth-min distances).
-  const halfDiag = 0.5 * Math.sqrt(3) * BLOCK * h;
-  const R = 1.3 * halfDiag + 2 * h;
-  const fine = buildBlockLists(S, grid, (i) => S.k[i] + R + S.foldAmp[i] + h);
-  const wide = buildBlockLists(S, grid, (i) => Math.max(S.k[i] + 0.05, AO_REACH) + S.foldAmp[i]);
-  lap('lists');
-
-  const field = new Float32Array(nx * ny * nz).fill(R);
+  const main = sampleGrid(S, lo, hi, h, true);
+  const { nx, ny, nz, ox, oy, oz, field, fine, wide } = main;
   const scratch = new Float64Array(256);
-  let evaluated = 0;
-  for (let bz = 0; bz < nbz; bz++) for (let by = 0; by < nby; by++) for (let bx = 0; bx < nbx; bx++) {
-    const b = bx + nbx * (by + nby * bz);
-    const s0 = fine.off[b], s1 = fine.off[b + 1];
-    if (s0 === s1) continue;
-    const cx = ox + (bx * BLOCK + (BLOCK - 1) / 2) * h, cy = oy + (by * BLOCK + (BLOCK - 1) / 2) * h, cz = oz + (bz * BLOCK + (BLOCK - 1) / 2) * h;
-    const dc = evalList(S, fine.list, s0, s1, cx, cy, cz, scratch);
-    if (dc > R) continue;
-    const far = dc < -R;
-    for (let k = 0; k < BLOCK; k++) {
-      const gk = bz * BLOCK + k, z = oz + gk * h;
-      for (let j = 0; j < BLOCK; j++) {
-        const gj = by * BLOCK + j, y = oy + gj * h;
-        let idx = bx * BLOCK + nx * (gj + ny * gk);
-        for (let i = 0; i < BLOCK; i++, idx++) {
-          field[idx] = far ? -R : evalList(S, fine.list, s0, s1, ox + (bx * BLOCK + i) * h, y, z, scratch);
-        }
-      }
-    }
-    if (!far) evaluated++;
-  }
   lap('field');
 
-  // Field query at an arbitrary point using the block lists.
+  // Field query at an arbitrary point using the main grid's block lists (valid near the surface
+  // for `fine`, up to AO_REACH away for `wide`, whatever grid the point was meshed on).
+  const { nbx, nby, nbz } = main.grid;
   const blockOf = (x, y, z) => {
     const bx = Math.floor((x - ox) / (BLOCK * h)), by = Math.floor((y - oy) / (BLOCK * h)), bz = Math.floor((z - oz) / (BLOCK * h));
     if (bx < 0 || by < 0 || bz < 0 || bx >= nbx || by >= nby || bz >= nbz) return -1;
@@ -453,9 +461,56 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     if (s0 === s1) return 1e3;
     return evalList(S, L.list, s0, s1, x, y, z, scratch);
   };
+  // Volume from the dense samples of the main grid (inside samples x cell volume).
+  let inside = 0;
+  for (let i = 0; i < field.length; i++) if (field[i] < 0) inside++;
+  const volume = inside * h * h * h;
 
-  // ---- surface nets ----------------------------------------------------------------------------
-  const { pos, index } = surfaceNets(field, nx, ny, nz, ox, oy, oz, h);
+  // ---- surface nets: main grid + finer detail zones ---------------------------------------------
+  // Detail zones (opts.zones, else shapes.zones): boxes { min, max, scale } meshed on their own grid
+  // with voxel * scale. The main mesh keeps its triangles up to `band` inside a zone and is tucked
+  // a few mm under the zone mesh there (both lie on the same exact iso-surface), so the overlap
+  // hides the change of resolution without stitching.
+  const zones = (opts.zones ?? shapes.zones ?? []).map((z) => ({
+    min: z.min, max: z.max, h: voxel * (z.scale ?? 0.5), band: z.band ?? 3 * voxel,
+  }));
+  const depthIn = (zi, x, y, z) => {        // > 0 inside zone zi: distance to its nearest face
+    const Z = zones[zi];
+    return Math.min(x - Z.min[0], Z.max[0] - x, y - Z.min[1], Z.max[1] - y, z - Z.min[2], Z.max[2] - z);
+  };
+  const parts = [{ ...surfaceNets(field, nx, ny, nz, ox, oy, oz, h), h, zone: -1 }];
+  for (let zi = 0; zi < zones.length; zi++) {
+    const Z = zones[zi], zp = 3 * Z.h;
+    const zlo = Z.min.map((v, r) => Math.max(v - zp, lo[r])), zhi = Z.max.map((v, r) => Math.min(v + zp, hi[r]));
+    if (zlo.some((v, r) => v >= zhi[r])) continue;
+    const g = sampleGrid(S, zlo, zhi, Z.h, false);
+    parts.push({ ...surfaceNets(g.field, g.nx, g.ny, g.nz, g.ox, g.oy, g.oz, Z.h), h: Z.h, zone: zi });
+  }
+  // Keep a main-mesh triangle unless it lies entirely deeper than `band` inside a zone; keep a zone
+  // triangle if it touches its zone. Then compact each part to the vertices still referenced.
+  const pos = [], index = [], vertH = [], vertZone = [];
+  for (const part of parts) {
+    const P0 = part.pos, I0 = part.index, keepTri = (t) => {
+      const v = [I0[t], I0[t + 1], I0[t + 2]];
+      if (part.zone < 0) {
+        return v.some((q) => zones.every((Z, zi) => depthIn(zi, P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]) < Z.band));
+      }
+      return v.some((q) => depthIn(part.zone, P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]) > 0);
+    };
+    const remap = new Int32Array(P0.length / 3).fill(-1);
+    for (let t = 0; t < I0.length; t += 3) {
+      if (!keepTri(t)) continue;
+      for (let e = 0; e < 3; e++) {
+        const q = I0[t + e];
+        if (remap[q] < 0) {
+          remap[q] = pos.length / 3;
+          pos.push(P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]);
+          vertH.push(part.h); vertZone.push(part.zone);
+        }
+        index.push(remap[q]);
+      }
+    }
+  }
   lap('nets');
 
   // ---- separate parts (eyeballs): own finer grid, own closed surface ---------------------------
@@ -468,7 +523,6 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   P.set(pos);
   const N = new Float32Array(nV * 3);
   const owner = new Int32Array(nV).fill(-1);   // separate shape that produced the vertex, -1 = skin
-  const nTMain = index.length;                 // skin triangles (the volume is measured on these)
   for (let m = 0, off = nMain; m < sep.length; m++) {
     const part = sep[m], cnt = part.pos.length / 3;
     P.set(part.pos, off * 3);
@@ -481,7 +535,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   lap('separate');
 
   // ---- snap to iso-surface + analytic normals ----------------------------------------------------
-  const eps = 0.35 * h;
+  let eps = 0.35 * h;
   const tet = [1, -1, -1, -1, -1, 1, -1, 1, -1, 1, 1, 1];
   const grad = (x, y, z, out) => {
     let gx = 0, gy = 0, gz = 0;
@@ -494,7 +548,8 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   const g = [0, 0, 0];
   for (let vi = 0; vi < nMain; vi++) {
     let x = P[vi * 3], y = P[vi * 3 + 1], z = P[vi * 3 + 2];
-    const x0 = x, y0 = y, z0 = z;
+    const x0 = x, y0 = y, z0 = z, h = vertH[vi];
+    eps = 0.35 * h;
     for (let it = 0; it < 2; it++) {
       const d = sdf(fine, x, y, z);
       grad(x, y, z, g);
@@ -605,17 +660,37 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     const a = index[t], b = index[t + 1], c = index[t + 2];
     adj[fillA[a]++] = b; adj[fillA[a]++] = c; adj[fillA[b]++] = c; adj[fillA[b]++] = a; adj[fillA[c]++] = a; adj[fillA[c]++] = b;
   }
-  const iters = opts.smoothIterations ?? 6;
-  let Wa = W, Wb = new Float32Array(W.length);
-  for (let it = 0; it < iters; it++) {
-    for (let vi = 0; vi < nV; vi++) {
-      const s0 = deg[vi], s1 = deg[vi + 1], cnt = s1 - s0, base = vi * nB;
-      if (cnt === 0) { for (let q = 0; q < nB; q++) Wb[base + q] = Wa[base + q]; continue; }
-      const inv = 0.5 / cnt;
-      for (let q = 0; q < nB; q++) Wb[base + q] = 0.5 * Wa[base + q];
-      for (let a = s0; a < s1; a++) { const nb = adj[a] * nB; for (let q = 0; q < nB; q++) Wb[base + q] += inv * Wa[nb + q]; }
+  // Smoothing runs per mesh part (main grid, each detail zone) over the bones present in that part;
+  // finer parts get more iterations so every part is smoothed over about the same distance
+  // (diffusion radius ~ cell size x sqrt(iterations)) and their weights agree where they overlap.
+  const baseIters = opts.smoothIterations ?? 6;
+  let Wa = W, Wb = new Float32Array(W);
+  const groups = new Map();
+  for (let vi = 0; vi < nV; vi++) {
+    if (owner[vi] >= 0) continue;                          // separate parts: rigid, nothing to smooth
+    const key = vertZone[vi];
+    if (!groups.has(key)) groups.set(key, { verts: [], h: vertH[vi] });
+    groups.get(key).verts.push(vi);
+  }
+  for (const grp of groups.values()) {
+    const verts = Int32Array.from(grp.verts);
+    const used = new Uint8Array(nB);
+    for (const vi of verts) for (let q = 0; q < nB; q++) if (W[vi * nB + q] > 0) used[q] = 1;
+    const bl = [];
+    for (let q = 0; q < nB; q++) if (used[q]) bl.push(q);
+    const iters = Math.round(baseIters * (h / grp.h) ** 2);
+    for (let it = 0; it < iters; it++) {
+      for (const vi of verts) {
+        const s0 = deg[vi], s1 = deg[vi + 1], cnt = s1 - s0, base = vi * nB;
+        if (cnt === 0) { for (const q of bl) Wb[base + q] = Wa[base + q]; continue; }
+        const inv = 0.5 / cnt;
+        for (const q of bl) Wb[base + q] = 0.5 * Wa[base + q];
+        for (let a = s0; a < s1; a++) { const nb = adj[a] * nB; for (const q of bl) Wb[base + q] += inv * Wa[nb + q]; }
+      }
+      const t = Wa; Wa = Wb; Wb = t;
     }
-    const t = Wa; Wa = Wb; Wb = t;
+    // Both buffers must hold this group's result: later groups keep swapping them.
+    for (const vi of verts) for (const q of bl) Wb[vi * nB + q] = Wa[vi * nB + q];
   }
   const skinIndex = new Uint16Array(nV * 4), skinWeight = new Float32Array(nV * 4);
   const top = [0, 0, 0, 0], topW = [0, 0, 0, 0];
@@ -634,6 +709,17 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     for (let q = 0; q < 4; q++) { skinIndex[vi * 4 + q] = top[q]; skinWeight[vi * 4 + q] = sum > 0 ? topW[q] / sum : (q === 0 ? 1 : 0); }
   }
   lap('skin');
+
+  // ---- tuck the main mesh under the detail zones ------------------------------------------------
+  // Ramp from 0 at a zone's face (where the zone mesh ends) to ZONE_TUCK at `band` inside it.
+  for (let vi = 0; vi < nV; vi++) {
+    if (owner[vi] >= 0 || vertZone[vi] >= 0) continue;
+    let t = 0;
+    for (let zi = 0; zi < zones.length; zi++) t = Math.max(t, depthIn(zi, P[vi * 3], P[vi * 3 + 1], P[vi * 3 + 2]) / zones[zi].band);
+    if (t <= 0) continue;
+    const d = ZONE_TUCK * Math.min(1, t);
+    for (let r = 0; r < 3; r++) P[vi * 3 + r] -= d * N[vi * 3 + r];
+  }
 
   // ---- geometry + skeleton -------------------------------------------------------------------------
   const geometry = new THREE.BufferGeometry();
@@ -679,13 +765,9 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   mesh.frustumCulled = false;
   lap('three');
 
-  let volume = 0;
-  for (let t = 0; t < nTMain; t += 3) {
-    const a = index[t] * 3, b = index[t + 1] * 3, c = index[t + 2] * 3;
-    volume += (P[a] * (P[b + 1] * P[c + 2] - P[b + 2] * P[c + 1]) - P[a + 1] * (P[b] * P[c + 2] - P[b + 2] * P[c]) + P[a + 2] * (P[b] * P[c + 1] - P[b + 1] * P[c])) / 6;
-  }
   const stats = {
-    vertices: nV, triangles: nT / 3, grid: [nx, ny, nz], blocksEvaluated: evaluated, voxel, volume,
+    vertices: nV, triangles: nT / 3, grid: [nx, ny, nz], blocksEvaluated: main.evaluated, voxel, volume,
+    zones: zones.map((Z) => ({ min: Z.min, max: Z.max, voxel: Z.h })),
     bbox: { min: geometry.boundingBox.min.toArray(), max: geometry.boundingBox.max.toArray() }, timings,
   };
   mesh.userData.stats = stats;
