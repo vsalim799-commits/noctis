@@ -420,10 +420,11 @@ export function cacheKey(bones, shapes, opts = {}) {
 
 /**
  * Build a skinned mesh from a bone list and an SDF shape list.
- * opts: { voxel = 0.035 m, material, smoothIterations = 6, onProgress(stage) }
+ * opts: { voxel (m; default shapes.voxel, else 0.035), zones (default shapes.zones), material,
+ *         smoothIterations = 6 }
  */
 export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
-  const voxel = opts.voxel ?? 0.035;
+  const voxel = opts.voxel ?? shapes.voxel ?? 0.035;
   const timings = {};
   let tMark = performance.now();
   const lap = (name) => { const t = performance.now(); timings[name] = Math.round(t - tMark); tMark = t; };

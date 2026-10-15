@@ -153,7 +153,7 @@ function makeShapes(bones) {
   // Upper head (skull bone).
   HRC('skull', 'head', [1.33, 0.37], [0.74, 0.56], 0.115, 0.165, 0.12);                          // nasal ridge
   // Maxillary face: centred near the lip line so the lip cutter below slices it where it is broad.
-  HRC('skull', 'head', [1.3, 0.2], [0.5, 0.25], 0.15, 0.23, 0.1, { scale: [1, 1, 1.08] });
+  HRC('skull', 'head', [1.3, 0.2], [0.5, 0.25], 0.15, 0.23, 0.1, { scale: [1, 1, 1.14] });
   HE('skull', 'head', [1.36, 0.3, 0], [0.12, 0.2, 0.14], [0, 0, 0.12], 0.08);                    // premaxilla (deep, blunt snout tip)
   HE('skull', 'head', [0.5, 0.66, 0], [0.3, 0.13, 0.2], [0, 0, 0], 0.12);                       // skull roof between the orbits
   HE('skull', 'head', [0.16, 0.56, 0], [0.26, 0.24, 0.24], [0, 0, 0], 0.14);                    // parietal / braincase
@@ -167,17 +167,17 @@ function makeShapes(bones) {
   // Lip cutter: squares off the bottom of the upper head along the closed-mouth line, leaving a
   // rounded upper-lip edge (the smooth-subtraction radius). Flat-topped ellipsoids chained along the
   // sinuous tooth row: higher at the premaxilla, lowest under the maxilla, rising to the rictus.
-  const lipCut = [[1.5, 0.21, 0.16], [1.22, 0.16, 0.24], [0.92, 0.13, 0.26], [0.66, 0.135, 0.22], [0.47, 0.16, 0.12]];
+  const lipCut = [[1.5, 0.21, 0.16], [1.22, 0.16, 0.24], [0.92, 0.13, 0.26], [0.66, 0.13, 0.22], [0.47, 0.14, 0.12]];
   for (const [u, top, ru] of lipCut) HE('skull', 'head', [u, top - 0.4, 0], [ru, 0.4, 0.6], [0, 0, 0], 0.022, { sign: -1 });
   // Lower jaw (jaw bone): two rami with the lower lips, flattened sideways and set ~2 cm inside
   // the upper lip so the upper lip overhangs them; their tops hide inside the upper head.
   both((s, m) => {
-    HRC('jaw', 'jaw', m([1.3, 0.08, 0.06]), m([0.95, 0.03, 0.085]), 0.1, 0.13, 0.05, { scale: [1, 1, 0.8] });    // dentary, front
-    HRC('jaw', 'jaw', m([0.95, 0.03, 0.085]), m([0.45, -0.02, 0.17]), 0.13, 0.18, 0.05, { scale: [1, 1, 0.7] });  // dentary, back
+    HRC('jaw', 'jaw', m([1.32, 0.1, 0.055]), m([0.95, 0.035, 0.075]), 0.1, 0.13, 0.05, { scale: [1, 1, 0.8] });  // dentary, front
+    HRC('jaw', 'jaw', m([0.95, 0.035, 0.075]), m([0.45, -0.02, 0.165]), 0.13, 0.18, 0.05, { scale: [1, 1, 0.7] }); // dentary, back
     HE('jaw', 'jaw', m([0.3, -0.03, 0.26]), [0.3, 0.2, 0.1], [0, 0.35, 0.06], 0.1);                              // surangular
     HE('jaw', 'jaw', m([0.1, -0.1, 0.29]), [0.17, 0.19, 0.13], [0, 0.15, 0], 0.12);                              // M. pterygoideus bulge
   });
-  HE('jaw', 'jaw', [1.3, 0.05, 0], [0.11, 0.11, 0.12], [0, 0, 0], 0.06);                        // chin
+  HE('jaw', 'jaw', [1.33, 0.08, 0], [0.1, 0.12, 0.115], [0, 0, 0.1], 0.06);                      // chin
   HE('jaw', 'jaw', [0.62, -0.12, 0], [0.55, 0.12, 0.17], [0, 0, 0.08], 0.12);                    // throat skin between the rami
 
   // ===== 2. BODY ================================================================================
@@ -344,12 +344,13 @@ function makeShapes(bones) {
     const lidRot = basisToEuler(bx, by, cross(bx, by));
     const L = (x, y, z) => add(add(add(eyeP, bx, x), by, y), bz, z);     // point in the lid frame
     details.push(() => {
-      E('skull', 'head', L(0, 0.008, -0.01), [0.1, 0.075, 0.045], lidRot, 0.03);                  // lid mound
-      E('skull', 'head', L(0.005, -0.004, 0.045), [0.085, 0.024, 0.058], lidRot, 0.01, { sign: -1 }); // palpebral opening
-      CAP('skull', 'head', L(-0.085, 0.05, 0.036), L(0.075, 0.054, 0.032), 0.01, 0.01, { sign: -1 });  // crease above the upper lid
-      E('skull', 'head', L(0.0, 0.0, -0.022), [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
-      // Brow ridge: lacrimal (front) to postorbital (back), over the eye, overhanging it.
-      CAP('skull', 'head', L(0.2, 0.105, -0.015), L(-0.16, 0.125, -0.005), 0.068, 0.05);
+      // The opening is shallow so the eyeball fills it nearly flush with the lid margins.
+      E('skull', 'head', L(0, 0.006, -0.014), [0.105, 0.075, 0.046], lidRot, 0.035);              // lid mound
+      E('skull', 'head', L(0.005, -0.003, 0.05), [0.09, 0.026, 0.032], lidRot, 0.009, { sign: -1 }); // palpebral opening
+      CAP('skull', 'head', L(-0.08, 0.047, 0.026), L(0.075, 0.05, 0.024), 0.008, 0.008, { sign: -1 }); // crease above the upper lid
+      E('skull', 'head', L(0.0, 0.0, -0.016), [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
+      // Brow ridge: lacrimal (front) to postorbital (back), just above the upper lid, overhanging it.
+      CAP('skull', 'head', L(0.17, 0.088, -0.012), L(-0.15, 0.1, -0.008), 0.056, 0.04);
     });
     // ---- brow bosses: postorbital boss above-behind the eye, lacrimal horn above-in-front of it.
     const po = castAt(H(0.48, 0.76, 0.2 * sg), HD([-0.1, -0.6, -sg]));
@@ -367,7 +368,7 @@ function makeShapes(bones) {
     });
     // ---- lip groove: a shallow crease where the upper lip overhangs the lower one ------------------
     // Sampled just under the cutter line, i.e. on the lower jaw just below the upper-lip edge.
-    const lip = [[1.4, 0.19], [1.25, 0.155], [1.05, 0.13], [0.85, 0.125], [0.68, 0.128], [0.56, 0.14], [0.48, 0.152]];
+    const lip = [[1.4, 0.19], [1.25, 0.155], [1.05, 0.13], [0.85, 0.125], [0.68, 0.125], [0.56, 0.13], [0.48, 0.135]];
     const hits = lip.map(([u, v]) => cast(H(u, v - 0.012, 0.9 * sg), [0, 0, -sg]));
     for (let k = 0; k + 1 < hits.length; k++) {
       const a = hits[k], b = hits[k + 1], r = 0.011;
@@ -390,7 +391,6 @@ function makeShapes(bones) {
       const a = Math.PI * (0.1 + 1.0 * R());
       bump(castAt(add(eyeP, HD([Math.cos(a), Math.sin(a), 0]), 0.13), eyeDir.map((v) => -v)), 0.014 + 0.008 * R());
     }
-    for (let k = 0; k < 5; k++) bump(castAt(H(0.3 + 0.35 * R(), 0.22 + 0.15 * R(), 0.3 * sg), [0, 0, -sg]), 0.015 + 0.008 * R());
   });
   for (const fn of details) fn();
   return out;
@@ -398,6 +398,9 @@ function makeShapes(bones) {
 
 export const TREX_BONES = makeBones();
 export const TREX_SHAPES = makeShapes(TREX_BONES);
+// Suggested main voxel (m) when the caller passes none: the body reads well at 2.5 cm, the detail
+// zones below refine head, hands and feet.
+TREX_SHAPES.voxel = 0.025;
 // Detail zones read by sdf_mesher.js (a property of the shape list, so callers need not pass them):
 // boxes meshed with voxel * scale. Their faces cross the body only on smooth surfaces (back of the
 // head, metatarsus, forearm), where the coarse and fine meshes overlap invisibly.

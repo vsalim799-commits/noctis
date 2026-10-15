@@ -1,0 +1,90 @@
+{
+  "schema": "noctis.bibliography/1",
+  "note_fr": "Références ajoutées pour la bibliothèque sonore procédurale (Tools/AudioFactory). Chaque entrée a été retrouvée (auteurs, année, titre, revue) par recherche web le 2026-10-15 ; les champs non confirmés sont laissés à null.",
+  "entries": [
+    {
+      "id": "gu2012_katydid_stridulation",
+      "authors": "Gu, J.-J.; Montealegre-Z, F.; Robert, D.; Engel, M.S.; Qiao, G.-X.; Ren, D.",
+      "year": 2012,
+      "title": "Wing stridulation in a Jurassic katydid (Insecta, Orthoptera) produced low-pitched musical calls to attract females",
+      "container": "Proceedings of the National Academy of Sciences of the USA",
+      "volume": "109(10)",
+      "pages": "3868-3873",
+      "doi": "10.1073/pnas.1118372109",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3309752",
+      "type": "article",
+      "verified": true,
+      "verification": "WebSearch 2026-10-15 — notice PMC3309752 (auteurs, volume, pages, DOI) ; résumé : Archaboilus musicus (Haglidae, Jurassique moyen, ~165 Ma), chant pur (musical) reconstruit à ~6,4 kHz à partir de la nervation alaire."
+    },
+    {
+      "id": "stahl1967_respiratory_scaling",
+      "authors": "Stahl, W.R.",
+      "year": 1967,
+      "title": "Scaling of respiratory variables in mammals",
+      "container": "Journal of Applied Physiology",
+      "volume": "22(3)",
+      "pages": "453-460",
+      "doi": "10.1152/jappl.1967.22.3.453",
+      "url": null,
+      "type": "article",
+      "verified": true,
+      "verification": "WebSearch 2026-10-15 — notice bibliographique (PMID 6020227) ; équation de fréquence de repos f = 322 W^-0,26 (W en g, soit 53,5 M^-0,26 /min avec M en kg) relevée via sa citation par Calder (1968) ; exposant 1,04 du volume courant relevé via une citation secondaire — la constante du volume courant n'a pas été vérifiée."
+    },
+    {
+      "id": "calder1968_bird_respiration",
+      "authors": "Calder, W.A.",
+      "year": 1968,
+      "title": "Respiratory and heart rates of birds at rest",
+      "container": "The Condor",
+      "volume": "70(4)",
+      "pages": "358-365",
+      "doi": null,
+      "url": "https://sora.unm.edu/sites/default/files/journals/condor/v070n04/p0358-p0365.pdf",
+      "type": "article",
+      "verified": true,
+      "verification": "WebSearch 2026-10-15 — archive SORA (Condor 70:358–365) ; régression de fréquence respiratoire des oiseaux au repos lue dans l'OCR comme f = 182 W^-0,33 (W en g) — coefficient non revérifié sur le PDF."
+    },
+    {
+      "id": "minnaert1933_musical_air_bubbles",
+      "authors": "Minnaert, M.",
+      "year": 1933,
+      "title": "On musical air-bubbles and the sounds of running water",
+      "container": "The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science",
+      "volume": "16",
+      "pages": "235-248",
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": true,
+      "verification": "WebSearch 2026-10-15 — plusieurs listes de références concordantes (volume 16, p. 235–248) ; DOI non confirmé."
+    },
+    {
+      "id": "prosperetti1993_rain_noise",
+      "authors": "Prosperetti, A.; Oguz, H.N.",
+      "year": 1993,
+      "title": "The impact of drops on liquid surfaces and the underwater noise of rain",
+      "container": "Annual Review of Fluid Mechanics",
+      "volume": "25",
+      "pages": "577-602",
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": true,
+      "verification": "WebSearch 2026-10-15 — deux listes de références indépendantes concordantes (vol. 25, p. 577–602) ; DOI non confirmé."
+    },
+    {
+      "id": "marshall1948_raindrop_size",
+      "authors": "Marshall, J.S.; Palmer, W.McK.",
+      "year": 1948,
+      "title": "The distribution of raindrops with size",
+      "container": "Journal of Meteorology",
+      "volume": "5",
+      "pages": "165-166",
+      "doi": null,
+      "url": "https://www.radartutorial.eu/15.weather/pubs/marshall-palmer-1948.pdf",
+      "type": "article",
+      "verified": true,
+      "verification": "WebSearch 2026-10-15 — copie numérisée de l'article et glossaire AMS (vol. 5, p. 165–166) ; distribution exponentielle des tailles de gouttes."
+    }
+  ]
+}
