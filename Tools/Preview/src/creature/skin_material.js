@@ -776,7 +776,8 @@ void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryP
 `;
 
 // Debug views (material.userData.setDebug(mode)): 1 albedo, 2 normal, 3 roughness, 4 ambient
-// occlusion, 5 detail visibility (red = scales shown, black = faded), 6 region tint / scute weight.
+// occlusion, 5 detail visibility (red = scales shown, black = faded), 6 region params (r: scale octave
+// 0.5 + 0.5 * log2(size / baseScale), g: feature density, b: scute weight), 7 crack / feature scale / site.
 const FRAG_DEBUG = /* glsl */`
 #include <dithering_fragment>
 #ifdef SKIN_DEBUG
@@ -793,7 +794,7 @@ const FRAG_DEBUG = /* glsl */`
 	#elif SKIN_DEBUG == 7
 		gl_FragColor = vec4( skDebugFeat, 1.0 );
 	#else
-		gl_FragColor = vec4( vSkinB.rg * 0.5, vSkinA.z, 1.0 );
+		gl_FragColor = vec4( 0.5 + 0.5 * vSkinA.x, vSkinA.y, vSkinA.z, 1.0 );
 	#endif
 #endif
 `;
