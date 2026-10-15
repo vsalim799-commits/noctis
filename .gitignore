@@ -11,3 +11,5 @@ DerivedDataCache/
 Output/
 node_modules/
 Build/
+__pycache__/
+*.pyc
