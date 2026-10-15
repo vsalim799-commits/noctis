@@ -13,12 +13,13 @@ const FPrimaryAssetType UNoctisSpeciesVisualData::PrimaryAssetType(TEXT("NoctisS
 
 UNoctisSpeciesVisualData::UNoctisSpeciesVisualData()
 {
-	// Bone names of the rig produced by Tools/CreatureFactory (see Build/Creatures/<species>/anatomy_*.json).
-	FootBones = {FName(TEXT("toesL")), FName(TEXT("toesR")), FName(TEXT("handL")), FName(TEXT("handR"))};
-	NeckBones = {FName(TEXT("neck1")), FName(TEXT("neck2")), FName(TEXT("neck3"))};
+	// Bone names of the rig produced by Tools/CreatureFactory (skeleton spec: Data/Anatomy/<species>.json, "bones").
+	// import_creatures.py overwrites these from that file when it exists, so non-default rigs stay in sync.
+	FootBones = {FName(TEXT("toes_l")), FName(TEXT("toes_r")), FName(TEXT("hand_l")), FName(TEXT("hand_r"))};
+	NeckBones = {FName(TEXT("neck_01")), FName(TEXT("neck_02")), FName(TEXT("neck_03"))};
 	for (int32 Index = 1; Index <= 10; ++Index)
 	{
-		TailBones.Add(FName(*FString::Printf(TEXT("tail%d"), Index)));
+		TailBones.Add(FName(*FString::Printf(TEXT("tail_%02d"), Index)));
 	}
 }
 

@@ -76,13 +76,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> FarImpostorMesh;
 
-	// ------------------------------------------------------------------ Skeleton map (defaults = Tools/CreatureFactory rig)
+	// ------------------------------------------------------------------ Skeleton map (defaults = Tools/CreatureFactory rig:
+	// root, pelvis, spine_01..03, neck_01..03, head, jaw, tail_01..10, thigh/shin/metatarsus/toes_l|r, upperarm/forearm/hand_l|r)
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skeleton")
 	FName PelvisBone = TEXT("pelvis");
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skeleton")
-	FName HeadBone = TEXT("skull");
+	FName HeadBone = TEXT("head");
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skeleton")
 	FName JawBone = TEXT("jaw");
