@@ -148,6 +148,7 @@ void EventRecorder::reset()
     perType_.fill(0);
     callsByEmitter_.clear();
     bad_ = 0;
+    outOfOrder_ = 0;
     firstBad_.clear();
 }
 
@@ -166,19 +167,22 @@ void EventRecorder::onEvent(const SimEvent& e)
     hasher_.u(e.param2);
     const bool finite = std::isfinite(e.time) && std::isfinite(e.position.x) && std::isfinite(e.position.y) && std::isfinite(e.position.z) &&
                         std::isfinite(e.magnitude);
-    // Events are dispatched in time order within a flush; across flushes time never goes back.
-    const bool ordered = e.time >= lastTime_ - 1e-9 || e.time >= world_.clock().seconds() - 3600.0;
-    if (!finite || !ordered || e.type >= EventType::Count)
+    if (!finite || e.type >= EventType::Count)
     {
         if (bad_ == 0)
         {
             char buf[256];
-            std::snprintf(buf, sizeof(buf), "%s t=%.3f pos=(%g,%g,%g) mag=%g %s", e.type < EventType::Count ? eventTypeName(e.type) : "?", e.time,
+            std::snprintf(buf, sizeof(buf), "%s t=%.3f pos=(%g,%g,%g) mag=%g", e.type < EventType::Count ? eventTypeName(e.type) : "?", e.time,
                           static_cast<double>(e.position.x), static_cast<double>(e.position.y), static_cast<double>(e.position.z),
-                          static_cast<double>(e.magnitude), finite ? "(time went backwards)" : "(non-finite)");
+                          static_cast<double>(e.magnitude));
             firstBad_ = buf;
         }
         ++bad_;
+    }
+    // Within a flush events are sorted by time; across flushes time should never go back.
+    if (e.time < lastTime_ - 1e-6)
+    {
+        ++outOfOrder_;
     }
     lastTime_ = std::max(lastTime_, e.time);
     if (e.type == EventType::Vocalization)

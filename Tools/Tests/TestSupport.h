@@ -67,7 +67,7 @@ std::string censusLine(const noctis::WorldSimulation& w);
 std::vector<int> aliveBySpecies(const noctis::WorldSimulation& w);
 
 // Records every dispatched event: count per type, ordered hash, per-emitter vocalisation counts,
-// and the first non-finite / out-of-order event seen.
+// and the first non-finite event seen.
 class EventRecorder
 {
 public:
@@ -81,7 +81,10 @@ public:
     size_t count(noctis::EventType t) const { return perType_[static_cast<size_t>(t)]; }
     // Largest number of vocalisations attributed to a single individual.
     size_t maxCallsPerIndividual(noctis::u32* who = nullptr) const;
+    // Events with a non-finite time/position/magnitude or an invalid type.
     size_t badEvents() const { return bad_; }
+    // Events whose time is earlier than an event dispatched before them.
+    size_t outOfOrder() const { return outOfOrder_; }
     const std::string& firstBad() const { return firstBad_; }
     void reset();
 
@@ -96,6 +99,7 @@ private:
     std::vector<std::pair<noctis::u32, size_t>> callsByEmitter_;
     double lastTime_ = -1e300;
     size_t bad_ = 0;
+    size_t outOfOrder_ = 0;
     std::string firstBad_;
 };
 

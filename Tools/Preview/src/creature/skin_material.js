@@ -523,6 +523,10 @@ void skScutes( vec3 p, vec3 nR, vec3 axis, float R, float len, float span, float
 	h = amp * prof * slope * conv;
 	g = amp * ( dprof * eg * slope * conv + prof * 0.55 / ( b - a ) * dt * conv - prof * slope * 0.6 * pc / max( span, 0.2 ) * dphi );
 	g += ( hr - 0.5 ) * 0.12 * uScuteHeight * prof;          // each plate slightly tilted
+	// fine wear / wrinkling on the plate surface
+	vec4 nm = skNoised( p / ( 0.12 * len ) + hr * 13.0 );
+	h += 0.01 * len * nm.x * prof;
+	g += 0.083 * nm.yzw * prof;
 	crack = 1.0 - smoothstep( 0.0, mort * 1.8 + aa, e );
 	top = prof;
 	rnd = hr.z;
@@ -927,6 +931,16 @@ export function configureSkinForBones(material, bones, shapes = null) {
     // The toe frame applies below roughly the top of the toe pads (joint height + a toe radius).
     U.uToeHeight.value = toes.head[1] + 0.06;
   }
+  // Scute frame radii from the sculpt: the metatarsus and toe volumes (rest-space round cones).
+  const radiusOf = (bone) => {
+    const cones = (shapes || []).filter((s) => s.bone === bone && s.kind === 'roundCone' && s.feature !== 'claw' && s.ra);
+    if (!cones.length) return 0;
+    const big = cones.reduce((a, s) => (s.ra + s.rb > a.ra + a.rb ? s : a));
+    return 0.5 * (big.ra + big.rb);
+  };
+  const rMeta = radiusOf('metaL') || radiusOf('metaR'), rToe = radiusOf('toesL') || radiusOf('toesR');
+  if (rMeta > 0) U.uScuteRadius.value.x = rMeta;
+  if (rToe > 0) U.uScuteRadius.value.y = rToe;
   const eyes = (shapes || []).filter((s) => s.feature === 'eye' && s.center);
   if (eyes.length) {
     const spots = [];

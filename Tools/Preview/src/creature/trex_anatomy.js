@@ -162,7 +162,10 @@ function makeShapes(bones) {
     HE('skull', 'head', m([0.82, 0.58, 0.12]), [0.24, 0.12, 0.1], mr([0, 0.18, -0.12]), 0.1);      // lacrimal region
     HE('skull', 'head', m([0.3, 0.5, 0.21]), [0.3, 0.27, 0.2], mr([0, 0.25, 0]), 0.14);           // jaw-closing muscles (M. adductor)
     HE('skull', 'head', m([0.58, 0.3, 0.24]), [0.34, 0.15, 0.11], mr([0, 0.32, 0.05]), 0.1);      // jugal (cheek under the orbit)
-    HE('skull', 'head', m([0.12, 0.24, 0.33]), [0.17, 0.21, 0.13], mr([0, 0.2, 0]), 0.12);        // quadratojugal flare
+    HE('skull', 'head', m([0.12, 0.24, 0.33]), [0.17, 0.21, 0.13], mr([0, 0.2, 0]), 0.18);        // quadratojugal flare
+    // Fleshy upper lip / cheek along the back half of the tooth row: keeps the face full down to
+    // the lip line instead of pinching above it (cut flat by the lip cutter below).
+    HRC('skull', 'head', m([1.0, 0.2, 0.13]), m([0.5, 0.2, 0.24]), 0.07, 0.085, 0.08);
   });
   // Lip cutter: squares off the bottom of the upper head along the closed-mouth line, leaving a
   // rounded upper-lip edge (the smooth-subtraction radius). Flat-topped ellipsoids chained along the
@@ -173,12 +176,12 @@ function makeShapes(bones) {
   // the upper lip so the upper lip overhangs them; their tops hide inside the upper head.
   both((s, m) => {
     HRC('jaw', 'jaw', m([1.32, 0.1, 0.055]), m([0.95, 0.035, 0.075]), 0.1, 0.13, 0.05, { scale: [1, 1, 0.8] });  // dentary, front
-    HRC('jaw', 'jaw', m([0.95, 0.035, 0.075]), m([0.45, -0.02, 0.165]), 0.13, 0.18, 0.05, { scale: [1, 1, 0.7] }); // dentary, back
+    HRC('jaw', 'jaw', m([0.95, 0.035, 0.08]), m([0.45, -0.02, 0.2]), 0.13, 0.18, 0.05, { scale: [1, 1, 0.7] });   // dentary, back
     HE('jaw', 'jaw', m([0.3, -0.03, 0.26]), [0.3, 0.2, 0.1], [0, 0.35, 0.06], 0.1);                              // surangular
     HE('jaw', 'jaw', m([0.1, -0.1, 0.29]), [0.17, 0.19, 0.13], [0, 0.15, 0], 0.12);                              // M. pterygoideus bulge
   });
   HE('jaw', 'jaw', [1.33, 0.08, 0], [0.1, 0.12, 0.115], [0, 0, 0.1], 0.06);                      // chin
-  HE('jaw', 'jaw', [0.62, -0.12, 0], [0.55, 0.12, 0.17], [0, 0, 0.08], 0.12);                    // throat skin between the rami
+  HE('jaw', 'jaw', [0.55, -0.06, 0], [0.5, 0.12, 0.17], [0, 0, 0.08], 0.12);                     // throat skin between the rami
 
   // ===== 2. BODY ================================================================================
   // ---- trunk -----------------------------------------------------------------------------------
@@ -239,6 +242,11 @@ function makeShapes(bones) {
     E('neck3', 'neck', m([3.26, 3.46, 0.11]), [0.3, 0.4, 0.19], mr([0, 0, 0.6]), 0.14, { folds: neckFolds });
   });
   E('neck3', 'neck', [3.36, 3.08, 0], [0.4, 0.2, 0.25], [0, 0, 0.5], 0.14, { folds: neckFolds }); // throat
+  both((s, m, mr) => {
+    // Muscles from the back of the skull to the neck (M. depressor mandibulae, transversospinalis):
+    // fill the step behind the broad quadratojugal region.
+    E('neck3', 'neck', m(H(-0.06, 0.28, 0.24)), [0.2, 0.3, 0.13], mr([0, 0.25, 0.3]), 0.14);
+  });
 
   // ---- legs ------------------------------------------------------------------------------------
   both((sfx, m, mr) => {
@@ -350,7 +358,7 @@ function makeShapes(bones) {
       CAP('skull', 'head', L(-0.08, 0.047, 0.026), L(0.075, 0.05, 0.024), 0.008, 0.008, { sign: -1 }); // crease above the upper lid
       E('skull', 'head', L(0.0, 0.0, -0.016), [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
       // Brow ridge: lacrimal (front) to postorbital (back), just above the upper lid, overhanging it.
-      CAP('skull', 'head', L(0.17, 0.088, -0.012), L(-0.15, 0.1, -0.008), 0.056, 0.04);
+      CAP('skull', 'head', L(0.16, 0.07, -0.012), L(-0.14, 0.082, -0.006), 0.052, 0.05);
     });
     // ---- brow bosses: postorbital boss above-behind the eye, lacrimal horn above-in-front of it.
     const po = castAt(H(0.48, 0.76, 0.2 * sg), HD([-0.1, -0.6, -sg]));
