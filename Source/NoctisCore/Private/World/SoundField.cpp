@@ -42,29 +42,90 @@ void SoundField::prune(double now, double keepSeconds)
                    sources_.end());
 }
 
+namespace soundfieldimpl
+{
+// Total order on the content of a sound (everything but the id). Sounds emitted from parallel phases
+// (footfalls during locomotion) reach the field in thread-arrival order, and listeners consume them
+// with order-dependent state (per-animal random draws, awareness lists, "last alarm heard"). Returning
+// query results in content order makes perception and recording independent of the thread schedule.
+// Ids are assigned on arrival and are therefore labels only: never order or seed anything by id.
+bool contentLess(const SoundSource& a, const SoundSource& b)
+{
+    if (a.startTime != b.startTime)
+    {
+        return a.startTime < b.startTime;
+    }
+    if (a.emitter.value != b.emitter.value)
+    {
+        return a.emitter.value < b.emitter.value;
+    }
+    if (a.kind != b.kind)
+    {
+        return a.kind < b.kind;
+    }
+    if (a.seed != b.seed)
+    {
+        return a.seed < b.seed;
+    }
+    if (a.callIndex != b.callIndex)
+    {
+        return a.callIndex < b.callIndex;
+    }
+    if (a.position.x != b.position.x)
+    {
+        return a.position.x < b.position.x;
+    }
+    if (a.position.y != b.position.y)
+    {
+        return a.position.y < b.position.y;
+    }
+    if (a.position.z != b.position.z)
+    {
+        return a.position.z < b.position.z;
+    }
+    if (a.levelDb != b.levelDb)
+    {
+        return a.levelDb < b.levelDb;
+    }
+    if (a.f0Hz != b.f0Hz)
+    {
+        return a.f0Hz < b.f0Hz;
+    }
+    return a.durationS < b.durationS;
+}
+} // namespace soundfieldimpl
+
 void SoundField::collect(double t0, double t1, std::vector<SoundSource>& out) const
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-    for (const SoundSource& s : sources_)
+    const size_t first = out.size();
     {
-        if (s.startTime <= t1 && s.startTime + s.durationS >= t0)
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (const SoundSource& s : sources_)
         {
-            out.push_back(s);
+            if (s.startTime <= t1 && s.startTime + s.durationS >= t0)
+            {
+                out.push_back(s);
+            }
         }
     }
+    std::sort(out.begin() + static_cast<std::ptrdiff_t>(first), out.end(), soundfieldimpl::contentLess);
 }
 
 void SoundField::collectNear(double t0, double t1, const Vec2& p, float radius, std::vector<SoundSource>& out) const
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-    const float r2 = radius * radius;
-    for (const SoundSource& s : sources_)
+    const size_t first = out.size();
     {
-        if (s.startTime <= t1 && s.startTime + s.durationS >= t0 && distanceSq(s.position.xy(), p) <= r2)
+        std::lock_guard<std::mutex> lock(mutex_);
+        const float r2 = radius * radius;
+        for (const SoundSource& s : sources_)
         {
-            out.push_back(s);
+            if (s.startTime <= t1 && s.startTime + s.durationS >= t0 && distanceSq(s.position.xy(), p) <= r2)
+            {
+                out.push_back(s);
+            }
         }
     }
+    std::sort(out.begin() + static_cast<std::ptrdiff_t>(first), out.end(), soundfieldimpl::contentLess);
 }
 
 float SoundField::absorptionDbPerM(float f, float temperatureC, float rh01, float pressureKPa)

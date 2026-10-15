@@ -44,10 +44,30 @@ def euler_xyz_matrix(r):
                      [bf - ae * d, be + af * d, a * c]], dtype=np.float64)
 
 
-def _loft_table(sections, nsamp=128):
+def _cap_sections(keys, caps):
+    """Rounded (elliptical) end caps: extra sections shrinking to a point over caps=[back, front] metres."""
+    keys = sorted(keys, key=lambda s: s["u"])
+    out = list(keys)
+    for end, L in ((0, caps[0]), (1, caps[1])):
+        if not L:
+            continue
+        e = keys[0] if end == 0 else keys[-1]
+        sgn = -1.0 if end == 0 else 1.0
+        for th in np.radians([20, 38, 54, 67, 78, 86, 89.5]):
+            c = max(math.cos(th), 0.03)
+            s = dict(e)
+            s["u"] = e["u"] + sgn * L * math.sin(th)
+            for k in ("top", "bot", "hw"):
+                s[k] = e[k] * c
+            s["cy"] = e["cy"]
+            out.append(s)
+    return sorted(out, key=lambda s: s["u"])
+
+
+def _loft_table(sections, nsamp=160, caps=None):
     """Resample loft key sections (dicts) to a dense uniform-u table with monotone cubic interp."""
     from scipy.interpolate import PchipInterpolator
-    keys = sorted(sections, key=lambda s: s["u"])
+    keys = _cap_sections(sections, caps) if caps else sorted(sections, key=lambda s: s["u"])
     u = np.array([s["u"] for s in keys], dtype=np.float64)
     cols = ["cy", "top", "bot", "hw", "nt", "nb"]
     vals = np.array([[s.get(c, s.get("n", 2.0)) if c in ("nt", "nb") else s[c] for c in cols] for s in keys])
@@ -155,7 +175,7 @@ class Compiled:
         for i, s in enumerate(shapes):
             kind = KIND[s["kind"]]
             self.kind[i] = kind
-            self.sign[i] = -1 if s.get("sign", 1) == -1 else 1
+            self.sign[i] = 0 if s.get("mask_only") else (-1 if s.get("sign", 1) == -1 else 1)
             if s["bone"] not in bidx:
                 raise ValueError(f"shape {i} references unknown bone {s['bone']}")
             self.bone[i] = bidx[s["bone"]]
@@ -215,7 +235,7 @@ class Compiled:
                 self.box[i, 3:] = (tab[:, 0:3] + ext[:, None]).max(0)
             else:
                 o, R = loft_frame(s)
-                u0, du, tab = _loft_table(s["sections"])
+                u0, du, tab = _loft_table(s["sections"], caps=s.get("caps"))
                 P[0:3] = o
                 P[3:12] = R.T.reshape(-1)
                 P[12] = u0
@@ -592,11 +612,15 @@ def field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z):
     d = 1e9
     for q in range(cstart[c], cstart[c + 1]):
         i = citems[q]
+        if sign[i] == 0:
+            continue
         di = shape_dist(kind[i], P, LT, SW, i, x, y, z)
         kk = k[i]
         if sign[i] > 0:
             h = kk - abs(d - di)
             d = min(d, di) - (h * h * 0.25 / kk if h > 0 else 0.0)
+        elif sign[i] == 0:
+            continue
         else:
             nd = -di
             h = kk - abs(d - nd)
@@ -665,6 +689,14 @@ def attr_points(pts, reg, bw, feat, masks, bone, region, feature, mask, sig_scal
                 continue
             di = shape_dist(kind[i], P, LT, SW, i, x, y, z)
             sig = sig_scale * k[i] + sig_add
+            if sign[i] == 0:
+                # mask-only volume: full weight inside, soft falloff outside
+                scm = math.exp(-max(di, 0.0) / sig)
+                for m in range(3):
+                    mi = mask[i, m]
+                    if mi >= 0:
+                        masks[j, mi] = max(masks[j, mi], scm)
+                continue
             w = math.exp(-max(di, 0.0) / sig)
             if w < 1e-3:
                 continue

@@ -247,12 +247,26 @@ void FNoctisSimulationRunner::BuildFrameExtras(FNoctisFrameOutput& Out, const FN
 	noctis::WaterSystem& Water = Sim.water();
 
 	Out.SoundExtras.SetNum(static_cast<int32>(Out.Snapshot.newSounds.size()));
+	const noctis::Vec3 Listener = Sim.research().eyePosition();
+	const noctis::PropagationEnv Env = Sim.context().propagation();
 	for (int32 Index = 0; Index < Out.SoundExtras.Num(); ++Index)
 	{
-		const noctis::Vec2 P = Out.Snapshot.newSounds[static_cast<size_t>(Index)].position.xy();
+		const noctis::SoundSource& Sound = Out.Snapshot.newSounds[static_cast<size_t>(Index)];
+		const noctis::Vec2 P = Sound.position.xy();
 		FNoctisSoundExtra& Extra = Out.SoundExtras[Index];
 		Extra.Substrate = static_cast<uint8>(Terrain.substrateAt(P));
 		Extra.bInWater = Water.depthAt(P, Terrain) > 0.05f;
+		Extra.DistanceM = noctis::distance(Sound.position, Listener);
+		// Same decomposition as noctis::AcousticRecorder: what the full model adds beyond spreading and f0 absorption.
+		const bool bLoud = Sound.kind == noctis::SoundKind::Vocalization || Sound.kind == noctis::SoundKind::Thunder;
+		if (Extra.DistanceM <= (bLoud ? 6000.0f : 400.0f))
+		{
+			const float D = FMath::Max(1.0f, Extra.DistanceM);
+			Extra.ReceivedLevelDb = noctis::SoundField::receivedLevelDb(Sound, Listener, Env);
+			const float SpreadingAndF0 = Sound.levelDb - 20.0f * FMath::LogX(10.0f, D) -
+										 noctis::SoundField::absorptionDbPerM(Sound.f0Hz * Sound.pitchShift, Env.temperatureC, Env.humidity) * D;
+			Extra.ExtraGainDb = Extra.ReceivedLevelDb - SpreadingAndF0;
+		}
 	}
 
 	const noctis::ResearchSystem& Research = Sim.research();
@@ -275,6 +289,10 @@ void FNoctisSimulationRunner::BuildFrameExtras(FNoctisFrameOutput& Out, const FN
 	Out.ClockText = NoctisUnreal::ToFString(Sim.clock().formatted());
 	Out.Tick = Sim.tick();
 	Out.AliveCount = static_cast<int32>(Sim.creatures().aliveCount());
+	Out.ValleyFloorZ = Sim.context().valleyFloorZ;
+	const bool bNight = Out.Snapshot.sky.sunElevationDeg < -6.0f;
+	Out.InsectChorus = Sim.ecology().insectChorus(bNight);
+	Out.BirdActivity = Sim.ecology().birdActivity(Out.Snapshot.sky.sunElevationDeg);
 }
 
 void FNoctisSimulationRunner::BuildAuxData(FNoctisAuxData& Aux, const noctis::Vec2& Focus) const

@@ -127,6 +127,7 @@
 //   topRough        -0.08    uTopRough: roughness change on polished scale tops
 //   fadeRough       0.12     uFadeRough: roughness added where detail is faded (keeps the normal variance)
 //   specular        0.65     uSpecular: direct-light specular multiplier (dry skin)
+//   specF90         0.55     uSpecF90: Fresnel reflectance at grazing angles (1 = glassy rim; dry, dusty skin < 1)
 //   scatterColor    [1.0, 0.7, 0.55]  uScatterColor: per-channel wrap (red scatters furthest)
 //   sss             0.22     uSSS: subsurface strength (wrap amount)
 //   sssNormalBlur   0.45     uSSSNormalBlur: how much the red channel uses the un-bumped normal
@@ -149,18 +150,20 @@
 
 export const SKIN_REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 'thigh', 'shin', 'foot', 'arm'];
 
-// Region defaults. Sizes are octaves of the 1.8 cm body scale: face/lips and the small forelimb
-// get half-size scales, as in extant archosaurs where facial and manual scales are finer. Feature
-// densities: highest on the face (art direction from extant archosaurs, uncertain), none on the belly.
+// Region defaults. Sizes relative to the 1.8 cm body scale: the face and jaw get finer scales
+// (between the half and the full octave, so patches of both sizes mix) and the small forelimb
+// half-size scales, as in extant archosaurs where facial and manual scales are finer (sizes are a
+// legibility choice, see the science note). Feature densities: highest on the face (art direction
+// from extant archosaurs, uncertain; the brow / cheek clusters come from the hotspots), none on the belly.
 export const DEFAULT_REGION_PARAMS = {
-  head:  { size: 0.009, feature: 0.55, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: 0.0, folds: [0, 0, 0] },
-  jaw:   { size: 0.009, feature: 0.35, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.03, folds: [0, 0, 0] },
+  head:  { size: 0.013, feature: 0.3, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: -0.04, folds: [0, 0, 0] },
+  jaw:   { size: 0.012, feature: 0.2, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.05, folds: [0, 0, 0] },
   neck:  { size: 0.018, feature: 0.20, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0, 1] },
   torso: { size: 0.018, feature: 0.12, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0.7, 0, 0] },
   belly: { size: 0.018, feature: 0.00, scute: 0, bump: 0.8, tint: [1.04, 1.03, 1.01], rough: 0.03, folds: [0.8, 0, 0] },
   tail:  { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [0.98, 0.98, 0.98], rough: 0.02, folds: [1, 0, 0] },
-  thigh: { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [0.98, 0.97, 0.96], rough: 0.0, folds: [0, 1, 0] },
-  shin:  { size: 0.018, feature: 0.08, scute: 0, bump: 1.0, tint: [0.86, 0.85, 0.85], rough: 0.04, folds: [0, 1, 0] },
+  thigh: { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [0.98, 0.97, 0.96], rough: 0.0, folds: [0, 0.35, 0] },
+  shin:  { size: 0.018, feature: 0.08, scute: 0, bump: 1.0, tint: [0.86, 0.85, 0.85], rough: 0.04, folds: [0, 0.6, 0] },
   foot:  { size: 0.018, feature: 0.00, scute: 1, bump: 1.15, tint: [0.64, 0.64, 0.66], rough: 0.08, folds: [0, 0, 0] },
   arm:   { size: 0.009, feature: 0.05, scute: 0, bump: 1.0, tint: [0.97, 0.96, 0.95], rough: 0.0, folds: [0, 1, 0] },
 };
@@ -176,9 +179,10 @@ const DEFAULTS = {
   dorsalColor: '#322e2b', ventralColor: '#9c907d', lateralTint: [1.06, 1.0, 0.94], counterShade: [-0.7, 0.45], mottle: 0.32, mottleScale: 1.6,
   scaleTint: 0.08, topLight: 0.07, crackDark: 0.22, cavityDark: 0.35, cavityAO: 0.7,
   roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
-  scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.65, sssNormalBlur: 0.45, translucency: 0.0,
+  scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.65, specF90: 0.55, sssNormalBlur: 0.45, translucency: 0.0,
   dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, detailFull: 8.0, worldScale: 1.0,
   eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.8,
+  lipRow: 0.03, lipShrink: 0.8, lipRows: 3, lipLength: 1.05, lipHeight: 0.12,
 };
 
 const MAX_HOTSPOTS = 6;
@@ -196,6 +200,10 @@ attribute float aOcclusion;  // optional: 0..1 occlusion by other body parts
 attribute vec4 aSkinA;   // smoothed region params (see bakeSkinRegions)
 attribute vec4 aSkinB;
 attribute vec4 aSkinC;
+#endif
+#ifdef SKIN_LIP
+attribute vec2 aLip;     // (along-lip arc length from the snout tip, signed distance to the lip line), m
+varying vec2 vLip;
 #endif
 uniform vec4 uRegionParams[ 10 ];
 uniform vec4 uRegionTint[ 10 ];
@@ -222,6 +230,9 @@ const VERT_MAIN = /* glsl */`
 {
 	vRestPos = position;
 	vRestNormal = normal;
+#ifdef SKIN_LIP
+	vLip = aLip;
+#endif
 #ifdef SKIN_BAKED_REGIONS
 	vec4 rp = aSkinA;
 	vSkinB = aSkinB;
@@ -254,6 +265,11 @@ varying vec4 vSkinB;
 varying vec4 vSkinFold;
 varying float vSkinCavity;
 varying vec3 vSkinFeat;
+#ifdef SKIN_LIP
+varying vec2 vLip;
+#endif
+uniform vec4 uLip;
+uniform float uLipHeight;
 
 uniform float uSeed, uBaseScale, uSizeNoise, uJitter, uSizeVar, uMortar, uDomeRadius, uScaleHeight, uSoftness, uBumpStrength;
 uniform float uFeatureScale, uFeatureHeight, uRosette, uFeatureTint;
@@ -268,7 +284,7 @@ uniform vec2 uCounterShade;
 uniform float uMottle, uMottleScale, uScaleTint, uTopLight, uCrackDark, uCavityDark, uCavityAO;
 uniform float uRoughness, uRoughVar, uCrackRough, uTopRough, uFadeRough;
 uniform vec3 uScatterColor;
-uniform float uSSS, uSSSNormalBlur, uTranslucency, uSpecular;
+uniform float uSSS, uSSSNormalBlur, uTranslucency, uSpecular, uSpecF90;
 uniform vec3 uDustColor;
 uniform float uDust, uDustHeight, uDetailFade, uDetailFull, uWorldScale;
 uniform vec3 uEyeColor, uClawColor;
@@ -280,6 +296,7 @@ float skAO;
 float skSkinW;      // 1 on skin, 0 on eyes / claws (no scattering there)
 float skDebugVis;   // detail visibility, for the debug view
 vec3 skDebugFeat;   // crack, feature-scale mask, nearest feature site (debug view 7)
+vec3 skDebugLip;    // lip coordinates: fract(s / 5 cm), |d| / 10 cm, lip-row weight (debug view 8)
 
 // Hash without sine (D. Hoskins): stable in fp32 for the cell indices we use (|i| < 10^4).
 vec3 skHash33( vec3 p ) {
@@ -557,6 +574,68 @@ float skVisible( float size, float pix ) {
 	return smoothstep( uDetailFade, uDetailFull, size / max( pix, 1e-6 ) );
 }
 
+// Labial scales: rows of enlarged, rounded-rectangular scales running parallel to the closed mouth
+// line on the upper and lower lips, the largest at the lip margin and shrinking row by row until
+// they merge into the pebbles. Lipped extant reptiles (e.g. varanid lizards) carry such rows; with
+// lips covering the teeth (Cullen et al. 2023, inferred for Tyrannosaurus) they are a plausible
+// art-direction inference, not preserved tyrannosaur skin.
+//   sd = (s: arc length along the lip from the snout tip, d: signed distance to the lip line, + upper
+//   lip), metres; gS / gD = their rest-space surface gradients. Row k is uLip.x * uLip.y^k high.
+//   Outputs: wl = weight of the lip layer (0 outside the band), relief gradient g, crack, top, rnd, vis.
+void skLipRows( vec2 sd, vec3 gS, vec3 gD, float pix, out float wl, out vec3 g, out float crack, out float top, out float rnd, out float vis ) {
+	float L = uLip.x, q = uLip.y;
+	float ad = abs( sd.y );
+	float sideK = sd.y < 0.0 ? 17.0 : 0.0;                    // upper / lower lip: different rows
+	vec3 gA = sd.y < 0.0 ? - gD : gD;                          // gradient of |d|
+	float W = L * ( 1.0 - pow( q, uLip.z ) ) / ( 1.0 - q );      // width of the whole band
+	float a = max( 1.0 - ad * ( 1.0 - q ) / L, 0.02 );
+	float kap = log( a ) / log( q );                           // continuous row coordinate
+	float dkap = ( 1.0 - q ) / ( L * a * abs( log( q ) ) );    // d kap / d|d|
+	float row = floor( kap );
+	float rowH = L * pow( q, row );
+	wl = ( 1.0 - smoothstep( W - 0.5 * rowH, W, ad ) ) * ( 1.0 - smoothstep( uLip.w - 0.12, uLip.w, abs( sd.x ) ) );
+	vis = skVisible( rowH, pix );
+	g = vec3( 0.0 ); crack = 0.0; top = 0.0; rnd = 0.5;
+	if ( wl <= 0.0 ) return;
+	vec3 hr = skHash33( vec3( row, sideK, uSeed + 41.7 ) );
+	float cl = rowH * ( 1.0 + 0.3 * hr.x );                    // scale length along the lip
+	float sg = sd.x / cl + hr.y;                               // staggered from row to row
+	// jittered cut points along the row: scales of unequal length
+	float it = floor( sg );
+	float j = 0.3;
+	float cA = it + j * ( skHash13( vec3( it, row + sideK, uSeed + 5.9 ) ) - 0.5 );
+	float cB = it + 1.0 + j * ( skHash13( vec3( it + 1.0, row + sideK, uSeed + 5.9 ) ) - 0.5 );
+	float ci = it;
+	if ( sg < cA ) { ci = it - 1.0; cB = cA; cA = it - 1.0 + j * ( skHash13( vec3( it - 1.0, row + sideK, uSeed + 5.9 ) ) - 0.5 ); }
+	else if ( sg >= cB ) { ci = it + 1.0; cA = cB; cB = it + 2.0 + j * ( skHash13( vec3( it + 2.0, row + sideK, uSeed + 5.9 ) ) - 0.5 ); }
+	vec3 hc = skHash33( vec3( ci, row + sideK, uSeed + 3.3 ) );
+	// metric distances to the four edges and their gradients; soft-min rounds the corners
+	float fr = kap - row;
+	float e0 = fr * rowH, e1 = ( 1.0 - fr ) * rowH;
+	float e2 = ( sg - cA ) * cl, e3 = ( cB - sg ) * cl;
+	vec3 g01 = rowH * dkap * gA;
+	float sz = min( rowH, cl );
+	float k = 0.2 * sz, ik = 1.0 / k;                          // generous corner rounding: beads, not bricks
+	float w0 = exp( - e0 * ik ), w1 = exp( - e1 * ik ), w2 = exp( - e2 * ik ), w3 = exp( - e3 * ik );
+	float ws = w0 + w1 + w2 + w3;
+	float e = - k * log( ws );
+	vec3 eg = ( ( w0 - w1 ) * g01 + ( w2 - w3 ) * gS ) / ws;
+	float mort = uMortar * sz * 1.3;
+	float dome = 0.5 * sz;                                     // domed right to the centre
+	float x = clamp( ( e - mort ) / dome, 0.0, 1.0 );
+	float prof = 1.0 - ( 1.0 - x ) * ( 1.0 - x );
+	float dprof = ( e > mort && x < 1.0 ) ? 2.0 * ( 1.0 - x ) / dome : 0.0;
+	float amp = uLipHeight * rowH * ( 0.75 + 0.5 * hc.x );
+	g = amp * dprof * eg;
+	g += ( hc - 0.5 ) * 0.3 * uLipHeight * prof;               // each scale a little tilted
+	vec4 nm = skNoised( vRestPos / ( 0.3 * rowH ) + hc * 11.0 ); // fine pitting of the crown
+	g += 0.05 * nm.yzw * prof;
+	crack = 1.0 - smoothstep( 0.0, mort * 1.8, e );
+	top = prof;
+	rnd = hc.z;
+}
+
+
 // Unnormalised Mikkelsen bump: dHdxy = screen derivatives of the height (same units as surf_pos).
 vec3 skPerturb( vec3 sigX, vec3 sigY, vec3 n, vec2 dHdxy, float faceDir ) {
 	vec3 R1 = cross( sigY, n );
@@ -574,6 +653,9 @@ vec3 skRestDx = dFdx( vRestPos );
 vec3 skRestDy = dFdy( vRestPos );
 vec3 skSigX = dFdx( - vViewPosition );
 vec3 skSigY = dFdy( - vViewPosition );
+#ifdef SKIN_LIP
+vec2 skLipDx = dFdx( vLip ), skLipDy = dFdy( vLip );   // outside any branch: derivatives need uniform flow
+#endif
 vec3 skGradDetail = vec3( 0.0 );
 vec3 skGradMacro = vec3( 0.0 );
 float skRoughness;
@@ -604,7 +686,7 @@ float skRoughness;
 	float foldCrease = 0.0;
 	if ( vSkinFold.w > 0.005 && dot( vSkinFold.xyz, vec3( 1.0 ) ) > 0.01 ) {
 		// low-frequency domain warp: folds curve instead of running straight (Jacobian ignored, small)
-		vec3 pw = p + uFoldWarp * vec3( n1.x, n2.x, 0.6 * n1.x - 0.8 * n2.x );
+		vec3 pw = p + uFoldWarp * vec3( n1.x, n3, 0.8 * n1.x - 0.6 * n3 );
 		for ( int i = 0; i < 3; i ++ ) {
 			float wi = vSkinFold[ i ];
 			if ( wi < 0.01 ) continue;
@@ -669,6 +751,32 @@ float skRoughness;
 		h += hd * wd; g += gd * wd;
 		feat = mix( feat, md, 1.0 - vis );
 	}
+
+#ifdef SKIN_LIP
+	// labial scale rows replace the pebbles along the lip line (see skLipRows)
+	if ( abs( vLip.y ) < uLip.x * 6.0 && uLipHeight > 0.0 ) {
+		// rest-space surface gradients of s and d from their screen derivatives: 2x2 solve in the
+		// basis of the rest-position derivatives
+		float a11 = dot( skRestDx, skRestDx ), a12 = dot( skRestDx, skRestDy ), a22 = dot( skRestDy, skRestDy );
+		float det = a11 * a22 - a12 * a12;
+		if ( det > 1e-28 ) {
+			vec2 cs = vec2( a22 * skLipDx.x - a12 * skLipDy.x, a11 * skLipDy.x - a12 * skLipDx.x ) / det;
+			vec2 cd = vec2( a22 * skLipDx.y - a12 * skLipDy.y, a11 * skLipDy.y - a12 * skLipDx.y ) / det;
+			vec3 gS = cs.x * skRestDx + cs.y * skRestDy;
+			vec3 gD = cd.x * skRestDx + cd.y * skRestDy;
+			float wl, cl, tl, rl, vl; vec3 gl;
+			skLipRows( vLip, gS, gD, pix, wl, gl, cl, tl, rl, vl );
+			skDebugLip = vec3( fract( vLip.x / 0.05 ), min( abs( vLip.y ) / 0.1, 1.0 ), wl );
+			if ( wl > 0.0 ) {
+				g = mix( g, gl * vl, wl );
+				crack = mix( crack, cl, wl ); top = mix( top, tl, wl );
+				rnd = mix( rnd, rl, step( 0.5, wl ) );
+				feat *= 1.0 - wl;
+				vis = mix( vis, vl, wl );
+			}
+		}
+	}
+#endif
 
 	// scutes on the front of the metatarsus / top of the toes. Rows narrow and stop where the foot
 	// region fades out (instead of cross-fading into a smudge); metatarsus and toe frames switch along
@@ -829,6 +937,8 @@ const FRAG_DEBUG = /* glsl */`
 		gl_FragColor = vec4( skDebugVis, 0.0, 0.0, 1.0 );
 	#elif SKIN_DEBUG == 7
 		gl_FragColor = vec4( skDebugFeat, 1.0 );
+	#elif SKIN_DEBUG == 8
+		gl_FragColor = vec4( skDebugLip, 1.0 );
 	#else
 		gl_FragColor = vec4( 0.5 + 0.5 * vSkinA.x, vSkinA.y, vSkinA.z, 1.0 );
 	#endif
@@ -905,9 +1015,10 @@ export function createSkinMaterial(THREE, opts = {}) {
     uCavityAO: { value: o.cavityAO }, uRoughness: { value: o.roughness }, uRoughVar: { value: o.roughVar },
     uCrackRough: { value: o.crackRough }, uTopRough: { value: o.topRough }, uFadeRough: { value: o.fadeRough },
     uScatterColor: { value: v3(THREE, o.scatterColor) }, uSSS: { value: o.sss }, uSSSNormalBlur: { value: o.sssNormalBlur },
-    uTranslucency: { value: o.translucency }, uSpecular: { value: o.specular },
+    uTranslucency: { value: o.translucency }, uSpecular: { value: o.specular }, uSpecF90: { value: o.specF90 },
     uDustColor: { value: col(o.dustColor) }, uDust: { value: o.dust }, uDustHeight: { value: o.dustHeight },
     uDetailFade: { value: o.detailFade }, uDetailFull: { value: o.detailFull }, uWorldScale: { value: o.worldScale },
+    uLip: { value: new THREE.Vector4(o.lipRow, o.lipShrink, o.lipRows, o.lipLength) }, uLipHeight: { value: o.lipHeight },
     uEyeColor: { value: col(o.eyeColor) }, uClawColor: { value: col(o.clawColor) }, uOcclusionAO: { value: o.occlusionAO }, uFoldAttr: { value: o.foldAttr },
   };
 
@@ -922,6 +1033,7 @@ export function createSkinMaterial(THREE, opts = {}) {
       .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = skRoughness;')
       .replace('#include <normal_fragment_maps>', FRAG_NORMAL)
       .replace('#include <lights_physical_pars_fragment>', FRAG_LIGHT)
+      .replace('#include <lights_physical_fragment>', '#include <lights_physical_fragment>\nmaterial.specularF90 = mix( material.specularF90, uSpecF90, skSkinW );')
       .replace('#include <aomap_fragment>', FRAG_AO)
       .replace('#include <dithering_fragment>', FRAG_DEBUG);
   };
@@ -995,7 +1107,7 @@ export function configureSkinForBones(material, bones, shapes = null) {
 // SKIN_BAKED_REGIONS define on the material: every mesh drawn with that material must then be
 // baked. Re-run it after editing material.userData.skinRegions. Vertices that share a position
 // (seams) are welded for the blur, so no crack opens along duplicated vertices.
-export function bakeSkinRegions(THREE, geometry, material, { radius = 0.08, iterations } = {}) {
+export function bakeSkinRegions(THREE, geometry, material, { radius = 0.08, iterations, lip = true, lipMaxDist = 0.14 } = {}) {
   const pos = geometry.attributes.position, n = pos.count;
   const reg = geometry.attributes.aRegion;
   const regions = material.userData.skinRegions, base = material.userData.skinUniforms.uBaseScale.value;
@@ -1066,7 +1178,108 @@ export function bakeSkinRegions(THREE, geometry, material, { radius = 0.08, iter
   geometry.setAttribute('aSkinA', new THREE.BufferAttribute(A, 4));
   geometry.setAttribute('aSkinB', new THREE.BufferAttribute(B, 4));
   geometry.setAttribute('aSkinC', new THREE.BufferAttribute(C, 4));
-  material.defines = { ...(material.defines || {}), SKIN_BAKED_REGIONS: '' };
+  const defines = { ...(material.defines || {}), SKIN_BAKED_REGIONS: '' };
+  // Lip coordinates for the labial scale rows (only where head and jaw regions meet).
+  const lipData = lip && reg ? lipCoordinates(pos, reg, canon, m, start, adj, lipMaxDist) : null;
+  if (lipData) {
+    const L = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) { L[i * 2] = lipData.s[canon[i]]; L[i * 2 + 1] = lipData.d[canon[i]]; }
+    geometry.setAttribute('aLip', new THREE.BufferAttribute(L, 2));
+    defines.SKIN_LIP = '';
+  } else delete defines.SKIN_LIP;
+  material.defines = defines;
   material.needsUpdate = true;
   return geometry;
+}
+
+// Lip coordinates on a welded mesh graph (canonical vertices, CSR adjacency):
+//  d = signed geodesic distance to the head / jaw region border, i.e. the closed mouth line
+//      (+ on the upper head, - on the jaw), clamped to +-maxDist;
+//  s = arc length along that border from its most anterior point (the snout tip), signed by the
+//      side (+z right, -z left), carried from the nearest border vertex.
+// Dijkstra over mesh edges (graph distances overestimate true geodesics by a few %, fine here).
+// Returns null when the mesh has no head / jaw border.
+function lipCoordinates(pos, reg, canon, m, start, adj, maxDist) {
+  const HEAD = SKIN_REGIONS.indexOf('head'), JAW = SKIN_REGIONS.indexOf('jaw');
+  const n = pos.count;
+  const P = new Float32Array(m * 3), R = new Int8Array(m).fill(-1);
+  for (let i = 0; i < n; i++) {
+    const c = canon[i];
+    if (R[c] >= 0) continue;
+    P[c * 3] = pos.getX(i); P[c * 3 + 1] = pos.getY(i); P[c * 3 + 2] = pos.getZ(i);
+    R[c] = Math.round(reg.getX(i));
+  }
+  const dist = (a, b) => Math.hypot(P[a * 3] - P[b * 3], P[a * 3 + 1] - P[b * 3 + 1], P[a * 3 + 2] - P[b * 3 + 2]);
+  // border vertices: head next to jaw or jaw next to head; start value = half the shortest edge
+  // to the other side, so the signed distance crosses zero mid-edge
+  const d0 = new Float32Array(m).fill(Infinity);
+  const border = [];
+  for (let v = 0; v < m; v++) {
+    if (R[v] !== HEAD && R[v] !== JAW) continue;
+    const other = R[v] === HEAD ? JAW : HEAD;
+    for (let e = start[v]; e < start[v + 1]; e++) {
+      const u = adj[e];
+      if (R[u] === other) d0[v] = Math.min(d0[v], 0.5 * dist(u, v));
+    }
+    if (d0[v] < Infinity) border.push(v);
+  }
+  if (border.length < 8) return null;
+  // arc length along the border band from its most anterior vertex
+  let tip = border[0];
+  for (const v of border) if (P[v * 3] > P[tip * 3]) tip = v;
+  const isBorder = new Uint8Array(m);
+  for (const v of border) isBorder[v] = 1;
+  const arc = dijkstra(m, start, adj, dist, [[tip, 0]], Infinity, isBorder);
+  // geodesic distance from the border, carrying the source's arc length
+  const srcArc = new Float32Array(m);
+  const seeds = border.map((v) => { srcArc[v] = arc.d[v] < Infinity ? Math.sign(P[v * 3 + 2] || 1) * arc.d[v] : 1e3; return [v, d0[v]]; });
+  const geo = dijkstra(m, start, adj, dist, seeds, maxDist, null, srcArc);
+  const s = new Float32Array(m), d = new Float32Array(m);
+  for (let v = 0; v < m; v++) {
+    const sign = R[v] === JAW ? -1 : 1;
+    if (geo.d[v] <= maxDist) { d[v] = sign * geo.d[v]; s[v] = geo.carry[v]; } else { d[v] = sign * maxDist; s[v] = 1e3; }
+  }
+  return { s, d };
+}
+
+// Multi-source Dijkstra on a CSR graph (binary heap, lazy deletion). seeds: [[vertex, startDist]];
+// stops at maxDist; `allowed` (optional) restricts the vertices; `carry` (optional) is propagated
+// from the seed that reaches each vertex first.
+function dijkstra(m, start, adj, dist, seeds, maxDist, allowed = null, carry = null) {
+  const D = new Float64Array(m).fill(Infinity);   // float64: the heap keys must compare exactly
+  const C = carry ? Float32Array.from(carry) : null;
+  const hv = [], hd = [];
+  const push = (v, dv) => {
+    let i = hv.length; hv.push(v); hd.push(dv);
+    while (i > 0) { const p = (i - 1) >> 1; if (hd[p] <= dv) break; hv[i] = hv[p]; hd[i] = hd[p]; i = p; }
+    hv[i] = v; hd[i] = dv;
+  };
+  const pop = () => {
+    const v = hv[0], last = hv.length - 1, lv = hv[last], ld = hd[last];
+    hv.pop(); hd.pop();
+    if (last > 0) {
+      let i = 0;
+      for (;;) {
+        let c = 2 * i + 1;
+        if (c >= last) break;
+        if (c + 1 < last && hd[c + 1] < hd[c]) c++;
+        if (hd[c] >= ld) break;
+        hv[i] = hv[c]; hd[i] = hd[c]; i = c;
+      }
+      hv[i] = lv; hd[i] = ld;
+    }
+    return v;
+  };
+  for (const [v, dv] of seeds) if (dv < D[v]) { D[v] = dv; push(v, dv); }
+  while (hv.length) {
+    const dv = hd[0], v = pop();
+    if (dv > D[v]) continue;
+    for (let e = start[v]; e < start[v + 1]; e++) {
+      const u = adj[e];
+      if (allowed && !allowed[u]) continue;
+      const du = dv + dist(u, v);
+      if (du < D[u] && du <= maxDist) { D[u] = du; if (C) C[u] = C[v]; push(u, du); }
+    }
+  }
+  return { d: D, carry: C };
 }

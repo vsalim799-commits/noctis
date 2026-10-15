@@ -57,6 +57,9 @@ private:
 	void OnVisualDataLoaded();
 	void OnVisualAssetsLoaded();
 	void OnFramePublished(const FNoctisFrameOutput& Front);
+	void MapVisualsToSpecies();
+
+	UFUNCTION()
 	void OnSimulationReady();
 	FVector GetViewLocation() const;
 	ANoctisCreatureActor* Acquire(int32 SpeciesIndex);
@@ -84,10 +87,12 @@ private:
 	TMap<uint32, int32> PreviousIndexById;
 	uint64 PreviousIndexSequence = 0;
 
+	TArray<FPrimaryAssetId> VisualAssetIds;
 	TSharedPtr<FStreamableHandle> VisualDataHandle;
 	TSharedPtr<FStreamableHandle> VisualAssetsHandle;
 	FDelegateHandle FramePublishedHandle;
 	bool bVisualsLoaded = false;
+	bool bVisualDataProcessed = false;
+	bool bVisualsMapped = false;
 	float ImpostorTimer = 0.0f;
-	uint64 LastSeenSequence = 0;
 };

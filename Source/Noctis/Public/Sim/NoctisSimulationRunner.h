@@ -68,6 +68,12 @@ struct FNoctisSoundExtra
 {
 	uint8 Substrate = 0;
 	bool bInWater = false;
+	/** Propagation to the researcher's ears, computed with the core's model (spreading, ISO 9613 absorption,
+	 *  foliage, wind gradient, terrain barrier). ReceivedLevelDb <= -100 means "not evaluated / inaudible". */
+	float DistanceM = 0.0f;
+	float ReceivedLevelDb = -100.0f;
+	/** Gain to pass to noctis::SignalSynth::render on top of spreading and per-harmonic absorption. */
+	float ExtraGainDb = 0.0f;
 };
 
 /** Terramechanics feedback for one wheel (Bekker sinkage, rolling resistance, traction). */
@@ -142,6 +148,11 @@ struct FNoctisFrameOutput
 	double JobMilliseconds = 0.0;
 	int32 AliveCount = 0;
 	float TimeScale = 1.0f;
+	/** Valley-floor reference height (m, 10th percentile of terrain): base of the cold-air fog layer. */
+	float ValleyFloorZ = 0.0f;
+	/** Environment soundscape intensities 0..1 from the population layer (insects, birds). */
+	float InsectChorus = 0.0f;
+	float BirdActivity = 0.0f;
 };
 
 class NOCTIS_API FNoctisSimulationRunner

@@ -44,7 +44,9 @@ function compileLoft(s) {
     // Fritsch-Carlson monotone tangents.
     const d = [], t = new Array(m).fill(0);
     for (let k = 0; k + 1 < m; k++) d[k] = (y[k + 1] - y[k]) / (xs[k + 1] - xs[k]);
-    t[0] = d[0]; t[m - 1] = d[m - 2];
+    // Zero slope at both ends: the ellipsoidal caps have zero slope where they start, so this
+    // keeps the surface normal continuous across the loft/cap junction (no visible crease).
+    t[0] = 0; t[m - 1] = 0;
     for (let k = 1; k + 1 < m; k++) t[k] = d[k - 1] * d[k] <= 0 ? 0 : (d[k - 1] + d[k]) / 2;
     for (let k = 0; k + 1 < m; k++) {
       if (d[k] === 0) { t[k] = 0; t[k + 1] = 0; continue; }
@@ -59,55 +61,63 @@ function compileLoft(s) {
     };
   });
   const x0 = xs[0], x1 = xs[m - 1], nT = Math.max(2, Math.ceil((x1 - x0) / LOFT_STEP) + 1);
-  const tab = new Float64Array(nT * 5);
+  // Table rows: 5 values then their x derivatives (central differences of the splines).
+  const tab = new Float64Array(nT * 10), e = 1e-4;
   for (let k = 0; k < nT; k++) {
     const x = Math.min(x1, x0 + k * LOFT_STEP);
-    for (let j = 0; j < 5; j++) tab[k * 5 + j] = spl[j](x);
+    for (let j = 0; j < 5; j++) {
+      tab[k * 10 + j] = spl[j](x);
+      tab[k * 10 + 5 + j] = (spl[j](Math.min(x1, x + e)) - spl[j](Math.max(x0, x - e))) / (Math.min(x1, x + e) - Math.max(x0, x - e));
+    }
   }
   const col = (j) => Array.from({ length: m }, (_, k) => st[k][LOFT_KEYS[j]]);
   return {
-    x0, x1, nT, tab, inv: 1 / LOFT_STEP, capF: s.capFront ?? 0.1, capB: s.capBack ?? 0.1, sec: new Float64Array(5),
+    x0, x1, nT, tab, inv: 1 / LOFT_STEP, capF: s.capFront ?? 0.1, capB: s.capBack ?? 0.1, sec: new Float64Array(10),
     minBot: Math.min(...col(1)), maxTop: Math.max(...col(0)), maxW: Math.max(...col(2)),
   };
 }
-// Station values at local x (clamped at the ends) into L.sec = [top, bot, w, c, n].
+// Station values at local x (clamped at the ends) into L.sec = [top, bot, w, c, n, d/dx of each].
 function loftSection(L, x) {
   const out = L.sec, T = L.tab;
   let f = (x - L.x0) * L.inv;
   if (f <= 0) f = 0; else if (f >= L.nT - 1) f = L.nT - 1.000001;
-  const k = f | 0, t = f - k, a = k * 5, b = a + 5;
-  out[0] = T[a] + (T[b] - T[a]) * t; out[1] = T[a + 1] + (T[b + 1] - T[a + 1]) * t;
-  out[2] = T[a + 2] + (T[b + 2] - T[a + 2]) * t; out[3] = T[a + 3] + (T[b + 3] - T[a + 3]) * t;
-  out[4] = T[a + 4] + (T[b + 4] - T[a + 4]) * t;
+  const k = f | 0, t = f - k, a = k * 10, b = a + 10;
+  for (let j = 0; j < 10; j++) out[j] = T[a + j] + (T[b + j] - T[a + j]) * t;
   return out;
 }
-// Normalised outline "radius" F of the section at (y, z) (F = 1 on the outline) and its gradient
-// in the section plane, written into g[0] (d/dy), g[1] (d/dz). Squareness blends the 2-norm and
-// the 4-norm of the scaled coordinates (both convex, so the blend is too) - no pow() needed.
+// Normalised outline "radius" F of the section at (y, z) (F = 1 on the outline) and its gradient,
+// written into g[0] (d/dy), g[1] (d/dz), g[2] (d/dx through the station values). Squareness blends
+// the 2-norm and the 4-norm of the scaled coordinates (both convex, so the blend is too): no pow().
 function loftSectionF(sec, y, z, g) {
   const top = sec[0], bot = sec[1], w = sec[2] > 1e-4 ? sec[2] : 1e-4, c = sec[3];
   const up = y >= c;
   let ry = up ? top - c : c - bot;
   if (ry < 1e-4) ry = 1e-4;
+  const dry = up ? sec[5] - sec[8] : sec[8] - sec[6];         // d(ry)/dx
   const qy = (y - c) / ry, qz = z / w;
+  const dqy = (-sec[8] - qy * dry) / ry, dqz = -qz * sec[7] / w; // d(qy)/dx, d(qz)/dx
   const y2 = qy * qy, z2 = qz * qz;
   const F2 = Math.sqrt(y2 + z2);
-  if (F2 < 1e-9) { g[0] = 0; g[1] = 0; return 0; }
+  if (F2 < 1e-9) { g[0] = 0; g[1] = 0; g[2] = 0; return 0; }
   const a = (sec[4] - 2) * 0.5;
   let F = F2, dy = qy / F2, dz = qz / F2;
   if (a > 0) {
     const F4 = Math.sqrt(Math.sqrt(y2 * y2 + z2 * z2)), i3 = 1 / (F4 * F4 * F4);
+    const ey = y2 * qy * i3, ez = z2 * qz * i3;
     F += a * (F4 - F2);
-    dy += a * (y2 * qy * i3 - dy);
-    dz += a * (z2 * qz * i3 - dz);
+    g[2] = (dy + a * (ey - dy)) * dqy + (dz + a * (ez - dz)) * dqz + 0.5 * sec[9] * (F4 - F2);
+    dy += a * (ey - dy);
+    dz += a * (ez - dz);
+  } else {
+    g[2] = dy * dqy + dz * dqz;
   }
   g[0] = dy / ry; g[1] = dz / w;
   return F;
 }
-const loftG = new Float64Array(2);
-// First-order distance (F - 1) / |grad F| in local coordinates. Inside the station range the x
-// derivative comes from a central difference (sloping outlines would otherwise overestimate the
-// distance); beyond the ends F is combined with the cap coordinate into an ellipsoidal cap.
+const loftG = new Float64Array(3);
+// First-order distance (F - 1) / |grad F| in local coordinates; the x derivative follows the
+// station values (sloping outlines would otherwise overestimate the distance). Beyond the ends F is
+// combined with the cap coordinate into an ellipsoidal cap (the end slopes are zero, see above).
 function loftDist(L, x, y, z) {
   const x0 = L.x0, x1 = L.x1;
   if (x < x0 || x > x1) {
@@ -119,12 +129,7 @@ function loftDist(L, x, y, z) {
     return (F - 1) / Math.max(Math.sqrt(gx * gx + gy * gy + gz * gz), 1e-6);
   }
   const F = loftSectionF(loftSection(L, x), y, z, loftG);
-  const gy = loftG[0], gz = loftG[1];
-  const e = 0.01;
-  const Fp = loftSectionF(loftSection(L, x + e), y, z, loftG);
-  const Fm = loftSectionF(loftSection(L, x - e), y, z, loftG);
-  const gx = (Fp - Fm) / (2 * e);
-  const gl = Math.sqrt(gx * gx + gy * gy + gz * gz);
+  const gl = Math.sqrt(loftG[0] * loftG[0] + loftG[1] * loftG[1] + loftG[2] * loftG[2]);
   if (gl < 1e-6) return -0.01;
   return (F - 1) / gl;
 }
@@ -606,10 +611,11 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   const volume = inside * h * h * h;
 
   // ---- surface nets: main grid + finer detail zones ---------------------------------------------
-  // Detail zones (opts.zones, else shapes.zones): boxes { min, max, scale } meshed on their own grid
-  // with voxel * scale. The main mesh keeps its triangles up to `band` inside a zone and is tucked
-  // a few mm under the zone mesh there (both lie on the same exact iso-surface), so the overlap
-  // hides the change of resolution without stitching.
+  // Detail zones (opts.zones, else shapes.zones): boxes { min, max, scale, band } meshed on their
+  // own grid with voxel * scale. Zones may nest (an eye zone inside the head zone): every mesh keeps
+  // its triangles up to `band` inside a finer zone and is tucked a few mm under the finer mesh there
+  // (both lie on the same exact iso-surface), so the overlap hides the change of resolution without
+  // stitching.
   const zones = (opts.zones ?? shapes.zones ?? []).map((z) => ({
     min: z.min, max: z.max, h: voxel * (z.scale ?? 0.5), band: z.band ?? 3 * voxel,
   }));
@@ -625,16 +631,15 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     const g = sampleGrid(S, zlo, zhi, Z.h, false);
     parts.push({ ...surfaceNets(g.field, g.nx, g.ny, g.nz, g.ox, g.oy, g.oz, Z.h), h: Z.h, zone: zi });
   }
-  // Keep a main-mesh triangle unless it lies entirely deeper than `band` inside a zone; keep a zone
-  // triangle if it touches its zone. Then compact each part to the vertices still referenced.
+  // Keep a triangle unless it lies entirely deeper than `band` inside a finer zone; a zone triangle
+  // must also touch its own zone. Then compact each part to the vertices still referenced.
   const pos = [], index = [], vertH = [], vertZone = [];
   for (const part of parts) {
+    const finer = zones.map((Z, zi) => zi).filter((zi) => zones[zi].h < part.h - 1e-9);
     const P0 = part.pos, I0 = part.index, keepTri = (t) => {
       const v = [I0[t], I0[t + 1], I0[t + 2]];
-      if (part.zone < 0) {
-        return v.some((q) => zones.every((Z, zi) => depthIn(zi, P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]) < Z.band));
-      }
-      return v.some((q) => depthIn(part.zone, P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]) > 0);
+      if (!v.some((q) => finer.every((zi) => depthIn(zi, P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]) < zones[zi].band))) return false;
+      return part.zone < 0 || v.some((q) => depthIn(part.zone, P0[q * 3], P0[q * 3 + 1], P0[q * 3 + 2]) > 0);
     };
     const remap = new Int32Array(P0.length / 3).fill(-1);
     for (let t = 0; t < I0.length; t += 3) {
@@ -724,21 +729,25 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
       const d = sdf(fine, x + nx_ * hh, y + ny_ * hh, z + nz_ * hh) / gn;
       cs += Math.max(0, hh - d) / hh; ws += 1;
     }
-    let ob = 0, wb = 0, wt = 1;
+    let ob = 0, wb = 0, wt = 1, gScale = 0;
     for (const hh of bigH) {
       const qx = x + nx_ * hh, qy = y + ny_ * hh, qz = z + nz_ * hh;
       let d = sdf(wide, qx, qy, qz);
       if (d < hh) {
         // Smooth unions and the ellipsoid bound under-estimate distance away from the surface,
-        // which would read as occlusion everywhere: rescale by the local gradient length.
-        let gx = 0, gy = 0, gz = 0;
-        const e = 0.03;
-        for (let t = 0; t < 12; t += 3) {
-          const f = sdf(wide, qx + tet[t] * e, qy + tet[t + 1] * e, qz + tet[t + 2] * e);
-          gx += tet[t] * f; gy += tet[t + 1] * f; gz += tet[t + 2] * f;
+        // which would read as occlusion everywhere: rescale by the local gradient length
+        // (measured once per vertex, at the first probe that needs it).
+        if (gScale === 0) {
+          let gx = 0, gy = 0, gz = 0;
+          const e = 0.03;
+          for (let t = 0; t < 12; t += 3) {
+            const f = sdf(wide, qx + tet[t] * e, qy + tet[t + 1] * e, qz + tet[t + 2] * e);
+            gx += tet[t] * f; gy += tet[t + 1] * f; gz += tet[t + 2] * f;
+          }
+          const gl = Math.sqrt(gx * gx + gy * gy + gz * gz) / (4 * e);
+          gScale = gl > 0.2 ? Math.min(gl, 1) : 1;
         }
-        const gl = Math.sqrt(gx * gx + gy * gy + gz * gz) / (4 * e);
-        if (gl > 0.2) d /= Math.min(gl, 1);
+        d /= gScale;
       }
       ob += wt * Math.max(0, hh - d) / hh; wb += wt; wt *= 0.75;
     }
@@ -850,11 +859,13 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   lap('skin');
 
   // ---- tuck the main mesh under the detail zones ------------------------------------------------
-  // Ramp from 0 at a zone's face (where the zone mesh ends) to ZONE_TUCK at `band` inside it.
+  // Ramp from 0 at a finer zone's face (where its mesh ends) to ZONE_TUCK at `band` inside it.
   for (let vi = 0; vi < nV; vi++) {
-    if (owner[vi] >= 0 || vertZone[vi] >= 0) continue;
+    if (owner[vi] >= 0) continue;
     let t = 0;
-    for (let zi = 0; zi < zones.length; zi++) t = Math.max(t, depthIn(zi, P[vi * 3], P[vi * 3 + 1], P[vi * 3 + 2]) / zones[zi].band);
+    for (let zi = 0; zi < zones.length; zi++) {
+      if (zones[zi].h < vertH[vi] - 1e-9) t = Math.max(t, depthIn(zi, P[vi * 3], P[vi * 3 + 1], P[vi * 3 + 2]) / zones[zi].band);
+    }
     if (t <= 0) continue;
     const d = ZONE_TUCK * Math.min(1, t);
     for (let r = 0; r < 3; r++) P[vi * 3 + r] -= d * N[vi * 3 + r];

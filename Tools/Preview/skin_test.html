@@ -170,6 +170,8 @@ fillAttributes(headGeo, (p, n) => {
   return { region: p.y < mouthY(p.x) ? R.jaw : R.head, cavity: Math.max(0.8 * lip, 0.7 * eye), fold: 0.6 * gauss(p.x + 0.55, 0.12) * (p.y < 0 ? 1 : 0) };
 });
 const headMat = createSkinMaterial(THREE, { ...matOpts, dust: 0, hotspots: [[0.12, 0.27, 0.27, 0.16], [0.12, 0.27, -0.27, 0.16], [0.6, 0.18, 0.0, 0.14]] });
+// baking also derives the lip coordinates (labial scale rows) from the head / jaw border
+if (P.get('bake') !== '0') bakeSkinRegions(THREE, headGeo, headMat, { radius: 0.03 });
 const head = new THREE.Mesh(headGeo, headMat);
 head.position.copy(headC);
 head.castShadow = head.receiveShadow = true;

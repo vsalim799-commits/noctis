@@ -11,31 +11,34 @@ from PIL import Image, ImageDraw
 from .sdf import field_at
 
 
+@njit(cache=True, fastmath=True)
+def _trace_one(ox, oy, oz, dx, dy, dz, maxt, kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems):
+    t = 0.0
+    for it in range(400):
+        d = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, ox + dx * t, oy + dy * t, oz + dz * t)
+        if d < 4e-4:
+            return t
+        t += max(d * 0.8, 2e-4)
+        if t > maxt:
+            return -1.0
+    return -1.0
+
+
 @njit(parallel=True, cache=True, fastmath=True)
 def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems):
     n = ro.shape[0]
     for j in prange(n):
-        t = 0.0
-        hit = False
-        for it in range(400):
-            x = ro[j, 0] + rd[j, 0] * t
-            y = ro[j, 1] + rd[j, 1] * t
-            z = ro[j, 2] + rd[j, 2] * t
-            d = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z)
-            if d < 4e-4:
-                hit = True
-                break
-            t += max(d * 0.8, 2e-4)
-            if t > maxt:
-                break
-        if not hit:
-            out_depth[j] = -1.0
-            continue
+        t = _trace_one(ro[j, 0], ro[j, 1], ro[j, 2], rd[j, 0], rd[j, 1], rd[j, 2], maxt, kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems)
         out_depth[j] = t
+        if t < 0:
+            continue
+        hx = ro[j, 0] + rd[j, 0] * t
+        hy = ro[j, 1] + rd[j, 1] * t
+        hz = ro[j, 2] + rd[j, 2] * t
         e = 1e-3
-        gx = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x + e, y, z) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x - e, y, z)
-        gy = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y + e, z) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y - e, z)
-        gz = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z + e) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z - e)
+        gx = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx + e, hy, hz) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx - e, hy, hz)
+        gy = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx, hy + e, hz) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx, hy - e, hz)
+        gz = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx, hy, hz + e) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx, hy, hz - e)
         gl = math.sqrt(gx * gx + gy * gy + gz * gz) + 1e-12
         nx = gx / gl
         ny = gy / gl
@@ -45,8 +48,8 @@ def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, SW, g0,
         out_n[j, 2] = nz
         occ = 0.0
         for s in range(1, 6):
-            hh = 0.03 * s * s
-            dd = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x + nx * hh, y + ny * hh, z + nz * hh)
+            hh = 0.012 * s * s
+            dd = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, hx + nx * hh, hy + ny * hh, hz + nz * hh)
             occ += max(0.0, hh - dd) / hh / s
         out_ao[j] = max(0.0, 1.0 - 0.9 * occ)
 
@@ -55,17 +58,54 @@ def _shade(depth, nrm, ao, W, H, light=(0.35, 0.85, 0.4), view=None):
     L = np.asarray(light, np.float64)
     L /= np.linalg.norm(L)
     hit = depth > 0
-    lam = np.clip(nrm @ L, 0, 1)
-    fill = np.clip(nrm @ np.array([-0.5, 0.2, -0.6]), 0, 1) * 0.25
-    rim = 0.0
-    if view is not None:
-        rim = np.clip(1 - np.abs(nrm @ view), 0, 1) ** 3 * 0.35
-    c = (0.12 + 0.75 * lam + fill) * (0.35 + 0.65 * ao) + rim
-    col = np.stack([c * 0.86, c * 0.8, c * 0.72], 1)
-    bg = np.array([0.16, 0.165, 0.17])
+    V = np.asarray(view if view is not None else (0, 0, 1.0), np.float64)
+    lam = np.clip((nrm @ L) * 0.8 + 0.2, 0, 1) ** 1.3
+    F2 = np.array([V[0] * 0.7, 0.25, V[2] * 0.7])
+    F2 /= np.linalg.norm(F2)
+    fill = np.clip(nrm @ F2, 0, 1) * 0.18
+    R = np.array([-V[0], 0.5, -V[2]])
+    R /= np.linalg.norm(R)
+    rim = np.clip(nrm @ R, 0, 1) ** 2 * np.clip(1 - np.abs(nrm @ V), 0, 1) ** 1.5 * 0.6
+    H_ = (L + V) / np.linalg.norm(L + V)
+    spec = np.clip(nrm @ H_, 0, 1) ** 24 * 0.12
+    c = (0.04 + 0.85 * lam + fill) * (0.25 + 0.75 * ao) + rim + spec
+    col = np.stack([c * 0.62, c * 0.57, c * 0.5], 1)
+    yy = np.repeat(np.linspace(0, 1, H), W)
+    bg = np.stack([0.035 + 0.02 * (1 - yy)] * 3, 1)
     img = np.where(hit[:, None], col, bg)
     img = np.clip(img, 0, 1) ** (1 / 2.2)
     return (img.reshape(H, W, 3) * 255).astype(np.uint8)
+
+
+def ortho_box(comp, view, box, W=900):
+    """Orthographic view of a sub-box: view in side/top/front, box = (u0,u1,v0,v1) in view axes."""
+    if view == "side":
+        ax_u, ax_v, dax, sgn = 0, 1, 2, 1.0
+    elif view == "top":
+        ax_u, ax_v, dax, sgn = 0, 2, 1, 1.0
+    else:
+        ax_u, ax_v, dax, sgn = 2, 1, 0, 1.0
+    u0, u1, v0, v1 = box
+    Hh = int(W * (v1 - v0) / (u1 - u0))
+    us = np.linspace(u0, u1, W)
+    vs = np.linspace(v1, v0, Hh)
+    if view == "side":
+        us = us[::-1]
+    if view == "front":
+        us = us[::-1]
+    UU, VV = np.meshgrid(us, vs)
+    ro = np.zeros((W * Hh, 3))
+    ro[:, ax_u] = UU.reshape(-1)
+    ro[:, ax_v] = VV.reshape(-1)
+    ro[:, dax] = sgn * 20.0
+    rd = np.zeros((W * Hh, 3))
+    rd[:, dax] = -sgn
+    depth = np.empty(W * Hh)
+    nrm = np.zeros((W * Hh, 3))
+    ao = np.ones(W * Hh)
+    _trace(ro, rd, depth, nrm, ao, 40.0, *comp.args())
+    light = (0.3, 0.9, 0.5) if view != "top" else (0.3, 0.6, 0.6)
+    return Image.fromarray(_shade(depth, nrm, ao, W, Hh, light=light, view=-rd[0])), (us, vs)
 
 
 def ortho_view(comp, view, W=900, pad=0.3):
