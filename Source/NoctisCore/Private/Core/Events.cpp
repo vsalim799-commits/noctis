@@ -72,7 +72,10 @@ void EventBus::flush()
         lastFlushed_.swap(pending_);
         pending_.clear();
     }
-    // Deterministic order regardless of which worker thread emitted first.
+    // Deterministic order regardless of which worker thread emitted first. The key must be total over
+    // every field: two creatures updated on different threads can emit events that agree on time,
+    // subject, type and param (e.g. both notice the researcher in the same step) and differ only in
+    // 'other' or position; a partial key leaves their relative order to the thread schedule.
     std::stable_sort(lastFlushed_.begin(), lastFlushed_.end(), [](const SimEvent& a, const SimEvent& b) {
         if (a.time != b.time)
         {
@@ -86,7 +89,31 @@ void EventBus::flush()
         {
             return a.type < b.type;
         }
-        return a.param < b.param;
+        if (a.param != b.param)
+        {
+            return a.param < b.param;
+        }
+        if (a.other.value != b.other.value)
+        {
+            return a.other.value < b.other.value;
+        }
+        if (a.param2 != b.param2)
+        {
+            return a.param2 < b.param2;
+        }
+        if (a.magnitude != b.magnitude)
+        {
+            return a.magnitude < b.magnitude;
+        }
+        if (a.position.x != b.position.x)
+        {
+            return a.position.x < b.position.x;
+        }
+        if (a.position.y != b.position.y)
+        {
+            return a.position.y < b.position.y;
+        }
+        return a.position.z < b.position.z;
     });
     totalEmitted_ += lastFlushed_.size();
     for (const SimEvent& e : lastFlushed_)
