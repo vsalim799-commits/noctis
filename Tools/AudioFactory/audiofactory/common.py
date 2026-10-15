@@ -294,3 +294,168 @@ def write_wav(path: Path, x: np.ndarray) -> None:
 
 def rel(path: Path) -> str:
     return path.resolve().relative_to(REPO).as_posix()
+
+
+# --------------------------------------------------------------------------------------------
+# Helpers for the footstep / foley / ambience / equipment modules (added in 1.1; the vocal module
+# does not use them, so the existing vocal library is unchanged).
+# --------------------------------------------------------------------------------------------
+def saturate(x):
+    return np.clip(x, 0.0, 1.0)
+
+
+def damped_resonator(x: np.ndarray, freq: float, tau_s: float) -> np.ndarray:
+    """Two-pole filter whose impulse response is exactly exp(-t/tau) sin(2 pi f t) (unit amplitude),
+    so a unit impulse in x produces a damped sine of amplitude 1. Used for modes, bubbles, clicks."""
+    f = _clamp_hz(freq)
+    w = 2.0 * math.pi * f / SR
+    rr = math.exp(-1.0 / (max(tau_s, 2.0 / SR) * SR))
+    return signal.lfilter([0.0, rr * math.sin(w)], [1.0, -2.0 * rr * math.cos(w), rr * rr], x, axis=0)
+
+
+def modal_bank(x: np.ndarray, freqs, taus, gains) -> np.ndarray:
+    y = np.zeros_like(x, dtype=np.float64)
+    for f, tau, g in zip(freqs, taus, gains):
+        if f < NYQ_SAFE:
+            y += g * damped_resonator(x, f, tau)
+    return y
+
+
+def front_loaded_times(r: np.random.Generator, count: int, t0: float, span: float, power: float = 1.6) -> np.ndarray:
+    """Event times concentrated at the start of [t0, t0 + span] (compaction, crushing...)."""
+    return t0 + span * r.uniform(0.0, 1.0, count) ** power
+
+
+def lognormal_amps(r: np.random.Generator, count: int, sigma: float = 0.6) -> np.ndarray:
+    return r.lognormal(0.0, sigma, count) * r.choice([-1.0, 1.0], count)
+
+
+def bubble_cloud(n: int, times_s, radii_m, amps, r: np.random.Generator, depth_m: float = 0.0, nbins: int = 72,
+                 fmin: float = 60.0, fmax: float = 20000.0) -> np.ndarray:
+    """Many gas bubbles ringing at their Minnaert frequency (Minnaert 1933). Bubbles are grouped in
+    log-spaced frequency bins; each bin is an impulse train through one damped resonator (fast),
+    with the damping law of `bubble`."""
+    times = np.asarray(times_s, dtype=np.float64)
+    radii = np.asarray(radii_m, dtype=np.float64)
+    amps = np.asarray(amps, dtype=np.float64)
+    out = np.zeros(n)
+    if times.size == 0:
+        return out
+    f = minnaert_hz(radii, depth_m)
+    edges = np.geomspace(fmin, fmax, nbins + 1)
+    idx = np.digitize(f, edges) - 1
+    for b in range(nbins):
+        sel = idx == b
+        if not np.any(sel):
+            continue
+        fc = math.sqrt(edges[b] * edges[b + 1])
+        delta = 0.02 + 0.006 * math.sqrt(fc / 1000.0)
+        tau = 1.0 / (math.pi * fc * delta)
+        # Split the bin over three detuned resonators so a dense cloud does not ring as one pure tone.
+        part_id = r.integers(0, 3, int(sel.sum()))
+        tb, ab = times[sel], amps[sel]
+        w = edges[b + 1] / edges[b]
+        for j, det in enumerate((w ** -0.33, 1.0, w ** 0.33)):
+            part = part_id == j
+            if np.any(part):
+                out += damped_resonator(impulses(n, tb[part], ab[part]), fc * det, tau)
+    return out
+
+
+def periodic_smooth(n: int, r: np.random.Generator, cutoff_hz: float) -> np.ndarray:
+    """Zero-mean, unit-std slowly varying control signal that is exactly periodic over n samples
+    (built in the frequency domain), for seamless loops."""
+    nb = n // 2 + 1
+    kmax = max(1, min(nb - 1, int(round(cutoff_hz * n / SR))))
+    spec = np.zeros(nb, dtype=np.complex128)
+    k = np.arange(1, kmax + 1)
+    spec[k] = (r.standard_normal(kmax) + 1j * r.standard_normal(kmax)) * np.exp(-0.5 * (k / (0.6 * kmax + 1e-9)) ** 2)
+    y = np.fft.irfft(spec, n)
+    return (y - y.mean()) / (y.std() + 1e-12)
+
+
+def circular_filter(x: np.ndarray, gain_fn) -> np.ndarray:
+    """Zero-phase filtering without padding: the output stays exactly periodic (loop-safe)."""
+    n = x.shape[0]
+    spec = np.fft.rfft(x, axis=0)
+    g = gain_fn(np.fft.rfftfreq(n, 1.0 / SR))
+    if spec.ndim == 2:
+        g = g[:, None]
+    return np.fft.irfft(spec * g, n, axis=0)
+
+
+def band_gain(lo: float, hi: float, order: float = 2.0):
+    """Butterworth-like band-pass magnitude (for circular_filter / fft_filter)."""
+    def g(f):
+        f = np.maximum(f, 1e-3)
+        a = 1.0 / np.sqrt(1.0 + (lo / f) ** (2 * order)) if lo > 0 else 1.0
+        b = 1.0 / np.sqrt(1.0 + (f / hi) ** (2 * order)) if hi > 0 else 1.0
+        return a * b
+    return g
+
+
+def periodic_noise(n: int, r: np.random.Generator, lo: float = 0.0, hi: float = 0.0, exponent: float = 0.0,
+                   order: float = 2.0) -> np.ndarray:
+    """Exactly periodic Gaussian noise, PSD ~ f^-exponent, band-limited to [lo, hi]; unit std."""
+    spec = np.fft.rfft(r.standard_normal(n))
+    f = np.fft.rfftfreq(n, 1.0 / SR)
+    f[0] = f[1]
+    spec *= f ** (-exponent / 2.0) * band_gain(lo, hi, order)(f)
+    spec[0] = 0.0
+    y = np.fft.irfft(spec, n)
+    return y / (np.std(y) + 1e-12)
+
+
+def wrap_circular(buf: np.ndarray, n: int) -> np.ndarray:
+    """Fold everything rendered past sample n back onto the start (events of a loop wrap around)."""
+    y = np.array(buf[:n], dtype=np.float64, copy=True)
+    k = n
+    while k < buf.shape[0]:
+        m = min(n, buf.shape[0] - k)
+        y[:m] += buf[k:k + m]
+        k += m
+    return y
+
+
+def pan_gains(pan: float) -> tuple[float, float]:
+    """Equal-power pan, pan in [-1, 1]."""
+    a = (float(np.clip(pan, -1.0, 1.0)) + 1.0) * math.pi / 4.0
+    return math.cos(a), math.sin(a)
+
+
+def to_stereo(x: np.ndarray, pan: float = 0.0) -> np.ndarray:
+    gl, gr = pan_gains(pan)
+    return np.stack([x * gl, x * gr], axis=1)
+
+
+def decorrelated_stereo(n: int, r: np.random.Generator, make, coherence: float = 0.3) -> np.ndarray:
+    """Stereo bed from a mono generator make(rng) -> (n,) : common part + independent parts."""
+    c = make(np.random.default_rng(r.integers(1 << 62)))
+    left = make(np.random.default_rng(r.integers(1 << 62)))
+    right = make(np.random.default_rng(r.integers(1 << 62)))
+    a = math.sqrt(coherence)
+    b = math.sqrt(1.0 - coherence)
+    return np.stack([a * c + b * left, a * c + b * right], axis=1)
+
+
+def env_ad(n: int, attack_s: float, decay_tau_s: float, start: int = 0) -> np.ndarray:
+    """Attack (raised cosine) then exponential decay, starting at sample `start`."""
+    e = np.zeros(n)
+    if start >= n:
+        return e
+    m = n - start
+    t = tvec(m)
+    a = max(attack_s, 1.0 / SR)
+    rise = np.where(t < a, 0.5 - 0.5 * np.cos(math.pi * np.minimum(t / a, 1.0)), 1.0)
+    e[start:] = rise * np.exp(-np.maximum(t - a, 0.0) / max(decay_tau_s, 1e-5))
+    return e
+
+
+def noise_burst(n: int, r: np.random.Generator, lo: float, hi: float, attack_s: float, tau_s: float, start: int = 0,
+                order: int = 2) -> np.ndarray:
+    return bandpass(r.standard_normal(n), lo, hi, order) * env_ad(n, attack_s, tau_s, start)
+
+
+def unit(x: np.ndarray) -> np.ndarray:
+    p = float(np.max(np.abs(x))) if x.size else 0.0
+    return x / p if p > 0 else x

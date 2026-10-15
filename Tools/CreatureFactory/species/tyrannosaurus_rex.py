@@ -129,13 +129,13 @@ def head_shapes():
         (0.16, 0.845, 0.205, 0.435, 0.34, 2.2, 3.0),
         (0.30, 0.85, 0.185, 0.425, 0.31, 2.2, 3.0),
         (0.45, 0.825, 0.165, 0.375, 0.28, 2.15, 3.0),
-        (0.60, 0.785, 0.15, 0.31, 0.26, 2.05, 3.0),
-        (0.76, 0.74, 0.14, 0.262, 0.25, 2.0, 3.0),
-        (0.92, 0.695, 0.135, 0.232, 0.25, 2.0, 3.0),
-        (1.08, 0.65, 0.14, 0.213, 0.26, 2.0, 3.0),
-        (1.21, 0.605, 0.15, 0.198, 0.27, 2.05, 3.0),
-        (1.32, 0.555, 0.165, 0.182, 0.29, 2.1, 3.0),
-        (1.40, 0.50, 0.185, 0.16, 0.32, 2.15, 2.9),
+        (0.60, 0.785, 0.15, 0.31, 0.26, 2.05, 3.6),
+        (0.76, 0.74, 0.14, 0.262, 0.25, 2.0, 4.0),
+        (0.92, 0.695, 0.135, 0.232, 0.25, 2.0, 4.0),
+        (1.08, 0.65, 0.14, 0.213, 0.26, 2.0, 4.0),
+        (1.21, 0.605, 0.15, 0.198, 0.27, 2.05, 4.0),
+        (1.32, 0.555, 0.165, 0.182, 0.29, 2.1, 3.8),
+        (1.40, 0.50, 0.185, 0.16, 0.32, 2.15, 3.4),
     ]
     secs = []
     for u, vt, vl, hw, fr, nt, nb in up:
@@ -157,10 +157,28 @@ def head_shapes():
         (1.30, 0.185, -0.025, 0.155, 2.3),
         (1.38, 0.205, 0.02, 0.13, 2.3),
     ]
+    # the upper lip overlaps the lower jaw (as in varanids, the analogue used by Cullen et al. 2023):
+    # the dentary's top sits just above the upper lip margin and ~2 cm inside it
+    def upper_width(u, v):
+        k = np.searchsorted([s[0] for s in up], u)
+        k = min(max(k, 1), len(up) - 1)
+        a, b = up[k - 1], up[k]
+        f = (u - a[0]) / (b[0] - a[0])
+        vt, vl, hw, fr, nt, nb = [a[i] * (1 - f) + b[i] * f for i in range(1, 7)]
+        cy = vl + fr * (vt - vl)
+        bot = cy - vl
+        t = min(1.0, max(0.0, (cy - v) / bot))
+        return hw * (1 - t ** nb) ** (1 / nb)
+
     secs = []
+    lip_v = dict((s[0], s[2]) for s in up)
     for u, vt, vb, hw, nb in lo:
-        cy = vt - 0.055
-        secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vb, hw=hw, nt=3.2, nb=nb))
+        vl = np.interp(u, [s[0] for s in up], [s[2] for s in up])
+        vt = max(vt, vl + 0.012) if u > 0.4 else vt
+        if u > 0.4:
+            hw = min(hw, upper_width(u, vl + 0.035) - 0.018)
+        cy = vt - 0.06
+        secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vb, hw=hw, nt=2.6, nb=nb))
     S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.12, 0.085], blend=0.012,
                   region="jaw", tag="mandible"))
     for sg in (1, -1):
@@ -209,10 +227,10 @@ def head_details(cast, base_shapes):
         lid_rot = basis_to_euler(bx, by, bz)
         # lids: a shell concentric with the eyeball, thicker upper lid, lower lid; then the almond
         # palpebral opening (shallow: it stops ~1.5 cm inside the eyeball) and a pit around the eyeball
-        S.append(E("head", "head", ec, [R_EYE + 0.034, R_EYE + 0.027, R_EYE + 0.014], lid_rot, 0.045, masks=["lid"], tag="lid_shell"))
-        S.append(E("head", "head", ec + by * 0.024 + bz * 0.014, [0.072, 0.03, 0.046], lid_rot, 0.03, masks=["lid"], tag="upper_lid"))
-        S.append(E("head", "head", ec - by * 0.03 + bz * 0.01, [0.066, 0.022, 0.042], lid_rot, 0.03, masks=["lid"], tag="lower_lid"))
-        S.append(E("head", "head", ec + bz * (R_EYE + 0.03) + bx * 0.004, [0.058, 0.025, 0.046], lid_rot, 0.01, sign=-1, tag="palpebral_opening"))
+        S.append(E("head", "head", ec, [R_EYE + 0.045, R_EYE + 0.036, R_EYE + 0.02], lid_rot, 0.05, masks=["lid"], tag="lid_shell"))
+        S.append(E("head", "head", ec + by * 0.03 + bz * 0.018, [0.08, 0.034, 0.05], lid_rot, 0.035, masks=["lid"], tag="upper_lid"))
+        S.append(E("head", "head", ec - by * 0.032 + bz * 0.012, [0.07, 0.024, 0.045], lid_rot, 0.035, masks=["lid"], tag="lower_lid"))
+        S.append(E("head", "head", ec + bz * (R_EYE + 0.032) + bx * 0.004, [0.054, 0.022, 0.048], lid_rot, 0.012, sign=-1, tag="palpebral_opening"))
         S.append(E("head", "head", ec, [R_EYE + 0.003] * 3, (0, 0, 0), 0.004, sign=-1, tag="eye_pit"))
         # ---------------- brow: lacrimal boss in front, postorbital boss above-behind -------------
         po = cast.cast_at(H(0.47, 0.77, 0.2 * sg), HD(np.array([-0.15, -0.75, -0.65 * sg])))
@@ -223,7 +241,7 @@ def head_details(cast, base_shapes):
         b0 = la - nla * 0.03 + np.array([0, 0, 0.03 * sg])
         b1 = po - npo * 0.035 + np.array([0, 0, 0.035 * sg])
         S.append(CAP("head", "head", b0, b1, 0.05, 0.05, masks=["brow"], tag="brow_shelf"))
-        S.append(E("head", "head", ec + by * 0.078 + bz * 0.032 + bx * 0.01, [0.1, 0.034, 0.05], lid_rot, 0.04, masks=["brow"], tag="brow_overhang"))
+        S.append(E("head", "head", ec + by * 0.072 + bz * 0.042 + bx * 0.01, [0.105, 0.036, 0.05], lid_rot, 0.045, masks=["brow"], tag="brow_overhang"))
         # jugal 'horn' (cornual process) below-behind the orbit, and the cheekbone ridge
         jh = cast.cast_at(H(0.36, 0.3, 0.3 * sg), np.array([0, 0, -sg]))
         S.append(E("head", "head", jh - cast.normal(jh) * 0.03, [0.09, 0.05, 0.06], mr(HR((0, 0.3, 0))), 0.05, masks=["rugose"], tag="jugal_horn"))

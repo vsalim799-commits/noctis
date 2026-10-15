@@ -222,6 +222,9 @@ public:
 	double GetCurrentStepSeconds() const { return StepSecondsForScale(TimeScale); }
 	uint64 GetPublishedSequence() const { return Sequence; }
 
+	/** Call after changing the core's time scale directly inside WithSimulation(): the next job re-applies TimeScale. */
+	void ForceReapplyTimeScale() { check(!bJobInFlight); AppliedTimeScale = -1.0f; }
+
 	/** Direct access; only valid while no job is in flight (asserts). Prefer WithSimulation(). */
 	noctis::WorldSimulation& GetSimulationChecked();
 

@@ -147,6 +147,7 @@ void EventRecorder::reset()
     total_ = 0;
     perType_.fill(0);
     callsByEmitter_.clear();
+    callsByContext_.fill(0);
     bad_ = 0;
     outOfOrder_ = 0;
     firstBad_.clear();
@@ -187,34 +188,56 @@ void EventRecorder::onEvent(const SimEvent& e)
     lastTime_ = std::max(lastTime_, e.time);
     if (e.type == EventType::Vocalization)
     {
-        auto it = std::find_if(callsByEmitter_.begin(), callsByEmitter_.end(), [&](const std::pair<u32, size_t>& p) { return p.first == e.subject.value; });
+        const size_t ctxIndex = std::min<size_t>(e.param, 15);
+        ++callsByContext_[ctxIndex];
+        auto it = std::find_if(callsByEmitter_.begin(), callsByEmitter_.end(), [&](const EmitterCalls& p) { return p.emitter == e.subject.value; });
         if (it == callsByEmitter_.end())
         {
-            callsByEmitter_.push_back({e.subject.value, 1});
+            callsByEmitter_.push_back(EmitterCalls{});
+            it = callsByEmitter_.end() - 1;
+            it->emitter = e.subject.value;
         }
-        else
-        {
-            ++it->second;
-        }
+        ++it->total;
+        ++it->byContext[ctxIndex];
     }
 }
 
 size_t EventRecorder::maxCallsPerIndividual(u32* who) const
 {
     size_t best = 0;
-    for (const auto& p : callsByEmitter_)
+    for (const EmitterCalls& p : callsByEmitter_)
     {
-        if (p.second > best)
+        if (p.total > best)
         {
-            best = p.second;
+            best = p.total;
             if (who)
             {
-                *who = p.first;
+                *who = p.emitter;
             }
         }
     }
     return best;
 }
+
+size_t EventRecorder::maxCallsPerIndividual(CallContext context, u32* who) const
+{
+    const size_t k = std::min<size_t>(static_cast<size_t>(context), 15);
+    size_t best = 0;
+    for (const EmitterCalls& p : callsByEmitter_)
+    {
+        if (p.byContext[k] > best)
+        {
+            best = p.byContext[k];
+            if (who)
+            {
+                *who = p.emitter;
+            }
+        }
+    }
+    return best;
+}
+
+size_t EventRecorder::calls(CallContext context) const { return callsByContext_[std::min<size_t>(static_cast<size_t>(context), 15)]; }
 
 namespace supportimpl
 {

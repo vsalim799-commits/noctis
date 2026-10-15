@@ -4,6 +4,7 @@
 //   const mat = createSkinMaterial(THREE, { dorsalColor: '#3a342f' });
 //   configureSkinForBones(mat, TREX_BONES, TREX_SHAPES);       // optional: foot frames, brow / cheek hotspots
 //   bakeSkinRegions(THREE, skinnedMesh.geometry, mat);         // optional, recommended on SDF meshes
+//                                                              // (smooth region borders + labial scale rows)
 //   skinnedMesh.material = mat;
 //   mat.userData.skinUniforms.uBumpStrength.value = 0.8;       // live tweak, no recompile
 //
@@ -21,23 +22,30 @@
 //      midline and inside optional hotspots (brow, cheek, nasal);
 //   3. scutes: transverse rows across the front of the metatarsus and the top of the toes, with
 //      staggered ends, occasional split rows and an imbricate step at the distal edge;
-//   4. skin folds: warped crease bands driven by the aFold attribute (+ a weak global level), plus a
-//      reticulate web of shallow creases for the large smooth areas;
-//   5. low-frequency fleshy lumps and a scale-cluster grain that survives at medium distance.
+//   4. labial scales: rows of enlarged bead-like scales parallel to the closed mouth line on both lips,
+//      shrinking row by row (needs the lip coordinates written by bakeSkinRegions);
+//   5. skin folds: "billow" relief |n| of anisotropic, domain-warped gradient noise: sharp meandering
+//      creases between fleshy rolls of uneven height, long along the fold lines, driven by the aFold
+//      attribute (+ a global level) in three fixed rest-space directions weighted per region; plus a
+//      web of fine wrinkles (zero lines of gradient noise) for the large smooth areas;
+//   6. low-frequency fleshy lumps and a scale-cluster grain that survives at medium distance.
 // Shading: countershaded albedo (perceptual blend, warm lateral band) + mottling + per-region tint,
 // per-scale colour jitter, darker mortar/cracks, aCavity occlusion, roughness breakup, dust on the
 // lower legs, eye / claw tissue from aFeature, and a cheap subsurface approximation (per-channel wrap
 // lighting + the red channel lit with a smoother normal, the "pre-integrated skin" trick) injected
-// into three's direct-light loop.
+// into three's direct-light loop; reduced grazing Fresnel and crease-occluded direct specular (studio
+// rim lights cast no shadows).
 // Antialiasing: every layer fades out as its cells shrink below a few pixels (pixel footprint from
-// screen-space derivatives of the rest position, uDetailFade..uDetailFull) and the lost normal
-// variance is put back as roughness, so medium / far shots do not shimmer.
+// screen-space derivatives of the rest position, geometric mean of the two axes, uDetailFade..
+// uDetailFull), crease widths grow with the footprint, and the lost normal variance is put back as
+// roughness, so medium / far shots do not shimmer.
 //
 // Science note: Tyrannosaurus skin impressions show small, non-imbricate, pebbly scales
 // (Bell et al. 2017). Their real size is smaller than what is rendered by default here; the default
 // sizes are a legibility choice for close-up renders (uncertain, tweak baseScale). Feature-scale
 // placement and the foot scutes are inferred from extant archosaurs (birds, crocodilians), not from
-// preserved tyrannosaur skin. Colour is UNKNOWN for any non-avian dinosaur: the palette is a neutral
+// preserved tyrannosaur skin; the labial rows assume lips (Cullen et al. 2023, inferred) dressed like
+// those of lipped extant reptiles (e.g. varanids). Colour is UNKNOWN for any non-avian dinosaur: the palette is a neutral
 // countershaded guess and must be labelled speculative wherever it is shown.
 //
 // ------------------------------------------------------------------------------------------
@@ -48,6 +56,8 @@
 //   aFeature   float  0 skin, 1 eye, 2 claw (sdf_mesher FEATURES): glossy eye, keratin claw
 //   aOcclusion float  0..1 occlusion by other body parts (ambient only)
 //   aSkinA/B/C vec4   written by bakeSkinRegions (smoothed region tables)
+//   aLip       vec2   written by bakeSkinRegions where head and jaw regions meet: (arc length along the
+//                     mouth line from the snout tip, signed distance to it, + upper lip), metres
 //   position, normal: REST pose (model space, metres; +x forward, +y up, +z animal's right)
 //
 // Options (createSkinMaterial(THREE, opts)) -> uniform of the same role; every uniform lives in
@@ -71,16 +81,18 @@
 //   -- feature scales
 //   featureScale    0.075    uFeatureScale (m): lattice spacing of the feature-scale sites
 //   featureSize     [0.2, 0.36]  uFeatureSize: radius range (fraction of featureScale; x0.7 on the face, x1 on the body)
-//   featureHeight   0.13     uFeatureHeight: relief (fraction of the radius)
+//   featureHeight   0.1      uFeatureHeight: relief (fraction of the radius)
 //   featureTint     -0.04    uFeatureTint: brightness change of the feature scales
 //   rosette         0.22     uRosette: enlargement of the pebbles ringing a feature scale (power weight, cell^2)
 //   hotspots        []       uHotspots[6]: [[x, y, z, radius], ...] rest-space spheres that densify feature scales
-//   hotspotBoost    0.6      uHotspotBoost: feature density added at a hotspot centre
+//                            and enlarge the pebbles (configureSkinForBones places brow / cheek / nasal ones)
+//   hotspotBoost    0.45     uHotspotBoost: feature density added at a hotspot centre
+//   hotspotSize     0.8      uHotspotSize: scale-size increase at a hotspot centre (octaves): a patch of larger scales
 //   midlineBoost    1.6      uMidlineBoost: feature density multiplier along the dorsal midline (z ~ 0, normal up)
 //   midlineWidth    0.12     uMidlineWidth (m): half-width of that dorsal row
 //   -- foot scutes ([metatarsus, toes] pairs)
 //   scuteLength     [0.055, 0.04]  uScuteLength (m): row length along the limb
-//   scuteSpan       [1.15, 1.35]   uScuteSpan (rad): half-angle around the limb covered by a row, from the front
+//   scuteSpan       [1.45, 1.5]    uScuteSpan (rad): half-angle around the limb covered by a row, from the front
 //   scuteRadius     [0.125, 0.07]  uScuteRadius (m): limb radius (converts angles to lengths; fitted by configureSkinForBones)
 //   scuteHeight     0.12     uScuteHeight: plate relief (fraction of the row length)
 //   scuteCurve      0.08     uScuteCurve: bow of the joints towards the sides (rows per rad^2)
@@ -89,10 +101,14 @@
 //   toeAxis         [1,0,0]  uToeAxis: distal direction of the toes in rest space
 //   toeHeight       0.22     uToeHeight (m): rest-space height below which the toe frame is used
 //   -- folds and macro relief
-//   foldDepth       0.016    uFoldDepth (m): depth of a full-strength skin fold
-//   foldBase        0.15     uFoldBase: fold intensity everywhere (added to aFold, times the region weights)
-//   foldAttr        0.35     uFoldAttr: weight of the aFold attribute
-//   foldDirs        [[1,0,0,9],[0,1,0,10],[0.8,0.6,0,14]]  uFoldDirs[3]: rest-space direction ACROSS each fold field + folds per metre
+//   foldDepth       0.06     uFoldDepth (m): relief of a full-strength fold (peak noise lobe; typical rolls ~40 %)
+//   foldBase        0.2      uFoldBase: fold intensity everywhere (added to foldAttr * aFold, times the region weights)
+//   foldAttr        0.8      uFoldAttr: weight of the aFold attribute
+//   foldAniso       5.0      uFoldAniso: fold length / spacing ratio (noise stretched along the fold lines)
+//   foldOctave      0.35     uFoldOctave: amplitude of the second, 2.13x finer fold octave (branching wrinkles)
+//   foldWarp        0.06     uFoldWarp (m): low-frequency domain warp, makes the folds curve
+//   foldDirs        [[1,0,0,6],[0,1,0,7],[0.8,0.6,0,6]]  uFoldDirs[3]: rest-space direction ACROSS each fold field +
+//                            noise frequency (1/m; crease spacing ~0.7 / frequency)
 //                            (x: tail / belly / flank transverse folds, y: limb wrinkles, diagonal: neck)
 //   netScale        0.12     uNetScale (m): wavelength of the wrinkle web (gradient-noise zero lines, 2 octaves)
 //   netDepth        0.0025   uNetDepth (m): depth of its grooves
@@ -102,6 +118,13 @@
 //   grainScale      0.045    uGrainScale (m): size of the scale-cluster grain kept at medium distance
 //   grainDepth      0.0018   uGrainDepth (m): its relief
 //   grainTint       0.1      uGrainTint: its brightness variation
+//   -- labial scales (need aLip from bakeSkinRegions; uLip = (lipRow, lipShrink, lipRows, lipLength))
+//   lipRow          0.03     uLip.x (m): height of the first row, at the lip margin
+//   lipShrink       0.8      uLip.y: height ratio of each next row
+//   lipRows         3        uLip.z: number of rows before the pebbles take over
+//   lipLength       1.05     uLip.w (m): extent along the mouth line from the snout tip (about the tooth row of a
+//                            ~1.4 m skull, plausible; rows fade out over the last 12 cm, at the mouth corner)
+//   lipHeight       0.12     uLipHeight: relief (fraction of the row height); 0 disables the rows
 //   -- colour (all speculative)
 //   dorsalColor     '#322e2b'  uDorsalColor (sRGB): back / upper flanks
 //   ventralColor    '#9c907d'  uVentralColor (sRGB): belly / underside
@@ -125,9 +148,11 @@
 //   roughVar        0.1      uRoughVar: low-frequency roughness breakup
 //   crackRough      0.18     uCrackRough: extra roughness in the cracks
 //   topRough        -0.08    uTopRough: roughness change on polished scale tops
-//   fadeRough       0.12     uFadeRough: roughness added where detail is faded (keeps the normal variance)
+//   fadeRough       0.22     uFadeRough: roughness added where detail is faded (keeps the normal variance)
 //   specular        0.65     uSpecular: direct-light specular multiplier (dry skin)
 //   specF90         0.55     uSpecF90: Fresnel reflectance at grazing angles (1 = glassy rim; dry, dusty skin < 1)
+//   specOcclusion   0.9      uSpecOcclusion: how much aCavity / aOcclusion / cracks / fold creases occlude DIRECT
+//                            specular (studio rim and fill lights cast no shadows and would glint inside creases)
 //   scatterColor    [1.0, 0.7, 0.55]  uScatterColor: per-channel wrap (red scatters furthest)
 //   sss             0.22     uSSS: subsurface strength (wrap amount)
 //   sssNormalBlur   0.45     uSSSNormalBlur: how much the red channel uses the un-bumped normal
@@ -145,7 +170,8 @@
 //
 // material.userData: skinUniforms (all uniforms), skinRegions (editable region table; call
 // updateRegions() or re-run bakeSkinRegions after editing), setDebug(mode): 0 off, 1 albedo,
-// 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales.
+// 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales,
+// 8 lip coordinates (r: fract(s / 5 cm), g: |d| / 10 cm, b: labial-row weight).
 // ------------------------------------------------------------------------------------------
 
 export const SKIN_REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 'thigh', 'shin', 'foot', 'arm'];
@@ -158,28 +184,28 @@ export const SKIN_REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 't
 export const DEFAULT_REGION_PARAMS = {
   head:  { size: 0.013, feature: 0.3, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: -0.04, folds: [0, 0, 0] },
   jaw:   { size: 0.012, feature: 0.2, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.05, folds: [0, 0, 0] },
-  neck:  { size: 0.018, feature: 0.20, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0, 1] },
-  torso: { size: 0.018, feature: 0.12, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0.7, 0, 0] },
+  neck:  { size: 0.018, feature: 0.12, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0, 1] },
+  torso: { size: 0.018, feature: 0.07, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0.7, 0, 0] },
   belly: { size: 0.018, feature: 0.00, scute: 0, bump: 0.8, tint: [1.04, 1.03, 1.01], rough: 0.03, folds: [0.8, 0, 0] },
-  tail:  { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [0.98, 0.98, 0.98], rough: 0.02, folds: [1, 0, 0] },
-  thigh: { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [0.98, 0.97, 0.96], rough: 0.0, folds: [0, 0.35, 0] },
-  shin:  { size: 0.018, feature: 0.08, scute: 0, bump: 1.0, tint: [0.86, 0.85, 0.85], rough: 0.04, folds: [0, 0.6, 0] },
-  foot:  { size: 0.018, feature: 0.00, scute: 1, bump: 1.15, tint: [0.64, 0.64, 0.66], rough: 0.08, folds: [0, 0, 0] },
+  tail:  { size: 0.018, feature: 0.06, scute: 0, bump: 1.0, tint: [0.98, 0.98, 0.98], rough: 0.02, folds: [1, 0, 0] },
+  thigh: { size: 0.018, feature: 0.06, scute: 0, bump: 1.0, tint: [0.98, 0.97, 0.96], rough: 0.0, folds: [0, 0.35, 0] },
+  shin:  { size: 0.018, feature: 0.05, scute: 0, bump: 1.0, tint: [0.86, 0.85, 0.85], rough: 0.04, folds: [0, 0.6, 0] },
+  foot:  { size: 0.026, feature: 0.00, scute: 1, bump: 1.15, tint: [0.64, 0.64, 0.66], rough: 0.08, folds: [0, 0, 0] },
   arm:   { size: 0.009, feature: 0.05, scute: 0, bump: 1.0, tint: [0.97, 0.96, 0.95], rough: 0.0, folds: [0, 1, 0] },
 };
 
 const DEFAULTS = {
   physical: false, debug: 0, sheen: 0.25, sheenColor: '#b9ab98', sheenRoughness: 0.8, envMapIntensity: 1,
   seed: 0, baseScale: 0.018, sizeNoise: 0.35, jitter: 0.85, sizeVar: 0.35, mortar: 0.035, domeRadius: 0.45, scaleHeight: 0.11, softness: 0.06,
-  bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.13, featureSize: [0.2, 0.36], rosette: 0.22, featureTint: -0.04,
-  hotspots: [], hotspotBoost: 0.6, midlineBoost: 1.6, midlineWidth: 0.12,
-  scuteLength: [0.055, 0.04], scuteSpan: [1.15, 1.35], scuteRadius: [0.125, 0.07], scuteHeight: 0.12, scuteCurve: 0.08, scuteSplit: 0.3,
+  bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.1, featureSize: [0.2, 0.36], rosette: 0.22, featureTint: -0.04,
+  hotspots: [], hotspotBoost: 0.45, hotspotSize: 0.8, midlineBoost: 1.6, midlineWidth: 0.12,
+  scuteLength: [0.055, 0.04], scuteSpan: [1.45, 1.5], scuteRadius: [0.125, 0.07], scuteHeight: 0.12, scuteCurve: 0.08, scuteSplit: 0.3,
   metaAxis: [0.32, -0.95, 0], toeAxis: [1, 0, 0], toeHeight: 0.22,
   foldDepth: 0.06, foldBase: 0.2, foldAniso: 5.0, foldOctave: 0.35, foldWarp: 0.06, foldDirs: [[1, 0, 0, 6], [0, 1, 0, 7], [0.8, 0.6, 0, 6]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.12, netDepth: 0.0025, netWidth: 0.12,
   dorsalColor: '#322e2b', ventralColor: '#9c907d', lateralTint: [1.06, 1.0, 0.94], counterShade: [-0.7, 0.45], mottle: 0.32, mottleScale: 1.6,
   scaleTint: 0.08, topLight: 0.07, crackDark: 0.22, cavityDark: 0.35, cavityAO: 0.7,
-  roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
-  scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.65, specF90: 0.55, sssNormalBlur: 0.45, translucency: 0.0,
+  roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.22,
+  scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.65, specF90: 0.55, specOcclusion: 0.9, sssNormalBlur: 0.45, translucency: 0.0,
   dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, detailFull: 8.0, worldScale: 1.0,
   eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.8,
   lipRow: 0.03, lipShrink: 0.8, lipRows: 3, lipLength: 1.05, lipHeight: 0.12,
@@ -210,6 +236,7 @@ uniform vec4 uRegionTint[ 10 ];
 uniform vec4 uRegionFold[ 10 ];   // xyz weights of the 3 fold fields
 uniform vec4 uHotspots[ ${MAX_HOTSPOTS} ];
 uniform float uHotspotBoost;
+uniform float uHotspotSize;
 uniform float uMidlineBoost;
 uniform float uMidlineWidth;
 uniform float uFoldBase;
@@ -250,7 +277,8 @@ const VERT_MAIN = /* glsl */`
 	}
 	float zz = position.z / uMidlineWidth;
 	float midline = exp( - zz * zz ) * smoothstep( 0.5, 0.9, normal.y );
-	vSkinA = vec4( rp.x, rp.y * ( 1.0 + midline * uMidlineBoost ) + hot * uHotspotBoost, rp.z, rp.w );
+	// hotspots: denser feature scales AND a patch of larger scales (the cheek / brow clusters)
+	vSkinA = vec4( rp.x + hot * uHotspotSize, rp.y * ( 1.0 + midline * uMidlineBoost ) + hot * uHotspotBoost, rp.z, rp.w * ( 1.0 + 0.25 * hot ) );
 	vSkinFold = vec4( foldW, clamp( uFoldAttr * aFold + uFoldBase, 0.0, 1.0 ) );
 	vSkinCavity = clamp( aCavity, 0.0, 1.0 );
 	vSkinFeat = vec3( 1.0 - clamp( abs( aFeature - 1.0 ), 0.0, 1.0 ), 1.0 - clamp( abs( aFeature - 2.0 ), 0.0, 1.0 ), clamp( aOcclusion, 0.0, 1.0 ) );
@@ -284,7 +312,7 @@ uniform vec2 uCounterShade;
 uniform float uMottle, uMottleScale, uScaleTint, uTopLight, uCrackDark, uCavityDark, uCavityAO;
 uniform float uRoughness, uRoughVar, uCrackRough, uTopRough, uFadeRough;
 uniform vec3 uScatterColor;
-uniform float uSSS, uSSSNormalBlur, uTranslucency, uSpecular, uSpecF90;
+uniform float uSSS, uSSSNormalBlur, uTranslucency, uSpecular, uSpecF90, uSpecOcclusion;
 uniform vec3 uDustColor;
 uniform float uDust, uDustHeight, uDetailFade, uDetailFull, uWorldScale;
 uniform vec3 uEyeColor, uClawColor;
@@ -293,6 +321,7 @@ uniform float uOcclusionAO;
 // Globals shared between the pattern evaluation and the custom light function.
 vec3 skSmoothN;     // view-space normal with the macro relief only (folds / lumps): used by the SSS red channel
 float skAO;
+float skSpecOcc;    // direct-specular occlusion (creases, body-part occlusion): lights without shadows leak there
 float skSkinW;      // 1 on skin, 0 on eyes / claws (no scattering there)
 float skDebugVis;   // detail visibility, for the debug view
 vec3 skDebugFeat;   // crack, feature-scale mask, nearest feature site (debug view 7)
@@ -662,7 +691,11 @@ float skRoughness;
 {
 	vec3 p = vRestPos;
 	vec3 nR = normalize( vRestNormal );
-	float pix = max( length( skRestDx ), length( skRestDy ) );   // metres per pixel on the rest surface
+	// metres per pixel on the rest surface. The geometric mean of the two footprint axes (not the
+	// max) keeps detail on surfaces seen at grazing angles, where the long axis alone would fade
+	// every scale and leave a smooth, glassy rim highlight; bounded to 1/4 of the long axis.
+	float pxA = length( skRestDx ), pxB = length( skRestDy );
+	float pix = max( sqrt( pxA * pxB ), 0.25 * max( pxA, pxB ) );
 
 	// ---- low-frequency lumps + mottling (shared noise)
 	vec4 n1 = skNoised( p * uLumpScale + uSeed * 1.7 );
@@ -877,6 +910,9 @@ float skRoughness;
 
 	// ---- occlusion: aCavity + micro occlusion in cracks and fold creases
 	skAO = ( 1.0 - uCavityAO * vSkinCavity ) * ( 1.0 - uOcclusionAO * vSkinFeat.z ) * ( 1.0 - 0.35 * crack * vis ) * ( 1.0 - 0.3 * foldCrease );
+	// rim / fill lights usually cast no shadow: without this their highlights glow inside creases
+	// and where a limb meets the body
+	skSpecOcc = 1.0 - uSpecOcclusion * ( 1.0 - ( 1.0 - vSkinCavity ) * ( 1.0 - vSkinFeat.z ) * ( 1.0 - 0.5 * crack * vis ) * ( 1.0 - 0.5 * foldCrease ) );
 }
 `;
 
@@ -906,7 +942,7 @@ void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryP
 	vec3 irrD = directLight.color * diff;
 	reflectedLight.directDiffuse += irrD * BRDF_Lambert( material.diffuseColor );
 	float dotNL = saturate( ndlD );
-	reflectedLight.directSpecular += uSpecular * dotNL * directLight.color * BRDF_GGX( L, geometryViewDir, geometryNormal, material );
+	reflectedLight.directSpecular += uSpecular * skSpecOcc * dotNL * directLight.color * BRDF_GGX( L, geometryViewDir, geometryNormal, material );
 	#ifdef USE_SHEEN
 		sheenSpecularDirect += dotNL * directLight.color * BRDF_Sheen( L, geometryViewDir, geometryNormal, material.sheenColor, material.sheenRoughness );
 	#endif
@@ -993,7 +1029,7 @@ export function createSkinMaterial(THREE, opts = {}) {
   }
   const U = {
     uRegionParams: { value: ru.params }, uRegionTint: { value: ru.tint }, uRegionFold: { value: ru.fold },
-    uHotspots: { value: hot }, uHotspotBoost: { value: o.hotspotBoost },
+    uHotspots: { value: hot }, uHotspotBoost: { value: o.hotspotBoost }, uHotspotSize: { value: o.hotspotSize },
     uMidlineBoost: { value: o.midlineBoost }, uMidlineWidth: { value: o.midlineWidth }, uFoldBase: { value: o.foldBase },
     uSeed: { value: o.seed * 17.123 }, uBaseScale: { value: o.baseScale }, uSizeNoise: { value: o.sizeNoise }, uJitter: { value: o.jitter }, uSizeVar: { value: o.sizeVar },
     uMortar: { value: o.mortar }, uDomeRadius: { value: o.domeRadius }, uScaleHeight: { value: o.scaleHeight },
@@ -1015,7 +1051,7 @@ export function createSkinMaterial(THREE, opts = {}) {
     uCavityAO: { value: o.cavityAO }, uRoughness: { value: o.roughness }, uRoughVar: { value: o.roughVar },
     uCrackRough: { value: o.crackRough }, uTopRough: { value: o.topRough }, uFadeRough: { value: o.fadeRough },
     uScatterColor: { value: v3(THREE, o.scatterColor) }, uSSS: { value: o.sss }, uSSSNormalBlur: { value: o.sssNormalBlur },
-    uTranslucency: { value: o.translucency }, uSpecular: { value: o.specular }, uSpecF90: { value: o.specF90 },
+    uTranslucency: { value: o.translucency }, uSpecular: { value: o.specular }, uSpecF90: { value: o.specF90 }, uSpecOcclusion: { value: o.specOcclusion },
     uDustColor: { value: col(o.dustColor) }, uDust: { value: o.dust }, uDustHeight: { value: o.dustHeight },
     uDetailFade: { value: o.detailFade }, uDetailFull: { value: o.detailFull }, uWorldScale: { value: o.worldScale },
     uLip: { value: new THREE.Vector4(o.lipRow, o.lipShrink, o.lipRows, o.lipLength) }, uLipHeight: { value: o.lipHeight },
@@ -1040,7 +1076,7 @@ export function createSkinMaterial(THREE, opts = {}) {
   // One compiled program is shared by every skin material of the same kind.
   mat.customProgramCacheKey = () => 'noctis-reptile-skin-v3' + (o.physical ? '-phys' : '');
   mat.userData.skinUniforms = U;
-  // Debug view: 0 off, 1 albedo, 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales.
+  // Debug view: 0 off, 1 albedo, 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales, 8 lip coordinates.
   mat.userData.setDebug = (mode) => {
     const d = { ...(mat.defines || {}) };
     if (mode) d.SKIN_DEBUG = mode | 0; else delete d.SKIN_DEBUG;
@@ -1103,7 +1139,9 @@ export function configureSkinForBones(material, bones, shapes = null) {
 // Optional, recommended for meshes whose aRegion changes abruptly from one vertex to the next
 // (e.g. SDF meshes): bakes the region tables into per-vertex attributes (aSkinA/B/C) and blurs
 // them over the mesh surface, so scale size, tint, roughness and fold weights cross-fade over
-// ~radius metres instead of switching inside one triangle (iterations: override the count). It enables the
+// ~radius metres instead of switching inside one triangle (iterations: override the count). Where head and
+// jaw regions meet it also writes the lip coordinates aLip (labial scale rows; lip: false skips them,
+// lipMaxDist bounds the search) and enables SKIN_LIP. It enables the
 // SKIN_BAKED_REGIONS define on the material: every mesh drawn with that material must then be
 // baked. Re-run it after editing material.userData.skinRegions. Vertices that share a position
 // (seams) are welded for the blur, so no crack opens along duplicated vertices.

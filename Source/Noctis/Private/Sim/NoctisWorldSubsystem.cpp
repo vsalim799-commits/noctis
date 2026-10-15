@@ -187,6 +187,7 @@ void UNoctisWorldSubsystem::CacheSpecies()
 		}
 		SpeciesById.Add(Info.Id, Info.Index);
 	}
+	CoreBounds = Sim.terrain().bounds();
 	for (const int SpeciesIndex : Sim.speciesInWorld())
 	{
 		if (Species.IsValidIndex(SpeciesIndex))

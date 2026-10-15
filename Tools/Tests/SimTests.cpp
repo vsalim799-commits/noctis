@@ -100,7 +100,9 @@ NOCTIS_TEST_LONG("sim.determinism.three_days_threads")
 
 NOCTIS_TEST("sim.events.rate_sanity")
 {
-    noctis::SimConfig cfg = noctistest::smallWorldConfig(7u, noctistest::testThreads(), 0.3f);
+    // Seed 1 places an Edmontosaurus herd where it meets predators within the first hours: the
+    // scenario that exposes alarm-call feedback (see Docs/PERFORMANCE.md, QA findings).
+    noctis::SimConfig cfg = noctistest::smallWorldConfig(1u, noctistest::testThreads(), 0.3f);
     std::unique_ptr<WorldSimulation> w = noctistest::makeWorld(cfg);
     REQUIRE(w != nullptr);
     noctistest::EventRecorder rec(*w);
@@ -124,10 +126,16 @@ NOCTIS_TEST("sim.events.rate_sanity")
     u32 loudest = 0;
     const size_t maxCalls = rec.maxCallsPerIndividual(&loudest);
     const Creature* lc = w->creatures().find(EntityId(loudest));
+    u32 alarmist = 0;
+    const size_t maxAlarms = rec.maxCallsPerIndividual(CallContext::Alarm, &alarmist);
+    const Creature* ac = w->creatures().find(EntityId(alarmist));
+    NOTE("alarm calls: %zu in total (%.2f /creature/h), at most %zu by one individual (%.1f /h, %s)", rec.calls(CallContext::Alarm),
+         static_cast<double>(rec.calls(CallContext::Alarm)) * perCH, maxAlarms, static_cast<double>(maxAlarms) / hours,
+         ac ? w->db().speciesAt(ac->speciesIndex).id.c_str() : "-");
     NOTE("%.0f creature-hours, %zu events: vocalisations %.2f /creature/h (max individual %zu in %.1f h, %s), formation changes %.2f /group/h, "
          "deaths %zu, births %zu, immigration %zu",
-         creatureHours, rec.total(), rec.count(EventType::Vocalization) * perCH, maxCalls, hours,
-         lc ? w->db().speciesAt(lc->speciesIndex).id.c_str() : "-", static_cast<double>(rec.count(EventType::GroupFormationChange)) / (groups0 * hours),
+         creatureHours, rec.total(), static_cast<double>(rec.count(EventType::Vocalization)) * perCH, maxCalls, hours,
+         lc ? w->db().speciesAt(lc->speciesIndex).id.c_str() : "-", static_cast<double>(rec.count(EventType::GroupFormationChange)) / (static_cast<double>(groups0) * hours),
          rec.count(EventType::Death), rec.count(EventType::Birth) + rec.count(EventType::Hatch), rec.count(EventType::Immigration));
     // Every event is well-formed.
     if (rec.badEvents() > 0)
@@ -142,10 +150,14 @@ NOCTIS_TEST("sim.events.rate_sanity")
     // Biological plausibility bounds (generous): an animal calling more than once a minute, on
     // average over half a day, or a population-wide rate above 20 calls per animal-hour indicates a
     // feedback loop (e.g. alarm calls re-triggering alarm calls), not behaviour.
-    CHECK_LE(rec.count(EventType::Vocalization) * perCH, 20.0);
+    CHECK_LE(static_cast<double>(rec.count(EventType::Vocalization)) * perCH, 20.0);
     CHECK_LE(static_cast<double>(maxCalls) / hours, 60.0);
+    // Alarm calls answer a detected predator: an individual repeating them more than every 3 minutes
+    // for half a day, or more than 2 alarm calls per animal-hour across the community, is a loop.
+    CHECK_LE(static_cast<double>(maxAlarms) / hours, 20.0);
+    CHECK_LE(static_cast<double>(rec.calls(CallContext::Alarm)) * perCH, 2.0);
     // Group formation flapping: more than one change every 5 minutes per group.
-    CHECK_LE(static_cast<double>(rec.count(EventType::GroupFormationChange)) / (groups0 * hours), 12.0);
+    CHECK_LE(static_cast<double>(rec.count(EventType::GroupFormationChange)) / (static_cast<double>(groups0) * hours), 12.0);
     // Mortality over half a day: a few percent at most without catastrophes.
     CHECK_LE(static_cast<double>(rec.count(EventType::Death)), 0.05 * creatureHours / hours + 3.0);
     // Sound field and footprint stores stay bounded.
@@ -221,6 +233,14 @@ NOCTIS_TEST_LONG("sim.soak.20_days")
     REQUIRE(w != nullptr);
     noctistest::EventRecorder rec(*w);
     const std::vector<int> initial = noctistest::aliveBySpecies(*w);
+    std::vector<int> initialAdults(initial.size(), 0);
+    for (size_t si = 0; si < initial.size(); ++si)
+    {
+        if (initial[si] > 0)
+        {
+            initialAdults[si] = w->creatures().census(static_cast<int>(si), w->clock().seconds()).adults;
+        }
+    }
     const size_t alive0 = w->creatures().aliveCount();
     const double biomass0 = w->vegetation().totalBiomassKg();
     std::vector<double> pool0;
@@ -272,16 +292,31 @@ NOCTIS_TEST_LONG("sim.soak.20_days")
         NOTE("day %2d: %4zu alive, %zu deaths so far, %zu carcasses, %zu footprints, veg %.3g kg, %.0f s wall  %s", day, alive, w->creatures().deaths().size(),
              w->carcasses().all().size(), w->tracks().count(), w->vegetation().totalBiomassKg(), secs, noctistest::censusLine(*w).c_str());
     }
-    // Population neither explodes nor collapses: whole community within [0.4x, 2.5x] of the start,
-    // and no species above 4x its initial count (+5).
+    // Population neither explodes nor collapses. Hatchling cohorts are expected in the breeding season
+    // (the run starts on day 140), so the bounds are on adults (which can only increase through
+    // immigration in 20 days) and loose on totals: community within [0.4x, 4x] of the start, adults of a
+    // species at most 2x (+5), all individuals of a species at most 8x (+10).
     CHECK_GE(static_cast<double>(minAlive), 0.4 * static_cast<double>(alive0));
-    CHECK_LE(static_cast<double>(maxAlive), 2.5 * static_cast<double>(alive0));
+    CHECK_LE(static_cast<double>(maxAlive), 4.0 * static_cast<double>(alive0));
     const std::vector<int> fin = noctistest::aliveBySpecies(*w);
+    const double now = w->clock().seconds();
     for (size_t si = 0; si < fin.size(); ++si)
     {
-        if (initial[si] > 0 && fin[si] > 4 * initial[si] + 5)
+        if (initial[si] <= 0)
         {
-            noctistest::failf(__FILE__, __LINE__, "%s exploded: %d -> %d", w->db().speciesAt(static_cast<int>(si)).id.c_str(), initial[si], fin[si]);
+            continue;
+        }
+        const SpeciesCensus cs = w->creatures().census(static_cast<int>(si), now);
+        const char* id = w->db().speciesAt(static_cast<int>(si)).id.c_str();
+        NOTE("%-32s %3d -> %3d alive (%3d juv., %3d adults; adults at start %3d) births %3d deaths %3d immig. %3d emig. %3d", id, initial[si], cs.alive,
+             cs.juveniles, cs.adults, initialAdults[si], cs.births, cs.deaths, cs.immigrants, cs.emigrants);
+        if (cs.adults > 2 * initialAdults[si] + 5)
+        {
+            noctistest::failf(__FILE__, __LINE__, "%s adults exploded: %d -> %d", id, initialAdults[si], cs.adults);
+        }
+        if (fin[si] > 8 * initial[si] + 10)
+        {
+            noctistest::failf(__FILE__, __LINE__, "%s exploded: %d -> %d", id, initial[si], fin[si]);
         }
     }
     // Vegetation and population pools stay finite and bounded.
@@ -306,6 +341,12 @@ NOCTIS_TEST_LONG("sim.soak.20_days")
     const double vocRate = static_cast<double>(rec.count(EventType::Vocalization)) / std::max(1.0, creatureDays * 24.0);
     NOTE("20 days: alive %zu -> %zu (min %zu, max %zu), %zu events, %.2f calls/creature/h, max %zu calls by one individual", alive0,
          w->creatures().aliveCount(), minAlive, maxAlive, rec.total(), vocRate, maxCalls);
+    const size_t maxAlarms = rec.maxCallsPerIndividual(CallContext::Alarm);
+    const double alarmRate = static_cast<double>(rec.calls(CallContext::Alarm)) / std::max(1.0, creatureDays * 24.0);
+    NOTE("alarm calls: %zu (%.2f /creature/h), at most %zu by one individual (%.1f /h)", rec.calls(CallContext::Alarm), alarmRate, maxAlarms,
+         static_cast<double>(maxAlarms) / (20.0 * 24.0));
     CHECK_LE(vocRate, 20.0);
     CHECK_LE(static_cast<double>(maxCalls) / (20.0 * 24.0), 60.0);
+    CHECK_LE(static_cast<double>(maxAlarms) / (20.0 * 24.0), 20.0);
+    CHECK_LE(alarmRate, 2.0);
 }

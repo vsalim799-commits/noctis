@@ -1,5 +1,6 @@
 // Adult Tyrannosaurus rex as a procedural SDF sculpt: a skeleton (bone heads in model space) plus
-// ~200 primitive volumes that sdf_mesher.js smooth-blends into one skin.
+// ~240 primitive volumes (two lofts for the skull and jaw; ~85 of the rest are toe pads, knuckles
+// and claws, ~40 small dermal bumps) that sdf_mesher.js smooth-blends into one skin.
 //
 // Units: metres. Axes: +x forward (snout), +y up, +z the animal's RIGHT side; ground at y = 0.
 // L = left = -z, R = right = +z. Bones rest with identity rotation (local axes = model axes).
@@ -15,11 +16,14 @@
 // left to the skin shader; the sculpt only carries the larger forms (folds, bosses, bumps).
 //
 // The sculpt is built in passes:
-//   1. the head, authored in its own frame (u forward from the jaw joint, v up, w = z), with a
-//      cutter that squares off the upper lip and the lower jaw added after it;
+//   1. the head, authored in its own frame (u forward from the jaw joint, v up, w = z): the upper
+//      head and the lower jaw are lofts through profile stations (top line, lip line, keyhole-shaped
+//      width), the lower jaw set just inside the upper lip so the lip line is a crisp crease;
 //   2. body volumes: lofted elliptical sections for trunk, neck and tail, then muscles and limbs;
-//   3. surface details (eye and lids, brow bosses, nostrils, lip groove, dermal bumps) placed by
+//   3. surface details (eye with lids and brow, brow bosses, nostrils, dermal bumps) placed by
 //      ray-casting onto the volumes above, so they stay attached when the volumes are re-proportioned.
+// The jaw bone is rigged, but there is no mouth interior: keep its rotation within ~0.05 rad
+// (lips parting slightly); a wider gape would need teeth, gums and a tongue.
 // Shapes are combined in array order (sdf_mesher.js): a subtraction only carves what precedes it.
 import { createSdf } from './sdf_mesher.js';
 
@@ -170,13 +174,14 @@ function makeShapes(bones) {
     [1.18, 0.52, 0.13, 0.165, 0.18, 2.2],
     [1.34, 0.46, 0.17, 0.14, 0.23, 2.2],
   ];
-  HLOFT('skull', 'head', UP, 0.1, { capFront: 0.15, capBack: 0.18 });
+  // skinSigma: crisp skull/jaw weights along the lips (the mouth then opens along the lip line).
+  HLOFT('skull', 'head', UP, 0.1, { capFront: 0.15, capBack: 0.18, skinSigma: 0.012 });
   // Lower jaw: follows the upper lip ~2.5 cm inside it (the upper lip overhangs the lower one, as
   // in lizards; lips cover the teeth), its top hidden inside the upper head; deep dentary and very
   // deep surangular region behind it. Bottom profile per station.
   const jawBot = [-0.15, -0.25, -0.26, -0.21, -0.16, -0.11, -0.065, -0.01];
   HLOFT('jaw', 'jaw', UP.map(([u, , , w, c], k) => [u, c + 0.03, jawBot[k], w - 0.024, c - 0.035, 2.2]), 0.02,
-    { capFront: 0.115, capBack: 0.14 });
+    { capFront: 0.115, capBack: 0.14, skinSigma: 0.008 });
   both((s, m, mr) => {
     // Cheek skin behind the rictus, joining the upper head to the jaw over the jaw joint.
     HE('jaw', 'jaw', m([0.2, 0.08, 0.35]), [0.2, 0.12, 0.07], mr([0, 0.2, 0]), 0.08);
@@ -217,8 +222,8 @@ function makeShapes(bones) {
   // ---- tail ------------------------------------------------------------------------------------
   // Depth and width at each tail joint (plausible: very deep base for M. caudofemoralis, laterally
   // compressed, tapering to a point). One elliptical round cone per segment on its own bone.
-  const tailDepth = [1.08, 0.97, 0.86, 0.76, 0.66, 0.56, 0.46, 0.37, 0.28, 0.18, 0.05];
-  const tailWidth = [0.88, 0.72, 0.6, 0.5, 0.42, 0.35, 0.29, 0.23, 0.17, 0.11, 0.035];
+  const tailDepth = [1.08, 0.95, 0.82, 0.71, 0.61, 0.51, 0.42, 0.33, 0.25, 0.16, 0.05];
+  const tailWidth = [0.88, 0.7, 0.57, 0.47, 0.39, 0.32, 0.26, 0.21, 0.15, 0.1, 0.035];
   const tailSt = tailDepth.map((d, i) => {
     const x = TAIL_X0 + TAIL_SEG * i, yv = tailY(x);
     // Vertebrae in the upper third: long chevrons make the part under the centra the deeper one.
@@ -227,7 +232,7 @@ function makeShapes(bones) {
   loft((i) => `tail${i + 1}`, 'tail', tailSt, (i) => [0.14, 0.06][i] ?? 0.02);
   both((s, m, mr) => {
     // M. caudofemoralis longus: bulges low on the tail base towards the femur's 4th trochanter.
-    E('tail1', 'tail', m([-1.15, 2.86, 0.27]), [1.0, 0.33, 0.21], mr([0, 0.05, 0.07]), 0.2);
+    E('tail1', 'tail', m([-1.15, 2.88, 0.25]), [1.05, 0.3, 0.21], mr([0, 0.05, 0.07]), 0.3);
   });
 
   // ---- neck ------------------------------------------------------------------------------------
@@ -276,10 +281,10 @@ function makeShapes(bones) {
     RC(mt, 'foot', m([0.19, 0.73, 0.44]), m([0.4, 0.22, 0.43]), 0.14, 0.16, 0.06, { scale: [1, 1, 1.2] });
     E(mt, 'foot', m([0.31, 0.48, 0.44]), [0.06, 0.25, 0.13], [0, 0, 0.4], 0.05);              // flat front (scute plate)
     E(to, 'foot', m([0.38, 0.11, 0.43]), [0.21, 0.11, 0.155], [0, 0, 0], 0.12);               // metatarsal (heel) pad
-    // Toes II-IV splay ~28 deg from digit III (II medial = towards the midline = -z on the right
+    // Toes II-IV splay ~35 deg from digit III (II medial = towards the midline = -z on the right
     // foot). Each toe: phalanges as round cones with a knuckle on top and a digital pad under each
-    // joint, then a broad, blunt tyrannosaurid claw curving to the ground. Digit III ~0.55 m incl.
-    // claw, so the footprint is ~0.8 m long and ~0.7 m wide.
+    // joint, then a broad, blunt tyrannosaurid claw curving to the ground. Digit III ~0.53 m incl.
+    // claw, so the footprint (heel pad to claw III) is ~0.85 m long and ~0.7 m wide.
     const toe = (yaw, len, r0, nPh) => {
       const c = Math.cos(yaw), sn = Math.sin(yaw);
       const at = (u, y) => m([0.46 + c * (len * u + 0.04), y, 0.43 + sn * (len * u + 0.1)]);
@@ -297,9 +302,9 @@ function makeShapes(bones) {
       RC(to, 'foot', at(uc, yc + 0.01), at(uc + 0.13, yc - 0.02), rc * 0.8, rc * 0.45, 0.012, { feature: 'claw' });
       RC(to, 'foot', at(uc + 0.13, yc - 0.02), at(uc + 0.24, 0.012), rc * 0.45, 0.01, 0.008, { feature: 'claw' });
     };
-    toe(-0.5, 0.44, 0.08, 3);    // digit II
-    toe(0, 0.52, 0.09, 4);       // digit III
-    toe(0.5, 0.46, 0.078, 4);    // digit IV
+    toe(-0.62, 0.41, 0.08, 3);   // digit II
+    toe(0, 0.48, 0.09, 4);       // digit III
+    toe(0.62, 0.43, 0.078, 4);   // digit IV
     // Hallux (digit I): small, raised off the ground, on the medial back of the metatarsus.
     RC(mt, 'foot', m([0.29, 0.42, 0.36]), m([0.24, 0.28, 0.31]), 0.045, 0.032, 0.03);
     RC(mt, 'foot', m([0.24, 0.28, 0.31]), m([0.27, 0.18, 0.3]), 0.027, 0.008, 0.01, { feature: 'claw' });
@@ -374,15 +379,19 @@ function makeShapes(bones) {
       CAP('skull', 'head', L(-0.06, 0.064, 0.02), L(0.06, 0.068, 0.018), 0.007, 0.008, { sign: -1 }); // crease above the upper lid
       E('skull', 'head', L(0.0, 0.0, -0.024), [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
       // Brow: lacrimal (front) to postorbital (back), above the upper lid, overhanging it.
-      CAP('skull', 'head', L(0.15, 0.082, -0.008), L(-0.13, 0.092, -0.002), 0.045, 0.055);
+      CAP('skull', 'head', L(0.15, 0.086, -0.004), L(-0.13, 0.096, 0.002), 0.05, 0.055);
     });
     // ---- brow bosses: postorbital boss above-behind the eye, lacrimal horn above-in-front of it.
     const po = castAt(H(0.44, 0.76, 0.2 * sg), HD([-0.1, -0.6, -sg]));
     const la = castAt(H(0.76, 0.72, 0.12 * sg), HD([0, -0.85, -0.5 * sg]));
     details.push(() => {
-      E('skull', 'head', add(po, normal(po), -0.03), [0.11, 0.065, 0.085], mr(HR([0, 0.3, 0.15])), 0.045); // postorbital boss
-      E('skull', 'head', add(la, normal(la), -0.025), [0.1, 0.05, 0.06], mr(HR([0, 0.25, -0.2])), 0.04);   // lacrimal horn
+      E('skull', 'head', add(po, normal(po), -0.025), [0.13, 0.075, 0.1], mr(HR([0, 0.3, 0.15])), 0.045);  // postorbital boss
+      E('skull', 'head', add(la, normal(la), -0.02), [0.12, 0.06, 0.07], mr(HR([0, 0.25, -0.2])), 0.04);   // lacrimal horn
     });
+    // ---- antorbital fossa: the skin over the antorbital fenestra sits ~1.5 cm lower than the
+    // maxilla around it (plausible), which keeps the face from looking inflated.
+    const ao = castAt(H(0.92, 0.38, 0.2 * sg), HD([0, -0.15, -sg]));
+    details.push(() => E('skull', 'head', add(ao, normal(ao), 0.06 - 0.015), [0.2, 0.09, 0.06], mr(HR([0, 0.2, 0.12])), 0.1, { sign: -1 }));
     // ---- nostril: external naris near the top front of the snout, opening forward-outward --------
     const na = castAt(H(1.3, 0.45, 0.09 * sg), HD([0.35, 0.1, -sg]));
     const nn = normal(na);
@@ -390,15 +399,22 @@ function makeShapes(bones) {
       E('skull', 'head', add(na, nn, -0.02), [0.07, 0.045, 0.04], mr(HR([0, 0.4, -0.25])), 0.04);           // narial swelling
       E('skull', 'head', add(na, nn, 0.012), [0.042, 0.016, 0.03], mr(HR([0, 0.45, -0.3])), 0.012, { sign: -1 }); // opening
     });
-    // The lip line itself is the step between the cut upper lip and the slightly narrower lower
-    // jaw (see the lip cutter above): an extra carved groove only produced aliasing at this scale.
+    // The lip line itself is the crease between the upper-head loft and the lower jaw loft set just
+    // inside it (section 1): an extra carved groove only produced aliasing at this scale.
     // ---- dermal bumps: rugose skin over the nasals, around the orbit and on the jugal --------------
     const R = rng(sg > 0 ? 17 : 29);
-    const bump = (p, r) => { const n = normal(p); details.push(() => E('skull', 'head', add(p, n, -0.65 * r), [r * 1.2, r, r * 1.1], [0, 0, 0], 0.018)); };
+    // A bump is a sphere-ish blob sunk into the surface; `embed` (fraction of r below the surface)
+    // sets how proud it stands: knobs on the brow, low flat mounds (large scales) on the cheek.
+    const bump = (p, r, embed = 0.65) => { const n = normal(p); details.push(() => E('skull', 'head', add(p, n, -embed * r), [r * 1.2, r, r * 1.1], [0, 0, 0], 0.018)); };
     // Row of rugosities along each side of the nasals, from the nostril back to the lacrimal horn.
     for (let k = 0; k < 7; k++) {
       const u = 1.18 - 0.055 * k + 0.02 * R();
       bump(castAt(H(u, 0.75, (0.075 + 0.012 * k + 0.015 * R()) * sg), HD([0, -1, -0.25 * sg])), 0.018 + 0.008 * R());
+    }
+    // Cluster of dermal bumps on the jugal, below and behind the eye (rugose jugal "horn" region).
+    for (let k = 0; k < 8; k++) {
+      const u = 0.26 + 0.32 * R(), v = 0.18 + 0.18 * R();
+      bump(castAt(H(u, v, 0.3 * sg), HD([0.1, 0, -sg])), 0.016 + 0.008 * R(), 0.82);
     }
     // Knobs along the brow above the eye (cf. the rugose lacrimal / postorbital surfaces).
     for (let k = 0; k < 6; k++) {

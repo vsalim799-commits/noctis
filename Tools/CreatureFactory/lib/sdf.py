@@ -235,7 +235,10 @@ class Compiled:
                 self.box[i, 3:] = (tab[:, 0:3] + ext[:, None]).max(0)
             else:
                 o, R = loft_frame(s)
-                u0, du, tab = _loft_table(s["sections"], caps=s.get("caps"))
+                u0, du, tab = _loft_table(s["sections"])
+                cp = s.get("caps") or [0.0, 0.0]
+                P[16] = cp[0]
+                P[17] = cp[1]
                 P[0:3] = o
                 P[3:12] = R.T.reshape(-1)
                 P[12] = u0
@@ -246,8 +249,8 @@ class Compiled:
                 toff += len(tab)
                 # conservative box: union of the section boxes in local space, rotated
                 us = u0 + du * np.arange(len(tab))
-                lo = np.array([us.min(), (tab[:, 0] - tab[:, 2]).min(), -tab[:, 3].max()])
-                hi = np.array([us.max(), (tab[:, 0] + tab[:, 1]).max(), tab[:, 3].max()])
+                lo = np.array([us.min() - P[16], (tab[:, 0] - tab[:, 2]).min(), -tab[:, 3].max()])
+                hi = np.array([us.max() + P[17], (tab[:, 0] + tab[:, 1]).max(), tab[:, 3].max()])
                 corners = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
                 wc = corners @ R.T + o
                 self.box[i, :3] = wc.min(0)
@@ -332,8 +335,9 @@ class Compiled:
 # ----------------------------------------------------------------------------------------------
 # numba kernels
 @njit(cache=True, fastmath=True)
-def _se_d2(yy, w, top, bot, hw, nt, nbt):
-    """First-order distance to a section made of two half-superellipses (upper/lower)."""
+def _se_r(yy, w, top, bot, hw, nt, nbt):
+    """Normalised radius r of a section made of two half-superellipses (r = 1 on the surface) and
+    its gradient (d r / d yy, d r / d w)."""
     if yy > 0:
         b = top
         ne = nt
@@ -343,15 +347,25 @@ def _se_d2(yy, w, top, bot, hw, nt, nbt):
     X = abs(w) / hw
     Y = abs(yy) / b
     if X < 1e-9 and Y < 1e-9:
-        return -min(hw, b)
+        return 0.0, 0.0, 0.0
     m = max(X, Y)
     F = (X / m) ** ne + (Y / m) ** ne
     r = m * F ** (1.0 / ne)
     gx = (X / r) ** (ne - 1.0) / hw
     gy = (Y / r) ** (ne - 1.0) / b
+    if w < 0:
+        gx = -gx
+    if yy < 0:
+        gy = -gy
+    return r, gy, gx
+
+
+@njit(cache=True, fastmath=True)
+def _se_d2(yy, w, top, bot, hw, nt, nbt):
+    r, gy, gx = _se_r(yy, w, top, bot, hw, nt, nbt)
     g = math.sqrt(gx * gx + gy * gy)
     d = (r - 1.0) / max(g, 1e-6)
-    lo = -min(hw, b)
+    lo = -min(hw, top, bot)
     if d < lo:
         d = lo
     return d
@@ -365,7 +379,8 @@ def _sweep_sec(SW, r0, f, v, w):
     hw = SW[r0, 15] * (1 - f) + SW[r0 + 1, 15] * f
     nt = SW[r0, 16] * (1 - f) + SW[r0 + 1, 16] * f
     nb = SW[r0, 17] * (1 - f) + SW[r0 + 1, 17] * f
-    return _se_d2(v - cy, w, top, bot, hw, nt, nb)
+    r, gy, gx = _se_r(v - cy, w, top, bot, hw, nt, nb)
+    return r, gy, gx, min(hw, min(top, bot)), (top + bot + 2 * hw) / 4.0
 
 
 @njit(cache=True, fastmath=True)
@@ -434,34 +449,42 @@ def sweep_eval(SW, off, n, step, x, y, z):
     v = (px * ux + py * uy + pz * uz) / ul
     w = (px * sx + py * sy + pz * sz) / sl
     a = (px * tx + py * ty + pz * tz) / tl
-    d2 = _sweep_sec(SW, r0, f, v, w)
-    if abs(d2) < 0.3:
-        # slope of the section along the curve (neighbour samples), first-order correction
-        jm = max(0, bs - 1)
-        jp = min(n - 2, bs + 1)
-        dp = _sweep_sec(SW, off + jp, f, v, w)
-        dm = _sweep_sec(SW, off + jm, f, v, w)
-        ds = 0.0
-        for q in range(3):
-            ds += (SW[off + jp, q] - SW[off + jm, q]) ** 2
-        ds = math.sqrt(ds) + 1e-9
-        s = (dp - dm) / ds
-        d2 = d2 / math.sqrt(1.0 + s * s)
+    r, gv, gw, rmin, rcap = _sweep_sec(SW, r0, f, v, w)
+    # derivative of r along the curve (section changing): neighbour samples, same (v, w)
+    jm = max(0, bs - 1)
+    jp = min(n - 2, bs + 1)
+    rp, _a, _b, _c, _d = _sweep_sec(SW, off + jp, f, v, w)
+    rm, _a, _b, _c, _d = _sweep_sec(SW, off + jm, f, v, w)
+    ds = 0.0
+    for q in range(3):
+        ds += (SW[off + jp, q] - SW[off + jm, q]) ** 2
+    ds = math.sqrt(ds) + 1e-9
+    gs = (rp - rm) / ds
     out = 0.0
     if bs == 0 and bt < 0:
         out = -a
     elif bs == n - 2 and bt > 1:
         out = a
     if out > 0:
-        if d2 > 0:
-            d2 = math.sqrt(d2 * d2 + out * out)
-        else:
-            d2 = max(d2, out)
+        # rounded cap: half-ellipsoid continuation of the end section
+        L = rcap
+        rc = math.sqrt((out / L) ** 2 + r * r)
+        if rc < 1e-9:
+            return -rmin, bs + f
+        gu = out / (L * L * rc)
+        gv = gv * r / rc
+        gw = gw * r / rc
+        r = rc
+        gs = gu
+    g = math.sqrt(gv * gv + gw * gw + gs * gs)
+    d2 = (r - 1.0) / max(g, 1e-6)
+    if d2 < -rmin:
+        d2 = -rmin
     return d2, bs + f
 
 
 @njit(cache=True, fastmath=True)
-def _loft_d2(LT, toff, n, u0, du, u, v, w):
+def _loft_sec(LT, toff, n, u0, du, u, v, w):
     t = (u - u0) / du
     if t < 0.0:
         t = 0.0
@@ -478,31 +501,50 @@ def _loft_d2(LT, toff, n, u0, du, u, v, w):
     hw = LT[r0, 3] * (1 - f) + LT[r0 + 1, 3] * f
     nt = LT[r0, 4] * (1 - f) + LT[r0 + 1, 4] * f
     nbt = LT[r0, 5] * (1 - f) + LT[r0 + 1, 5] * f
-    yy = v - cy
-    if yy > 0:
-        b = top
-        ne = nt
-    else:
-        b = bot
-        ne = nbt
-    X = abs(w) / hw
-    Y = abs(yy) / b
-    if X < 1e-9 and Y < 1e-9:
-        return -min(hw, b)
-    # r = (X^n + Y^n)^(1/n), computed scale-safely
-    m = max(X, Y)
-    xn = (X / m) ** ne
-    ynn = (Y / m) ** ne
-    F = xn + ynn
-    r = m * F ** (1.0 / ne)
-    # dr/dX = (X/r)^(n-1)
-    gx = (X / r) ** (ne - 1.0) / hw
-    gy = (Y / r) ** (ne - 1.0) / b
-    g = math.sqrt(gx * gx + gy * gy)
+    r, gy, gx = _se_r(v - cy, w, top, bot, hw, nt, nbt)
+    return r, gy, gx, min(hw, min(top, bot))
+
+
+@njit(cache=True, fastmath=True)
+def _loft_d2(LT, toff, n, u0, du, u, v, w, cap0, cap1):
+    u1 = u0 + du * (n - 1)
+    uc = min(max(u, u0), u1)
+    r, gv, gw, rmin = _loft_sec(LT, toff, n, u0, du, uc, v, w)
+    h = 0.01
+    rp, _a, _b, _c = _loft_sec(LT, toff, n, u0, du, min(uc + h, u1), v, w)
+    rm, _a, _b, _c = _loft_sec(LT, toff, n, u0, du, max(uc - h, u0), v, w)
+    gu = (rp - rm) / (min(uc + h, u1) - max(uc - h, u0) + 1e-12)
+    out = 0.0
+    if u < u0:
+        out = u0 - u
+    elif u > u1:
+        out = u - u1
+    L = cap0 if u < u0 else cap1
+    if out > 0 and L > 0:
+        # rounded cap: half-ellipsoid continuation of the end section over L metres
+        rc = math.sqrt((out / L) ** 2 + r * r)
+        if rc < 1e-9:
+            return -rmin
+        gu = out / (L * L * rc)
+        gv = gv * r / rc
+        gw = gw * r / rc
+        g = math.sqrt(gv * gv + gw * gw + gu * gu)
+        d = (rc - 1.0) / max(g, 1e-6)
+        if d < -rmin:
+            d = -rmin
+        return d
+    if out > 0:
+        # flat end
+        d = (r - 1.0) / max(math.sqrt(gv * gv + gw * gw), 1e-6)
+        if d < -rmin:
+            d = -rmin
+        if d > 0:
+            return math.sqrt(d * d + out * out)
+        return max(d, out)
+    g = math.sqrt(gv * gv + gw * gw + gu * gu)
     d = (r - 1.0) / max(g, 1e-6)
-    lo = -min(hw, b)
-    if d < lo:
-        d = lo
+    if d < -rmin:
+        d = -rmin
     return d
 
 
@@ -570,24 +612,7 @@ def shape_dist(kind, P, LT, SW, i, x, y, z):
         n = int(P[i, 14])
         toff = int(P[i, 15])
         u1 = u0 + du * (n - 1)
-        d2 = _loft_d2(LT, toff, n, u0, du, u, v, w)
-        # account for the section changing along u (first-order distance correction)
-        if abs(d2) < 0.25:
-            h = 0.01
-            dp = _loft_d2(LT, toff, n, u0, du, u + h, v, w)
-            dm = _loft_d2(LT, toff, n, u0, du, u - h, v, w)
-            s = (dp - dm) / (2 * h)
-            d2 = d2 / math.sqrt(1.0 + s * s)
-        out = 0.0
-        if u < u0:
-            out = u0 - u
-        elif u > u1:
-            out = u - u1
-        if out > 0:
-            if d2 > 0:
-                return math.sqrt(d2 * d2 + out * out)
-            return max(d2, out)
-        return d2
+        return _loft_d2(LT, toff, n, u0, du, u, v, w, P[i, 16], P[i, 17])
 
 
 @njit(cache=True, fastmath=True)
@@ -608,7 +633,7 @@ def field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z):
         ex = max(g0[0] - x, 0.0, x - (g0[0] + dims[0] * cell))
         ey = max(g0[1] - y, 0.0, y - (g0[1] + dims[1] * cell))
         ez = max(g0[2] - z, 0.0, z - (g0[2] + dims[2] * cell))
-        return math.sqrt(ex * ex + ey * ey + ez * ez) + 0.25
+        return math.sqrt(ex * ex + ey * ey + ez * ez) + 0.05
     d = 1e9
     for q in range(cstart[c], cstart[c + 1]):
         i = citems[q]
@@ -626,7 +651,7 @@ def field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z):
             h = kk - abs(d - nd)
             d = max(d, nd) + (h * h * 0.25 / kk if h > 0 else 0.0)
     if d > 1e8:
-        d = 0.25
+        d = 0.1          # empty cell: no shape within the culling margin (>= band + 0.03 = 0.11 m)
     return d
 
 

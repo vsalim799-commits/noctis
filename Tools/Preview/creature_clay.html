@@ -89,7 +89,7 @@ scene.add(mesh);
 // Skinning test: bend neck and tail, open the jaw, step the right leg, raise the left arm.
 if (P.get('pose') === '1') {
   const r = (name, x, y, z) => boneMap.get(name).rotation.set(x, y, z);
-  r('neck2', 0, 0.25, 0.1); r('neck3', 0, 0.2, 0.05); r('jaw', 0, 0, -0.35);
+  r('neck2', 0, 0.25, 0.1); r('neck3', 0, 0.2, 0.05); r('jaw', 0, 0, -(+(P.get('jaw') ?? 0.35)));   // ?jaw=rad
   for (let i = 1; i <= 10; i++) r(`tail${i}`, 0, -0.06, 0.02);
   r('thighR', 0, 0, 0.5); r('shinR', 0, 0, -0.8); r('metaR', 0, 0, 0.6); r('toesR', 0, 0, -0.3);
   r('upperArmL', 0, 0, 0.6);
@@ -158,6 +158,33 @@ window.renderView = (name) => {
   renderer.render(scene, cam);
   return true;
 };
+// Measurements against the science targets (Data/Species/hell_creek/tyrannosaurus_rex.json):
+// length 12 m, hip height 3.1 m, foot 0.8 x 0.7 m, femur 1.3 / tibia 1.15 / metatarsus 0.6 m,
+// skull ~1.4-1.5 m, mass 6-9.5 t (7 t typical).
+{
+  const head = (n) => TREX_BONES.find((b) => b.name === n).head;
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+  const pos = mesh.geometry.attributes.position, n = pos.count;
+  let backTop = 0, snout = -1e9, headW = 0, fx0 = 1e9, fx1 = -1e9, fz0 = 1e9, fz1 = -1e9;
+  const jawX = head('jaw')[0];
+  for (let i = 0; i < n; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    if (Math.abs(x) < 0.1) backTop = Math.max(backTop, y);
+    if (x > jawX - 0.1) { snout = Math.max(snout, x); if (y > 3.0) headW = Math.max(headW, 2 * Math.abs(z)); }
+    if (y < 0.12 && z > 0) { fx0 = Math.min(fx0, x); fx1 = Math.max(fx1, x); fz0 = Math.min(fz0, z); fz1 = Math.max(fz1, z); }
+  }
+  stats.measure = {
+    length: stats.bbox.max[0] - stats.bbox.min[0],
+    hipHeight: head('thighR')[1],
+    backHeightOverHip: backTop,
+    skullJawJointToSnout: snout - jawX,
+    headWidth: headW,
+    femur: dist(head('thighR'), head('shinR')), tibia: dist(head('shinR'), head('metaR')), metatarsus: dist(head('metaR'), head('toesR')),
+    footprintLength: fx1 - fx0, footprintWidth: fz1 - fz0,
+    tail: head('tail1')[0] - stats.bbox.min[0],
+    massT: [0.8 * stats.volume, 0.95 * stats.volume],    // bulk density 0.8-0.95 t/m3 (air sacs; assumption)
+  };
+}
 const bb = stats.bbox;
 document.getElementById('l').textContent =
   `T. rex — sculpture SDF (argile) · longueur ${(bb.max[0] - bb.min[0]).toFixed(2)} m · hauteur max ${bb.max[1].toFixed(2)} m · ` +

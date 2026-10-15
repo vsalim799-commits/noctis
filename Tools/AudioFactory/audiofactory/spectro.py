@@ -22,7 +22,10 @@ THUMB_T = 160    # thumbnail time columns
 def _stft_db(x: np.ndarray, low_content: bool):
     nper = 8192 if low_content else 2048
     nper = min(nper, max(256, 2 ** int(math.floor(math.log2(max(256, x.shape[0]))))))
-    hop = max(64, nper // 8)
+    if x.shape[0] < 4 * C.SR:
+        # Short one-shots (footsteps, foley): keep at least ~16 analysis frames (added in 1.1).
+        nper = min(nper, max(512, 2 ** int(math.floor(math.log2(max(512, x.shape[0] // 16))))))
+    hop = max(64, nper // 8, int(math.ceil(x.shape[0] / 1500.0)))      # long loops: cap the frame count
     f, t, Z = signal.stft(x, fs=C.SR, nperseg=nper, noverlap=nper - hop, boundary=None, padded=False)
     S = 20.0 * np.log10(np.abs(Z) + 1e-9)
     return f, t, S

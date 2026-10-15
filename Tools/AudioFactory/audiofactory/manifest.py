@@ -29,6 +29,9 @@ SOUND_CLASSES = {
     "SC_Equipment_Drone": {"parent": "SC_Equipment"},
     "SC_Equipment_Handheld": {"parent": "SC_Equipment"},
     "SC_Equipment_Radio": {"parent": "SC_Equipment"},
+    "SC_Player": {"parent": "SC_Noctis_Master"},
+    "SC_Player_Footstep": {"parent": "SC_Player"},
+    "SC_Player_Foley": {"parent": "SC_Player"},
 }
 
 
@@ -70,6 +73,9 @@ ATTENUATION_PRESETS = {
     "ATT_Drone": _att(2, 1000),
     "ATT_Drone_DistanceBaked": _att(50, 1500, lpf=False),
     "ATT_Handheld_FirstPerson": _att(None, None, spatial=False, lpf=False, note="Matériel tenu par le joueur : 2D, sans atténuation."),
+    "ATT_Generator_DistanceBaked": _att(50, 3000, lpf=False,
+                                        note="Variantes de distance du groupe électrogène : absorption ISO 9613-1 déjà appliquée dans le fichier."),
+    "ATT_Water_Line": _att(5, 400, note="Rivière : source linéique ; placer plusieurs émetteurs le long du chenal (-3 dB par doublement de distance)."),
 }
 
 CONCURRENCY_PRESETS = {
@@ -84,6 +90,7 @@ CONCURRENCY_PRESETS = {
     "CON_Weather_Rain": {"max_count": 1, "resolution_rule": "StopOldest", "limit_to_owner": False},
     "CON_Equipment_Unique": {"max_count": 1, "resolution_rule": "StopOldest", "limit_to_owner": True},
     "CON_Equipment_Handheld": {"max_count": 3, "resolution_rule": "StopOldest", "limit_to_owner": False},
+    "CON_Water_Splash": {"max_count": 8, "resolution_rule": "StopQuietest", "limit_to_owner": False},
 }
 
 
@@ -146,6 +153,9 @@ class Sound:
     normalize: tuple = ("peak", -1.0)
     fade: bool = True
     variant: dict = field(default_factory=dict)
+    caption: dict = field(default_factory=dict)  # {"fr": ..., "en": ...} accessibility caption
+    subject: str = "paleo"        # paleo | physical_environment | researcher | modern_equipment
+    loop_xfade: bool = False      # loop already made seamless by construction (circular rendering)
 
     def record(self, ds: D.Dataset) -> dict:
         r = {
@@ -167,6 +177,15 @@ class Sound:
             "ue5": self.ue5,
             "qa": self.qa,
         }
+        r["subject"] = self.subject
+        if self.subject in ("researcher", "modern_equipment"):
+            r["confidence_note_fr"] = ("Son moderne de conception de jeu (equipment.json : hypothèses de conception) ; "
+                                       "le niveau de confiance ne porte pas sur une question paléontologique.")
+        if self.caption:
+            cap = dict(self.caption)
+            if self.hypothesis:
+                cap = {"fr": cap["fr"] + " (hypothèse)", "en": cap["en"] + " (hypothesis)"}
+            r["caption"] = cap
         if self.profile_toggle:
             r["profile_toggle"] = self.profile_toggle
             r["profile_states"] = ds.profile_toggle_states(self.profile_toggle)

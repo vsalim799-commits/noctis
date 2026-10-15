@@ -1,6 +1,7 @@
 // SDF "sculpt" -> skinned mesh.
-// A creature is described as primitive volumes (ellipsoids, capsules, round cones) attached to
-// bones and merged with smooth unions / smooth subtractions, like clay blobs. We sample the signed
+// A creature is described as primitive volumes (ellipsoids, capsules, round cones, and lofts:
+// sections swept through profile stations, see compileLoft) attached to bones and merged with
+// smooth unions / smooth subtractions, like clay blobs. We sample the signed
 // distance only in a narrow band around the surface (block culling), polygonise it with surface
 // nets, snap every vertex onto the exact iso-surface, and derive skin weights, region ids, cavity
 // and skin-fold attributes from which primitives shape each vertex. No external assets, no UVs.
@@ -147,6 +148,7 @@ function compileShapes(shapes, boneIndex) {
     region: new Uint8Array(n),
     feature: new Uint8Array(n),
     separate: new Uint8Array(n),     // 1 = meshed on its own (not part of the skin field)
+    skinSig: new Float64Array(n),    // skin-weight falloff distance (m)
     k: new Float64Array(n),          // smooth-min radius
     p: new Float64Array(n * STRIDE),
     box: new Float64Array(n * 6),    // min xyz, max xyz (unexpanded)
@@ -165,6 +167,9 @@ function compileShapes(shapes, boneIndex) {
     S.k[i] = Math.max(s.blend ?? 0.05, 1e-4);
     S.sign[i] = s.sign === -1 ? -1 : 1;
     S.separate[i] = s.separate ? 1 : 0;
+    // Skin weights fall off with the distance to the shape's own surface over `skinSigma` (default:
+    // a bit more than the blend radius); a small value keeps a crisp split, e.g. along the lips.
+    S.skinSig[i] = s.skinSigma ?? 0.3 * S.k[i] + 0.02;
     const o = i * STRIDE, P = S.p, bo = i * 6;
     if (s.kind === 'loft') {
       S.kind[i] = 2;
@@ -565,6 +570,14 @@ export function cacheKey(bones, shapes, opts = {}) {
  * Build a skinned mesh from a bone list and an SDF shape list.
  * opts: { voxel (m; default shapes.voxel, else 0.035), zones (default shapes.zones), material,
  *         smoothIterations = 6 }
+ *
+ * Shape fields (model space, rest pose, metres): { bone, region, blend (smooth-min radius),
+ *   sign?: -1 (smooth subtraction), feature?: 'eye'|'claw', separate?: true, skinSigma?, folds? } plus
+ *   ellipsoid: center, radii, rotation? (XYZ Euler)
+ *   capsule / roundCone: a, b, ra, rb?, scale? ([x,y,z] about `a`: elliptical sections)
+ *   loft: origin, rotation?, stations [[x, top, bot, w, c, n], ...] in the local frame
+ *         (local x = sweep axis), capFront?, capBack? — see compileLoft.
+ * Returns { mesh (THREE.SkinnedMesh), skeleton, boneMap (name -> THREE.Bone), restGeometry, stats }.
  */
 export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   const voxel = opts.voxel ?? shapes.voxel ?? 0.035;
@@ -696,6 +709,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     eps = 0.35 * h;
     for (let it = 0; it < 2; it++) {
       const d = sdf(fine, x, y, z);
+      if (it > 0 && Math.abs(d) < 0.002 * h) break;     // already on the surface: skip the gradient
       grad(x, y, z, g);
       const gl2 = g[0] * g[0] + g[1] * g[1] + g[2] * g[2];
       if (gl2 < 1e-12) break;
@@ -782,7 +796,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
         const i = fine.list[q];
         if (S.sign[i] < 0) continue;
         const di = shapeDist(S, i, x, y, z);
-        const sig = 0.3 * S.k[i] + 0.02;
+        const sig = S.skinSig[i];
         const w = Math.exp(-Math.max(di, 0) / sig);
         if (w < 1e-3) continue;
         W[vi * nB + S.bone[i]] += w; sum += w;
@@ -808,6 +822,19 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     const a = index[t], b = index[t + 1], c = index[t + 2];
     adj[fillA[a]++] = b; adj[fillA[a]++] = c; adj[fillA[b]++] = c; adj[fillA[b]++] = a; adj[fillA[c]++] = a; adj[fillA[c]++] = b;
   }
+  // Smoothing never crosses between the head and jaw regions: the upper lip follows the skull and
+  // the lower lip the jaw, so the mouth opens along the lip line instead of smearing.
+  const HEAD = REGIONS.indexOf('head'), JAW = REGIONS.indexOf('jaw');
+  const degF = new Int32Array(nV + 1), adjF = new Int32Array(adj.length);
+  for (let vi = 0, o = 0; vi < nV; vi++) {
+    const rv = region[vi];
+    for (let a = deg[vi]; a < deg[vi + 1]; a++) {
+      const rn = region[adj[a]];
+      if ((rv === HEAD && rn === JAW) || (rv === JAW && rn === HEAD)) continue;
+      adjF[o++] = adj[a];
+    }
+    degF[vi + 1] = o;
+  }
   // Smoothing runs per mesh part (main grid, each detail zone) over the bones present in that part;
   // finer parts get more iterations so every part is smoothed over about the same distance
   // (diffusion radius ~ cell size x sqrt(iterations)) and their weights agree where they overlap.
@@ -829,11 +856,11 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     const iters = Math.round(baseIters * (h / grp.h) ** 2);
     for (let it = 0; it < iters; it++) {
       for (const vi of verts) {
-        const s0 = deg[vi], s1 = deg[vi + 1], cnt = s1 - s0, base = vi * nB;
+        const s0 = degF[vi], s1 = degF[vi + 1], cnt = s1 - s0, base = vi * nB;
         if (cnt === 0) { for (const q of bl) Wb[base + q] = Wa[base + q]; continue; }
         const inv = 0.5 / cnt;
         for (const q of bl) Wb[base + q] = 0.5 * Wa[base + q];
-        for (let a = s0; a < s1; a++) { const nb = adj[a] * nB; for (const q of bl) Wb[base + q] += inv * Wa[nb + q]; }
+        for (let a = s0; a < s1; a++) { const nb = adjF[a] * nB; for (const q of bl) Wb[base + q] += inv * Wa[nb + q]; }
       }
       const t = Wa; Wa = Wb; Wb = t;
     }

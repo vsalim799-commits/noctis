@@ -80,6 +80,8 @@ public:
 	const FNoctisFrameOutput* GetPreviousFrame() const;
 	float GetInterpolationAlpha() const;
 	const FNoctisSpace& GetSpace() const { return Space; }
+	/** Terrain rectangle in the core frame (immutable after boot). */
+	const noctis::Rect2& GetCoreBounds() const { return CoreBounds; }
 
 	// ---- Species ------------------------------------------------------------------------------------
 
@@ -128,6 +130,7 @@ private:
 
 	TUniquePtr<FNoctisSimulationRunner> Runner;
 	FNoctisSpace Space;
+	noctis::Rect2 CoreBounds{};
 	TArray<FNoctisSpeciesInfo> Species;
 	TMap<FName, int32> SpeciesById;
 	FNoctisFrameInput NextInput;

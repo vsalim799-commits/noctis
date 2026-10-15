@@ -79,8 +79,11 @@ public:
     noctis::u64 hash() const { return hasher_.h; }
     size_t total() const { return total_; }
     size_t count(noctis::EventType t) const { return perType_[static_cast<size_t>(t)]; }
-    // Largest number of vocalisations attributed to a single individual.
+    // Largest number of vocalisations attributed to a single individual (all call contexts, or one).
     size_t maxCallsPerIndividual(noctis::u32* who = nullptr) const;
+    size_t maxCallsPerIndividual(noctis::CallContext context, noctis::u32* who = nullptr) const;
+    // Vocalisations of one call context (alarm, contact, courtship...).
+    size_t calls(noctis::CallContext context) const;
     // Events with a non-finite time/position/magnitude or an invalid type.
     size_t badEvents() const { return bad_; }
     // Events whose time is earlier than an event dispatched before them.
@@ -96,7 +99,14 @@ private:
     Hasher hasher_;
     size_t total_ = 0;
     std::array<size_t, static_cast<size_t>(noctis::EventType::Count) + 1> perType_{};
-    std::vector<std::pair<noctis::u32, size_t>> callsByEmitter_;
+    struct EmitterCalls
+    {
+        noctis::u32 emitter = 0;
+        size_t total = 0;
+        std::array<size_t, 16> byContext{};
+    };
+    std::vector<EmitterCalls> callsByEmitter_;
+    std::array<size_t, 16> callsByContext_{};
     double lastTime_ = -1e300;
     size_t bad_ = 0;
     size_t outOfOrder_ = 0;

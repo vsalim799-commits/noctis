@@ -28,6 +28,12 @@ console.log(JSON.stringify({ ...stats, bbox: undefined }));
 console.log(`length ${(bb.max[0] - bb.min[0]).toFixed(3)} m (x ${bb.min[0].toFixed(2)}..${bb.max[0].toFixed(2)}), max height ${bb.max[1].toFixed(3)} m, ` +
   `min y ${bb.min[1].toFixed(3)}, width ${(bb.max[2] - bb.min[2]).toFixed(3)} m, volume ${stats.volume.toFixed(2)} m3 ` +
   `(~${(stats.volume * 0.95).toFixed(2)} t at 950 kg/m3), page ready in ${((Date.now() - t0) / 1000).toFixed(1)} s`);
+if (stats.measure) {
+  const m = stats.measure, f = (v) => v.toFixed(2);
+  console.log(`measure: length ${f(m.length)} m (target 12) | hip (acetabulum) ${f(m.hipHeight)} m (target ~3.1), back over hip ${f(m.backHeightOverHip)} m | ` +
+    `skull jaw-joint->snout ${f(m.skullJawJointToSnout)} m, head width ${f(m.headWidth)} m | femur ${f(m.femur)} tibia ${f(m.tibia)} metatarsus ${f(m.metatarsus)} m | ` +
+    `footprint ${f(m.footprintLength)} x ${f(m.footprintWidth)} m (target 0.8 x 0.7) | tail ${f(m.tail)} m | mass ${m.massT.map(f).join('-')} t at 0.8-0.95 t/m3`);
+}
 const prefix = opt.prefix ?? (opt.mode && opt.mode !== 'clay' ? `${opt.mode}_` : 'clay_');
 for (const v of views.length ? views : ['side']) {
   await page.evaluate((name) => window.renderView(name), v);

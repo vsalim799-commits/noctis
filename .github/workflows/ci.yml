@@ -1,0 +1,129 @@
+# Noctis core CI: build the engine-agnostic simulation core with the same strict flags as the
+# Unreal module (no exceptions, no RTTI, warnings as errors) on four toolchains, run the quick
+# test suite, run the benchmark, and keep the benchmark JSON and the test logs as artifacts.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      long_tests:
+        description: "Also run the long tests (20-day soak, 3-day determinism) on linux-gcc"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "17 3 * * 1" # weekly, Monday 03:17 UTC: long tests
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+  CTEST_OUTPUT_ON_FAILURE: "1"
+
+jobs:
+  build-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-gcc
+            os: ubuntu-latest
+            cxx: g++
+          - name: linux-clang
+            os: ubuntu-latest
+            cxx: clang++
+          - name: windows-msvc
+            os: windows-latest
+            cxx: cl
+          - name: macos-appleclang
+            os: macos-latest
+            cxx: clang++
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Ninja (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -q && sudo apt-get install -y -q ninja-build
+
+      - name: Install Ninja (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ninja || true
+
+      - name: MSVC developer environment (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Ensure Ninja (Windows)
+        if: runner.os == 'Windows'
+        run: ninja --version || choco install ninja --no-progress -y
+
+      # Compiler cache, saved per toolchain and restored from the latest entry of the same toolchain.
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ matrix.name }}
+          max-size: 400M
+
+      - name: Toolchain versions
+        run: |
+          cmake --version | head -n 1
+          ninja --version
+          if [ "${{ matrix.cxx }}" != "cl" ]; then ${{ matrix.cxx }} --version | head -n 1; fi
+
+      - name: Configure
+        # CMP0141 + Embedded: MSVC writes debug info into the objects (/Z7) instead of a shared PDB,
+        # which is what makes MSVC objects cacheable by ccache.
+        run: >
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
+          -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
+          -DNOCTIS_UE_STRICT=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test (short label)
+        working-directory: build
+        run: ctest -L short --timeout 900 --output-junit ctest-short.xml
+
+      - name: Test (long label)
+        if: matrix.name == 'linux-gcc' && (github.event_name == 'schedule' || inputs.long_tests)
+        working-directory: build
+        env:
+          NOCTIS_LONG_TESTS: "1"
+        run: ctest -L long --timeout 7200 --output-junit ctest-long.xml
+
+      - name: Benchmark (quick)
+        run: ./build/noctis_bench --quick --out "bench-${{ matrix.name }}.json"
+
+      - name: Upload benchmark and test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: noctis-${{ matrix.name }}
+          path: |
+            bench-${{ matrix.name }}.json
+            build/Testing/Temporary/LastTest*.log
+            build/ctest-*.xml
+          if-no-files-found: warn
+          retention-days: 30

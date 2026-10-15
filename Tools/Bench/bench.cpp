@@ -1,6 +1,9 @@
 // noctis_bench — performance benchmark of the Noctis simulation core. Writes a JSON report.
 //
 //   noctis_bench [--out FILE] [--quick] [--threads N] [--seed N] [--scale F] [--env ID] [--data DIR] [--small]
+//   noctis_bench --run-days D [--regime accelerated|cli|realtime] [--threads N] ...   profiling driver: only
+//                initialises the world and advances it D simulated days (use with callgrind/gprof, e.g.
+//                valgrind --tool=callgrind --toggle-collect='noctis::WorldSimulation::advance(double, double)')
 //
 // Measures, on the game's default world (2017² height samples, 1024² material cells, 16 m vegetation
 // cells, full initial populations) unless --small:
@@ -128,6 +131,8 @@ struct Options
     float scale = 1.0f;
     bool quick = false;
     bool smallWorld = false;
+    double runDays = 0.0;
+    std::string regime = "accelerated";
 };
 
 bool parseOptions(int argc, char** argv, Options& o)
@@ -145,9 +150,19 @@ bool parseOptions(int argc, char** argv, Options& o)
         {
             o.smallWorld = true;
         }
-        else if ((a == "--out" || a == "--data" || a == "--env" || a == "--seed" || a == "--threads" || a == "--scale") && (v = value()) != nullptr)
+        else if ((a == "--out" || a == "--data" || a == "--env" || a == "--seed" || a == "--threads" || a == "--scale" || a == "--run-days" ||
+                  a == "--regime") &&
+                 (v = value()) != nullptr)
         {
-            if (a == "--out")
+            if (a == "--run-days")
+            {
+                o.runDays = std::atof(v);
+            }
+            else if (a == "--regime")
+            {
+                o.regime = v;
+            }
+            else if (a == "--out")
             {
                 o.out = v;
             }
@@ -174,7 +189,8 @@ bool parseOptions(int argc, char** argv, Options& o)
         }
         else
         {
-            std::printf("usage: noctis_bench [--out FILE] [--quick] [--small] [--threads N] [--seed N] [--scale F] [--env ID] [--data DIR]\n");
+            std::printf("usage: noctis_bench [--out FILE] [--quick] [--small] [--threads N] [--seed N] [--scale F] [--env ID] [--data DIR]\n"
+                        "       noctis_bench --run-days D [--regime accelerated|cli|realtime] [--threads N] [--small] ...\n");
             return false;
         }
     }
@@ -334,6 +350,49 @@ JsonValue throughputJson(const Throughput& t)
     return j;
 }
 
+// Profiling driver: initialise, then advance D simulated days in one regime. Nothing else runs, so a
+// profiler attached to the whole process (or toggled on WorldSimulation::advance) sees the simulation only.
+int runDays(const Options& opt)
+{
+    double dt = 10.0;
+    float timeScale = 100.0f;
+    if (opt.regime == "cli")
+    {
+        dt = 1.0;
+        timeScale = 1.0f;
+    }
+    else if (opt.regime == "realtime")
+    {
+        dt = 0.1;
+        timeScale = 1.0f;
+    }
+    else if (opt.regime != "accelerated")
+    {
+        std::printf("unknown regime '%s' (accelerated|cli|realtime)\n", opt.regime.c_str());
+        return 2;
+    }
+    WorldSimulation w;
+    auto t0 = Clock::now();
+    if (!w.initialize(makeConfig(opt, opt.threads, true)))
+    {
+        return 1;
+    }
+    const double initMs = msSince(t0);
+    const size_t alive0 = w.creatures().aliveCount();
+    w.setTimeScale(timeScale);
+    t0 = Clock::now();
+    for (int h = 0; h < static_cast<int>(opt.runDays * 24.0 + 0.5); ++h)
+    {
+        w.advance(3600.0, dt);
+    }
+    const double secs = msSince(t0) / 1000.0;
+    std::printf("regime %s (dt %.1f s, x%.0f), %d thread(s): init %.0f ms; %.2f simulated days in %.1f s (x%.0f real time); creatures %zu -> %zu; "
+                "peak RSS %.1f MB\n",
+                opt.regime.c_str(), dt, static_cast<double>(timeScale), opt.threads, initMs, opt.runDays, secs, opt.runDays * 86400.0 / std::max(1e-9, secs),
+                alive0, w.creatures().aliveCount(), peakRssMb());
+    return 0;
+}
+
 const char* compilerName()
 {
 #if defined(__clang__) && defined(__apple_build_version__)
@@ -373,6 +432,10 @@ int main(int argc, char** argv)
         return 2;
     }
     setLogLevel(LogLevel::Warning);
+    if (opt.runDays > 0.0)
+    {
+        return runDays(opt);
+    }
     const double rssStart = currentRssMb();
     JsonValue report = JsonValue::makeObject();
     report.set("schema", "noctis-bench/1");
