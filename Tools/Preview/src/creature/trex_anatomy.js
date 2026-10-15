@@ -411,11 +411,8 @@ function makeShapes(bones) {
       const u = 1.18 - 0.055 * k + 0.02 * R();
       bump(castAt(H(u, 0.75, (0.075 + 0.012 * k + 0.015 * R()) * sg), HD([0, -1, -0.25 * sg])), 0.018 + 0.008 * R());
     }
-    // Cluster of dermal bumps on the jugal, below and behind the eye (rugose jugal "horn" region).
-    for (let k = 0; k < 8; k++) {
-      const u = 0.26 + 0.32 * R(), v = 0.18 + 0.18 * R();
-      bump(castAt(H(u, v, 0.3 * sg), HD([0.1, 0, -sg])), 0.016 + 0.008 * R(), 0.82);
-    }
+    // (No sculpted bumps on the cheek: at ~1 cm they sit at the mesh resolution and read as beads;
+    // the skin shader's feature-scale scale clusters carry that texture instead.)
     // Knobs along the brow above the eye (cf. the rugose lacrimal / postorbital surfaces).
     for (let k = 0; k < 6; k++) {
       const a = Math.PI * (0.15 + 0.7 * (k + R()) / 6);

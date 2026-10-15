@@ -15,7 +15,8 @@ canvas{display:block}
 // Test bench for src/creature/skin_material.js: a skinned, bendable "neck" tube, a head-like
 // ellipsoid and a foot (metatarsus + 3 toes) carrying fake aRegion / aCavity / aFold attributes,
 // lit like the studio (soft key above-front-left, rim from behind, weak fill, dim room env).
-// URL: skin_test.html?shot=close|neck|head|foot|mid|far|pose2|flat&w=1600&h=900[&seed=0][&bump=1]
+// URL: skin_test.html?shot=close|neck|head|lip|brow|foot|mid|far|pose2|flat&w=1600&h=900[&seed=0][&bump=1]
+//      [&debug=1..8][&phys=1][&bake=0][&jit=0.5][&o={"foldDepth":0.03}] (o: any createSkinMaterial option, JSON)
 // shot=trex_side|trex_front34|trex_head|trex_eye|trex_flank|trex_feet|trex_tail [&pose=1] dresses the
 // real SDF T. rex (sdf_mesher + trex_anatomy, imported read-only) with the skin.
 // Renders once on demand and sets window.__ready (headless capture: shoot_skin.mjs).
@@ -244,6 +245,7 @@ const shots = {
   neck:  { pos: [0.3, 2.4, -3.6], look: [0.2, 1.9, 0], fov: 32 },
   head:  { pos: [3.3, 2.05, -2.0], look: [2.95, 1.72, 0], fov: 30 },
   brow:  { pos: [3.25, 2.12, -0.95], look: [3.0, 1.86, -0.25], fov: 30 },
+  lip:   { pos: [3.75, 1.75, -0.95], look: [3.35, 1.58, -0.3], fov: 30 },
   foot:  { pos: [0.6, 0.85, -3.0], look: [-0.15, 0.35, -1.6], fov: 30 },
   mid:   { pos: [1.0, 2.6, -6.5], look: [0.9, 1.3, -0.4], fov: 32 },
   far:   { pos: [1.0, 3.2, -16], look: [1.0, 1.2, -0.4], fov: 30 },

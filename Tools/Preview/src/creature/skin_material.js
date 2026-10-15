@@ -325,7 +325,7 @@ float skSpecOcc;    // direct-specular occlusion (creases, body-part occlusion):
 float skSkinW;      // 1 on skin, 0 on eyes / claws (no scattering there)
 float skDebugVis;   // detail visibility, for the debug view
 vec3 skDebugFeat;   // crack, feature-scale mask, nearest feature site (debug view 7)
-vec3 skDebugLip;    // lip coordinates: fract(s / 5 cm), |d| / 10 cm, lip-row weight (debug view 8)
+vec3 skDebugLip = vec3( 0.0 );   // lip coordinates: fract(s / 5 cm), |d| / 10 cm, lip-row weight (debug view 8)
 
 // Hash without sine (D. Hoskins): stable in fp32 for the cell indices we use (|i| < 10^4).
 vec3 skHash33( vec3 p ) {
@@ -957,7 +957,8 @@ void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryP
 
 // Debug views (material.userData.setDebug(mode)): 1 albedo, 2 normal, 3 roughness, 4 ambient
 // occlusion, 5 detail visibility (red = scales shown, black = faded), 6 region params (r: scale octave
-// 0.5 + 0.5 * log2(size / baseScale), g: feature density, b: scute weight), 7 crack / feature scale / site.
+// 0.5 + 0.5 * log2(size / baseScale), g: feature density, b: scute weight), 7 crack / feature scale / site,
+// 8 lip coordinates (r: fract(s / 5 cm), g: |d| / 10 cm, b: labial-row weight).
 const FRAG_DEBUG = /* glsl */`
 #include <dithering_fragment>
 #ifdef SKIN_DEBUG

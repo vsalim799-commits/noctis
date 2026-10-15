@@ -21,6 +21,7 @@ endif()
 option(NOCTIS_UE_STRICT "Mimic Unreal Engine constraints: no exceptions, no RTTI, warnings as errors" ON)
 option(NOCTIS_BUILD_TESTS "Build noctis_tests and register them with CTest" ON)
 option(NOCTIS_BUILD_BENCH "Build the noctis_bench benchmark" ON)
+set(NOCTIS_SANITIZE "" CACHE STRING "GCC/Clang sanitizers for every target, e.g. address,undefined (empty = none)")
 
 # ----------------------------------------------------------------------------- compiler flags
 # One interface target carries the strict flags so every executable (core, CLI, tests, bench)
@@ -46,6 +47,10 @@ if(NOCTIS_UE_STRICT)
   endif()
 elseif(MSVC)
   target_compile_options(noctis_strict INTERFACE /utf-8 /permissive-)
+endif()
+if(NOCTIS_SANITIZE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(noctis_strict INTERFACE -fsanitize=${NOCTIS_SANITIZE} -fno-omit-frame-pointer -fno-sanitize-recover=all)
+  target_link_options(noctis_strict INTERFACE -fsanitize=${NOCTIS_SANITIZE})
 endif()
 
 # ----------------------------------------------------------------------------- core library

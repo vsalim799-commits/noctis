@@ -426,6 +426,33 @@ def sweep_eval(SW, off, n, step, x, y, z):
             best = dd
             bs = j
             bt = tt
+    # soft projection: average the parameter of nearby segments (weights from their distance) so
+    # the section does not jump on the concave side of a bend (ripples on the throat otherwise)
+    if bs > 0 or bt >= 0:
+        if bs < n - 2 or bt <= 1:
+            tau = 0.012
+            sw = 0.0
+            ssum = 0.0
+            for j in range(lo, hi + 1):
+                r = off + j
+                ax = SW[r + 1, 0] - SW[r, 0]
+                ay = SW[r + 1, 1] - SW[r, 1]
+                az = SW[r + 1, 2] - SW[r, 2]
+                px = x - SW[r, 0]
+                py = y - SW[r, 1]
+                pz = z - SW[r, 2]
+                l2 = ax * ax + ay * ay + az * az
+                t = min(1.0, max(0.0, (px * ax + py * ay + pz * az) / max(l2, 1e-12)))
+                qx = px - ax * t
+                qy = py - ay * t
+                qz = pz - az * t
+                dd = qx * qx + qy * qy + qz * qz
+                wgt = math.exp(-(dd - best) / tau)
+                sw += wgt
+                ssum += wgt * (j + t)
+            sp = ssum / sw
+            bs = min(n - 2, int(sp))
+            bt = sp - bs
     r0 = off + bs
     f = min(1.0, max(0.0, bt))
     cx = SW[r0, 0] * (1 - f) + SW[r0 + 1, 0] * f
@@ -650,8 +677,11 @@ def field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z):
             nd = -di
             h = kk - abs(d - nd)
             d = max(d, nd) + (h * h * 0.25 / kk if h > 0 else 0.0)
-    if d > 1e8:
-        d = 0.1          # empty cell: no shape within the culling margin (>= band + 0.03 = 0.11 m)
+    # Shapes skipped by the culling are all farther than the culling margin (>= band + 0.03 =
+    # 0.11 m), so the culled field is only trusted up to 0.1 m: clamping keeps it a safe bound for
+    # sphere tracing and Newton steps (marching cubes only needs the sign out there).
+    if d > 0.1:
+        d = 0.1
     return d
 
 
