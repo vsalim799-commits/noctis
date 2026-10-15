@@ -109,8 +109,8 @@ export const SKIN_REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 't
 // Region defaults. Sizes are octaves of the 2.2 cm body scale: face/lips and the small forelimb
 // get half-size scales, as in extant archosaurs where facial and manual scales are finer.
 export const DEFAULT_REGION_PARAMS = {
-  head:  { size: 0.009, feature: 0.30, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: -0.03, folds: [0, 0, 0] },
-  jaw:   { size: 0.009, feature: 0.12, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.07, folds: [0, 0, 0] },
+  head:  { size: 0.009, feature: 0.18, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: -0.03, folds: [0, 0, 0] },
+  jaw:   { size: 0.009, feature: 0.08, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.07, folds: [0, 0, 0] },
   neck:  { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0, 1] },
   torso: { size: 0.018, feature: 0.05, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0.8, 0] },
   belly: { size: 0.018, feature: 0.00, scute: 0, bump: 0.8, tint: [1.04, 1.03, 1.01], rough: 0.03, folds: [0.8, 0, 0] },
@@ -122,7 +122,7 @@ export const DEFAULT_REGION_PARAMS = {
 };
 
 const DEFAULTS = {
-  physical: false, sheen: 0.25, sheenColor: '#b9ab98', sheenRoughness: 0.8, envMapIntensity: 1,
+  physical: false, debug: 0, sheen: 0.25, sheenColor: '#b9ab98', sheenRoughness: 0.8, envMapIntensity: 1,
   seed: 0, baseScale: 0.018, jitter: 0.85, sizeVar: 0.35, mortar: 0.035, domeRadius: 0.45, scaleHeight: 0.11, softness: 0.06,
   bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.1, hotspots: [], hotspotBoost: 0.6,
   midlineBoost: 1.6, midlineWidth: 0.12, scuteSize: [0.05, 0.22, 0.3], scuteHeight: 0.16,
@@ -231,6 +231,7 @@ uniform float uOcclusionAO;
 vec3 skSmoothN;     // view-space normal with the macro relief only (folds / lumps): used by the SSS red channel
 float skAO;
 float skSkinW;      // 1 on skin, 0 on eyes / claws (no scattering there)
+float skDebugVis;   // detail visibility, for the debug view
 
 // Hash without sine (D. Hoskins): stable in fp32 for the cell indices we use (|i| < 10^4).
 vec3 skHash33( vec3 p ) {
@@ -369,7 +370,7 @@ void skTubercles( vec3 p, float size, float density, inout float h, inout vec3 g
 	float radius = ( 0.3 + 0.15 * cr.y ) * ( 1.0 + wob );
 	float x = d / radius;
 	if ( x > 1.2 ) return;
-	float amp = uFeatureHeight * ( 0.6 + 0.6 * cr.z ) * size;
+	float amp = uFeatureHeight * ( 0.4 + 0.8 * cr.z ) * size;
 	// flat-topped dome 1 - x^4 with a defined foot; the pebbles stay half-visible on top so it
 	// reads as a rugose boss, not a droplet
 	float x2 = x * x;
@@ -377,8 +378,8 @@ void skTubercles( vec3 p, float size, float density, inout float h, inout vec3 g
 	float hf = amp * b1;
 	vec3 gf = amp * 4.0 * x2 * x / ( radius * size ) * dir * step( x, 1.0 );
 	float mask = 1.0 - smoothstep( 0.6, 1.0, x );      // the pebbles flatten on the boss
-	h = h * ( 1.0 - 0.55 * mask ) + hf;
-	g = g * ( 1.0 - 0.55 * mask ) + gf;
+	h = h * ( 1.0 - 0.4 * mask ) + hf;
+	g = g * ( 1.0 - 0.4 * mask ) + gf;
 	float ring = smoothstep( 0.85, 0.97, x ) * ( 1.0 - smoothstep( 1.0, 1.12, x ) );
 	crack = max( crack * ( 1.0 - 0.6 * mask ), 0.6 * ring );
 	top = mix( top, 0.25 + 0.25 * b1, mask );
@@ -539,6 +540,7 @@ float skRoughness;
 
 	float eyeW = smoothstep( 0.3, 0.7, vSkinFeat.x ), clawW = smoothstep( 0.3, 0.7, vSkinFeat.y );
 	skSkinW = 1.0 - max( eyeW, clawW );
+	skDebugVis = vis;
 	float bump = uBumpStrength * vSkinA.w * skSkinW;
 	skGradDetail = g * bump;
 	skGradMacro *= uBumpStrength * skSkinW;
@@ -552,7 +554,7 @@ float skRoughness;
 	col *= 1.0 + uGrainTint * n4.x * grainVis;
 	col *= 1.0 + uScaleTint * ( rnd - 0.5 ) * 2.0 * vis;
 	col *= 1.0 + uTopLight * top * vis;
-	col *= 1.0 - 0.2 * boss;                                       // bosses: slightly darker, read by relief
+	col *= 1.0 - 0.14 * boss;                                       // bosses: slightly darker, read by relief
 	float crackAmt = max( crack * vis, foldCrease * 0.6 );
 	col *= 1.0 - uCrackDark * mix( 0.18, crackAmt, vis );           // faded: keep the mean darkening of the mortar
 	col *= 1.0 - uCavityDark * vSkinCavity * vSkinCavity;          // squared: only true creases darken
@@ -614,6 +616,27 @@ void RE_Direct_Skin( const in IncidentLight directLight, const in vec3 geometryP
 }
 #undef RE_Direct
 #define RE_Direct RE_Direct_Skin
+`;
+
+// Debug views (material.userData.setDebug(mode)): 1 albedo, 2 normal, 3 roughness, 4 ambient
+// occlusion, 5 detail visibility (red = scales shown, black = faded), 6 region tint / scute weight.
+const FRAG_DEBUG = /* glsl */`
+#include <dithering_fragment>
+#ifdef SKIN_DEBUG
+	#if SKIN_DEBUG == 1
+		gl_FragColor = vec4( pow( diffuseColor.rgb, vec3( 1.0 / 2.2 ) ), 1.0 );
+	#elif SKIN_DEBUG == 2
+		gl_FragColor = vec4( normal * 0.5 + 0.5, 1.0 );
+	#elif SKIN_DEBUG == 3
+		gl_FragColor = vec4( vec3( skRoughness ), 1.0 );
+	#elif SKIN_DEBUG == 4
+		gl_FragColor = vec4( vec3( skAO ), 1.0 );
+	#elif SKIN_DEBUG == 5
+		gl_FragColor = vec4( skDebugVis, 0.0, 0.0, 1.0 );
+	#else
+		gl_FragColor = vec4( vSkinB.rgb * 0.5, vSkinA.z, 1.0 );
+	#endif
+#endif
 `;
 
 const FRAG_AO = /* glsl */`
@@ -699,11 +722,20 @@ export function createSkinMaterial(THREE, opts = {}) {
       .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = skRoughness;')
       .replace('#include <normal_fragment_maps>', FRAG_NORMAL)
       .replace('#include <lights_physical_pars_fragment>', FRAG_LIGHT)
-      .replace('#include <aomap_fragment>', FRAG_AO);
+      .replace('#include <aomap_fragment>', FRAG_AO)
+      .replace('#include <dithering_fragment>', FRAG_DEBUG);
   };
   // One compiled program is shared by every skin material of the same kind.
   mat.customProgramCacheKey = () => 'noctis-reptile-skin-v1' + (o.physical ? '-phys' : '');
   mat.userData.skinUniforms = U;
+  // Debug view: 0 off, 1 albedo, 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region tint / scutes.
+  mat.userData.setDebug = (mode) => {
+    const d = { ...(mat.defines || {}) };
+    if (mode) d.SKIN_DEBUG = mode | 0; else delete d.SKIN_DEBUG;
+    mat.defines = d;
+    mat.needsUpdate = true;
+  };
+  if (o.debug) mat.userData.setDebug(o.debug);
   mat.userData.skinRegions = regions;
   // Re-upload the region tables after editing material.userData.skinRegions[...].
   mat.userData.updateRegions = () => {

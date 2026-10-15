@@ -106,7 +106,8 @@ function fillAttributes(g, attr, uOf) {
 const seed = +(P.get('seed') || 0);
 const bumpStrength = +(P.get('bump') || 1);
 const flat = shot === 'flat';
-const matOpts = { seed, bumpStrength: flat ? 0 : bumpStrength };
+// &phys=1 uses MeshPhysicalMaterial (+ sheen); &debug=1..6 shows a debug channel of the skin
+const matOpts = { seed, bumpStrength: flat ? 0 : bumpStrength, physical: P.get('phys') === '1', debug: +(P.get('debug') || 0) };
 
 // ---- 1. skinned neck: 2.6 m tube along +x, 3 bones, S-bend posed at render time.
 const neckY = 1.6;
@@ -201,6 +202,11 @@ for (const c of claws) {
   cl.rotation.set(0, -c.a, -Math.PI / 2 - 0.35);
   scene.add(cl);
 }
+
+// ---- robustness: a plain sphere with none of the optional attributes (aRegion / aCavity / aFold ...)
+const plain = new THREE.Mesh(new THREE.SphereGeometry(0.35, 96, 64), createSkinMaterial(THREE, matOpts));
+plain.position.set(1.4, 0.35, -2.2); plain.castShadow = plain.receiveShadow = true;
+scene.add(plain);
 
 // ---- floor: grey, fading into the dark background
 const floorMat = new THREE.MeshStandardMaterial({ color: 0x3b3b3d, roughness: 0.92 });
