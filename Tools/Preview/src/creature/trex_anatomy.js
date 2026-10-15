@@ -358,7 +358,7 @@ function makeShapes(bones) {
       CAP('skull', 'head', L(-0.08, 0.047, 0.026), L(0.075, 0.05, 0.024), 0.008, 0.008, { sign: -1 }); // crease above the upper lid
       E('skull', 'head', L(0.0, 0.0, -0.016), [0.05, 0.05, 0.05], [0, 0, 0], 0.004, { feature: 'eye', separate: true }); // eyeball
       // Brow ridge: lacrimal (front) to postorbital (back), just above the upper lid, overhanging it.
-      CAP('skull', 'head', L(0.16, 0.07, -0.012), L(-0.14, 0.082, -0.006), 0.052, 0.05);
+      CAP('skull', 'head', L(0.16, 0.07, -0.014), L(-0.14, 0.082, -0.008), 0.052, 0.075);
     });
     // ---- brow bosses: postorbital boss above-behind the eye, lacrimal horn above-in-front of it.
     const po = castAt(H(0.48, 0.76, 0.2 * sg), HD([-0.1, -0.6, -sg]));
@@ -379,13 +379,13 @@ function makeShapes(bones) {
     const lip = [[1.4, 0.19], [1.25, 0.155], [1.05, 0.13], [0.85, 0.125], [0.68, 0.125], [0.56, 0.13], [0.48, 0.135]];
     const hits = lip.map(([u, v]) => cast(H(u, v - 0.012, 0.9 * sg), [0, 0, -sg]));
     for (let k = 0; k + 1 < hits.length; k++) {
-      const a = hits[k], b = hits[k + 1], r = 0.011;
-      details.push(() => CAP('skull', 'head', add(a, normal(a), r - 0.005), add(b, normal(b), r - 0.005), r, 0.008, { sign: -1 }));
+      const a = hits[k], b = hits[k + 1], r = 0.008;
+      details.push(() => CAP('skull', 'head', add(a, normal(a), r - 0.003), add(b, normal(b), r - 0.003), r, 0.006, { sign: -1 }));
     }
     // Front of the mouth: the groove wraps round the premaxilla.
     const f0 = cast(H(2.0, 0.195, 0.07 * sg), HD([-1, 0, 0])), f1 = cast(H(2.0, 0.2, 0.0), HD([-1, 0, 0]));
-    details.push(() => CAP('skull', 'head', add(hits[0], normal(hits[0]), 0.006), add(f0, normal(f0), 0.006), 0.011, 0.008, { sign: -1 }));
-    details.push(() => CAP('skull', 'head', add(f0, normal(f0), 0.006), add(f1, normal(f1), 0.006), 0.011, 0.008, { sign: -1 }));
+    details.push(() => CAP('skull', 'head', add(hits[0], normal(hits[0]), 0.005), add(f0, normal(f0), 0.005), 0.008, 0.006, { sign: -1 }));
+    details.push(() => CAP('skull', 'head', add(f0, normal(f0), 0.005), add(f1, normal(f1), 0.005), 0.008, 0.006, { sign: -1 }));
 
     // ---- dermal bumps: rugose skin over the nasals, around the orbit and on the jugal --------------
     const R = rng(sg > 0 ? 17 : 29);
