@@ -109,14 +109,14 @@ export const SKIN_REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 't
 // Region defaults. Sizes are octaves of the 2.2 cm body scale: face/lips and the small forelimb
 // get half-size scales, as in extant archosaurs where facial and manual scales are finer.
 export const DEFAULT_REGION_PARAMS = {
-  head:  { size: 0.009, feature: 0.18, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: -0.03, folds: [0, 0, 0] },
-  jaw:   { size: 0.009, feature: 0.08, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.07, folds: [0, 0, 0] },
-  neck:  { size: 0.018, feature: 0.10, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0, 1] },
-  torso: { size: 0.018, feature: 0.05, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0.8, 0] },
+  head:  { size: 0.009, feature: 0.34, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: 0.0, folds: [0, 0, 0] },
+  jaw:   { size: 0.009, feature: 0.22, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.03, folds: [0, 0, 0] },
+  neck:  { size: 0.018, feature: 0.14, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0, 1] },
+  torso: { size: 0.018, feature: 0.09, scute: 0, bump: 1.0, tint: [1.00, 1.00, 1.00], rough: 0.0, folds: [0, 0.8, 0] },
   belly: { size: 0.018, feature: 0.00, scute: 0, bump: 0.8, tint: [1.04, 1.03, 1.01], rough: 0.03, folds: [0.8, 0, 0] },
-  tail:  { size: 0.018, feature: 0.05, scute: 0, bump: 1.0, tint: [0.98, 0.98, 0.98], rough: 0.02, folds: [1, 0, 0] },
-  thigh: { size: 0.018, feature: 0.03, scute: 0, bump: 1.0, tint: [0.98, 0.97, 0.96], rough: 0.0, folds: [0, 1, 0] },
-  shin:  { size: 0.018, feature: 0.02, scute: 0, bump: 1.0, tint: [0.86, 0.85, 0.85], rough: 0.04, folds: [0, 1, 0] },
+  tail:  { size: 0.018, feature: 0.07, scute: 0, bump: 1.0, tint: [0.98, 0.98, 0.98], rough: 0.02, folds: [1, 0, 0] },
+  thigh: { size: 0.018, feature: 0.07, scute: 0, bump: 1.0, tint: [0.98, 0.97, 0.96], rough: 0.0, folds: [0, 1, 0] },
+  shin:  { size: 0.018, feature: 0.05, scute: 0, bump: 1.0, tint: [0.86, 0.85, 0.85], rough: 0.04, folds: [0, 1, 0] },
   foot:  { size: 0.018, feature: 0.00, scute: 1, bump: 1.15, tint: [0.64, 0.64, 0.66], rough: 0.08, folds: [0, 0, 0] },
   arm:   { size: 0.009, feature: 0.00, scute: 0, bump: 1.0, tint: [0.97, 0.96, 0.95], rough: 0.0, folds: [0, 1, 0] },
 };
@@ -124,15 +124,16 @@ export const DEFAULT_REGION_PARAMS = {
 const DEFAULTS = {
   physical: false, debug: 0, sheen: 0.25, sheenColor: '#b9ab98', sheenRoughness: 0.8, envMapIntensity: 1,
   seed: 0, baseScale: 0.018, jitter: 0.85, sizeVar: 0.35, mortar: 0.035, domeRadius: 0.45, scaleHeight: 0.11, softness: 0.06,
-  bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.1, hotspots: [], hotspotBoost: 0.6,
-  midlineBoost: 1.6, midlineWidth: 0.12, scuteSize: [0.05, 0.22, 0.3], scuteHeight: 0.16,
+  bumpStrength: 1.0, featureScale: 0.075, featureHeight: 0.22, featureSize: [0.22, 0.4], rosette: 0.22, featureTint: 0.05,
+  hotspots: [], hotspotBoost: 0.6, midlineBoost: 1.6, midlineWidth: 0.12,
+  scuteLength: [0.055, 0.04], scuteSpan: [1.15, 1.35], scuteRadius: [0.125, 0.07], scuteHeight: 0.12, scuteCurve: 0.08, scuteSplit: 0.3,
   metaAxis: [0.32, -0.95, 0], toeAxis: [1, 0, 0], toeHeight: 0.22,
   foldDepth: 0.016, foldBase: 0.15, foldDirs: [[1, 0, 0, 9], [0, 1, 0, 10], [0.8, 0.6, 0, 14]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.1, netDepth: 0.0022, netWidth: 0.07,
   dorsalColor: '#48413b', ventralColor: '#a0988a', counterShade: [-0.8, 0.1], mottle: 0.42, mottleScale: 1.6,
   scaleTint: 0.12, topLight: 0.08, crackDark: 0.28, cavityDark: 0.35, cavityAO: 0.7,
   roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
   scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.8, sssNormalBlur: 0.45, translucency: 0.0,
-  dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, worldScale: 1.0,
+  dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, detailFull: 5.0, worldScale: 1.0,
   eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.35,
 };
 
@@ -211,9 +212,11 @@ varying float vSkinCavity;
 varying vec3 vSkinFeat;
 
 uniform float uSeed, uBaseScale, uJitter, uSizeVar, uMortar, uDomeRadius, uScaleHeight, uSoftness, uBumpStrength;
-uniform float uFeatureScale, uFeatureHeight;
-uniform vec3 uScuteSize, uMetaAxis, uToeAxis;
-uniform float uScuteHeight, uToeHeight;
+uniform float uFeatureScale, uFeatureHeight, uRosette, uFeatureTint;
+uniform vec2 uFeatureSize;
+uniform vec3 uMetaAxis, uToeAxis;
+uniform vec2 uScuteLength, uScuteSpan, uScuteRadius;
+uniform float uScuteHeight, uScuteCurve, uScuteSplit, uToeHeight;
 uniform float uFoldDepth, uLumpDepth, uLumpScale, uGrainScale, uGrainDepth, uGrainTint, uNetScale, uNetDepth, uNetWidth;
 uniform vec4 uFoldDirs[ 3 ];
 uniform vec3 uDorsalColor, uVentralColor;
@@ -223,7 +226,7 @@ uniform float uRoughness, uRoughVar, uCrackRough, uTopRough, uFadeRough;
 uniform vec3 uScatterColor;
 uniform float uSSS, uSSSNormalBlur, uTranslucency, uSpecular;
 uniform vec3 uDustColor;
-uniform float uDust, uDustHeight, uDetailFade, uWorldScale;
+uniform float uDust, uDustHeight, uDetailFade, uDetailFull, uWorldScale;
 uniform vec3 uEyeColor, uClawColor;
 uniform float uOcclusionAO;
 
@@ -232,6 +235,7 @@ vec3 skSmoothN;     // view-space normal with the macro relief only (folds / lum
 float skAO;
 float skSkinW;      // 1 on skin, 0 on eyes / claws (no scattering there)
 float skDebugVis;   // detail visibility, for the debug view
+vec3 skDebugFeat;   // crack, feature-scale mask, nearest feature site (debug view 7)
 
 // Hash without sine (D. Hoskins): stable in fp32 for the cell indices we use (|i| < 10^4).
 vec3 skHash33( vec3 p ) {
@@ -303,93 +307,228 @@ vec2 skVoronoi( vec3 p, mat3 J, float jitter, float wAmp, float soft, out vec3 g
 	return vec2( - soft * log( s ), dmin );
 }
 
-// Rounded polygonal "pebble" scales of a given size (m). Outputs relief h (m), its gradient g,
-// crack mask (1 in the mortar), top mask (1 on the scale crown) and a per-scale random value.
-void skPebbles( vec3 p, float size, out float h, out vec3 g, out float crack, out float top, out float rnd ) {
-	vec3 eg, cr;
-	vec2 v = skVoronoi( p, mat3( 1.0 / size ), uJitter, uSizeVar, uSoftness * size, eg, cr );
-	float e = v.x / size;                                   // border distance in cell units
-	float m = uMortar * ( 0.7 + 0.6 * cr.y );
-	float x = clamp( ( e - m ) / uDomeRadius, 0.0, 1.0 );
-	float prof = 1.0 - ( 1.0 - x ) * ( 1.0 - x );
-	float dprof = ( e > m && x < 1.0 ) ? 2.0 * ( 1.0 - x ) / uDomeRadius : 0.0;
-	float amp = uScaleHeight * ( 0.6 + 0.8 * cr.x );
-	h = amp * prof * size;
-	g = amp * dprof * eg;                                   // dh/dp = amp*size*dprof * (eg/size)
-	g += ( cr - 0.5 ) * ( 0.35 * uScaleHeight / 0.13 ) * prof; // per-scale tilt breaks up the specular
-	crack = 1.0 - smoothstep( 0.0, m * 1.8, e );
-	top = prof;
-	rnd = cr.z;
-}
-
-// Transverse scutes in a limb frame: plates short along the limb axis, spanning its front.
-// Profile is asymmetric like overlapping (imbricate) scutes: a raised step at the distal edge
-// of each plate and a gentle ramp at its proximal edge.
-void skScutes( vec3 p, vec3 axis, out float h, out vec3 g, out float crack, out float top, out float rnd ) {
-	vec3 F = normalize( cross( vec3( 0.0, 0.0, 1.0 ), axis ) );
-	vec3 B = cross( axis, F );
-	mat3 J = transpose( mat3( axis / uScuteSize.x, F / uScuteSize.y, B / uScuteSize.z ) );
-	vec3 eg, cr;
-	vec2 v = skVoronoi( p, J, 0.5, 0.0, 0.06 * uScuteSize.x, eg, cr );
-	float e = v.x / uScuteSize.x;
-	float m = 0.06;
-	// eg points away from the nearest border: dot < 0 means that border is the distal one
-	float R = mix( 0.22, 0.85, smoothstep( - 0.5, 0.5, dot( eg, axis ) ) );
-	float x = clamp( ( e - m ) / R, 0.0, 1.0 );
-	float prof = 1.0 - ( 1.0 - x ) * ( 1.0 - x );
-	float dprof = ( e > m && x < 1.0 ) ? 2.0 * ( 1.0 - x ) / R : 0.0;
-	float amp = uScuteHeight * ( 0.75 + 0.5 * cr.x );
-	h = amp * prof * uScuteSize.x;
-	g = amp * dprof * eg + ( cr - 0.5 ) * 0.1 * prof;
-	crack = 1.0 - smoothstep( 0.0, m * 1.8, e );
-	top = prof;
-	rnd = cr.z;
-}
-
-// Sparse tubercles (feature scales): low, flat-topped, slightly irregular domes that replace the
-// pebbles where a cell of a coarser lattice is "selected" (probability = density). The pebble
-// relief is kept faintly on top so a tubercle reads as a rugose large scale, not a bead.
-void skTubercles( vec3 p, float size, float density, inout float h, inout vec3 g, inout float crack, inout float top, inout float rnd, out float boss ) {
-	boss = 0.0;
-	vec3 q = p / size;
+// Feature-scale sites: the two nearest "selected" points of a coarse jittered lattice (cell
+// uFeatureScale). A lattice point is selected when its random number is below the local density;
+// its radius grows from 0 as the density rises past that number (full size at ~1.3x), so a feature
+// scale never appears cut in half where the density varies across the body. s = (centre in rest metres, radius in m;
+// radius 0 = no site), rnd = 3 random numbers of the site.
+void skFeatureSites( vec3 p, float density, out vec4 s1, out vec4 s2, out vec3 rnd1, out vec3 rnd2 ) {
+	vec3 q = p / uFeatureScale;
 	vec3 iq = floor( q ), fq = q - iq;
-	float dmin = 1e9;
-	vec3 r1 = vec3( 0.0 ), c1 = vec3( 0.0 );
+	float d1 = 1e9, d2 = 1e9;
+	s1 = vec4( 0.0 ); s2 = vec4( 0.0 ); rnd1 = vec3( 0.5 ); rnd2 = vec3( 0.5 );
 	for ( int k = 0; k < 27; k ++ ) {
 		vec3 gg = vec3( float( k % 3 ) - 1.0, float( ( k / 3 ) % 3 ) - 1.0, float( k / 9 ) - 1.0 );
-		vec3 rr = gg + 0.5 + 0.7 * ( skHash33( iq + gg + uSeed + 19.7 ) - 0.5 ) - fq;
-		float d = dot( rr, rr );
-		if ( d < dmin ) { dmin = d; r1 = rr; c1 = iq + gg; }
+		vec3 c = iq + gg;
+		vec3 hc = skHash33( c + uSeed + 5.13 );
+		float grow = smoothstep( 0.0, 0.25, ( density - hc.x ) / max( density, 0.02 ) );
+		if ( grow <= 0.0 ) continue;
+		vec3 fp = gg + 0.5 + 0.5 * ( skHash33( c + uSeed + 19.7 ) - 0.5 );
+		float R = mix( uFeatureSize.x, uFeatureSize.y, hc.y ) * grow;
+		float d = length( fp - fq ) - R;
+		vec4 s = vec4( ( iq + fp ) * uFeatureScale, R * uFeatureScale );
+		if ( d < d1 ) { d2 = d1; s2 = s1; rnd2 = rnd1; d1 = d; s1 = s; rnd1 = hc; }
+		else if ( d < d2 ) { d2 = d; s2 = s; rnd2 = hc; }
 	}
-	vec3 cr = skHash33( c1 + uSeed + 5.13 );
-	if ( cr.x > density ) return;
-	float d = sqrt( dmin );
-	vec3 dir = r1 / max( d, 1e-4 );                         // towards the tubercle centre
-	// irregular outline: radius depends on the direction (cheap angular wobble)
-	float wob = 0.09 * sin( 4.0 * dir.x + 3.0 * dir.y + 6.28 * cr.z ) + 0.06 * sin( 7.0 * dir.z - 5.0 * dir.x + 6.28 * cr.y );
-	float radius = ( 0.3 + 0.15 * cr.y ) * ( 1.0 + wob );
-	float x = d / radius;
-	if ( x > 1.2 ) return;
-	float amp = uFeatureHeight * ( 0.4 + 0.8 * cr.z ) * size;
-	// flat-topped dome 1 - x^4 with a defined foot; the pebbles stay half-visible on top so it
-	// reads as a rugose boss, not a droplet
-	float x2 = x * x;
-	float b1 = max( 1.0 - x2 * x2, 0.0 );
-	float hf = amp * b1;
-	vec3 gf = amp * 4.0 * x2 * x / ( radius * size ) * dir * step( x, 1.0 );
-	float mask = 1.0 - smoothstep( 0.6, 1.0, x );      // the pebbles flatten on the boss
-	h = h * ( 1.0 - 0.4 * mask ) + hf;
-	g = g * ( 1.0 - 0.4 * mask ) + gf;
-	float ring = smoothstep( 0.85, 0.97, x ) * ( 1.0 - smoothstep( 1.0, 1.12, x ) );
-	crack = max( crack * ( 1.0 - 0.6 * mask ), 0.6 * ring );
-	top = mix( top, 0.25 + 0.25 * b1, mask );
-	rnd = mix( rnd, cr.y, mask );
-	boss = mask;
 }
 
-// Smoothly fades a layer whose cells cover fewer than uDetailFade pixels.
+// Rounded polygonal "pebble" scales of a given size (m), as a smooth-bordered power diagram (see
+// skVoronoi). Pebble cells whose feature point falls inside a feature site are MERGED into one
+// large feature scale (no crack between them), so its outline follows the surrounding cracks the
+// way enlarged scales sit in real archosaur skin, instead of a bead laid on top; pebbles in a ring
+// around it are enlarged (uRosette), giving the rosette arrangement seen around feature scales.
+// Outputs relief h (m) and its rest-space gradient g, crack mask (1 in the mortar), top mask
+// (1 on the crown), a per-scale random value, and feat (1 on a feature scale).
+void skPebbles( vec3 p, float size, vec4 f1, vec4 f2, vec3 fr1, vec3 fr2, out float h, out vec3 g, out float crack, out float top, out float rnd, out float feat ) {
+	vec3 q = p / size;
+	vec3 iq = floor( q ), fq = q - iq;
+	vec4 r[ 27 ];                                            // xyz = feature - q, w = power distance
+	int id[ 27 ];                                            // 0 plain pebble, 1 / 2 merged into site 1 / 2
+	float dmin = 1e9;
+	int imin = 13;
+	bool any = f1.w > 0.0;
+	for ( int k = 0; k < 27; k ++ ) {
+		vec3 gc = vec3( float( k % 3 ) - 1.0, float( ( k / 3 ) % 3 ) - 1.0, float( k / 9 ) - 1.0 );
+		vec3 o = skHash33( iq + gc + uSeed );
+		vec3 rr = gc + 0.5 + uJitter * ( o - 0.5 ) - fq;
+		float wt = fract( dot( o, vec3( 13.17, 7.71, 3.37 ) ) );
+		float d = dot( rr, rr ) - uSizeVar * wt * wt;
+		int idk = 0;
+		if ( any ) {
+			vec3 fp = p + rr * size;                         // the cell's feature point, rest metres
+			float m1 = f1.w > 0.0 ? length( fp - f1.xyz ) - f1.w : 1e3;
+			float m2 = f2.w > 0.0 ? length( fp - f2.xyz ) - f2.w : 1e3;
+			idk = m1 < 0.0 ? 1 : ( m2 < 0.0 ? 2 : 0 );
+			if ( idk == 0 ) d -= uRosette * ( 1.0 - smoothstep( 0.0, 1.6 * size, min( m1, m2 ) ) );
+		}
+		r[ k ] = vec4( rr, d );
+		id[ k ] = idk;
+		if ( d < dmin ) { dmin = d; imin = k; }
+	}
+	vec3 r1 = r[ imin ].xyz;
+	float w1 = r[ imin ].w;
+	int id1 = id[ imin ];
+	float soft = uSoftness * size, inv = 1.0 / soft;
+	float s = 0.0;
+	vec3 gs = vec3( 0.0 );
+	for ( int k = 0; k < 27; k ++ ) {
+		if ( k == imin || ( id1 != 0 && id[ k ] == id1 ) ) continue;
+		vec3 dr = r[ k ].xyz - r1;
+		float il = inversesqrt( dot( dr, dr ) );
+		float e = 0.5 * ( r[ k ].w - w1 ) * il * size;      // metric distance to that border plane
+		float wgt = exp( - e * inv );
+		s += wgt;
+		gs += wgt * il * dr;
+	}
+	// soft-min distance to the cell border (metres) and its gradient; deep inside a large feature
+	// scale no border is in the neighbourhood at all
+	float e = s > 1e-25 ? - soft * log( s ) : 4.0 * size;
+	vec3 eg = s > 1e-25 ? - gs / s : vec3( 0.0 );
+	vec3 g1 = vec3( float( imin % 3 ) - 1.0, float( ( imin / 3 ) % 3 ) - 1.0, float( imin / 9 ) - 1.0 );
+	vec3 cr = skHash33( iq + g1 + uSeed + 71.31 );
+	if ( id1 == 0 ) {
+		float ec = e / size;                                 // border distance in cell units
+		float m = uMortar * ( 0.7 + 0.6 * cr.y );
+		float x = clamp( ( ec - m ) / uDomeRadius, 0.0, 1.0 );
+		float prof = 1.0 - ( 1.0 - x ) * ( 1.0 - x );
+		float dprof = ( ec > m && x < 1.0 ) ? 2.0 * ( 1.0 - x ) / uDomeRadius : 0.0;
+		float amp = uScaleHeight * ( 0.6 + 0.8 * cr.x );
+		h = amp * prof * size;
+		g = amp * dprof * eg;                                // dh/dp = amp*size*dprof * (eg/size)
+		g += ( cr - 0.5 ) * ( 0.35 * uScaleHeight / 0.13 ) * prof; // per-scale tilt breaks up the specular
+		crack = 1.0 - smoothstep( 0.0, m * 1.8, ec );
+		top = prof;
+		rnd = cr.z;
+		feat = 0.0;
+	} else {
+		vec4 f = id1 == 1 ? f1 : f2;
+		vec3 fr = id1 == 1 ? fr1 : fr2;
+		// Distance to the outline of the merged region from F = softmin(d, outside cells) -
+		// softmin(d, merged cells): the numerator of the bisector distance is continuous across the
+		// borders between merged cells, and the soft-min over the merged cells keeps its gradient
+		// continuous too, so the rim has no spikes where two merged cells meet it.
+		float tau = 0.14;
+		float sA = 0.0, sB = 0.0;
+		vec3 gA = vec3( 0.0 ), gB = vec3( 0.0 );
+		for ( int k = 0; k < 27; k ++ ) {
+			float wk = exp( - ( r[ k ].w - w1 ) / tau );
+			if ( id[ k ] == id1 ) { sB += wk; gB += wk * r[ k ].xyz; }
+			else { sA += wk; gA += wk * r[ k ].xyz; }
+		}
+		e = sA > 1e-30 ? 0.5 * size * tau * ( log( sB ) - log( sA ) ) : 4.0 * size;
+		eg = sA > 1e-30 ? gB / sB - gA / sA : vec3( 0.0 );
+		// The crown is a smooth convex dome around the site centre; the merged pebble outline only
+		// shapes the rounded rim (the cell-border distance jumps between merged cells inside, so it
+		// must not drive the interior shape).
+		float Rc = f.w + 0.6 * size;
+		vec3 dc = p - f.xyz;
+		float c2 = min( dot( dc, dc ) / ( Rc * Rc ), 1.0 );
+		float crown = 1.0 - 0.7 * c2;
+		vec3 dcrown = c2 < 1.0 ? - 1.4 * dc / ( Rc * Rc ) : vec3( 0.0 );
+		float m = uMortar * size * 1.3;
+		float rim = uDomeRadius * size * 1.3;
+		float x = clamp( ( e - m ) / rim, 0.0, 1.0 );
+		float prof = 1.0 - ( 1.0 - x ) * ( 1.0 - x );
+		float dprof = ( e > m && x < 1.0 ) ? 2.0 * ( 1.0 - x ) / rim : 0.0;
+		float amp = uFeatureHeight * f.w * ( 0.6 + 0.8 * fr.y );
+		h = amp * prof * crown;
+		g = amp * ( dprof * eg * crown + prof * dcrown );
+		g += ( fr - 0.5 ) * 0.25 * uFeatureHeight * prof;     // each feature scale tilted a little
+		crack = 1.0 - smoothstep( 0.0, m * 1.8, e );
+		top = prof * crown;
+		rnd = fr.z;
+		feat = 1.0;
+	}
+}
+
+// Smooth stand-in for a feature scale once the pebbles are below pixel size (keeps the bumps
+// visible at medium distance without evaluating the pebble cells).
+void skFeatureDisc( vec3 p, vec4 f, vec3 fr, inout float h, inout vec3 g, inout float m ) {
+	if ( f.w <= 0.0 ) return;
+	vec3 dc = p - f.xyz;
+	float R = f.w * 1.1;
+	float x2 = dot( dc, dc ) / ( R * R );
+	if ( x2 >= 1.0 ) return;
+	float b = 1.0 - x2;
+	float amp = uFeatureHeight * f.w * ( 0.6 + 0.8 * fr.y );
+	h += amp * b * b;
+	g += amp * 2.0 * b * ( - 2.0 * dc / ( R * R ) );
+	m = max( m, smoothstep( 0.0, 0.5, b ) );
+}
+
+// Transverse scutes (scutate scales) across the front of a limb segment, as on the metatarsus and
+// toes of birds and crocodilians (extant phylogenetic bracket; tyrannosaurid foot scutes are
+// inferred, not preserved in detail). Rows are a jittered 1-D cell sequence along the limb axis;
+// the joints curve slightly, every row has its own lateral extent (staggered ends) and some rows
+// are split in two. The profile is asymmetric like overlapping scutes: each plate rises towards
+// its free distal edge, which ends in a sharp step.
+//   axis: distal direction; R: limb radius (m); len: row length along the axis (m);
+//   span: half-angle around the limb covered by a full row (rad); key: decorrelates feet / toes;
+//   aa: antialiasing width (m). on = 1 where the pixel lies on a scute (else pebbles);
+//   eLat = signed lateral distance to the end of the row (m, > 0 on the scute).
+void skScutes( vec3 p, vec3 nR, vec3 axis, float R, float len, float span, float key, float aa, out float h, out vec3 g, out float crack, out float top, out float rnd, out float on, out float eLat ) {
+	vec3 F = normalize( cross( vec3( 0.0, 0.0, 1.0 ), axis ) );
+	vec3 S = cross( axis, F );
+	vec3 nP = nR - axis * dot( nR, axis );
+	float nl = length( nP );
+	nP = nl > 1e-4 ? nP / nl : F;
+	float phi = atan( dot( nP, S ), dot( nP, F ) );         // angle around the limb from the front
+	vec3 Tl = cross( axis, nP );                              // surface direction of increasing phi
+	vec3 dphi = Tl / R;
+	float ax = dot( p, axis ) / len;
+	float wob = 0.06 * sin( 3.1 * phi + 0.7 * ax + key );
+	float t = ax - uScuteCurve * phi * phi + wob;
+	vec3 dt = axis / len - 2.0 * uScuteCurve * phi * dphi + 0.06 * cos( 3.1 * phi + 0.7 * ax + key ) * ( 3.1 * dphi + 0.7 * axis / len );
+	// jittered cut points c(i) = i + j * (hash - 0.5): rows of unequal length
+	float it = floor( t );
+	float j = 0.35;
+	float cA = it + j * ( skHash13( vec3( it, key, uSeed + 3.7 ) ) - 0.5 );
+	float cB = it + 1.0 + j * ( skHash13( vec3( it + 1.0, key, uSeed + 3.7 ) ) - 0.5 );
+	float row = it, a = cA, b = cB;
+	if ( t < cA ) { row = it - 1.0; b = cA; a = it - 1.0 + j * ( skHash13( vec3( it - 1.0, key, uSeed + 3.7 ) ) - 0.5 ); }
+	else if ( t >= cB ) { row = it + 1.0; a = cB; b = it + 2.0 + j * ( skHash13( vec3( it + 2.0, key, uSeed + 3.7 ) ) - 0.5 ); }
+	vec3 hr = skHash33( vec3( row, key, uSeed + 9.1 ) );
+	// lateral ends of this row (staggered from row to row)
+	float pL = - span * ( 0.72 + 0.45 * hr.x ), pR = span * ( 0.72 + 0.45 * hr.y );
+	float eL = ( phi - pL ) * R, eR = ( pR - phi ) * R;
+	eLat = min( eL, eR );
+	vec3 gLat = eL < eR ? Tl : - Tl;
+	// edges: proximal / distal joint, lateral end, optional split; soft-min rounds the corners
+	float eP = ( t - a ) * len, eD = ( b - t ) * len;
+	float k = 0.1 * len, ik = 1.0 / k;
+	float w0 = exp( - eP * ik ), w1 = exp( - eD * ik ), w2 = exp( - max( eLat, 0.0 ) * ik ), w3 = 0.0;
+	vec3 gsum = w0 * len * dt - w1 * len * dt + w2 * gLat;
+	if ( hr.z < uScuteSplit ) {
+		float ps = ( fract( hr.x * 7.13 + hr.y * 3.1 ) - 0.5 ) * span * 0.9;
+		float eS = abs( phi - ps ) * R;
+		w3 = exp( - eS * ik );
+		gsum += w3 * sign( phi - ps ) * Tl;
+	}
+	float ws = w0 + w1 + w2 + w3;
+	float e = - k * log( ws );
+	vec3 eg = gsum / ws;
+	float u = clamp( ( t - a ) / ( b - a ), 0.0, 1.0 );
+	float mort = 0.045 * len;
+	float Rr = len * mix( 0.5, 0.16, smoothstep( 0.35, 0.75, u ) ); // gentle proximal ramp, sharp distal step
+	float x = clamp( ( e - mort ) / Rr, 0.0, 1.0 );
+	float prof = 1.0 - ( 1.0 - x ) * ( 1.0 - x );
+	float dprof = ( e > mort && x < 1.0 ) ? 2.0 * ( 1.0 - x ) / Rr : 0.0;
+	float slope = 0.45 + 0.55 * u;
+	float pc = phi / max( span, 0.2 );
+	float conv = 1.0 - 0.3 * pc * pc;                         // plates are convex across the limb
+	float amp = uScuteHeight * len * ( 0.8 + 0.4 * hr.y );
+	h = amp * prof * slope * conv;
+	g = amp * ( dprof * eg * slope * conv + prof * 0.55 / ( b - a ) * dt * conv - prof * slope * 0.6 * pc / max( span, 0.2 ) * dphi );
+	g += ( hr - 0.5 ) * 0.12 * uScuteHeight * prof;          // each plate slightly tilted
+	crack = 1.0 - smoothstep( 0.0, mort * 1.8 + aa, e );
+	top = prof;
+	rnd = hr.z;
+	on = smoothstep( - aa, aa, eLat );
+}
+
+// Fades a layer out as its cells shrink from uDetailFull to uDetailFade pixels across.
 float skVisible( float size, float pix ) {
-	return smoothstep( uDetailFade, uDetailFade * 2.5, size / max( pix, 1e-6 ) );
+	return smoothstep( uDetailFade, uDetailFull, size / max( pix, 1e-6 ) );
 }
 
 // Unnormalised Mikkelsen bump: dHdxy = screen derivatives of the height (same units as surf_pos).
@@ -458,8 +597,13 @@ float skRoughness;
 	}
 
 	// ---- scale layers
-	float h = 0.0, crack = 0.0, top = 0.0, rnd = 0.5;
+	float h = 0.0, crack = 0.0, top = 0.0, rnd = 0.5, feat = 0.0;
 	vec3 g = vec3( 0.0 );
+	// feature-scale sites (shared by both pebble octaves so their outlines agree)
+	vec4 f1 = vec4( 0.0 ), f2 = vec4( 0.0 );
+	vec3 fr1 = vec3( 0.5 ), fr2 = vec3( 0.5 );
+	float visF = skVisible( uFeatureScale * uFeatureSize.y * 2.0, pix ) * ( 1.0 - smoothstep( 0.2, 0.6, vSkinA.z ) );
+	if ( vSkinA.y > 0.005 && visF > 0.0 ) skFeatureSites( p, min( vSkinA.y, 0.9 ), f1, f2, fr1, fr2 );
 	float L = clamp( vSkinA.x, - 3.0, 3.0 );
 	float lo = floor( L );
 	// dithered (|d| < 0.25 keeps octave crossings continuous): scale sizes interlock at region borders
@@ -467,45 +611,57 @@ float skRoughness;
 	float sizeA = uBaseScale * exp2( lo ), sizeB = sizeA * 2.0;
 	float visA = skVisible( sizeA, pix ), visB = skVisible( sizeB, pix );
 	float vis = mix( visA, visB, tB );
-	if ( tB < 0.999 && visA > 0.0 ) {
-		float h0, c0, t0, r0; vec3 g0;
-		skPebbles( p, sizeA, h0, g0, c0, t0, r0 );
-		float w = ( 1.0 - tB ) * visA;
-		h += h0 * w; g += g0 * w; crack += c0 * ( 1.0 - tB ); top += t0 * ( 1.0 - tB ); rnd = r0;
+	for ( int oct = 0; oct < 2; oct ++ ) {
+		float wo = oct == 0 ? 1.0 - tB : tB;
+		float vo = oct == 0 ? visA : visB;
+		if ( wo < 0.001 || vo <= 0.0 ) continue;
+		float h0, c0, t0, r0, ft0; vec3 g0;
+		skPebbles( p, oct == 0 ? sizeA : sizeB, f1, f2, fr1, fr2, h0, g0, c0, t0, r0, ft0 );
+		// feature scales are large: their relief survives longer than the pebbles' (visF)
+		float wv = wo * vo * ( ft0 > 0.5 ? visF : 1.0 );
+		h += h0 * wv; g += g0 * wv;
+		crack += c0 * wo; top += t0 * wo; feat += ft0 * wo;
+		rnd = oct == 0 ? r0 : mix( rnd, r0, step( 0.5, tB ) );
 	}
-	if ( tB > 0.001 && visB > 0.0 ) {
-		float h0, c0, t0, r0; vec3 g0;
-		skPebbles( p, sizeB, h0, g0, c0, t0, r0 );
-		float w = tB * visB;
-		h += h0 * w; g += g0 * w; crack += c0 * tB; top += t0 * tB; rnd = mix( rnd, r0, step( 0.5, tB ) );
+	// below pebble resolution the feature scales become smooth bumps
+	if ( visF > 0.0 && vis < 1.0 && f1.w > 0.0 ) {
+		float hd = 0.0, md = 0.0; vec3 gd = vec3( 0.0 );
+		skFeatureDisc( p, f1, fr1, hd, gd, md );
+		skFeatureDisc( p, f2, fr2, hd, gd, md );
+		float wd = visF * ( 1.0 - vis );
+		h += hd * wd; g += gd * wd;
+		feat = mix( feat, md, 1.0 - vis );
 	}
 
-	// scutes on the front of the metatarsus / top of the toes
-	float scuteW = 0.0, boss = 0.0;
+	// scutes on the front of the metatarsus / top of the toes. Rows narrow and stop where the foot
+	// region fades out (instead of cross-fading into a smudge); metatarsus and toe frames switch along
+	// a wavy line just above the toe joint, with a crease there.
+	float scuteW = 0.0;
 	if ( vSkinA.z > 0.01 ) {
-		// two frames (metatarsus, toes) evaluated separately and cross-faded: blending the axis
-		// itself would squeeze the plates into thin stripes at the joint
-		float toeW = 1.0 - smoothstep( uToeHeight - 0.06, uToeHeight + 0.06, p.y );
-		vec3 axM = normalize( uMetaAxis ), axT = normalize( uToeAxis );
-		vec3 fM = normalize( cross( vec3( 0.0, 0.0, 1.0 ), axM ) ), fT = normalize( cross( vec3( 0.0, 0.0, 1.0 ), axT ) );
-		float faceW = smoothstep( - 0.05, 0.45, dot( nR, normalize( mix( fM, fT, toeW ) ) ) );
-		scuteW = vSkinA.z * faceW;
-		float sVis = skVisible( uScuteSize.x, pix );
-		if ( scuteW > 0.01 && sVis > 0.0 ) {
-			float hs = 0.0, cs = 0.0, ts = 0.0, rs = 0.0; vec3 gs = vec3( 0.0 );
-			float h0, c0, t0, r0; vec3 g0;
-			if ( toeW < 0.999 ) {
-				skScutes( p, axM, h0, g0, c0, t0, r0 );
-				hs += h0 * ( 1.0 - toeW ); gs += g0 * ( 1.0 - toeW ); cs += c0 * ( 1.0 - toeW ); ts += t0 * ( 1.0 - toeW ); rs = r0;
-			}
-			if ( toeW > 0.001 ) {
-				skScutes( p + 1.37, axT, h0, g0, c0, t0, r0 );
-				hs += h0 * toeW; gs += g0 * toeW; cs += c0 * toeW; ts += t0 * toeW; rs = mix( rs, r0, step( 0.5, toeW ) );
-			}
-			h = mix( h, hs * sVis, scuteW ); g = mix( g, gs * sVis, scuteW );
-			crack = mix( crack, cs, scuteW ); top = mix( top, ts, scuteW ); rnd = mix( rnd, rs, step( 0.5, scuteW ) );
-			vis = mix( vis, sVis, scuteW );
+		float aa = 1.2 * pix;
+		float spanK = smoothstep( 0.2, 0.85, vSkinA.z );
+		float sVis = skVisible( min( uScuteLength.x, uScuteLength.y ), pix );
+		float side = step( 0.0, p.z ) * 7.0;                  // left and right feet get different rows
+		float toeLine = uToeHeight + 0.02 * n2.x;
+		float toeW = 1.0 - smoothstep( - aa, aa, p.y - toeLine );
+		float hs = 0.0, cs = 0.0, ts = 0.0, rs = 0.0, os = 0.0, es = 0.0; vec3 gs = vec3( 0.0 );
+		for ( int fr = 0; fr < 2; fr ++ ) {
+			float wf = fr == 0 ? 1.0 - toeW : toeW;
+			if ( wf < 0.001 ) continue;
+			float h0, c0, t0, r0, o0, e0; vec3 g0;
+			if ( fr == 0 ) skScutes( p, nR, normalize( uMetaAxis ), uScuteRadius.x, uScuteLength.x, uScuteSpan.x * spanK, side, aa, h0, g0, c0, t0, r0, o0, e0 );
+			else skScutes( p, nR, normalize( uToeAxis ), uScuteRadius.y, uScuteLength.y, uScuteSpan.y * spanK, side + 3.0, aa, h0, g0, c0, t0, r0, o0, e0 );
+			hs += h0 * wf; gs += g0 * wf; cs += c0 * wf; ts += t0 * wf; os += o0 * wf; es += e0 * wf;
+			rs = fr == 0 ? r0 : mix( rs, r0, step( 0.5, toeW ) );
 		}
+		cs = max( cs, ( 1.0 - smoothstep( 0.0, 0.006 + aa, abs( p.y - toeLine ) ) ) * os );
+		scuteW = os * sVis;
+		h = mix( h, hs * sVis, scuteW ); g = mix( g, gs * sVis, scuteW );
+		// pebbles meeting the end of a row are cut by a crack too
+		crack = max( mix( crack, cs, os ), ( 1.0 - smoothstep( 0.0, 0.004 + aa, abs( es ) ) ) * spanK );
+		top = mix( top, ts, os ); rnd = mix( rnd, rs, step( 0.5, os ) );
+		feat *= 1.0 - os;
+		vis = mix( vis, sVis, os );
 	}
 
 	// reticulate crease network: shallow grooves along the borders of ~9 cm cells, the wrinkle
@@ -522,25 +678,18 @@ float skRoughness;
 		float t = clamp( e / w, 0.0, 1.0 );
 		float prof = 1.0 - t * t * ( 3.0 - 2.0 * t );
 		float dprof = ( e > 0.0 && e < w ) ? - 6.0 * t * ( 1.0 - t ) / w : 0.0;
-		float amt = netVis * on * ( 0.35 + 0.65 * cr.y );               // some grooves fainter than others
+		float amt = netVis * on * ( 0.35 + 0.65 * cr.y ) * ( 1.0 - feat );   // some grooves fainter than others
 		h -= uNetDepth * amt * prof;
 		g -= uNetDepth * amt * dprof / uNetScale * eg;
 		foldCrease = max( foldCrease, prof * amt * 0.45 );
 	}
+	float boss = feat * visF;
 
-	// sparse tubercles (feature scales)
-	float fVis = skVisible( uFeatureScale * 0.5, pix );
-	if ( vSkinA.y > 0.005 && fVis > 0.0 ) {
-		float hb = h; vec3 gb = g; float cb = crack, tb = top, rb = rnd;
-		skTubercles( p + 7.7, uFeatureScale, min( vSkinA.y, 0.85 ), h, g, crack, top, rnd, boss );
-		boss *= fVis;
-		h = mix( hb, h, fVis ); g = mix( gb, g, fVis ); crack = mix( cb, crack, fVis ); top = mix( tb, top, fVis ); rnd = mix( rb, rnd, fVis );
-		vis = max( vis, fVis * step( 0.001, abs( h - hb ) ) );
-	}
 
 	float eyeW = smoothstep( 0.3, 0.7, vSkinFeat.x ), clawW = smoothstep( 0.3, 0.7, vSkinFeat.y );
 	skSkinW = 1.0 - max( eyeW, clawW );
 	skDebugVis = vis;
+	skDebugFeat = vec3( crack, feat, f1.w > 0.0 ? 0.5 + 0.5 * step( length( p - f1.xyz ), f1.w ) : 0.0 );
 	float bump = uBumpStrength * vSkinA.w * skSkinW;
 	skGradDetail = g * bump;
 	skGradMacro *= uBumpStrength * skSkinW;
@@ -554,7 +703,7 @@ float skRoughness;
 	col *= 1.0 + uGrainTint * n4.x * grainVis;
 	col *= 1.0 + uScaleTint * ( rnd - 0.5 ) * 2.0 * vis;
 	col *= 1.0 + uTopLight * top * vis;
-	col *= 1.0 - 0.14 * boss;                                       // bosses: slightly darker, read by relief
+	col *= 1.0 + uFeatureTint * boss * ( 0.6 + 0.8 * fract( rnd * 3.7 ) ); // feature scales: own tone, read mostly by relief
 	float crackAmt = max( crack * vis, foldCrease * 0.6 );
 	col *= 1.0 - uCrackDark * mix( 0.18, crackAmt, vis );           // faded: keep the mean darkening of the mortar
 	col *= 1.0 - uCavityDark * vSkinCavity * vSkinCavity;          // squared: only true creases darken
@@ -633,8 +782,10 @@ const FRAG_DEBUG = /* glsl */`
 		gl_FragColor = vec4( vec3( skAO ), 1.0 );
 	#elif SKIN_DEBUG == 5
 		gl_FragColor = vec4( skDebugVis, 0.0, 0.0, 1.0 );
+	#elif SKIN_DEBUG == 7
+		gl_FragColor = vec4( skDebugFeat, 1.0 );
 	#else
-		gl_FragColor = vec4( vSkinB.rgb * 0.5, vSkinA.z, 1.0 );
+		gl_FragColor = vec4( vSkinB.rg * 0.5, vSkinA.z, 1.0 );
 	#endif
 #endif
 `;
@@ -653,6 +804,7 @@ reflectedLight.indirectDiffuse *= skAO;
 // ---------------------------------------------------------------------------------------------
 
 function v3(THREE, a) { return new THREE.Vector3(a[0], a[1], a[2]); }
+function v2(THREE, a) { return new THREE.Vector2(a[0], a[1]); }
 
 function regionUniforms(THREE, regions, baseScale) {
   const params = [], tint = [], fold = [];
@@ -692,7 +844,10 @@ export function createSkinMaterial(THREE, opts = {}) {
     uMortar: { value: o.mortar }, uDomeRadius: { value: o.domeRadius }, uScaleHeight: { value: o.scaleHeight },
     uSoftness: { value: o.softness }, uBumpStrength: { value: o.bumpStrength },
     uFeatureScale: { value: o.featureScale }, uFeatureHeight: { value: o.featureHeight },
-    uScuteSize: { value: v3(THREE, o.scuteSize) }, uScuteHeight: { value: o.scuteHeight },
+    uFeatureSize: { value: v2(THREE, o.featureSize) }, uRosette: { value: o.rosette }, uFeatureTint: { value: o.featureTint },
+    uScuteLength: { value: v2(THREE, o.scuteLength) }, uScuteSpan: { value: v2(THREE, o.scuteSpan) },
+    uScuteRadius: { value: v2(THREE, o.scuteRadius) }, uScuteHeight: { value: o.scuteHeight },
+    uScuteCurve: { value: o.scuteCurve }, uScuteSplit: { value: o.scuteSplit },
     uMetaAxis: { value: v3(THREE, o.metaAxis).normalize() }, uToeAxis: { value: v3(THREE, o.toeAxis).normalize() },
     uToeHeight: { value: o.toeHeight },
     uFoldDepth: { value: o.foldDepth }, uFoldDirs: { value: o.foldDirs.map((d) => { const a = v3(THREE, d).normalize(); return new THREE.Vector4(a.x, a.y, a.z, d[3]); }) }, uLumpDepth: { value: o.lumpDepth }, uLumpScale: { value: o.lumpScale },
@@ -707,7 +862,7 @@ export function createSkinMaterial(THREE, opts = {}) {
     uScatterColor: { value: v3(THREE, o.scatterColor) }, uSSS: { value: o.sss }, uSSSNormalBlur: { value: o.sssNormalBlur },
     uTranslucency: { value: o.translucency }, uSpecular: { value: o.specular },
     uDustColor: { value: col(o.dustColor) }, uDust: { value: o.dust }, uDustHeight: { value: o.dustHeight },
-    uDetailFade: { value: o.detailFade }, uWorldScale: { value: o.worldScale },
+    uDetailFade: { value: o.detailFade }, uDetailFull: { value: o.detailFull }, uWorldScale: { value: o.worldScale },
     uEyeColor: { value: col(o.eyeColor) }, uClawColor: { value: col(o.clawColor) }, uOcclusionAO: { value: o.occlusionAO }, uFoldAttr: { value: o.foldAttr },
   };
 

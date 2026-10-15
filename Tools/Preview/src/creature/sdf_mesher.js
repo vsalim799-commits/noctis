@@ -6,8 +6,11 @@
 // and skin-fold attributes from which primitives shape each vertex. No external assets, no UVs.
 //
 // Shape order matters: shapes are combined in array order, so subtractions (eye sockets, mouth
-// line) should come after the volumes they carve, and anything listed after a subtraction (an
-// eyeball) is added back on top of it.
+// line) should come after the volumes they carve, and anything listed after a subtraction is added
+// back on top of it.
+// A shape flagged `separate: true` (e.g. an eyeball) is left out of the skin field and meshed on
+// its own, on a finer grid, as an independent closed surface merged into the same geometry: small
+// round parts stay crisp without refining the whole body grid.
 
 export const REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 'thigh', 'shin', 'foot', 'arm'];
 // Optional per-shape `feature` tags, exported per vertex as aFeature (0 = skin) so a material can
@@ -30,6 +33,7 @@ function compileShapes(shapes, boneIndex) {
     bone: new Int32Array(n),
     region: new Uint8Array(n),
     feature: new Uint8Array(n),
+    separate: new Uint8Array(n),     // 1 = meshed on its own (not part of the skin field)
     k: new Float64Array(n),          // smooth-min radius
     p: new Float64Array(n * STRIDE),
     box: new Float64Array(n * 6),    // min xyz, max xyz (unexpanded)
@@ -47,6 +51,7 @@ function compileShapes(shapes, boneIndex) {
     S.feature[i] = Math.max(0, FEATURES.indexOf(s.feature || 'skin'));
     S.k[i] = Math.max(s.blend ?? 0.05, 1e-4);
     S.sign[i] = s.sign === -1 ? -1 : 1;
+    S.separate[i] = s.separate ? 1 : 0;
     const o = i * STRIDE, P = S.p, bo = i * 6;
     if (s.kind === 'ellipsoid') {
       S.kind[i] = 0;
@@ -238,6 +243,7 @@ function buildBlockLists(S, grid, marginOf) {
   const count = new Int32Array(nb + 1);
   const clampi = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
   for (let i = 0; i < S.n; i++) {
+    if (S.separate[i]) continue;
     const m = marginOf(i), b = i * 6;
     // Block bx covers points [bx*B, bx*B+B-1]; include the one-cell seam to the next block.
     const r = [
@@ -256,6 +262,7 @@ function buildBlockLists(S, grid, marginOf) {
   const list = new Int32Array(count[nb]);
   const fill = count.slice(0, nb);
   for (let i = 0; i < S.n; i++) {
+    if (S.separate[i]) continue;
     const b = i * 6;
     for (let bz = ranges[b + 2]; bz <= ranges[b + 5]; bz++) for (let by = ranges[b + 1]; by <= ranges[b + 4]; by++)
       for (let bx = ranges[b]; bx <= ranges[b + 3]; bx++) list[fill[bx + nbx * (by + nby * bz)]++] = i;
@@ -263,12 +270,102 @@ function buildBlockLists(S, grid, marginOf) {
   return { off: count, list };
 }
 
+// Surface nets over a dense grid of field samples (negative inside): one vertex per cell that
+// straddles the surface (mean of the edge crossings), one quad per sign-changing grid edge.
+function surfaceNets(field, nx, ny, nz, ox, oy, oz, h) {
+  const sx = 1, sy = nx, sz = nx * ny;
+  const cellVert = new Int32Array(nx * ny * nz).fill(-1);
+  const pos = [];
+  const cells = [];
+  const corner = [0, sx, sy, sx + sy, sz, sx + sz, sy + sz, sx + sy + sz];
+  const cOff = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]];
+  const edges = [0, 1, 2, 3, 4, 5, 6, 7, 0, 2, 1, 3, 4, 6, 5, 7, 0, 4, 1, 5, 2, 6, 3, 7];
+  const v = new Float64Array(8);
+  for (let k = 0; k < nz - 1; k++) for (let j = 0; j < ny - 1; j++) {
+    let idx = nx * (j + ny * k);
+    for (let i = 0; i < nx - 1; i++, idx++) {
+      let mask = 0;
+      for (let c = 0; c < 8; c++) { v[c] = field[idx + corner[c]]; if (v[c] < 0) mask |= 1 << c; }
+      if (mask === 0 || mask === 255) continue;
+      let px = 0, py = 0, pz = 0, cnt = 0;
+      for (let e = 0; e < 24; e += 2) {
+        const a = edges[e], b = edges[e + 1];
+        if ((v[a] < 0) === (v[b] < 0)) continue;
+        const t = v[a] / (v[a] - v[b]);
+        px += cOff[a][0] + t * (cOff[b][0] - cOff[a][0]);
+        py += cOff[a][1] + t * (cOff[b][1] - cOff[a][1]);
+        pz += cOff[a][2] + t * (cOff[b][2] - cOff[a][2]);
+        cnt++;
+      }
+      cellVert[idx] = pos.length / 3;
+      cells.push(idx, mask);
+      pos.push(ox + (i + px / cnt) * h, oy + (j + py / cnt) * h, oz + (k + pz / cnt) * h);
+    }
+  }
+  const index = [];
+  const quad = (a, b, c, d, flip) => {
+    // Split along the shorter diagonal for fewer slivers.
+    const dac = (pos[a * 3] - pos[c * 3]) ** 2 + (pos[a * 3 + 1] - pos[c * 3 + 1]) ** 2 + (pos[a * 3 + 2] - pos[c * 3 + 2]) ** 2;
+    const dbd = (pos[b * 3] - pos[d * 3]) ** 2 + (pos[b * 3 + 1] - pos[d * 3 + 1]) ** 2 + (pos[b * 3 + 2] - pos[d * 3 + 2]) ** 2;
+    if (flip) { const t = b; b = d; d = t; }
+    if (dac <= dbd) index.push(a, b, c, a, c, d); else index.push(a, b, d, b, c, d);
+  };
+  for (let q = 0; q < cells.length; q += 2) {
+    const idx = cells[q], mask = cells[q + 1];
+    const i = idx % nx, j = Math.floor(idx / nx) % ny, k = Math.floor(idx / (nx * ny));
+    const in0 = (mask & 1) !== 0;
+    // Edge along +x from corner 0: cells around it in the (y,z) plane, ordered so the
+    // winding normal is +x when the low end is inside.
+    if (((mask >> 1) & 1) !== (mask & 1) && j > 0 && k > 0)
+      quad(cellVert[idx - sy - sz], cellVert[idx - sz], cellVert[idx], cellVert[idx - sy], !in0);
+    if (((mask >> 2) & 1) !== (mask & 1) && i > 0 && k > 0)
+      quad(cellVert[idx - sx - sz], cellVert[idx - sx], cellVert[idx], cellVert[idx - sz], !in0);
+    if (((mask >> 4) & 1) !== (mask & 1) && i > 0 && j > 0)
+      quad(cellVert[idx - sx - sy], cellVert[idx - sy], cellVert[idx], cellVert[idx - sx], !in0);
+  }
+  return { pos, index };
+}
+
+// Mesh one shape on its own: a dense grid ~14 cells across its smallest extent, surface nets,
+// then Newton projection onto the shape and analytic normals.
+function meshSeparate(S, si, h) {
+  const b = si * 6, B = S.box;
+  const size = Math.min(B[b + 3] - B[b], B[b + 4] - B[b + 1], B[b + 5] - B[b + 2]);
+  const hs = Math.min(h, size / 14), pad = 2 * hs;
+  const ox = B[b] - pad, oy = B[b + 1] - pad, oz = B[b + 2] - pad;
+  const nx = Math.ceil((B[b + 3] - B[b] + 2 * pad) / hs) + 1;
+  const ny = Math.ceil((B[b + 4] - B[b + 1] + 2 * pad) / hs) + 1;
+  const nz = Math.ceil((B[b + 5] - B[b + 2] + 2 * pad) / hs) + 1;
+  const field = new Float32Array(nx * ny * nz);
+  for (let k = 0, idx = 0; k < nz; k++) for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++, idx++)
+    field[idx] = shapeDist(S, si, ox + i * hs, oy + j * hs, oz + k * hs);
+  const { pos, index } = surfaceNets(field, nx, ny, nz, ox, oy, oz, hs);
+  const P = new Float32Array(pos), N = new Float32Array(P.length);
+  const e = 0.25 * hs;
+  const grad = (x, y, z) => [
+    shapeDist(S, si, x + e, y, z) - shapeDist(S, si, x - e, y, z),
+    shapeDist(S, si, x, y + e, z) - shapeDist(S, si, x, y - e, z),
+    shapeDist(S, si, x, y, z + e) - shapeDist(S, si, x, y, z - e),
+  ];
+  for (let v = 0; v < P.length; v += 3) {
+    let x = P[v], y = P[v + 1], z = P[v + 2];
+    for (let it = 0; it < 3; it++) {
+      const d = shapeDist(S, si, x, y, z), g = grad(x, y, z), l = Math.hypot(g[0], g[1], g[2]) || 1;
+      x -= d * g[0] / l; y -= d * g[1] / l; z -= d * g[2] / l;
+    }
+    const g = grad(x, y, z), l = Math.hypot(g[0], g[1], g[2]) || 1;
+    P[v] = x; P[v + 1] = y; P[v + 2] = z;
+    N[v] = g[0] / l; N[v + 1] = g[1] / l; N[v + 2] = g[2] / l;
+  }
+  return { shape: si, pos: P, nrm: N, index };
+}
+
 // Unculled field evaluator (debugging, measuring the sculpt, placing details on the surface).
 export function createSdf(bones, shapes) {
   const S = compileShapes(shapes, new Map(bones.map((b, i) => [b.name, i])));
-  const all = Int32Array.from({ length: S.n }, (_, i) => i);
+  const all = Int32Array.from({ length: S.n }, (_, i) => i).filter((i) => !S.separate[i]);
   const scratch = new Float64Array(2 * S.n + 2);
-  return (x, y, z) => evalList(S, all, 0, S.n, x, y, z, scratch);
+  return (x, y, z) => evalList(S, all, 0, all.length, x, y, z, scratch);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -295,7 +392,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   // ---- grid ----------------------------------------------------------------------------------
   const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
   for (let i = 0; i < S.n; i++) {
-    if (S.sign[i] < 0) continue;
+    if (S.sign[i] < 0 || S.separate[i]) continue;
     for (let r = 0; r < 3; r++) {
       lo[r] = Math.min(lo[r], S.box[i * 6 + r] - S.k[i] - S.foldAmp[i]);
       hi[r] = Math.max(hi[r], S.box[i * 6 + 3 + r] + S.k[i] + S.foldAmp[i]);
@@ -358,62 +455,30 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   };
 
   // ---- surface nets ----------------------------------------------------------------------------
-  const sx = 1, sy = nx, sz = nx * ny;
-  const cellVert = new Int32Array(nx * ny * nz).fill(-1);
-  const pos = [];
-  const cells = [];
-  const corner = [0, sx, sy, sx + sy, sz, sx + sz, sy + sz, sx + sy + sz];
-  const cOff = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]];
-  const edges = [0, 1, 2, 3, 4, 5, 6, 7, 0, 2, 1, 3, 4, 6, 5, 7, 0, 4, 1, 5, 2, 6, 3, 7];
-  const v = new Float64Array(8);
-  for (let k = 0; k < nz - 1; k++) for (let j = 0; j < ny - 1; j++) {
-    let idx = nx * (j + ny * k);
-    for (let i = 0; i < nx - 1; i++, idx++) {
-      let mask = 0;
-      for (let c = 0; c < 8; c++) { v[c] = field[idx + corner[c]]; if (v[c] < 0) mask |= 1 << c; }
-      if (mask === 0 || mask === 255) continue;
-      let px = 0, py = 0, pz = 0, cnt = 0;
-      for (let e = 0; e < 24; e += 2) {
-        const a = edges[e], b = edges[e + 1];
-        if ((v[a] < 0) === (v[b] < 0)) continue;
-        const t = v[a] / (v[a] - v[b]);
-        px += cOff[a][0] + t * (cOff[b][0] - cOff[a][0]);
-        py += cOff[a][1] + t * (cOff[b][1] - cOff[a][1]);
-        pz += cOff[a][2] + t * (cOff[b][2] - cOff[a][2]);
-        cnt++;
-      }
-      cellVert[idx] = pos.length / 3;
-      cells.push(idx, mask);
-      pos.push(ox + (i + px / cnt) * h, oy + (j + py / cnt) * h, oz + (k + pz / cnt) * h);
-    }
-  }
-  const index = [];
-  const quad = (a, b, c, d, flip) => {
-    // Split along the shorter diagonal for fewer slivers.
-    const dac = (pos[a * 3] - pos[c * 3]) ** 2 + (pos[a * 3 + 1] - pos[c * 3 + 1]) ** 2 + (pos[a * 3 + 2] - pos[c * 3 + 2]) ** 2;
-    const dbd = (pos[b * 3] - pos[d * 3]) ** 2 + (pos[b * 3 + 1] - pos[d * 3 + 1]) ** 2 + (pos[b * 3 + 2] - pos[d * 3 + 2]) ** 2;
-    if (flip) { const t = b; b = d; d = t; }
-    if (dac <= dbd) index.push(a, b, c, a, c, d); else index.push(a, b, d, b, c, d);
-  };
-  for (let q = 0; q < cells.length; q += 2) {
-    const idx = cells[q], mask = cells[q + 1];
-    const i = idx % nx, j = Math.floor(idx / nx) % ny, k = Math.floor(idx / (nx * ny));
-    const in0 = (mask & 1) !== 0;
-    // Edge along +x from corner 0: cells around it in the (y,z) plane, ordered so the
-    // winding normal is +x when the low end is inside.
-    if (((mask >> 1) & 1) !== (mask & 1) && j > 0 && k > 0)
-      quad(cellVert[idx - sy - sz], cellVert[idx - sz], cellVert[idx], cellVert[idx - sy], !in0);
-    if (((mask >> 2) & 1) !== (mask & 1) && i > 0 && k > 0)
-      quad(cellVert[idx - sx - sz], cellVert[idx - sx], cellVert[idx], cellVert[idx - sz], !in0);
-    if (((mask >> 4) & 1) !== (mask & 1) && i > 0 && j > 0)
-      quad(cellVert[idx - sx - sy], cellVert[idx - sy], cellVert[idx], cellVert[idx - sx], !in0);
-  }
+  const { pos, index } = surfaceNets(field, nx, ny, nz, ox, oy, oz, h);
   lap('nets');
 
-  const nV = pos.length / 3;
-  const P = new Float32Array(pos);
+  // ---- separate parts (eyeballs): own finer grid, own closed surface ---------------------------
+  const sep = [];
+  for (let i = 0; i < S.n; i++) if (S.separate[i] && S.sign[i] > 0) sep.push(meshSeparate(S, i, h));
+  const nMain = pos.length / 3;
+  let nV = nMain;
+  for (const m of sep) nV += m.pos.length / 3;
+  const P = new Float32Array(nV * 3);
+  P.set(pos);
   const N = new Float32Array(nV * 3);
-  const gradLen = new Float32Array(nV);   // |grad| of the field at the vertex (1 for a true SDF)
+  const owner = new Int32Array(nV).fill(-1);   // separate shape that produced the vertex, -1 = skin
+  const nTMain = index.length;                 // skin triangles (the volume is measured on these)
+  for (let m = 0, off = nMain; m < sep.length; m++) {
+    const part = sep[m], cnt = part.pos.length / 3;
+    P.set(part.pos, off * 3);
+    N.set(part.nrm, off * 3);
+    for (let t = 0; t < part.index.length; t++) index.push(part.index[t] + off);
+    owner.fill(part.shape, off, off + cnt);
+    off += cnt;
+  }
+  const gradLen = new Float32Array(nV).fill(1);   // |grad| of the field at the vertex (1 for a true SDF)
+  lap('separate');
 
   // ---- snap to iso-surface + analytic normals ----------------------------------------------------
   const eps = 0.35 * h;
@@ -427,7 +492,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     out[0] = gx; out[1] = gy; out[2] = gz;
   };
   const g = [0, 0, 0];
-  for (let vi = 0; vi < nV; vi++) {
+  for (let vi = 0; vi < nMain; vi++) {
     let x = P[vi * 3], y = P[vi * 3 + 1], z = P[vi * 3 + 2];
     const x0 = x, y0 = y, z0 = z;
     for (let it = 0; it < 2; it++) {
@@ -485,7 +550,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
     }
     const c = Math.min(1, 1.6 * cs / ws), o = Math.min(1, 1.5 * ob / wb);
     occl[vi] = o;
-    const b = blockOf(x, y, z);
+    const b = owner[vi] < 0 ? blockOf(x, y, z) : -1;
     crease[vi] = b >= 0 ? foldCrease(S, fine.list, fine.off[b], fine.off[b + 1], x, y, z) : 0;
     cavity[vi] = Math.min(1, Math.max(c, 0.75 * o, 0.6 * crease[vi]));
   }
@@ -499,6 +564,14 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   const region = new Float32Array(nV), feature = new Float32Array(nV);
   for (let vi = 0; vi < nV; vi++) {
     const x = P[vi * 3], y = P[vi * 3 + 1], z = P[vi * 3 + 2];
+    if (owner[vi] >= 0) {
+      // A separate part follows its own bone rigidly.
+      const i = owner[vi];
+      W[vi * nB + S.bone[i]] = 1;
+      region[vi] = S.region[i];
+      feature[vi] = S.feature[i];
+      continue;
+    }
     const b = blockOf(x, y, z);
     let best = -1, bestW = 0, sum = 0;
     if (b >= 0) {
@@ -607,7 +680,7 @@ export function buildCreature(THREE, bones, shapes, opts = { voxel: 0.035 }) {
   lap('three');
 
   let volume = 0;
-  for (let t = 0; t < nT; t += 3) {
+  for (let t = 0; t < nTMain; t += 3) {
     const a = index[t] * 3, b = index[t + 1] * 3, c = index[t + 2] * 3;
     volume += (P[a] * (P[b + 1] * P[c + 2] - P[b + 2] * P[c + 1]) - P[a + 1] * (P[b] * P[c + 2] - P[b + 2] * P[c]) + P[a + 2] * (P[b] * P[c + 1] - P[b + 1] * P[c])) / 6;
   }
