@@ -27,7 +27,7 @@ enum class ObservationMethod : u8
     Audio,
     Fieldwork
 };
-NOCTIS_API const char* observationMethodLabelFr(ObservationMethod m);
+NOCTISCORE_API const char* observationMethodLabelFr(ObservationMethod m);
 
 enum class ObservedAction : u8
 {
@@ -46,7 +46,7 @@ enum class ObservedAction : u8
     Nesting,
     Unknown
 };
-NOCTIS_API const char* observedActionLabelFr(ObservedAction a);
+NOCTISCORE_API const char* observedActionLabelFr(ObservedAction a);
 
 enum class FeatureKind : u8
 {
@@ -227,7 +227,7 @@ struct CatalogEntry
     bool confirmedByPlayer = false;
 };
 
-class NOCTIS_API IndividualCatalog
+class NOCTISCORE_API IndividualCatalog
 {
 public:
     // Matches the subject against existing entries; creates a new entry when the subject carries
@@ -271,7 +271,7 @@ struct OpticsSpec
     bool rangefinder = false;
 };
 
-class NOCTIS_API ObservationSystem
+class NOCTISCORE_API ObservationSystem
 {
 public:
     ObservationRecord observe(const OpticsSpec& optics, const Vec3& eye, float headingRad, const CreatureSystem& creatures, const WorldContext& ctx,

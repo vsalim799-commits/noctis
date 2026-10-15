@@ -19,7 +19,7 @@ struct CalendarSpec
     double synodicMonthDays = 29.53;
 };
 
-class NOCTIS_API SimClock
+class NOCTISCORE_API SimClock
 {
 public:
     void configure(const CalendarSpec& spec, double startDayOfYear, double startHour, int startYear = 0);

@@ -35,7 +35,7 @@ struct Footprint
     float makerSpeedMs = 0.0f; // hidden truth used to evaluate the player's speed estimates
 };
 
-class NOCTIS_API TrackSystem
+class NOCTISCORE_API TrackSystem
 {
 public:
     void configure(const Rect2& bounds, float bucketSizeM = 64.0f, int maxPerBucket = 160);
@@ -81,7 +81,7 @@ enum class DecayStage : u8
     Skeletonizing,
     Skeleton
 };
-NOCTIS_API const char* decayStageLabelFr(DecayStage s);
+NOCTISCORE_API const char* decayStageLabelFr(DecayStage s);
 
 enum class BiteMarkType : u8
 {
@@ -105,7 +105,7 @@ enum class DeathCause : u8
     Exposure,
     Researcher // the player's own impact is recorded honestly
 };
-NOCTIS_API const char* deathCauseLabelFr(DeathCause c);
+NOCTISCORE_API const char* deathCauseLabelFr(DeathCause c);
 
 struct BiteMark
 {
@@ -143,7 +143,7 @@ struct Carcass
     bool active = true;
 };
 
-class NOCTIS_API CarcassSystem
+class NOCTISCORE_API CarcassSystem
 {
 public:
     EntityId create(i16 species, EntityId individual, const Vec2& pos, float heading, float massKg, double time, DeathCause cause,
@@ -210,7 +210,7 @@ struct HatchRecord
     Egg egg;
 };
 
-class NOCTIS_API NestSystem
+class NOCTISCORE_API NestSystem
 {
 public:
     EntityId create(i16 species, NestType type, EntityId mother, const Vec2& pos, double time);

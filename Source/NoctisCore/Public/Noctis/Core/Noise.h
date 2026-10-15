@@ -5,7 +5,7 @@
 
 namespace noctis
 {
-class NOCTIS_API GradientNoise2D
+class NOCTISCORE_API GradientNoise2D
 {
 public:
     explicit GradientNoise2D(u64 seed = 1);

@@ -159,25 +159,25 @@ enum class CallContext : u8
     Other
 };
 
-NOCTIS_API const char* bodyPlanKey(BodyPlan b);
-NOCTIS_API BodyPlan parseBodyPlan(const std::string& s, bool* ok = nullptr);
-NOCTIS_API const char* plantTypeKey(PlantType p);
-NOCTIS_API const char* plantTypeLabelFr(PlantType p);
-NOCTIS_API int parsePlantType(const std::string& s); // -1 if unknown
-NOCTIS_API const char* habitatKey(Habitat h);
-NOCTIS_API const char* habitatLabelFr(Habitat h);
-NOCTIS_API int parseHabitat(const std::string& s); // -1 if unknown
-NOCTIS_API const char* personalityKey(PersonalityAxis a);
-NOCTIS_API ThermoClass parseThermoClass(const std::string& s);
-NOCTIS_API DietType parseDietType(const std::string& s);
-NOCTIS_API HuntStyle parseHuntStyle(const std::string& s);
-NOCTIS_API NestType parseNestType(const std::string& s);
-NOCTIS_API ActivityPattern parseActivityPattern(const std::string& s);
-NOCTIS_API u16 parseWeapon(const std::string& s);
-NOCTIS_API CallContext parseCallContext(const std::string& s);
-NOCTIS_API const char* callContextKey(CallContext c);
-NOCTIS_API const char* dietTypeKey(DietType d);
-NOCTIS_API const char* activityPatternKey(ActivityPattern a);
+NOCTISCORE_API const char* bodyPlanKey(BodyPlan b);
+NOCTISCORE_API BodyPlan parseBodyPlan(const std::string& s, bool* ok = nullptr);
+NOCTISCORE_API const char* plantTypeKey(PlantType p);
+NOCTISCORE_API const char* plantTypeLabelFr(PlantType p);
+NOCTISCORE_API int parsePlantType(const std::string& s); // -1 if unknown
+NOCTISCORE_API const char* habitatKey(Habitat h);
+NOCTISCORE_API const char* habitatLabelFr(Habitat h);
+NOCTISCORE_API int parseHabitat(const std::string& s); // -1 if unknown
+NOCTISCORE_API const char* personalityKey(PersonalityAxis a);
+NOCTISCORE_API ThermoClass parseThermoClass(const std::string& s);
+NOCTISCORE_API DietType parseDietType(const std::string& s);
+NOCTISCORE_API HuntStyle parseHuntStyle(const std::string& s);
+NOCTISCORE_API NestType parseNestType(const std::string& s);
+NOCTISCORE_API ActivityPattern parseActivityPattern(const std::string& s);
+NOCTISCORE_API u16 parseWeapon(const std::string& s);
+NOCTISCORE_API CallContext parseCallContext(const std::string& s);
+NOCTISCORE_API const char* callContextKey(CallContext c);
+NOCTISCORE_API const char* dietTypeKey(DietType d);
+NOCTISCORE_API const char* activityPatternKey(ActivityPattern a);
 
 inline bool isBiped(BodyPlan b)
 {

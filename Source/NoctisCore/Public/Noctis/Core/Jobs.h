@@ -9,7 +9,7 @@
 
 namespace noctis
 {
-class NOCTIS_API JobScheduler
+class NOCTISCORE_API JobScheduler
 {
 public:
     virtual ~JobScheduler() = default;
@@ -19,7 +19,7 @@ public:
     virtual int workerCount() const = 0;
 };
 
-class NOCTIS_API SerialScheduler final : public JobScheduler
+class NOCTISCORE_API SerialScheduler final : public JobScheduler
 {
 public:
     void parallelFor(size_t count, const std::function<void(size_t)>& fn, size_t minBatch) override;
@@ -27,5 +27,5 @@ public:
 };
 
 // Creates a std::thread pool scheduler (threads <= 0 -> hardware concurrency).
-NOCTIS_API std::unique_ptr<JobScheduler> makeThreadPoolScheduler(int threads);
+NOCTISCORE_API std::unique_ptr<JobScheduler> makeThreadPoolScheduler(int threads);
 } // namespace noctis

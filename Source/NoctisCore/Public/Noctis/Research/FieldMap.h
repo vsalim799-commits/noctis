@@ -28,7 +28,7 @@ enum class MapFeatureKind : u8
     Vehicle,
     Note
 };
-NOCTIS_API const char* mapFeatureLabelFr(MapFeatureKind k);
+NOCTISCORE_API const char* mapFeatureLabelFr(MapFeatureKind k);
 
 struct MapFeature
 {
@@ -59,7 +59,7 @@ struct TerritoryEstimate
     std::vector<Vec2> hull;
 };
 
-class NOCTIS_API FieldMap
+class NOCTISCORE_API FieldMap
 {
 public:
     void configure(const Rect2& bounds, float cellSizeM = 64.0f);

@@ -55,7 +55,7 @@ struct WorldLayout
     float axisAngle = 0.0f;
 };
 
-class NOCTIS_API TerrainGenerator
+class NOCTISCORE_API TerrainGenerator
 {
 public:
     // Fills terrain (heights, substrates, habitats, base wetness) and returns the hydrographic layout.

@@ -213,5 +213,5 @@ struct SpeciesDefinition
 };
 
 // Science topics that every species file must contain (see Data/SCHEMA.md).
-NOCTIS_API const std::vector<std::string>& requiredSpeciesTopics();
+NOCTISCORE_API const std::vector<std::string>& requiredSpeciesTopics();
 } // namespace noctis

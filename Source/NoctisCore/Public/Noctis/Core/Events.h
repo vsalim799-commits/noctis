@@ -64,7 +64,7 @@ enum class EventType : u16
     Count
 };
 
-NOCTIS_API const char* eventTypeName(EventType t);
+NOCTISCORE_API const char* eventTypeName(EventType t);
 
 struct SimEvent
 {
@@ -78,7 +78,7 @@ struct SimEvent
     u32 param2 = 0;
 };
 
-class NOCTIS_API EventBus
+class NOCTISCORE_API EventBus
 {
 public:
     using Listener = std::function<void(const SimEvent&)>;

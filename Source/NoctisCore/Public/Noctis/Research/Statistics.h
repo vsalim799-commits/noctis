@@ -24,14 +24,14 @@ struct TestResult
     double medianB = 0.0;
 };
 
-NOCTIS_API double mean(const std::vector<double>& v);
-NOCTIS_API double median(std::vector<double> v);
-NOCTIS_API double stddev(const std::vector<double>& v);
+NOCTISCORE_API double mean(const std::vector<double>& v);
+NOCTISCORE_API double median(std::vector<double> v);
+NOCTISCORE_API double stddev(const std::vector<double>& v);
 // Two-sided Fisher exact test for a 2x2 table [[a, b], [c, d]] with odds ratio (Haldane) and Woolf 95 % CI.
-NOCTIS_API TestResult fisherExact(int a, int b, int c, int d);
+NOCTISCORE_API TestResult fisherExact(int a, int b, int c, int d);
 // Mann–Whitney U with permutation p-value; effect = rank-biserial correlation, bootstrap 95 % CI.
-NOCTIS_API TestResult mannWhitney(const std::vector<double>& a, const std::vector<double>& b, u64 seed, int permutations = 3000);
+NOCTISCORE_API TestResult mannWhitney(const std::vector<double>& a, const std::vector<double>& b, u64 seed, int permutations = 3000);
 // Spearman rank correlation with permutation p-value and bootstrap 95 % CI.
-NOCTIS_API TestResult spearman(const std::vector<double>& x, const std::vector<double>& y, u64 seed, int permutations = 3000);
-NOCTIS_API std::vector<double> ranks(const std::vector<double>& v);
+NOCTISCORE_API TestResult spearman(const std::vector<double>& x, const std::vector<double>& y, u64 seed, int permutations = 3000);
+NOCTISCORE_API std::vector<double> ranks(const std::vector<double>& v);
 } // namespace noctis

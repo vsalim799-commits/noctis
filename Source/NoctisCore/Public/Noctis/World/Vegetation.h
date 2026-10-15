@@ -33,7 +33,7 @@ struct VegetationClimate
     Vec2 wind;
 };
 
-class NOCTIS_API VegetationSystem
+class NOCTISCORE_API VegetationSystem
 {
 public:
     void build(const EnvironmentSim& env, const Terrain& terrain, u64 seed, float cellSizeM = 16.0f);

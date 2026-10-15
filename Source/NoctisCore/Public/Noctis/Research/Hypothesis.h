@@ -30,9 +30,9 @@ enum class Measure : u8
     TimeOfDay,
     Count
 };
-NOCTIS_API const char* measureLabelFr(Measure m);
-NOCTIS_API const char* measureKey(Measure m);
-NOCTIS_API int parseMeasure(const std::string& key);
+NOCTISCORE_API const char* measureLabelFr(Measure m);
+NOCTISCORE_API const char* measureKey(Measure m);
+NOCTISCORE_API int parseMeasure(const std::string& key);
 
 enum class ConditionKind : u8
 {
@@ -44,7 +44,7 @@ enum class ConditionKind : u8
     TimeBetween,      // value..value2 hours
     MeasureAbove      // measure > value
 };
-NOCTIS_API const char* conditionLabelFr(ConditionKind c);
+NOCTISCORE_API const char* conditionLabelFr(ConditionKind c);
 
 struct Condition
 {
@@ -87,7 +87,7 @@ enum class HypothesisStatus : u8
     NotSupported, // data contradict it, or no effect with adequate power
     Inconclusive
 };
-NOCTIS_API const char* hypothesisStatusLabelFr(HypothesisStatus s);
+NOCTISCORE_API const char* hypothesisStatusLabelFr(HypothesisStatus s);
 
 // A call detected by the player's analysis of a recording (the input to acoustic hypotheses).
 struct AcousticDetection
@@ -127,7 +127,7 @@ struct Hypothesis
     std::vector<u32> parentHypotheses; // the observation/hypothesis that prompted this one
 };
 
-class NOCTIS_API HypothesisSystem
+class NOCTISCORE_API HypothesisSystem
 {
 public:
     u32 create(Hypothesis h, double now);

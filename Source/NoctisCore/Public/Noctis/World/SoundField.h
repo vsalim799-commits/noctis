@@ -30,7 +30,7 @@ enum class SoundKind : u8
     Impact,
     Mechanical // camera shutter, equipment
 };
-NOCTIS_API const char* soundKindLabelFr(SoundKind k);
+NOCTISCORE_API const char* soundKindLabelFr(SoundKind k);
 
 struct SoundSource
 {
@@ -61,7 +61,7 @@ struct PropagationEnv
     const Terrain* terrain = nullptr;
 };
 
-class NOCTIS_API SoundField
+class NOCTISCORE_API SoundField
 {
 public:
     // Thread-safe.

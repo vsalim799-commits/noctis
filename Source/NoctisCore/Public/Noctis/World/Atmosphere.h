@@ -34,7 +34,7 @@ struct SkyState
     DayPhase phase = DayPhase::Day;
 };
 
-class NOCTIS_API SkySystem
+class NOCTISCORE_API SkySystem
 {
 public:
     void configure(float latitudeDeg, float axialTiltDeg);
@@ -62,7 +62,7 @@ struct SeasonState
     std::string labelFr;
 };
 
-class NOCTIS_API SeasonSystem
+class NOCTISCORE_API SeasonSystem
 {
 public:
     void configure(const EnvironmentSim& env);
@@ -86,7 +86,7 @@ enum class WeatherRegime : u8
     Count
 };
 
-NOCTIS_API const char* weatherRegimeLabelFr(WeatherRegime r);
+NOCTISCORE_API const char* weatherRegimeLabelFr(WeatherRegime r);
 
 struct WeatherState
 {
@@ -116,7 +116,7 @@ struct LightningStrike
     double time = 0.0;
 };
 
-class NOCTIS_API WeatherSystem
+class NOCTISCORE_API WeatherSystem
 {
 public:
     void configure(const EnvironmentSim& env, u64 seed);

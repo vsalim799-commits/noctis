@@ -22,7 +22,8 @@ public class NoctisCore : ModuleRules
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
 		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 
-		// NOCTIS_API is mapped to NOCTISCORE_API in Noctis/Core/Platform.h; NOCTIS_STANDALONE must stay undefined here.
+		// Core headers export with NOCTISCORE_API (defined by UBT for this module); NOCTIS_API belongs to the game
+		// module "Noctis". NOCTIS_STANDALONE must stay undefined here (see Noctis/Core/Platform.h).
 		PublicDefinitions.Add("NOCTIS_UNREAL=1");
 
 		// Core is the only engine dependency: the core never includes engine headers beyond CoreTypes/AssertionMacros,

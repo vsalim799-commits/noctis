@@ -7,7 +7,7 @@
 
 namespace noctis
 {
-class NOCTIS_API SpatialHash
+class NOCTISCORE_API SpatialHash
 {
 public:
     void configure(const Rect2& bounds, float cellSize);

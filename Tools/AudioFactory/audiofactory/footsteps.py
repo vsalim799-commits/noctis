@@ -1,0 +1,2 @@
+def jobs(ds):
+    return []

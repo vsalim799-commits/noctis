@@ -71,7 +71,7 @@ struct ValidationIssue
     std::string message;
 };
 
-class NOCTIS_API EvidenceDatabase
+class NOCTISCORE_API EvidenceDatabase
 {
 public:
     // dataRoot is the repository's Data/ directory (or the staged copy in a packaged game).
@@ -123,8 +123,8 @@ private:
 };
 
 // Parsers shared with tools/tests.
-NOCTIS_API Claim parseClaim(const JsonValue& v);
-NOCTIS_API JsonValue claimToJson(const Claim& c);
-NOCTIS_API bool parseSpeciesJson(const JsonValue& root, SpeciesDefinition& out, std::vector<std::string>& errors);
-NOCTIS_API bool parseEnvironmentJson(const JsonValue& root, EnvironmentDefinition& out, std::vector<std::string>& errors);
+NOCTISCORE_API Claim parseClaim(const JsonValue& v);
+NOCTISCORE_API JsonValue claimToJson(const Claim& c);
+NOCTISCORE_API bool parseSpeciesJson(const JsonValue& root, SpeciesDefinition& out, std::vector<std::string>& errors);
+NOCTISCORE_API bool parseEnvironmentJson(const JsonValue& root, EnvironmentDefinition& out, std::vector<std::string>& errors);
 } // namespace noctis

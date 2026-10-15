@@ -77,7 +77,7 @@ struct LocalizationResult
     int microphones = 0;
 };
 
-class NOCTIS_API SignalSynth
+class NOCTISCORE_API SignalSynth
 {
 public:
     // Adds the signal of 'src' as received at distanceM into buffer (pascals) starting at bufferStart.
@@ -88,7 +88,7 @@ public:
     static void addNoise(std::vector<float>& buffer, int sampleRate, float levelDb, float lowpassHz, float highpassHz, u64 seed);
 };
 
-class NOCTIS_API AcousticRecorder
+class NOCTISCORE_API AcousticRecorder
 {
 public:
     // Synthesises what the microphone captured during [t0, t0 + durationS]. When 'capturedSources' is null the
@@ -97,7 +97,7 @@ public:
                             u64 seed, const std::vector<SoundSource>* capturedSources = nullptr);
 };
 
-class NOCTIS_API AcousticAnalysis
+class NOCTISCORE_API AcousticAnalysis
 {
 public:
     static void fft(std::vector<std::complex<float>>& a, bool inverse);

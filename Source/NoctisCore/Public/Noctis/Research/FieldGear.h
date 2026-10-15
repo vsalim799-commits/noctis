@@ -26,7 +26,7 @@ struct EquipmentItem
     JsonValue specs;
 };
 
-class NOCTIS_API EquipmentCatalog
+class NOCTISCORE_API EquipmentCatalog
 {
 public:
     void load(const JsonValue& root);
@@ -60,7 +60,7 @@ struct LoadoutSummary
     std::vector<std::string> warningsFr;
 };
 
-NOCTIS_API LoadoutSummary summarizeLoadout(const std::vector<LoadoutLine>& lines, const EquipmentCatalog& catalog, float vehiclePayloadKg);
+NOCTISCORE_API LoadoutSummary summarizeLoadout(const std::vector<LoadoutLine>& lines, const EquipmentCatalog& catalog, float vehiclePayloadKg);
 
 // ---------------------------------------------------------------- Researcher
 
@@ -80,7 +80,7 @@ struct ResearcherState
     float noiseDb = 0.0f;
 };
 
-class NOCTIS_API ResearcherSystem
+class NOCTISCORE_API ResearcherSystem
 {
 public:
     void setTransform(const Vec3& position, float heading, const Vec2& velocity);
@@ -133,7 +133,7 @@ struct VehicleState
     float noiseDb = 0.0f;
 };
 
-class NOCTIS_API VehicleSystem
+class NOCTISCORE_API VehicleSystem
 {
 public:
     void configure(const JsonValue& spec);
@@ -189,7 +189,7 @@ enum class DroneMode : u8
     Landing,
     Lost
 };
-NOCTIS_API const char* droneModeLabelFr(DroneMode m);
+NOCTISCORE_API const char* droneModeLabelFr(DroneMode m);
 
 struct DroneState
 {
@@ -217,7 +217,7 @@ struct DroneState
     double flightTimeS = 0.0;
 };
 
-class NOCTIS_API DroneSystem
+class NOCTISCORE_API DroneSystem
 {
 public:
     void configure(const JsonValue& spec);
@@ -258,7 +258,7 @@ enum class SensorKind : u8
     AudioRecorder,
     WeatherStation
 };
-NOCTIS_API const char* sensorKindLabelFr(SensorKind k);
+NOCTISCORE_API const char* sensorKindLabelFr(SensorKind k);
 
 struct Sensor
 {

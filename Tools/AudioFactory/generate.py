@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+"""Noctis AudioFactory — reproducible procedural sound library.
+
+    python Tools/AudioFactory/generate.py                 # everything
+    python Tools/AudioFactory/generate.py --only vocal footsteps
+    python Tools/AudioFactory/generate.py --jobs 4 --no-png
+
+Writes 48 kHz / 24-bit WAV files under Build/Audio/ (git-ignored), spectrogram PNGs under Output/audio/
+and the committed manifest Data/Audio/manifest.json.
+"""
+from __future__ import annotations
+
+import argparse
+import importlib
+import json
+import math
+import multiprocessing as mp
+import sys
+import time
+from collections import Counter, defaultdict
+from pathlib import Path
+
+import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from audiofactory import common as C  # noqa: E402
+from audiofactory import data as D  # noqa: E402
+from audiofactory import manifest as M  # noqa: E402
+
+MODULES = ["vocal", "footsteps", "foley", "ambience", "equipment"]
+_DS: D.Dataset | None = None
+_PNG = True
+
+
+def _init(png: bool):
+    global _DS, _PNG
+    _DS = D.load()
+    _PNG = png
+
+
+def _active_rms_dbfs(x: np.ndarray) -> float:
+    mono = x.mean(axis=1) if x.ndim == 2 else x
+    w = C.ns(0.05)
+    nfr = max(1, mono.shape[0] // w)
+    fr = mono[: nfr * w].reshape(nfr, w) if mono.shape[0] >= w else mono.reshape(1, -1)
+    e = np.sqrt(np.mean(fr * fr, axis=1))
+    act = e >= e.max() * C.db2lin(-20.0)
+    return float(C.lin2db(math.sqrt(float(np.mean(e[act] ** 2)))))
+
+
+def finalize(s: M.Sound) -> tuple[dict, tuple]:
+    x = np.asarray(s.audio, dtype=np.float64)
+    x = C.highpass(x, 5.0, order=2)                    # DC / sub-audio guard
+    if s.fade and not s.loop:
+        x = C.fade(x, 0.002, 0.02)
+    mode = s.normalize[0]
+    if mode == "peak":
+        x, g = C.normalize_peak(x, s.normalize[1])
+    elif mode == "rms":
+        x, g = C.normalize_rms(x, s.normalize[1], s.normalize[2] if len(s.normalize) > 2 else -1.0)
+    else:
+        g = 0.0
+    wav = C.BUILD_DIR / s.group / f"{s.id}.wav"
+    C.write_wav(wav, x)
+    rec = s.record(_DS)
+    act = _active_rms_dbfs(x)
+    level = dict(s.level)
+    level["normalization"] = {"mode": mode, "target_dbfs": s.normalize[1] if len(s.normalize) > 1 else None,
+                              "gain_db": round(g, 3)}
+    level["active_rms_dbfs"] = round(act, 3)
+    if "source_spl_db_1m" in level:
+        # SPL (dB re 20 µPa at 1 m) that a full-scale RMS signal (0 dBFS RMS) of this file represents.
+        level["calibration_spl_db_at_0dbfs_rms"] = round(level["source_spl_db_1m"] - act, 2)
+    rec["level"] = level
+    ch = 1 if x.ndim == 1 else x.shape[1]
+    rec["file"] = C.rel(wav)
+    rec["audio"] = {"sample_rate": C.SR, "bit_depth": 24, "format": "WAV PCM", "channels": ch, "frames": int(x.shape[0]),
+                    "duration_s": round(x.shape[0] / C.SR, 6), "loop": s.loop}
+    rec["qa"] = dict(s.qa, duration_s=round(x.shape[0] / C.SR, 6), channels=ch, loop=s.loop)
+    thumb = None
+    if _PNG:
+        png = C.PREVIEW_DIR / s.group / f"{s.id}.png"
+        low = s.params.get("f0_effective_median_hz", 1000.0) < 150.0 or s.category in ("footstep",) or "thunder" in s.id
+        from audiofactory import spectro
+        thumb = spectro.render(png, x, s.id, f"{s.label_fr}  [{D.CONFIDENCE_LABEL_FR[s.confidence]}]", low_content=low)
+        rec["preview_png"] = C.rel(png)
+    return rec, (s.group, s.id, thumb, D.CONFIDENCE_LABEL_FR[s.confidence])
+
+
+def run_job(job: tuple) -> list:
+    mod, fn, kw = job
+    m = importlib.import_module(f"audiofactory.{mod}")
+    sounds = getattr(m, fn)(_DS, **kw)
+    out = []
+    for s in sounds:
+        rec, thumb = finalize(s)
+        rec["module"] = mod
+        out.append((rec, thumb))
+    return out
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--only", nargs="*", choices=MODULES, help="generate only these categories (manifest is merged)")
+    ap.add_argument("--jobs", type=int, default=max(1, mp.cpu_count()))
+    ap.add_argument("--no-png", action="store_true", help="skip spectrogram previews")
+    args = ap.parse_args(argv)
+    t0 = time.time()
+    ds = D.load()
+    mods = args.only or MODULES
+    joblist = []
+    for m in mods:
+        joblist += importlib.import_module(f"audiofactory.{m}").jobs(ds)
+    print(f"[audiofactory] {len(joblist)} jobs ({', '.join(mods)}) on {args.jobs} processes")
+    results = []
+    if args.jobs > 1:
+        with mp.get_context("fork").Pool(args.jobs, initializer=_init, initargs=(not args.no_png,)) as pool:
+            for k, res in enumerate(pool.imap(run_job, joblist, chunksize=1)):
+                results.extend(res)
+                if (k + 1) % 25 == 0:
+                    print(f"  {k + 1}/{len(joblist)} jobs, {len(results)} sounds, {time.time() - t0:.0f} s", flush=True)
+    else:
+        _init(not args.no_png)
+        for job in joblist:
+            results.extend(run_job(job))
+    records = [r for r, _ in results]
+    ids = [r["id"] for r in records]
+    dup = [k for k, v in Counter(ids).items() if v > 1]
+    if dup:
+        raise SystemExit(f"duplicate sound ids: {dup[:10]}")
+
+    # Merge with the existing manifest when only some modules were regenerated.
+    old = []
+    if args.only and C.MANIFEST_PATH.exists():
+        prev = json.loads(C.MANIFEST_PATH.read_text(encoding="utf-8"))
+        old = [r for r in prev.get("sounds", []) if r.get("module") not in set(mods)]
+    all_records = sorted(old + records, key=lambda r: (r["category"], r["id"]))
+    write_manifest(ds, all_records)
+
+    if not args.no_png:
+        from audiofactory import spectro
+        groups = defaultdict(list)
+        for _, (g, sid, th, conf) in results:
+            if th is not None:
+                groups[g].append((sid, th, conf))
+        for g, items in sorted(groups.items()):
+            for part in range(0, len(items), 48):
+                chunk = items[part:part + 48]
+                suffix = "" if len(items) <= 48 else f"_{part // 48 + 1}"
+                spectro.contact_sheet(C.PREVIEW_DIR / "sheets" / f"{g.replace('/', '__')}{suffix}.png", g + suffix, chunk)
+    by_cat = Counter(r["category"] for r in all_records)
+    print(f"[audiofactory] {len(all_records)} sounds in manifest {dict(by_cat)}; {time.time() - t0:.0f} s")
+    return 0
+
+
+def write_manifest(ds: D.Dataset, records: list[dict]) -> None:
+    used = sorted({s for r in records for s in r["sources"]})
+    by_cat = Counter(r["category"] for r in records)
+    by_conf = Counter(r["confidence"] for r in records)
+    doc = {
+        "schema": "noctis.audio_manifest/1",
+        "generator": "Tools/AudioFactory/generate.py",
+        "generator_version": C.GENERATOR_VERSION,
+        "master_seed": C.MASTER_SEED,
+        "audio_format": {"sample_rate": C.SR, "bit_depth": 24, "container": "WAV PCM", "root": "Build/Audio"},
+        "conventions_fr": {
+            "niveaux": "level.source_spl_db_1m : niveau de source en dB SPL (re 20 µPa) à 1 m, même convention que SoundSource::levelDb du cœur. "
+                       "Les fichiers sont normalisés (voir level.normalization) ; level.calibration_spl_db_at_0dbfs_rms permet de recalibrer dans UE5.",
+            "confiance": "Chaque son porte le niveau de confiance de l'hypothèse la plus faible qui le fonde (règle Data/SCHEMA.md : une référence non vérifiée ne peut soutenir plus qu'INFÉRÉ ; sans référence : SPÉCULATIF au mieux).",
+            "hypotheses": "Toutes les vocalisations de dinosaures non aviens, d'oiseaux, d'amphibiens et d'insectes sont des HYPOTHÈSES (hypothesis = true). Le jeu ne prétend jamais connaître la signification d'un cri.",
+            "distance": "Les variantes de distance appliquent l'absorption ISO 9613-1 et l'atténuation par le feuillage du cœur (SoundField.cpp) ; le niveau reçu est dans parameters.propagation.",
+            "qa": "Le bloc qa contient les valeurs attendues vérifiées par Tools/AudioFactory/qa.py.",
+        },
+        "ue5": {
+            "sound_classes": M.SOUND_CLASSES,
+            "attenuation_presets": M.ATTENUATION_PRESETS,
+            "concurrency_presets": M.CONCURRENCY_PRESETS,
+        },
+        "summary": {
+            "sounds": len(records),
+            "by_category": dict(sorted(by_cat.items())),
+            "by_confidence": dict(sorted(by_conf.items(), key=lambda kv: D.conf_rank(kv[0]))),
+            "total_duration_s": round(sum(r["audio"]["duration_s"] for r in records), 2),
+        },
+        "sources_used": {s: {"authors": ds.sources[s].get("authors"), "year": ds.sources[s].get("year"),
+                             "title": ds.sources[s].get("title"), "verified": bool(ds.sources[s].get("verified"))} for s in used},
+        "sounds": records,
+    }
+    C.MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    C.MANIFEST_PATH.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

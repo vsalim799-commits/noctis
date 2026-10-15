@@ -38,7 +38,7 @@ struct WaterDisturbance
     double time = 0.0;
 };
 
-class NOCTIS_API WaterSystem
+class NOCTISCORE_API WaterSystem
 {
 public:
     void build(const WorldLayout& layout, const Terrain& terrain);

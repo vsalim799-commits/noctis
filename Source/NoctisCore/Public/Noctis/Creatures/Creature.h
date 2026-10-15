@@ -26,7 +26,7 @@ enum class LodLevel : u8
     Far,     // far: coarse kinematics and statistical encounters
     Regional // outside the valley: part of the regional population pool
 };
-NOCTIS_API const char* lodLabel(LodLevel l);
+NOCTISCORE_API const char* lodLabel(LodLevel l);
 
 // ------------------------------------------------------------------ Anatomy
 
@@ -45,8 +45,8 @@ enum class BodyRegion : u8
     Count
 };
 inline constexpr int kBodyRegionCount = static_cast<int>(BodyRegion::Count);
-NOCTIS_API const char* bodyRegionLabelFr(BodyRegion r);
-NOCTIS_API const char* bodyRegionKey(BodyRegion r);
+NOCTISCORE_API const char* bodyRegionLabelFr(BodyRegion r);
+NOCTISCORE_API const char* bodyRegionKey(BodyRegion r);
 
 // ------------------------------------------------------------------ Personality
 
@@ -93,7 +93,7 @@ enum class InjuryType : u8
     Sprain,
     Burn
 };
-NOCTIS_API const char* injuryTypeLabelFr(InjuryType t);
+NOCTISCORE_API const char* injuryTypeLabelFr(InjuryType t);
 
 struct Injury
 {
@@ -140,7 +140,7 @@ enum class AwarenessStage : u8
     Vigilant,   // attending, freezing, scanning
     Identified  // knows what it is
 };
-NOCTIS_API const char* awarenessStageLabelFr(AwarenessStage s);
+NOCTISCORE_API const char* awarenessStageLabelFr(AwarenessStage s);
 
 enum class Relation : u8
 {
@@ -160,7 +160,7 @@ enum class Relation : u8
     Carcass,
     Nest
 };
-NOCTIS_API const char* relationLabelFr(Relation r);
+NOCTISCORE_API const char* relationLabelFr(Relation r);
 
 enum Modality : u8
 {
@@ -228,7 +228,7 @@ enum class MemoryKind : u8
     Shelter,
     Intrusion
 };
-NOCTIS_API const char* memoryKindLabelFr(MemoryKind k);
+NOCTISCORE_API const char* memoryKindLabelFr(MemoryKind k);
 
 struct PlaceMemory
 {
@@ -301,8 +301,8 @@ enum class BehaviorId : u8
     Count
 };
 inline constexpr int kBehaviorCount = static_cast<int>(BehaviorId::Count);
-NOCTIS_API const char* behaviorKey(BehaviorId b);
-NOCTIS_API const char* behaviorLabelFr(BehaviorId b);
+NOCTISCORE_API const char* behaviorKey(BehaviorId b);
+NOCTISCORE_API const char* behaviorLabelFr(BehaviorId b);
 
 enum class HuntPhase : u8
 {
@@ -314,7 +314,7 @@ enum class HuntPhase : u8
     Attack,
     Abandon
 };
-NOCTIS_API const char* huntPhaseLabelFr(HuntPhase p);
+NOCTISCORE_API const char* huntPhaseLabelFr(HuntPhase p);
 
 enum class Posture : u8
 {
@@ -326,7 +326,7 @@ enum class Posture : u8
     Lying,      // resting / sleeping
     Swimming
 };
-NOCTIS_API const char* postureLabelFr(Posture p);
+NOCTISCORE_API const char* postureLabelFr(Posture p);
 
 enum class ActionKind : u8
 {
@@ -390,7 +390,7 @@ enum class Gait : u8
     Swim,
     Fly
 };
-NOCTIS_API const char* gaitLabelFr(Gait g);
+NOCTISCORE_API const char* gaitLabelFr(Gait g);
 
 struct FootState
 {

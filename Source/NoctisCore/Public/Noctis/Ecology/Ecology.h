@@ -24,7 +24,7 @@ enum class PopulationGuild : u8
     Molluscs,
     Other
 };
-NOCTIS_API const char* guildLabelFr(PopulationGuild g);
+NOCTISCORE_API const char* guildLabelFr(PopulationGuild g);
 
 struct PopulationPool
 {
@@ -52,7 +52,7 @@ struct CensusSample
     int footprints = 0;
 };
 
-class NOCTIS_API EcologySystem final : public PopulationHarvester
+class NOCTISCORE_API EcologySystem final : public PopulationHarvester
 {
 public:
     void build(const EvidenceDatabase& db, const std::vector<int>& speciesInWorld, const Terrain& terrain, const WaterSystem& water, u64 seed);

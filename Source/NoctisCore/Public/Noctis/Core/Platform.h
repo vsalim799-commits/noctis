@@ -4,14 +4,21 @@
 //   * standalone (CMake, NOCTIS_STANDALONE defined) for the headless runner and tests;
 //   * as the Unreal Engine module "NoctisCore" (UBT defines NOCTISCORE_API).
 // Rules that keep both builds healthy: no exceptions, no RTTI, no identifiers that collide
-// with Unreal macros (PI, check, verify, ensure, TEXT, INDEX_NONE ...), no file-scope helpers
-// with generic names (unity builds concatenate translation units).
+// with Unreal macros (PI, check, verify, ensure, TEXT, INDEX_NONE ...) or Windows macros
+// (near, far, small, interface, ERROR ...), no file-scope helpers with generic names
+// (unity builds concatenate translation units).
+//
+// Export macro: core declarations use NOCTISCORE_API — the name UBT gives the "NoctisCore" module.
+// Never use NOCTIS_API in the core: in the Unreal build that macro belongs to the game module "Noctis"
+// (UBT defines it there as DLLEXPORT), so core headers included from the game module would export
+// core classes from the wrong DLL. NOCTIS_API survives only as a standalone alias for older code.
 #pragma once
 
 #include <cstddef>
 #include <cstdint>
 
 #if defined(NOCTIS_STANDALONE)
+#define NOCTISCORE_API
 #define NOCTIS_API
 #include <cassert>
 #define NOCTIS_ASSERT(cond) assert(cond)
@@ -22,7 +29,6 @@
 // Logging is bridged by NoctisCoreModule.cpp, which installs a LogSink that forwards to UE_LOG.
 #include "CoreTypes.h"
 #include "Misc/AssertionMacros.h"
-#define NOCTIS_API NOCTISCORE_API
 #define NOCTIS_ASSERT(cond) checkSlow(cond)
 #else
 #error "Noctis core: define NOCTIS_STANDALONE (CMake) or build it as the Unreal module NoctisCore (UBT defines NOCTISCORE_API)."

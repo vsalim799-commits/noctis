@@ -10,7 +10,7 @@
 
 namespace noctis
 {
-class NOCTIS_API FileSystem
+class NOCTISCORE_API FileSystem
 {
 public:
     virtual ~FileSystem() = default;
@@ -23,6 +23,6 @@ public:
     virtual bool makeDirectories(const std::string& path) const = 0;
 };
 
-NOCTIS_API std::unique_ptr<FileSystem> makeStdFileSystem();
-NOCTIS_API std::string joinPath(const std::string& a, const std::string& b);
+NOCTISCORE_API std::unique_ptr<FileSystem> makeStdFileSystem();
+NOCTISCORE_API std::string joinPath(const std::string& a, const std::string& b);
 } // namespace noctis

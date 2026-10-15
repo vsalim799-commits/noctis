@@ -10,7 +10,7 @@
 
 namespace noctis
 {
-class NOCTIS_API JsonValue
+class NOCTISCORE_API JsonValue
 {
 public:
     enum class Type : u8
@@ -100,6 +100,6 @@ struct JsonParseResult
     std::string error; // "line:col: message"
 };
 
-NOCTIS_API JsonParseResult parseJson(const std::string& text);
-NOCTIS_API std::string jsonEscape(const std::string& s);
+NOCTISCORE_API JsonParseResult parseJson(const std::string& text);
+NOCTISCORE_API std::string jsonEscape(const std::string& s);
 } // namespace noctis

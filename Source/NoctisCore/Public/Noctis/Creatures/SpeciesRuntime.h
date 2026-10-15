@@ -60,10 +60,10 @@ struct SpeciesRuntime
     const SpeciesSim& sim() const { return def->sim; }
 };
 
-NOCTIS_API SpeciesRuntime buildSpeciesRuntime(const SpeciesDefinition& def, int index);
+NOCTISCORE_API SpeciesRuntime buildSpeciesRuntime(const SpeciesDefinition& def, int index);
 
 // Field metabolic rate in watts for a given mass (kg) with the species' thermoregulatory model.
-NOCTIS_API float fieldMetabolicRateW(const SpeciesRuntime& sp, float massKg);
+NOCTISCORE_API float fieldMetabolicRateW(const SpeciesRuntime& sp, float massKg);
 // Resting metabolic rate in watts (fraction of FMR; game assumption 0.4 of FMR).
 inline float restingMetabolicRateW(const SpeciesRuntime& sp, float massKg) { return 0.4f * fieldMetabolicRateW(sp, massKg); }
 } // namespace noctis

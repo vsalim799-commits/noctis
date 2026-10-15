@@ -18,10 +18,10 @@ enum class LogLevel : u8
 
 using LogSink = std::function<void(LogLevel, const std::string&)>;
 
-NOCTIS_API void setLogSink(LogSink sink);
-NOCTIS_API void setLogLevel(LogLevel minimum);
-NOCTIS_API void logMessage(LogLevel level, const std::string& message);
-NOCTIS_API std::string formatString(const char* fmt, ...)
+NOCTISCORE_API void setLogSink(LogSink sink);
+NOCTISCORE_API void setLogLevel(LogLevel minimum);
+NOCTISCORE_API void logMessage(LogLevel level, const std::string& message);
+NOCTISCORE_API std::string formatString(const char* fmt, ...)
 #if defined(__GNUC__) || defined(__clang__)
     __attribute__((format(printf, 1, 2)))
 #endif

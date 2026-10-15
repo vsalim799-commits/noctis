@@ -30,7 +30,7 @@ enum class SpecimenElement : u8
     Coprolite,
     Count
 };
-NOCTIS_API const char* specimenElementLabelFr(SpecimenElement e);
+NOCTISCORE_API const char* specimenElementLabelFr(SpecimenElement e);
 
 struct FossilSpecimen
 {
@@ -108,7 +108,7 @@ struct CarcassExamination
     std::vector<std::string> notesFr;
 };
 
-class NOCTIS_API PaleontologySystem
+class NOCTISCORE_API PaleontologySystem
 {
 public:
     void generateSites(const WorldLayout& layout, const EvidenceDatabase& db, const EnvironmentDefinition& env, const std::vector<int>& agentSpecies,

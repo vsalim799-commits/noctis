@@ -49,7 +49,7 @@ enum class OpticsKind : u8
     TrapCamera
 };
 
-class NOCTIS_API ResearchSystem
+class NOCTISCORE_API ResearchSystem
 {
 public:
     void initialize(const EvidenceDatabase& db, const EnvironmentDefinition& env, const WorldLayout& layout, const std::vector<int>& agentSpecies,

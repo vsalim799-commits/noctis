@@ -1,8 +1,11 @@
 // Procedural reptile skin for the Noctis creature renderer (three.js 0.169, WebGL2, UV-free).
 //
-//   import { createSkinMaterial } from './creature/skin_material.js';
-//   skinnedMesh.material = createSkinMaterial(THREE, { dorsalColor: '#463d36' });
-//   skinnedMesh.material.userData.skinUniforms.uBumpStrength.value = 0.8;   // live tweak
+//   import { createSkinMaterial, configureSkinForBones, bakeSkinRegions } from './creature/skin_material.js';
+//   const mat = createSkinMaterial(THREE, { dorsalColor: '#3a342f' });
+//   configureSkinForBones(mat, TREX_BONES, TREX_SHAPES);       // optional: foot frames, brow / cheek hotspots
+//   bakeSkinRegions(THREE, skinnedMesh.geometry, mat);         // optional, recommended on SDF meshes
+//   skinnedMesh.material = mat;
+//   mat.userData.skinUniforms.uBumpStrength.value = 0.8;       // live tweak, no recompile
 //
 // Everything is evaluated in REST object space (the `position` / `normal` attributes, i.e. before
 // skinning), so the scales stay glued to the skin while the skeleton animates. Instead of a
@@ -10,104 +13,145 @@
 // cheaper than 3 projections, and there is no blend seam or stretching anywhere on the body.
 //
 // Layers (all procedural, combined into one height field whose analytic gradient bumps the normal):
-//   1. pebble scales: smooth-bordered 3D Voronoi (soft-min over the cell borders gives rounded,
-//      polygonal "pebbles"), size per body region, snapped to octaves of uBaseScale so that the
-//      transition between two sizes costs a second evaluation only along region borders;
-//   2. feature scales: sparse larger round tubercles (denser on the head, along the dorsal midline
-//      and inside optional hotspots such as the brow above the orbit);
-//   3. scutes: transverse plates on the front of the metatarsus and the top of the toes
-//      (anisotropic Voronoi in a limb-aligned frame);
-//   4. skin folds: warped crease bands driven by the aFold attribute (+ a weak global level);
-//   5. low-frequency fleshy lumps.
-// Shading: countershaded albedo + mottling + per-region tint, per-scale colour jitter, darker
-// mortar/cracks, aCavity occlusion, roughness breakup, dust on the lower legs, and a cheap
-// subsurface approximation (per-channel wrap lighting + the red channel lit with a smoother
-// normal, the classic "pre-integrated skin" trick) injected into three's direct-light loop.
-// Fine detail fades with the pixel footprint (screen-space derivatives of the rest position) and
-// the lost normal variance is put back as roughness, so medium/far shots do not shimmer.
+//   1. pebble scales: smooth-bordered 3D power diagram (soft-min over the cell borders gives rounded,
+//      polygonal "pebbles" of mixed sizes), size per body region plus low-frequency patches of larger /
+//      smaller scales, snapped to octaves of uBaseScale (a second evaluation only where two octaves meet);
+//   2. feature scales: sparse, larger, low round scales set INTO the pebble field (the pebbles around
+//      one are cut along its rim and slightly enlarged, a rosette), denser on the head, along the dorsal
+//      midline and inside optional hotspots (brow, cheek, nasal);
+//   3. scutes: transverse rows across the front of the metatarsus and the top of the toes, with
+//      staggered ends, occasional split rows and an imbricate step at the distal edge;
+//   4. skin folds: warped crease bands driven by the aFold attribute (+ a weak global level), plus a
+//      reticulate web of shallow creases for the large smooth areas;
+//   5. low-frequency fleshy lumps and a scale-cluster grain that survives at medium distance.
+// Shading: countershaded albedo (perceptual blend, warm lateral band) + mottling + per-region tint,
+// per-scale colour jitter, darker mortar/cracks, aCavity occlusion, roughness breakup, dust on the
+// lower legs, eye / claw tissue from aFeature, and a cheap subsurface approximation (per-channel wrap
+// lighting + the red channel lit with a smoother normal, the "pre-integrated skin" trick) injected
+// into three's direct-light loop.
+// Antialiasing: every layer fades out as its cells shrink below a few pixels (pixel footprint from
+// screen-space derivatives of the rest position, uDetailFade..uDetailFull) and the lost normal
+// variance is put back as roughness, so medium / far shots do not shimmer.
 //
 // Science note: Tyrannosaurus skin impressions show small, non-imbricate, pebbly scales
-// (Bell et al. 2017). Their real size is smaller than what is rendered by default here; the
-// default sizes are a legibility choice for close-up renders (uncertain, tweak uBaseScale).
-// Colour is UNKNOWN for any non-avian dinosaur: the palette is a neutral countershaded guess and
-// must be labelled speculative wherever it is shown.
+// (Bell et al. 2017). Their real size is smaller than what is rendered by default here; the default
+// sizes are a legibility choice for close-up renders (uncertain, tweak baseScale). Feature-scale
+// placement and the foot scutes are inferred from extant archosaurs (birds, crocodilians), not from
+// preserved tyrannosaur skin. Colour is UNKNOWN for any non-avian dinosaur: the palette is a neutral
+// countershaded guess and must be labelled speculative wherever it is shown.
 //
 // ------------------------------------------------------------------------------------------
 // Geometry attributes read (all optional; a missing attribute reads as 0):
-//   aRegion  float  index into SKIN_REGIONS (head, jaw, neck, torso, belly, tail, thigh, shin, foot, arm)
-//   aCavity  float  0..1 cavity / occlusion estimate (darkens albedo, occludes ambient light)
-//   aFold    float  0..1 skin-fold intensity (neck / joint wrinkles)
+//   aRegion    float  index into SKIN_REGIONS (head, jaw, neck, torso, belly, tail, thigh, shin, foot, arm)
+//   aCavity    float  0..1 cavity / occlusion estimate (darkens albedo, occludes ambient light)
+//   aFold      float  0..1 skin-fold intensity (neck / joint wrinkles)
+//   aFeature   float  0 skin, 1 eye, 2 claw (sdf_mesher FEATURES): glossy eye, keratin claw
+//   aOcclusion float  0..1 occlusion by other body parts (ambient only)
+//   aSkinA/B/C vec4   written by bakeSkinRegions (smoothed region tables)
 //   position, normal: REST pose (model space, metres; +x forward, +y up, +z animal's right)
 //
 // Options (createSkinMaterial(THREE, opts)) -> uniform of the same role; every uniform lives in
-// material.userData.skinUniforms and can be changed at any time without recompiling:
-//   physical        false   use MeshPhysicalMaterial (+ sheen for a dusty grazing sheen) instead of Standard
-//   sheen           0.25    (physical only) sheen amount; sheenColor / sheenRoughness also accepted
-//   envMapIntensity 1       standard three.js material property
-//   seed            0       uSeed: shifts every cellular pattern (variants of the same skin)
-//   baseScale       0.022   uBaseScale (m): reference pebble size; region sizes snap to its octaves (x0.5, x1, x2)
-//   jitter          0.85    uJitter: 0 = regular grid of cells, 1 = fully random cells
-//   sizeVar         0.35    uSizeVar: power-diagram weight range (0 = equal cells; ~0.5 = big scales among small ones)
-//   mortar          0.055   uMortar: crack half-width between scales (fraction of a cell)
-//   domeRadius      0.32    uDomeRadius: width of the rounded scale edge (fraction of a cell)
-//   scaleHeight     0.13    uScaleHeight: scale relief height (fraction of the cell size)
-//   softness        0.06    uSoftness: soft-min radius of the cell borders (fraction of a cell; rounds corners)
-//   bumpStrength    1.0     uBumpStrength: global multiplier on all relief
-//   featureScale    0.075   uFeatureScale (m): cell size of the sparse tubercle layer
-//   featureHeight   0.16    uFeatureHeight: tubercle height (fraction of its cell)
-//   hotspots        []      uHotspots[6]: [[x, y, z, radius], ...] rest-space spheres that densify tubercles (brow, nasal)
-//   hotspotBoost    0.6     uHotspotBoost: tubercle density added at a hotspot centre
-//   midlineBoost    1.6     uMidlineBoost: tubercle density multiplier along the dorsal midline (z ~ 0, normal up)
-//   midlineWidth    0.12    uMidlineWidth (m): half-width of that dorsal row
-//   scuteSize       [0.045, 0.16, 0.13]  uScuteSize (m): plate length along the limb, width across the front, depth sideways
-//   scuteHeight     0.16    uScuteHeight: plate relief (fraction of the plate length)
-//   metaAxis        [0.32,-0.95,0]       uMetaAxis: distal direction of the metatarsus in rest space (see configureSkinForBones)
-//   toeAxis         [1,0,0]              uToeAxis: distal direction of the toes in rest space
-//   toeHeight       0.22    uToeHeight (m): rest-space height below which the toe frame is used
-//   foldDepth       0.014   uFoldDepth (m): depth of a full-strength skin fold
-//   foldBase        0.15    uFoldBase: fold intensity everywhere (added to aFold, times the region weights)
+// material.userData.skinUniforms and can be changed at any time without recompiling. Lengths in
+// metres of rest space (scaled by worldScale); "cell" = the local scale size.
+//   physical        false    use MeshPhysicalMaterial (+ sheen for a dusty grazing sheen) instead of Standard
+//   sheen           0.25     (physical only) sheen amount; sheenColor '#b9ab98', sheenRoughness 0.8
+//   envMapIntensity 1        standard three.js material property
+//   debug           0        debug view (see setDebug below)
+//   -- pebble scales
+//   seed            0        uSeed: shifts every cellular pattern (variants of the same skin)
+//   baseScale       0.018    uBaseScale (m): reference pebble size; region sizes snap to its octaves (x0.5, x1, x2)
+//   sizeNoise       0.35     uSizeNoise: octaves of low-frequency variation of the scale size (patches)
+//   jitter          0.85     uJitter: 0 = regular grid of cells, 1 = fully random cells
+//   sizeVar         0.35     uSizeVar: power-diagram weight range (0 = equal cells; ~0.5 = big scales among small ones)
+//   mortar          0.035    uMortar: crack half-width between scales (fraction of a cell)
+//   domeRadius      0.45     uDomeRadius: width of the rounded scale edge (fraction of a cell)
+//   scaleHeight     0.11     uScaleHeight: scale relief height (fraction of the cell size)
+//   softness        0.06     uSoftness: soft-min radius of the cell borders (fraction of a cell; rounds corners)
+//   bumpStrength    1.0      uBumpStrength: global multiplier on all relief
+//   -- feature scales
+//   featureScale    0.075    uFeatureScale (m): lattice spacing of the feature-scale sites
+//   featureSize     [0.2, 0.36]  uFeatureSize: radius range (fraction of featureScale; x0.7 on the face, x1 on the body)
+//   featureHeight   0.13     uFeatureHeight: relief (fraction of the radius)
+//   featureTint     -0.04    uFeatureTint: brightness change of the feature scales
+//   rosette         0.22     uRosette: enlargement of the pebbles ringing a feature scale (power weight, cell^2)
+//   hotspots        []       uHotspots[6]: [[x, y, z, radius], ...] rest-space spheres that densify feature scales
+//   hotspotBoost    0.6      uHotspotBoost: feature density added at a hotspot centre
+//   midlineBoost    1.6      uMidlineBoost: feature density multiplier along the dorsal midline (z ~ 0, normal up)
+//   midlineWidth    0.12     uMidlineWidth (m): half-width of that dorsal row
+//   -- foot scutes ([metatarsus, toes] pairs)
+//   scuteLength     [0.055, 0.04]  uScuteLength (m): row length along the limb
+//   scuteSpan       [1.15, 1.35]   uScuteSpan (rad): half-angle around the limb covered by a row, from the front
+//   scuteRadius     [0.125, 0.07]  uScuteRadius (m): limb radius (converts angles to lengths; fitted by configureSkinForBones)
+//   scuteHeight     0.12     uScuteHeight: plate relief (fraction of the row length)
+//   scuteCurve      0.08     uScuteCurve: bow of the joints towards the sides (rows per rad^2)
+//   scuteSplit      0.3      uScuteSplit: probability that a row is split in two
+//   metaAxis        [0.32,-0.95,0]  uMetaAxis: distal direction of the metatarsus in rest space (configureSkinForBones)
+//   toeAxis         [1,0,0]  uToeAxis: distal direction of the toes in rest space
+//   toeHeight       0.22     uToeHeight (m): rest-space height below which the toe frame is used
+//   -- folds and macro relief
+//   foldDepth       0.016    uFoldDepth (m): depth of a full-strength skin fold
+//   foldBase        0.15     uFoldBase: fold intensity everywhere (added to aFold, times the region weights)
+//   foldAttr        0.35     uFoldAttr: weight of the aFold attribute
 //   foldDirs        [[1,0,0,9],[0,1,0,10],[0.8,0.6,0,14]]  uFoldDirs[3]: rest-space direction ACROSS each fold field + folds per metre
-//                           (x: tail / belly transverse folds, y: limb and flank wrinkles, diagonal: neck)
-//   lumpDepth       0.006   uLumpDepth (m): amplitude of the low-frequency fleshy undulation
-//   lumpScale       3.0     uLumpScale (1/m): frequency of that undulation
-//   grainScale      0.045   uGrainScale (m): size of the scale-cluster grain kept at medium distance
-//   grainDepth      0.0018  uGrainDepth (m): its relief
-//   grainTint       0.1     uGrainTint: its brightness variation
-//   dorsalColor     '#4a4038'  uDorsalColor (sRGB): back / upper flanks (speculative)
-//   ventralColor    '#a2947f'  uVentralColor (sRGB): belly / underside (speculative)
-//   counterShade    [-0.45, 0.35] uCounterShade: rest-normal-y range of the ventral -> dorsal transition
-//   mottle          0.28    uMottle: low-frequency blotch contrast
-//   mottleScale     1.6     uMottleScale (1/m): blotch frequency
-//   scaleTint       0.16    uScaleTint: per-scale brightness jitter
-//   topLight        0.12    uTopLight: lightening of the worn scale tops
-//   crackDark       0.45    uCrackDark: darkening inside the mortar / cracks
-//   cavityDark      0.45    uCavityDark: albedo darkening by aCavity
-//   cavityAO        0.75    uCavityAO: ambient occlusion by aCavity
-//   roughness       0.6     uRoughness: base roughness
-//   roughVar        0.08    uRoughVar: low-frequency roughness breakup
-//   crackRough      0.18    uCrackRough: extra roughness in the cracks
-//   topRough        -0.1    uTopRough: roughness change on polished scale tops
-//   fadeRough       0.12    uFadeRough: roughness added where detail is faded (keeps the normal variance)
-//   scatterColor    [1.0, 0.42, 0.28] uScatterColor: per-channel wrap (red scatters furthest)
-//   sss             0.55    uSSS: subsurface strength (wrap amount)
-//   sssNormalBlur   0.45    uSSSNormalBlur: how much the red channel uses the un-bumped normal
-//   translucency    0.0     uTranslucency: back-light glow at thin silhouettes (keep ~0 for a 7 t animal)
-//   dust            0.35    uDust: dust / dried mud on the lower legs and in the cracks there
-//   dustHeight      0.7     uDustHeight (m): height up to which dust is present
+//                            (x: tail / belly / flank transverse folds, y: limb wrinkles, diagonal: neck)
+//   netScale        0.1      uNetScale (m): cell size of the reticulate crease web
+//   netDepth        0.0022   uNetDepth (m): depth of its grooves
+//   netWidth        0.07     uNetWidth: groove half-width (fraction of a net cell)
+//   lumpDepth       0.006    uLumpDepth (m): amplitude of the low-frequency fleshy undulation
+//   lumpScale       3.0      uLumpScale (1/m): frequency of that undulation
+//   grainScale      0.045    uGrainScale (m): size of the scale-cluster grain kept at medium distance
+//   grainDepth      0.0018   uGrainDepth (m): its relief
+//   grainTint       0.1      uGrainTint: its brightness variation
+//   -- colour (all speculative)
+//   dorsalColor     '#322e2b'  uDorsalColor (sRGB): back / upper flanks
+//   ventralColor    '#9c907d'  uVentralColor (sRGB): belly / underside
+//   lateralTint     [1.06, 1.0, 0.94]  uLateralTint: multiplier on the band where the two tones meet
+//   counterShade    [-0.7, 0.45]  uCounterShade: rest-normal-y range of the ventral -> dorsal transition
+//   mottle          0.32     uMottle: low-frequency blotch contrast
+//   mottleScale     1.6      uMottleScale (1/m): blotch frequency
+//   scaleTint       0.08     uScaleTint: per-scale brightness jitter
+//   topLight        0.07     uTopLight: lightening of the worn scale tops
+//   crackDark       0.22     uCrackDark: darkening inside the mortar / cracks
+//   cavityDark      0.35     uCavityDark: albedo darkening by aCavity
+//   cavityAO        0.7      uCavityAO: ambient occlusion by aCavity
+//   occlusionAO     0.35     uOcclusionAO: ambient occlusion by aOcclusion
+//   dust            0.25     uDust: dust / dried mud on the lower legs and in the cracks there
+//   dustHeight      0.7      uDustHeight (m): height up to which dust is present
 //   dustColor       '#8d8270'  uDustColor (sRGB)
-//   detailFade      2.0     uDetailFade: pixels per scale under which detail is fully faded (fully shown at 2.5x)
-//   worldScale      1.0     uWorldScale: object -> world scale, keeps the relief consistent if the mesh is scaled
-//   regions         {}      per-region overrides, e.g. { foot: { tint: [0.8, 0.8, 0.82], rough: 0.1 } } with fields
-//                           size (m), feature (density 0..1), scute (0..1), bump (x), tint ([r,g,b] linear multiplier),
-//                           rough (offset), folds ([wx, wy, wd] weights of the three fold fields of foldDirs)
+//   eyeColor        '#2b1a0b'  uEyeColor (sRGB): aFeature = 1
+//   clawColor       '#2e2925'  uClawColor (sRGB): aFeature = 2
+//   -- reflectance and scattering
+//   roughness       0.68     uRoughness: base roughness
+//   roughVar        0.1      uRoughVar: low-frequency roughness breakup
+//   crackRough      0.18     uCrackRough: extra roughness in the cracks
+//   topRough        -0.08    uTopRough: roughness change on polished scale tops
+//   fadeRough       0.12     uFadeRough: roughness added where detail is faded (keeps the normal variance)
+//   specular        0.65     uSpecular: direct-light specular multiplier (dry skin)
+//   scatterColor    [1.0, 0.7, 0.55]  uScatterColor: per-channel wrap (red scatters furthest)
+//   sss             0.22     uSSS: subsurface strength (wrap amount)
+//   sssNormalBlur   0.45     uSSSNormalBlur: how much the red channel uses the un-bumped normal
+//   translucency    0.0      uTranslucency: back-light glow at thin silhouettes (keep ~0 for a 7 t animal)
+//   -- level of detail
+//   detailFade      1.6      uDetailFade: pixels per cell at which a layer is fully faded
+//   detailFull      8.0      uDetailFull: pixels per cell at which a layer is fully shown
+//   worldScale      1.0      uWorldScale: object -> world scale, keeps the relief consistent if the mesh is scaled
+//   -- regions
+//   regions         {}       per-region overrides, e.g. { foot: { tint: [0.8, 0.8, 0.82], rough: 0.1 } } with fields
+//                            size (m), feature (density 0..1), scute (0..1), bump (x), tint ([r,g,b] linear multiplier),
+//                            rough (offset), folds ([wx, wy, wd] weights of the three fold fields of foldDirs)
 //   -> uRegionParams[10] (x log2(size/baseScale), y feature density, z scute, w bump),
 //      uRegionTint[10] (rgb tint, a roughness offset), uRegionFold[10] (xyz fold-field weights, w unused)
+//
+// material.userData: skinUniforms (all uniforms), skinRegions (editable region table; call
+// updateRegions() or re-run bakeSkinRegions after editing), setDebug(mode): 0 off, 1 albedo,
+// 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales.
 // ------------------------------------------------------------------------------------------
 
 export const SKIN_REGIONS = ['head', 'jaw', 'neck', 'torso', 'belly', 'tail', 'thigh', 'shin', 'foot', 'arm'];
 
-// Region defaults. Sizes are octaves of the 2.2 cm body scale: face/lips and the small forelimb
-// get half-size scales, as in extant archosaurs where facial and manual scales are finer.
+// Region defaults. Sizes are octaves of the 1.8 cm body scale: face/lips and the small forelimb
+// get half-size scales, as in extant archosaurs where facial and manual scales are finer. Feature
+// densities: highest on the face (art direction from extant archosaurs, uncertain), none on the belly.
 export const DEFAULT_REGION_PARAMS = {
   head:  { size: 0.009, feature: 0.55, scute: 0, bump: 1.0, tint: [1.00, 0.98, 0.95], rough: 0.0, folds: [0, 0, 0] },
   jaw:   { size: 0.009, feature: 0.35, scute: 0, bump: 0.9, tint: [1.12, 1.08, 1.02], rough: -0.03, folds: [0, 0, 0] },
@@ -894,9 +938,9 @@ export function createSkinMaterial(THREE, opts = {}) {
       .replace('#include <dithering_fragment>', FRAG_DEBUG);
   };
   // One compiled program is shared by every skin material of the same kind.
-  mat.customProgramCacheKey = () => 'noctis-reptile-skin-v1' + (o.physical ? '-phys' : '');
+  mat.customProgramCacheKey = () => 'noctis-reptile-skin-v2' + (o.physical ? '-phys' : '');
   mat.userData.skinUniforms = U;
-  // Debug view: 0 off, 1 albedo, 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region tint / scutes.
+  // Debug view: 0 off, 1 albedo, 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales.
   mat.userData.setDebug = (mode) => {
     const d = { ...(mat.defines || {}) };
     if (mode) d.SKIN_DEBUG = mode | 0; else delete d.SKIN_DEBUG;

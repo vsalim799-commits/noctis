@@ -20,7 +20,7 @@ enum class Formation : u8
     Compact,
     Fleeing
 };
-NOCTIS_API const char* formationLabelFr(Formation f);
+NOCTISCORE_API const char* formationLabelFr(Formation f);
 
 struct Group
 {
@@ -86,7 +86,7 @@ struct SpeciesCensus
     double biomassKg = 0.0;
 };
 
-class NOCTIS_API CreatureSystem
+class NOCTISCORE_API CreatureSystem
 {
 public:
     void initialize(const std::vector<SpeciesRuntime>* species, const Rect2& bounds, u64 seed);

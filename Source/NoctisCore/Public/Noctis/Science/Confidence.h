@@ -17,9 +17,9 @@ enum class Confidence : u8
     Unknown = 4            // INCONNU
 };
 
-NOCTIS_API const char* confidenceKey(Confidence c);     // "strongly_supported"
-NOCTIS_API const char* confidenceLabelFr(Confidence c); // "FORTEMENT ÉTAYÉ"
-NOCTIS_API Confidence parseConfidence(const std::string& key, bool* ok = nullptr);
+NOCTISCORE_API const char* confidenceKey(Confidence c);     // "strongly_supported"
+NOCTISCORE_API const char* confidenceLabelFr(Confidence c); // "FORTEMENT ÉTAYÉ"
+NOCTISCORE_API Confidence parseConfidence(const std::string& key, bool* ok = nullptr);
 // The weaker of two confidences (used when a conclusion depends on several claims).
 inline Confidence weakest(Confidence a, Confidence b) { return static_cast<u8>(a) > static_cast<u8>(b) ? a : b; }
 

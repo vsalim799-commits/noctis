@@ -21,7 +21,7 @@ enum class DataTargetKind : u8
     Specimens,
     Observations
 };
-NOCTIS_API const char* dataTargetLabelFr(DataTargetKind k);
+NOCTISCORE_API const char* dataTargetLabelFr(DataTargetKind k);
 
 struct DataTarget
 {
@@ -38,7 +38,7 @@ enum class ExpeditionStatus : u8
     Completed,
     Aborted
 };
-NOCTIS_API const char* expeditionStatusLabelFr(ExpeditionStatus s);
+NOCTISCORE_API const char* expeditionStatusLabelFr(ExpeditionStatus s);
 
 struct LogEntry
 {
@@ -81,7 +81,7 @@ struct Expedition
     float batteryUsedKWh = 0.0f;
 };
 
-class NOCTIS_API ExpeditionSystem
+class NOCTISCORE_API ExpeditionSystem
 {
 public:
     u32 plan(Expedition e, const EquipmentCatalog& catalog, float vehiclePayloadKg);

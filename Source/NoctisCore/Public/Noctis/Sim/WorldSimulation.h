@@ -37,7 +37,7 @@ struct SimConfig
     bool initialRemains = true;
 };
 
-class NOCTIS_API WorldSimulation
+class NOCTISCORE_API WorldSimulation
 {
 public:
     WorldSimulation();

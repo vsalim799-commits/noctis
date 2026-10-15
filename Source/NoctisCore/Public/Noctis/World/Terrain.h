@@ -26,8 +26,8 @@ enum class Substrate : u8
 };
 inline constexpr int kSubstrateCount = static_cast<int>(Substrate::Count);
 
-NOCTIS_API const char* substrateKey(Substrate s);
-NOCTIS_API const char* substrateLabelFr(Substrate s);
+NOCTISCORE_API const char* substrateKey(Substrate s);
+NOCTISCORE_API const char* substrateLabelFr(Substrate s);
 
 // Bekker parameters for one substrate at a given moisture state.
 struct SoilMechanics
@@ -43,7 +43,7 @@ struct SoilMechanics
     float maxSinkageM = 0.3f;      // thickness of the yielding layer above firmer sediment
 };
 
-NOCTIS_API SoilMechanics soilMechanics(Substrate s, float moisture01);
+NOCTISCORE_API SoilMechanics soilMechanics(Substrate s, float moisture01);
 
 struct TerrainQuery
 {
@@ -55,7 +55,7 @@ struct TerrainQuery
     float moisture = 0.5f;
 };
 
-class NOCTIS_API Terrain
+class NOCTISCORE_API Terrain
 {
 public:
     // Height samples are vertex-based: sample (i, j) sits at origin + (i, j) * spacing.
