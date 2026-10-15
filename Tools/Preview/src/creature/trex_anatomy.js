@@ -144,44 +144,49 @@ function makeShapes(bones) {
   const neckFolds = { amp: 0.013, wavelength: 0.19, axis: [0.8, 0.6, 0], lateral: 0.35 };
 
   // ===== 1. HEAD ================================================================================
-  // Skull ~1.45 m from the back of the quadratojugal (u ~ -0.05) to the snout tip (u ~1.47); dorsal
-  // outline rising from the snout (v ~0.5) to the orbits (v ~0.72) and the temporal region (~0.78);
-  // ~0.9 m across the quadratojugals, ~0.3 m across the snout tip (narrow snout, broad temporal
-  // region -> forward-facing orbits). Lip line (closed mouth) at v ~0.12-0.2, sinuous.
+  // Skull ~1.47 m from the jaw joint (u = 0) to the snout tip; about 0.88 m across the
+  // quadratojugals and ~0.28 m across the premaxillae (narrow snout, broad temporal region ->
+  // forward-facing orbits). Dorsal outline nearly straight from the snout (v ~0.46) up to the
+  // lacrimals and postorbitals (v ~0.72) and level behind them (no cranial dome). Head depth with
+  // the jaw closed ~1.0 m at the back, ~0.5 m at the snout. The upper head and the lower jaw are
+  // lofts through measured-looking stations (u, top, bottom, half-width, height of the widest
+  // line, squareness), so the lateral profile, the lip line and the keyhole outline seen from
+  // above are controlled directly; muscles, bosses and the eye are added on top.
   const HE = (bone, region, c, radii, r = [0, 0, 0], blend = 0.1, extra = {}) => E(bone, region, H(...c), radii, HR(r), blend, extra);
   const HRC = (bone, region, a, b, ra, rb, blend = 0.05, extra = {}) => RC(bone, region, H(...a), H(...b), ra, rb, blend, extra);
-  // Upper head (skull bone).
-  HRC('skull', 'head', [1.33, 0.37], [0.74, 0.56], 0.115, 0.165, 0.12);                          // nasal ridge
-  // Maxillary face: centred near the lip line so the lip cutter below slices it where it is broad.
-  HRC('skull', 'head', [1.3, 0.2], [0.5, 0.25], 0.15, 0.23, 0.1, { scale: [1, 1, 1.14] });
-  HE('skull', 'head', [1.36, 0.3, 0], [0.12, 0.2, 0.14], [0, 0, 0.12], 0.08);                    // premaxilla (deep, blunt snout tip)
-  HE('skull', 'head', [0.5, 0.66, 0], [0.3, 0.13, 0.2], [0, 0, 0], 0.12);                       // skull roof between the orbits
-  HE('skull', 'head', [0.16, 0.56, 0], [0.26, 0.24, 0.24], [0, 0, 0], 0.14);                    // parietal / braincase
-  HE('skull', 'head', [-0.02, 0.42, 0], [0.13, 0.3, 0.28], [0, 0, 0], 0.14);                    // occiput (merges into the neck)
+  const HLOFT = (bone, region, stations, blend, extra = {}) =>
+    out.push({ bone, kind: 'loft', origin: H(0, 0), rotation: HR(), stations, blend, region, ...extra });
+  // Upper head stations [u, top, bottom (= lip line in front of the rictus), half-width, height of
+  // the widest line, squareness]. The lip line is sinuous: high under the premaxilla, lowest under
+  // the convex maxillary tooth row, rising to the rictus below the orbit (u ~0.38); behind the
+  // rictus the bottom drops to the cheek, which covers the jaw joint.
+  const UP = [
+    [-0.06, 0.6, 0.0, 0.33, 0.28, 2.4],
+    [0.12, 0.69, -0.02, 0.44, 0.26, 2.6],
+    [0.32, 0.73, 0.1, 0.42, 0.27, 2.6],
+    [0.52, 0.72, 0.15, 0.33, 0.21, 2.4],
+    [0.72, 0.67, 0.13, 0.255, 0.18, 2.2],
+    [0.95, 0.59, 0.11, 0.2, 0.16, 2.2],
+    [1.18, 0.52, 0.13, 0.165, 0.18, 2.2],
+    [1.34, 0.46, 0.17, 0.14, 0.23, 2.2],
+  ];
+  HLOFT('skull', 'head', UP, 0.1, { capFront: 0.15, capBack: 0.18 });
+  // Lower jaw: follows the upper lip ~2.5 cm inside it (the upper lip overhangs the lower one, as
+  // in lizards; lips cover the teeth), its top hidden inside the upper head; deep dentary and very
+  // deep surangular region behind it. Bottom profile per station.
+  const jawBot = [-0.15, -0.25, -0.26, -0.21, -0.16, -0.11, -0.065, -0.01];
+  HLOFT('jaw', 'jaw', UP.map(([u, , , w, c], k) => [u, c + 0.03, jawBot[k], w - 0.024, c - 0.035, 2.2]), 0.02,
+    { capFront: 0.115, capBack: 0.14 });
   both((s, m, mr) => {
-    HE('skull', 'head', m([0.82, 0.58, 0.12]), [0.24, 0.12, 0.1], mr([0, 0.18, -0.12]), 0.1);      // lacrimal region
-    HE('skull', 'head', m([0.3, 0.5, 0.21]), [0.3, 0.27, 0.2], mr([0, 0.25, 0]), 0.14);           // jaw-closing muscles (M. adductor)
-    HE('skull', 'head', m([0.58, 0.3, 0.24]), [0.34, 0.15, 0.11], mr([0, 0.32, 0.05]), 0.1);      // jugal (cheek under the orbit)
-    HE('skull', 'head', m([0.12, 0.24, 0.33]), [0.17, 0.21, 0.13], mr([0, 0.2, 0]), 0.18);        // quadratojugal flare
-    // Fleshy upper lip / cheek along the back half of the tooth row: keeps the face full down to
-    // the lip line instead of pinching above it (cut flat by the lip cutter below).
-    HRC('skull', 'head', m([1.0, 0.2, 0.13]), m([0.5, 0.2, 0.24]), 0.07, 0.085, 0.08);
+    // Cheek skin behind the rictus, joining the upper head to the jaw over the jaw joint.
+    HE('jaw', 'jaw', m([0.2, 0.08, 0.35]), [0.2, 0.12, 0.07], mr([0, 0.2, 0]), 0.08);
+    HE('jaw', 'jaw', m([0.06, -0.1, 0.31]), [0.16, 0.17, 0.11], mr([0, 0.15, 0]), 0.1);          // M. pterygoideus bulge
+    HE('skull', 'head', m([0.43, 0.28, 0.335]), [0.22, 0.08, 0.05], mr([0, 0.3, -0.05]), 0.06);  // jugal bulge under the orbit
+    HE('skull', 'head', m([0.12, 0.2, 0.41]), [0.13, 0.15, 0.07], mr([0, 0.2, 0]), 0.08);        // quadratojugal flare
+    HE('skull', 'head', m([0.2, 0.6, 0.2]), [0.24, 0.1, 0.13], mr([0, 0.15, 0]), 0.1);           // jaw muscles bulging over the skull roof
+    HE('skull', 'head', m([0.74, 0.62, 0.12]), [0.16, 0.07, 0.08], mr([0, 0.3, -0.1]), 0.07);    // lacrimal (front rim of the orbit)
   });
-  // Lip cutter: squares off the bottom of the upper head along the closed-mouth line, leaving a
-  // rounded upper-lip edge (the smooth-subtraction radius). Flat-topped ellipsoids chained along the
-  // sinuous tooth row: higher at the premaxilla, lowest under the maxilla, rising to the rictus.
-  const lipCut = [[1.5, 0.21, 0.16], [1.22, 0.16, 0.24], [0.92, 0.13, 0.26], [0.66, 0.13, 0.22], [0.47, 0.14, 0.12]];
-  for (const [u, top, ru] of lipCut) HE('skull', 'head', [u, top - 0.4, 0], [ru, 0.4, 0.6], [0, 0, 0], 0.026, { sign: -1 });
-  // Lower jaw (jaw bone): two rami with the lower lips, flattened sideways and set ~2 cm inside
-  // the upper lip so the upper lip overhangs them; their tops hide inside the upper head.
-  both((s, m) => {
-    HRC('jaw', 'jaw', m([1.32, 0.1, 0.055]), m([0.95, 0.035, 0.075]), 0.1, 0.13, 0.05, { scale: [1, 1, 0.8] });  // dentary, front
-    HRC('jaw', 'jaw', m([0.95, 0.035, 0.08]), m([0.45, -0.02, 0.2]), 0.13, 0.18, 0.05, { scale: [1, 1, 0.7] });   // dentary, back
-    HE('jaw', 'jaw', m([0.3, -0.03, 0.26]), [0.3, 0.2, 0.1], [0, 0.35, 0.06], 0.1);                              // surangular
-    HE('jaw', 'jaw', m([0.1, -0.1, 0.29]), [0.17, 0.19, 0.13], [0, 0.15, 0], 0.12);                              // M. pterygoideus bulge
-  });
-  HE('jaw', 'jaw', [1.33, 0.08, 0], [0.1, 0.12, 0.115], [0, 0, 0.1], 0.06);                      // chin
-  HE('jaw', 'jaw', [0.55, -0.06, 0], [0.5, 0.12, 0.17], [0, 0, 0.08], 0.12);                     // throat skin between the rami
+  HRC('skull', 'head', [1.32, 0.44], [0.66, 0.62], 0.06, 0.085, 0.06, { scale: [1, 1, 1.2] });    // nasal ridge (rugose nasals)
 
   // ===== 2. BODY ================================================================================
   // ---- trunk -----------------------------------------------------------------------------------

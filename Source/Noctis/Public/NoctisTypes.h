@@ -187,7 +187,8 @@ struct NOCTIS_API FNoctisCreatureAnimInputs
 	UPROPERTY(BlueprintReadOnly, Category = "Noctis|SoftTissue")
 	TArray<float> Muscle;
 
-	/** Damped soft-tissue offsets from the core: belly V/L (cm), neck V/L (deg), tail V/L (deg). */
+	/** Damped soft-tissue offsets from the core: belly V/L (cm), neck V/L (deg), tail V/L (deg).
+	 *  Vertical: positive = up. Lateral: positive = towards the animal's right (component +Y in Unreal). */
 	UPROPERTY(BlueprintReadOnly, Category = "Noctis|SoftTissue")
 	float BellyVertical = 0.0f;
 

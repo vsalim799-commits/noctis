@@ -23,13 +23,120 @@ const AO_REACH = 0.6;       // metres; longest occlusion probe along the normal
 const ZONE_TUCK = 0.004;    // metres; how far the main mesh hides under a detail-zone mesh
 
 // ---------------------------------------------------------------------------------------------
+// Loft: a section swept along the local x axis. Each station { x, top, bot, w, c, n } gives, in
+// the local y-z plane, a superellipse-like outline that is `w` wide (half-width) at height `c`,
+// reaching up to `top` and down to `bot` (two half-outlines; n = 2 is an ellipse, n -> 4 squarer).
+// Station values are interpolated with monotone cubic Hermite splines, so silhouettes stay smooth
+// without overshoot; both ends close with an ellipsoidal cap of length capFront / capBack. Used
+// where an outline must follow a profile (skull top line, lip line, keyhole-shaped skull seen from
+// above) rather than emerge from blended blobs.
+const LOFT_KEYS = ['top', 'bot', 'w', 'c', 'n'];
+const LOFT_STEP = 0.005;    // metres; the splines are tabulated at this spacing (linear lookup)
+function compileLoft(s) {
+  const st = s.stations.map((q) => (Array.isArray(q) ? { x: q[0], top: q[1], bot: q[2], w: q[3], c: q[4], n: q[5] } : { ...q }))
+    .sort((a, b) => a.x - b.x);
+  for (const q of st) q.n = Math.min(4, Math.max(2, q.n ?? 2));
+  const m = st.length;
+  if (m < 2) throw new Error('sdf_mesher: a loft needs at least two stations');
+  const xs = st.map((q) => q.x);
+  const spl = LOFT_KEYS.map((key) => {
+    const y = st.map((q) => q[key]);
+    // Fritsch-Carlson monotone tangents.
+    const d = [], t = new Array(m).fill(0);
+    for (let k = 0; k + 1 < m; k++) d[k] = (y[k + 1] - y[k]) / (xs[k + 1] - xs[k]);
+    t[0] = d[0]; t[m - 1] = d[m - 2];
+    for (let k = 1; k + 1 < m; k++) t[k] = d[k - 1] * d[k] <= 0 ? 0 : (d[k - 1] + d[k]) / 2;
+    for (let k = 0; k + 1 < m; k++) {
+      if (d[k] === 0) { t[k] = 0; t[k + 1] = 0; continue; }
+      const a = t[k] / d[k], b = t[k + 1] / d[k], h2 = a * a + b * b;
+      if (h2 > 9) { const s3 = 3 / Math.sqrt(h2); t[k] = s3 * a * d[k]; t[k + 1] = s3 * b * d[k]; }
+    }
+    return (x) => {
+      let k = 0;
+      while (k < m - 2 && x > xs[k + 1]) k++;
+      const hs = xs[k + 1] - xs[k], u = Math.min(1, Math.max(0, (x - xs[k]) / hs)), u2 = u * u, u3 = u2 * u;
+      return (2 * u3 - 3 * u2 + 1) * y[k] + (u3 - 2 * u2 + u) * hs * t[k] + (-2 * u3 + 3 * u2) * y[k + 1] + (u3 - u2) * hs * t[k + 1];
+    };
+  });
+  const x0 = xs[0], x1 = xs[m - 1], nT = Math.max(2, Math.ceil((x1 - x0) / LOFT_STEP) + 1);
+  const tab = new Float64Array(nT * 5);
+  for (let k = 0; k < nT; k++) {
+    const x = Math.min(x1, x0 + k * LOFT_STEP);
+    for (let j = 0; j < 5; j++) tab[k * 5 + j] = spl[j](x);
+  }
+  const col = (j) => Array.from({ length: m }, (_, k) => st[k][LOFT_KEYS[j]]);
+  return {
+    x0, x1, nT, tab, inv: 1 / LOFT_STEP, capF: s.capFront ?? 0.1, capB: s.capBack ?? 0.1, sec: new Float64Array(5),
+    minBot: Math.min(...col(1)), maxTop: Math.max(...col(0)), maxW: Math.max(...col(2)),
+  };
+}
+// Station values at local x (clamped at the ends) into L.sec = [top, bot, w, c, n].
+function loftSection(L, x) {
+  const out = L.sec, T = L.tab;
+  let f = (x - L.x0) * L.inv;
+  if (f <= 0) f = 0; else if (f >= L.nT - 1) f = L.nT - 1.000001;
+  const k = f | 0, t = f - k, a = k * 5, b = a + 5;
+  out[0] = T[a] + (T[b] - T[a]) * t; out[1] = T[a + 1] + (T[b + 1] - T[a + 1]) * t;
+  out[2] = T[a + 2] + (T[b + 2] - T[a + 2]) * t; out[3] = T[a + 3] + (T[b + 3] - T[a + 3]) * t;
+  out[4] = T[a + 4] + (T[b + 4] - T[a + 4]) * t;
+  return out;
+}
+// Normalised outline "radius" F of the section at (y, z) (F = 1 on the outline) and its gradient
+// in the section plane, written into g[0] (d/dy), g[1] (d/dz). Squareness blends the 2-norm and
+// the 4-norm of the scaled coordinates (both convex, so the blend is too) - no pow() needed.
+function loftSectionF(sec, y, z, g) {
+  const top = sec[0], bot = sec[1], w = sec[2] > 1e-4 ? sec[2] : 1e-4, c = sec[3];
+  const up = y >= c;
+  let ry = up ? top - c : c - bot;
+  if (ry < 1e-4) ry = 1e-4;
+  const qy = (y - c) / ry, qz = z / w;
+  const y2 = qy * qy, z2 = qz * qz;
+  const F2 = Math.sqrt(y2 + z2);
+  if (F2 < 1e-9) { g[0] = 0; g[1] = 0; return 0; }
+  const a = (sec[4] - 2) * 0.5;
+  let F = F2, dy = qy / F2, dz = qz / F2;
+  if (a > 0) {
+    const F4 = Math.sqrt(Math.sqrt(y2 * y2 + z2 * z2)), i3 = 1 / (F4 * F4 * F4);
+    F += a * (F4 - F2);
+    dy += a * (y2 * qy * i3 - dy);
+    dz += a * (z2 * qz * i3 - dz);
+  }
+  g[0] = dy / ry; g[1] = dz / w;
+  return F;
+}
+const loftG = new Float64Array(2);
+// First-order distance (F - 1) / |grad F| in local coordinates. Inside the station range the x
+// derivative comes from a central difference (sloping outlines would otherwise overestimate the
+// distance); beyond the ends F is combined with the cap coordinate into an ellipsoidal cap.
+function loftDist(L, x, y, z) {
+  const x0 = L.x0, x1 = L.x1;
+  if (x < x0 || x > x1) {
+    const cap = x < x0 ? L.capB : L.capF, q = (x < x0 ? x0 - x : x - x1) / cap;
+    const Fs = loftSectionF(loftSection(L, x), y, z, loftG);
+    const F = Math.sqrt(Fs * Fs + q * q);
+    if (F < 1e-9) return -0.01;
+    const gy = Fs * loftG[0] / F, gz = Fs * loftG[1] / F, gx = q / (cap * F);
+    return (F - 1) / Math.max(Math.sqrt(gx * gx + gy * gy + gz * gz), 1e-6);
+  }
+  const F = loftSectionF(loftSection(L, x), y, z, loftG);
+  const gy = loftG[0], gz = loftG[1];
+  const e = 0.01;
+  const Fp = loftSectionF(loftSection(L, x + e), y, z, loftG);
+  const Fm = loftSectionF(loftSection(L, x - e), y, z, loftG);
+  const gx = (Fp - Fm) / (2 * e);
+  const gl = Math.sqrt(gx * gx + gy * gy + gz * gz);
+  if (gl < 1e-6) return -0.01;
+  return (F - 1) / gl;
+}
+
 // Shape compilation: everything that does not depend on the sample point is precomputed into
 // flat typed arrays so the inner loops stay monomorphic and allocation-free.
 function compileShapes(shapes, boneIndex) {
   const n = shapes.length;
   const S = {
     n,
-    kind: new Uint8Array(n),        // 0 = ellipsoid, 1 = round cone (capsule = equal radii)
+    kind: new Uint8Array(n),        // 0 = ellipsoid, 1 = round cone (capsule = equal radii), 2 = loft
+    lofts: new Array(n),             // compiled loft data (kind 2)
     sign: new Int8Array(n),
     bone: new Int32Array(n),
     region: new Uint8Array(n),
@@ -54,7 +161,31 @@ function compileShapes(shapes, boneIndex) {
     S.sign[i] = s.sign === -1 ? -1 : 1;
     S.separate[i] = s.separate ? 1 : 0;
     const o = i * STRIDE, P = S.p, bo = i * 6;
-    if (s.kind === 'ellipsoid') {
+    if (s.kind === 'loft') {
+      S.kind[i] = 2;
+      const L = compileLoft(s);
+      S.lofts[i] = L;
+      const org = s.origin || [0, 0, 0];
+      const [ex, ey, ez] = s.rotation || [0, 0, 0];
+      const a = Math.cos(ex), b = Math.sin(ex), c = Math.cos(ey), d = Math.sin(ey), e = Math.cos(ez), f = Math.sin(ez);
+      const ae = a * e, af = a * f, be = b * e, bf = b * f;
+      const R = [c * e, -c * f, d, af + be * d, ae - bf * d, -b * c, bf - ae * d, be + af * d, a * c];
+      P[o] = org[0]; P[o + 1] = org[1]; P[o + 2] = org[2];
+      P[o + 3] = R[0]; P[o + 4] = R[3]; P[o + 5] = R[6];
+      P[o + 6] = R[1]; P[o + 7] = R[4]; P[o + 8] = R[7];
+      P[o + 9] = R[2]; P[o + 10] = R[5]; P[o + 11] = R[8];
+      // Model-space box of the local box (stations + caps).
+      const lx = [L.x0 - L.capB, L.x1 + L.capF];
+      const ly = [L.minBot, L.maxTop];
+      const wz = L.maxW;
+      for (let r = 0; r < 3; r++) { S.box[bo + r] = Infinity; S.box[bo + 3 + r] = -Infinity; }
+      for (const X of lx) for (const Y of ly) for (const Z of [-wz, wz]) {
+        for (let r = 0; r < 3; r++) {
+          const v = org[r] + R[r * 3] * X + R[r * 3 + 1] * Y + R[r * 3 + 2] * Z;
+          S.box[bo + r] = Math.min(S.box[bo + r], v); S.box[bo + 3 + r] = Math.max(S.box[bo + 3 + r], v);
+        }
+      }
+    } else if (s.kind === 'ellipsoid') {
       S.kind[i] = 0;
       const [cx, cy, cz] = s.center, [rx, ry, rz] = s.radii;
       const [ex, ey, ez] = s.rotation || [0, 0, 0];
@@ -115,6 +246,13 @@ function compileShapes(shapes, boneIndex) {
 // Distance from point to shape i (negative inside).
 function shapeDist(S, i, x, y, z) {
   const P = S.p, o = i * STRIDE;
+  if (S.kind[i] === 2) {
+    const dx = x - P[o], dy = y - P[o + 1], dz = z - P[o + 2];
+    return loftDist(S.lofts[i],
+      P[o + 3] * dx + P[o + 4] * dy + P[o + 5] * dz,
+      P[o + 6] * dx + P[o + 7] * dy + P[o + 8] * dz,
+      P[o + 9] * dx + P[o + 10] * dy + P[o + 11] * dz);
+  }
   if (S.kind[i] === 0) {
     const dx = x - P[o], dy = y - P[o + 1], dz = z - P[o + 2];
     const lx = P[o + 3] * dx + P[o + 4] * dy + P[o + 5] * dz;

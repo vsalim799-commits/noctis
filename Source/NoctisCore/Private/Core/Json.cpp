@@ -406,13 +406,20 @@ void appendNumber(std::string& out, double v)
         return;
     }
     char buf[48];
-    if (std::fabs(v - std::round(v)) < 1e-9 && std::fabs(v) < 1e15)
+    if (v == std::trunc(v) && std::fabs(v) < 1e15)
     {
+        // Exact integers (the vast majority of counts and ids) print without a fraction.
         std::snprintf(buf, sizeof(buf), "%.0f", v);
     }
     else
     {
-        std::snprintf(buf, sizeof(buf), "%.9g", v);
+        // Shortest of %.15g / %.17g that parses back to the same double: data files stay readable
+        // (0.1 prints as 0.1) and saves round-trip exactly (17 significant digits always suffice).
+        std::snprintf(buf, sizeof(buf), "%.15g", v);
+        if (std::strtod(buf, nullptr) != v)
+        {
+            std::snprintf(buf, sizeof(buf), "%.17g", v);
+        }
     }
     out += buf;
 }

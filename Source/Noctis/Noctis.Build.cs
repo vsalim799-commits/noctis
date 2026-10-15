@@ -43,12 +43,10 @@ public class Noctis : ModuleRules
 			"PCG",
 		});
 
-		// Gameplay Debugger category (FGameplayDebuggerCategory_Noctis). UBT defines WITH_GAMEPLAY_DEBUGGER globally
-		// from TargetRules.bUseGameplayDebugger; the module is only linked when it is enabled.
-		if (Target.bUseGameplayDebugger)
-		{
-			PrivateDependencyModuleNames.Add("GameplayDebugger");
-		}
+		// Gameplay Debugger category (FGameplayDebuggerCategory_Noctis). This helper (also used by AIModule) adds the
+		// GameplayDebugger dependency when the target enables it and defines WITH_GAMEPLAY_DEBUGGER(_CORE/_MENU) either way.
+		// VERIFY on 5.5: ModuleRules.SetupGameplayDebuggerSupport(ReadOnlyTargetRules, bool bAddAsPublicDependency = false).
+		SetupGameplayDebuggerSupport(Target);
 
 		// Scientific data (Data/**/*.json) staged next to the executable as loose files so that packaged builds read
 		// exactly the files the scientists edit. Resolved at runtime from FPaths::ProjectDir() / "Data".

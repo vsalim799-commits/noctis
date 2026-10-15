@@ -148,7 +148,6 @@ private:
     EnvironmentSim env_;
     Rng rng_;
     WeatherState state_;
-    double regimeTimer_ = 0.0;
     double hourAccumulator_ = 0.0;
     float tempAnomaly_ = 0.0f;
     float windDirAnomaly_ = 0.0f;

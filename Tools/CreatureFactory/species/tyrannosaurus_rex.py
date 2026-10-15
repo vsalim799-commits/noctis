@@ -123,19 +123,19 @@ def head_shapes():
     S = []
     # u, v_top, v_lip, hw, (cy fraction above the lip), n_top, n_bot
     up = [
-        (-0.16, 0.66, 0.26, 0.33, 0.40, 2.0, 2.6),
-        (-0.04, 0.78, 0.22, 0.42, 0.36, 2.1, 2.8),
-        (0.12, 0.83, 0.20, 0.455, 0.33, 2.2, 3.0),
-        (0.28, 0.83, 0.185, 0.44, 0.30, 2.2, 3.0),
-        (0.44, 0.795, 0.165, 0.385, 0.27, 2.15, 3.0),
-        (0.60, 0.745, 0.145, 0.315, 0.24, 2.05, 3.0),
-        (0.76, 0.685, 0.13, 0.262, 0.22, 2.0, 3.0),
-        (0.92, 0.625, 0.122, 0.228, 0.21, 1.95, 3.0),
-        (1.08, 0.565, 0.125, 0.205, 0.21, 1.95, 3.0),
-        (1.22, 0.505, 0.14, 0.188, 0.22, 1.95, 3.0),
-        (1.34, 0.445, 0.165, 0.168, 0.24, 2.0, 3.0),
-        (1.43, 0.385, 0.19, 0.135, 0.28, 2.0, 2.8),
-        (1.49, 0.33, 0.215, 0.085, 0.35, 2.0, 2.5),
+        (-0.10, 0.70, 0.30, 0.30, 0.45, 2.0, 2.5),
+        (0.02, 0.80, 0.24, 0.40, 0.38, 2.1, 2.8),
+        (0.16, 0.84, 0.205, 0.44, 0.34, 2.2, 3.0),
+        (0.30, 0.845, 0.185, 0.43, 0.31, 2.2, 3.0),
+        (0.45, 0.82, 0.165, 0.38, 0.28, 2.15, 3.0),
+        (0.60, 0.78, 0.15, 0.31, 0.26, 2.05, 3.0),
+        (0.76, 0.735, 0.14, 0.26, 0.25, 2.0, 3.0),
+        (0.92, 0.69, 0.135, 0.23, 0.25, 2.0, 3.0),
+        (1.08, 0.645, 0.14, 0.212, 0.26, 2.0, 3.0),
+        (1.22, 0.60, 0.15, 0.198, 0.27, 2.05, 3.0),
+        (1.34, 0.545, 0.168, 0.18, 0.29, 2.1, 3.0),
+        (1.43, 0.48, 0.19, 0.152, 0.32, 2.15, 2.8),
+        (1.49, 0.40, 0.215, 0.10, 0.38, 2.2, 2.5),
     ]
     secs = []
     for u, vt, vl, hw, fr, nt, nb in up:
@@ -144,27 +144,27 @@ def head_shapes():
     S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, blend=0.05,
                   region="head", tag="cranium"))
     # snout tip: rounds the premaxilla (narrow U in dorsal view)
-    S.append(E("head", "head", H(1.455, 0.285), [0.06, 0.1, 0.105], HR((0, 0, 0.15)), 0.07, tag="premaxilla"))
+    S.append(E("head", "head", H(1.45, 0.33), [0.065, 0.14, 0.115], HR((0, 0, 0.12)), 0.08, tag="premaxilla"))
     # lower jaw: dentary + surangular/angular + intermandibular soft tissue
     lo = [
-        (-0.20, 0.12, -0.10, 0.30, 2.0),
-        (-0.06, 0.20, -0.21, 0.40, 2.1),
-        (0.12, 0.195, -0.27, 0.415, 2.2),
-        (0.30, 0.18, -0.265, 0.385, 2.2),
-        (0.48, 0.152, -0.225, 0.325, 2.2),
-        (0.66, 0.128, -0.17, 0.27, 2.2),
-        (0.84, 0.112, -0.115, 0.226, 2.2),
-        (1.02, 0.112, -0.065, 0.196, 2.25),
-        (1.18, 0.125, -0.02, 0.172, 2.3),
-        (1.31, 0.152, 0.03, 0.148, 2.3),
-        (1.41, 0.18, 0.085, 0.11, 2.3),
-        (1.46, 0.195, 0.125, 0.06, 2.2),
+        (-0.20, 0.13, -0.10, 0.30, 2.0),
+        (-0.06, 0.21, -0.22, 0.40, 2.1),
+        (0.12, 0.205, -0.28, 0.41, 2.2),
+        (0.30, 0.19, -0.28, 0.38, 2.2),
+        (0.48, 0.17, -0.25, 0.325, 2.2),
+        (0.66, 0.16, -0.21, 0.27, 2.2),
+        (0.84, 0.155, -0.165, 0.225, 2.2),
+        (1.02, 0.158, -0.12, 0.197, 2.25),
+        (1.18, 0.168, -0.075, 0.175, 2.3),
+        (1.31, 0.185, -0.025, 0.152, 2.3),
+        (1.41, 0.205, 0.035, 0.117, 2.3),
+        (1.47, 0.22, 0.09, 0.072, 2.2),
     ]
     secs = []
     for u, vt, vb, hw, nb in lo:
         cy = vt - 0.055
         secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vb, hw=hw, nt=3.2, nb=nb))
-    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, blend=0.035,
+    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, blend=0.015,
                   region="jaw", tag="mandible"))
     S.append(E("jaw", "jaw", H(1.41, 0.12), [0.08, 0.07, 0.11], HR(), 0.05, tag="chin"))
     for sg in (1, -1):
@@ -172,10 +172,10 @@ def head_shapes():
         w = lambda c: H(c[0], c[1], c[2] * sg)
         mr = lambda r: r if sg > 0 else [-r[0], -r[1], r[2]]
         # jaw-closing muscles bulging over the temporal region (M. adductor mandibulae externus)
-        S.append(E("head", "head", w((0.2, 0.62, 0.25)), [0.3, 0.19, 0.17], mr(HR((0.25, 0.15, -0.05))), 0.12, tag="adductor"))
+        S.append(E("head", "head", w((0.22, 0.64, 0.22)), [0.28, 0.17, 0.15], mr(HR((0.25, 0.15, -0.05))), 0.12, tag="adductor"))
         # cheek: jugal + quadratojugal flare (broad back of the head in dorsal view)
         S.append(E("head", "head", w((0.38, 0.34, 0.31)), [0.32, 0.13, 0.1], mr(HR((0, 0.3, 0.04))), 0.1, tag="jugal"))
-        S.append(E("head", "head", w((0.06, 0.34, 0.39)), [0.17, 0.19, 0.1], mr(HR((0, 0.25, 0))), 0.1, tag="quadratojugal"))
+        S.append(E("head", "head", w((0.1, 0.36, 0.34)), [0.15, 0.16, 0.09], mr(HR((0, 0.25, 0))), 0.1, tag="quadratojugal"))
         # jowls: M. pterygoideus ventralis wrapping under the back of the lower jaw
         S.append(E("jaw", "jaw", w((0.05, -0.13, 0.3)), [0.22, 0.19, 0.14], mr(HR((0, 0.2, 0.15))), 0.12, tag="pterygoideus",
                    masks=["jowl"]))
@@ -197,9 +197,9 @@ def head_details(cast, base_shapes):
         side = "r" if sg > 0 else "l"
         # ---------------- eye --------------------------------------------------------------------
         # Orbit high on the skull, eye looking forward-outward (binocular field ~55 deg, Stevens 2006).
-        eye_dir = HD(np.array([0.42, 0.06, 0.905 * sg]))
+        eye_dir = HD(np.array([0.42, 0.04, 0.905 * sg]))
         eye_dir /= np.linalg.norm(eye_dir)
-        surf = cast.cast_at(H(0.575, 0.585, 0.24 * sg), -eye_dir, back=0.8)
+        surf = cast.cast_at(H(0.575, 0.6, 0.24 * sg), -eye_dir, back=0.8)
         n = cast.normal(surf)
         R_EYE = 0.052
         # eyeball centre: front of the cornea sits ~1 cm below the original surface
@@ -222,7 +222,6 @@ def head_details(cast, base_shapes):
         S.append(E("head", "head", ec + bz * 0.05, [0.064, 0.03, 0.075], lid_rot, 0.012, sign=-1, tag="palpebral_opening"))
         S.append(E("head", "head", ec, [R_EYE + 0.006] * 3, (0, 0, 0), 0.006, sign=-1, tag="eye_pit"))
         # crease under the lower lid and above the upper lid
-        S.append(E("head", "head", ec - by * 0.078 + bz * 0.03, [0.075, 0.012, 0.03], lid_rot, 0.02, sign=-1, tag="lid_crease"))
         # ---------------- brow: lacrimal boss in front, postorbital boss above-behind -------------
         po = cast.cast_at(H(0.47, 0.76, 0.2 * sg), HD(np.array([-0.15, -0.75, -0.65 * sg])))
         la = cast.cast_at(H(0.74, 0.72, 0.14 * sg), HD(np.array([0.0, -0.85, -0.5 * sg])))
@@ -230,9 +229,11 @@ def head_details(cast, base_shapes):
         S.append(E("head", "head", po - npo * 0.035, [0.13, 0.07, 0.1], mr(HR((0, 0.35, 0.12))), 0.05, masks=["rugose", "brow"], tag="postorbital_boss"))
         S.append(E("head", "head", la - nla * 0.03, [0.12, 0.05, 0.065], mr(HR((0, 0.25, -0.15))), 0.05, masks=["rugose", "brow"], tag="lacrimal_boss"))
         # brow shelf over the eye (between the bosses), slightly lateral so it overhangs the lids
-        b0 = la - nla * 0.035 + np.array([0, 0, 0.02 * sg])
-        b1 = po - npo * 0.04 + np.array([0, 0, 0.025 * sg])
-        S.append(CAP("head", "head", b0, b1, 0.048, 0.05, masks=["brow"], tag="brow_shelf"))
+        b0 = la - nla * 0.03 + np.array([0, 0, 0.03 * sg])
+        b1 = po - npo * 0.035 + np.array([0, 0, 0.035 * sg])
+        S.append(CAP("head", "head", b0, b1, 0.055, 0.05, masks=["brow"], tag="brow_shelf"))
+        # brow overhang right above the upper lid
+        S.append(E("head", "head", ec + by * 0.085 + bz * 0.035 + bx * 0.01, [0.1, 0.035, 0.05], lid_rot, 0.04, masks=["brow"], tag="brow_overhang"))
         # jugal 'horn' (cornual process) below-behind the orbit, and the cheekbone ridge
         jh = cast.cast_at(H(0.36, 0.3, 0.3 * sg), np.array([0, 0, -sg]))
         S.append(E("head", "head", jh - cast.normal(jh) * 0.03, [0.09, 0.05, 0.06], mr(HR((0, 0.3, 0))), 0.04, masks=["rugose"], tag="jugal_horn"))
@@ -333,110 +334,181 @@ def classify_js_masks(s):
     return m
 
 
-def build(js):
-    jb = {b["name"]: b for b in js["bones"]}
-    old_head = {n: np.array(b["head"], float) for n, b in jb.items()}
+# Vertebral centre-line (x, y) from the tail tip to the occipital condyle, and the soft-tissue
+# section around it: skin height above the centra (top), depth below (bot), half-width (hw) at the
+# widest level (fraction fw of the depth from the top). Plausible values over a Sue-sized skeleton:
+# deep tail base (M. caudofemoralis, Persons & Currie 2011), deep ribcage with the gastral line from
+# the coracoids to the pubic boot, short thick S-shaped neck.
+BODY_KEYS = [
+    # x,     y,    top,   bot,   hw,    fw,  nt,  nb
+    (-7.05, 2.78, 0.012, 0.016, 0.012, 0.40, 2.0, 2.0),
+    (-6.40, 2.87, 0.050, 0.072, 0.046, 0.38, 2.0, 1.9),
+    (-5.60, 2.97, 0.100, 0.150, 0.092, 0.36, 2.0, 1.9),
+    (-4.70, 3.08, 0.155, 0.250, 0.148, 0.34, 2.05, 1.9),
+    (-3.80, 3.18, 0.210, 0.360, 0.210, 0.33, 2.1, 1.9),
+    (-2.90, 3.28, 0.260, 0.480, 0.275, 0.33, 2.1, 1.9),
+    (-2.00, 3.37, 0.310, 0.610, 0.345, 0.34, 2.15, 1.95),
+    (-1.20, 3.44, 0.350, 0.740, 0.410, 0.36, 2.2, 2.0),
+    (-0.50, 3.49, 0.370, 0.870, 0.460, 0.40, 2.3, 2.0),
+    (0.20, 3.51, 0.370, 1.060, 0.485, 0.42, 2.3, 2.0),
+    (0.90, 3.48, 0.385, 1.360, 0.505, 0.45, 2.3, 2.0),
+    (1.60, 3.40, 0.405, 1.370, 0.515, 0.45, 2.3, 2.0),
+    (2.20, 3.28, 0.420, 1.120, 0.475, 0.45, 2.3, 2.0),
+    (2.62, 3.21, 0.430, 0.900, 0.430, 0.45, 2.25, 2.0),
+    (2.96, 3.34, 0.420, 0.720, 0.385, 0.45, 2.2, 2.0),
+    (3.26, 3.57, 0.380, 0.580, 0.345, 0.45, 2.2, 2.0),
+    (3.50, 3.82, 0.300, 0.470, 0.305, 0.45, 2.1, 2.0),
+    (3.64, 3.93, 0.220, 0.360, 0.255, 0.45, 2.0, 2.0),
+]
+TAIL_X0, TAIL_TIP = -0.85, -7.05
 
-    # ----- new skeleton (heads), JS names first --------------------------------------------------
-    new_head = {}
-    for n, p in old_head.items():
-        if n.startswith(("thigh", "shin", "meta", "toes")):
-            continue
-        new_head[n] = p + [0, DY, 0] if n != "root" else p.copy()
+
+def body_y(x):
+    xs = [k[0] for k in BODY_KEYS]
+    ys = [k[1] for k in BODY_KEYS]
+    from scipy.interpolate import PchipInterpolator
+    return float(PchipInterpolator(xs, ys)(x))
+
+
+def make_bones(js):
+    """Final skeleton (names, heads, tails) for the re-posed animal."""
+    nh = {}
+    nh["root"] = np.zeros(3)
+    nh["pelvis"] = np.array([0.0, HIP_Y, 0.0])
+    for n, x in (("spine_01", 0.70), ("spine_02", 1.45), ("spine_03", 2.15), ("neck_01", 2.62), ("neck_02", 2.96), ("neck_03", 3.26)):
+        nh[n] = np.array([x, body_y(x), 0.0])
+    nh["head"] = H(0.04, 0.3)
+    nh["jaw"] = JAW.copy()
+    seg = (TAIL_TIP - TAIL_X0) / 10
+    for i in range(1, 11):
+        x = TAIL_X0 + seg * (i - 1)
+        nh[f"tail_{i:02d}"] = np.array([x, body_y(x), 0.0])
     legs = {}
-    for sfx, sg in (("L", -1), ("R", 1)):
-        hip, knee, ankle, mtp = leg_chain()
-        f = lambda p: np.array([p[0], p[1], p[2] * sg])
-        legs[sfx] = (f(hip), f(knee), f(ankle), f(mtp))
-        new_head[f"thigh{sfx}"], new_head[f"shin{sfx}"], new_head[f"meta{sfx}"], new_head[f"toes{sfx}"] = legs[sfx]
-    new_head["skull"] = H(0.04, 0.3)
-    new_head["jaw"] = JAW.copy()
-
-    # ----- shapes: re-used JS body, re-posed -----------------------------------------------------
-    def bone_xform(n):
-        """(R, h0, h1) mapping a JS bone's shapes to the new pose."""
-        if n.startswith(("thigh", "shin", "meta")):
-            child = {"thigh": "shin", "shin": "meta", "meta": "toes"}[n[:-1] if n[-1] in "LR" else n]
-            child = child + n[-1]
-            d0 = old_head[child] - old_head[n]
-            d1 = new_head[child] - new_head[n]
-            return rot_between(d0, d1), old_head[n], new_head[n]
-        if n.startswith("toes"):
-            return np.eye(3), old_head[n], new_head[n]
-        return np.eye(3), np.zeros(3), np.array([0, DY, 0.0])
-
-    shapes = []
-    for s in js["shapes"]:
-        if s["bone"] in ("skull", "jaw"):
-            continue
-        s = {k: v for k, v in s.items() if k not in ("id", "folds")}
-        masks = classify_js_masks(s)
-        R, h0, h1 = bone_xform(s["bone"])
-        s = transform_shape(s, R, h0, h1)
-        b = s["bone"]
-        # musculature: thicker thighs and shanks (plausible soft tissue; T. rex hindlimb muscles were
-        # massive, Hutchinson et al. 2011; Persons & Currie 2011 for the caudofemoralis)
-        if b.startswith("thigh"):
-            s = scale_shape(s, 1.13)
-        elif b.startswith("shin"):
-            s = scale_shape(s, 1.08)
-        elif b.startswith("meta") and s.get("feature") != "claw":
-            s = scale_shape(s, 1.05)
-        s["bone"] = JS_TO_NEW[b]
-        if masks:
-            s["masks"] = masks
-        shapes.append(s)
-
-    # thigh: extra lateral bulge of M. iliotibialis / femorotibialis so the drumstick stands proud
-    for sfx, sg in (("r", 1), ("l", -1)):
-        hip, knee, ankle, mtp = legs["R" if sg > 0 else "L"]
-        mid = 0.55 * hip + 0.45 * knee
-        shapes.append(E(f"thigh_{sfx}", "thigh", mid + [0.06, 0.05, 0.1 * sg], [0.5, 0.78, 0.26], (0, 0, 0.38), 0.14, tag="thigh_lateral"))
-        # M. caudofemoralis longus insertion region behind the thigh
-        shapes.append(E(f"thigh_{sfx}", "thigh", hip + [-0.32, -0.42, 0.04 * sg], [0.42, 0.42, 0.25], (0, 0, 0.5), 0.15, tag="thigh_caudal"))
-        # gastrocnemius belly
-        shapes.append(E(f"shin_{sfx}", "shin", 0.7 * knee + 0.3 * ankle + [-0.12, 0.0, 0.0], [0.2, 0.4, 0.19], (0, 0, -0.28), 0.1, tag="gastrocnemius"))
-
-    # ----- the head -------------------------------------------------------------------------------
-    hs = head_shapes()
-    base = shapes + hs
-    bone_names = sorted({s["bone"] for s in base})
-    cast = Caster(base, bone_names)
-    det, eyes, teeth = head_details(cast, base)
-    shapes = base + det
-
-    # ----- bones (final names, heads + tails) ----------------------------------------------------
-    nh = {JS_TO_NEW[n]: p for n, p in new_head.items()}
-    parents = {JS_TO_NEW[b["name"]]: (JS_TO_NEW[b["parent"]] if b["parent"] else None) for b in js["bones"]}
-    tails = {}
-    children = {}
-    for n, p in parents.items():
-        if p:
-            children.setdefault(p, []).append(n)
+    for s, sg in (("l", -1), ("r", 1)):
+        hip, knee, ankle, mtp = [np.array([p[0], p[1], p[2] * sg]) for p in leg_chain()]
+        legs[s] = (hip, knee, ankle, mtp)
+        nh[f"thigh_{s}"], nh[f"shin_{s}"], nh[f"metatarsus_{s}"], nh[f"toes_{s}"] = hip, knee, ankle, mtp
+    jb = {b["name"]: np.array(b["head"], float) for b in js["bones"]}
+    for s, S in (("l", "L"), ("r", "R")):
+        for a, b in (("upperarm", "upperArm"), ("forearm", "foreArm"), ("hand", "hand")):
+            nh[f"{a}_{s}"] = jb[f"{b}{S}"] + [0, DY, 0]
+    parents = {"root": None, "pelvis": "root", "spine_01": "pelvis", "spine_02": "spine_01", "spine_03": "spine_02",
+               "neck_01": "spine_03", "neck_02": "neck_01", "neck_03": "neck_02", "head": "neck_03", "jaw": "head",
+               "tail_01": "pelvis", **{f"tail_{i:02d}": f"tail_{i - 1:02d}" for i in range(2, 11)}}
+    for s in "lr":
+        parents.update({f"thigh_{s}": "pelvis", f"shin_{s}": f"thigh_{s}", f"metatarsus_{s}": f"shin_{s}",
+                        f"toes_{s}": f"metatarsus_{s}", f"upperarm_{s}": "spine_03", f"forearm_{s}": f"upperarm_{s}",
+                        f"hand_{s}": f"forearm_{s}"})
     chain_child = {"pelvis": "spine_01", "spine_01": "spine_02", "spine_02": "spine_03", "spine_03": "neck_01",
                    "neck_01": "neck_02", "neck_02": "neck_03", "neck_03": "head", **{f"tail_{i:02d}": f"tail_{i + 1:02d}" for i in range(1, 10)}}
     for s in "lr":
         chain_child.update({f"thigh_{s}": f"shin_{s}", f"shin_{s}": f"metatarsus_{s}", f"metatarsus_{s}": f"toes_{s}",
                             f"upperarm_{s}": f"forearm_{s}", f"forearm_{s}": f"hand_{s}"})
-    for n in nh:
-        if n in chain_child:
-            tails[n] = nh[chain_child[n]]
-    tails["root"] = nh["root"] + [0.6, 0, 0]
+    tails = {n: nh[c] for n, c in chain_child.items()}
+    tails["root"] = np.array([0.6, 0.0, 0.0])
     tails["head"] = H(0.95, 0.42)
     tails["jaw"] = H(1.25, 0.02)
-    tail_tip = np.array([-7.05, nh["tail_10"][1] - 0.18, 0])
-    tails["tail_10"] = tail_tip
-    for s, sg in (("l", -1), ("r", 1)):
+    tails["tail_10"] = np.array([TAIL_TIP, body_y(TAIL_TIP), 0.0])
+    for s in "lr":
         tails[f"toes_{s}"] = nh[f"toes_{s}"] + [0.42, -0.08, 0.0]
-        tails[f"hand_{s}"] = nh[f"hand_{s}"] + [0.12, -0.12, 0.0]
-    bones = []
+        tails[f"hand_{s}"] = nh[f"hand_{s}"] + [0.10, -0.12, 0.0]
     order = ["root", "pelvis", "spine_01", "spine_02", "spine_03", "neck_01", "neck_02", "neck_03", "head", "jaw"] + \
             [f"tail_{i:02d}" for i in range(1, 11)] + \
             [f"{b}_{s}" for s in "lr" for b in ("thigh", "shin", "metatarsus", "toes")] + \
             [f"{b}_{s}" for s in "lr" for b in ("upperarm", "forearm", "hand")]
     inv = {v: k for k, v in JS_TO_NEW.items()}
-    for n in order:
-        bones.append(dict(name=n, parent=parents[n], head=list(nh[n]), tail=list(tails[n]), deform=True, js_name=inv[n]))
+    bones = [dict(name=n, parent=parents[n], head=list(map(float, nh[n])), tail=list(map(float, tails[n])), deform=True,
+                  js_name=inv.get(n)) for n in order]
+    return bones, nh, legs
+
+
+def body_shapes(bones, legs):
+    bd = {b["name"]: b for b in bones}
+    S = []
+    pts = []
+    for (x, y, top, bot, hw, fw, nt, nb) in BODY_KEYS:
+        c = top - fw * (top + bot)          # widest level relative to the centre-line
+        pts.append(dict(p=[x, y, 0.0], cy=c, top=top - c, bot=bot + c, hw=hw, nt=nt, nb=nb))
+    chain = [dict(bone=n, head=bd[n]["head"], tail=bd[n]["tail"]) for n in
+             [f"tail_{i:02d}" for i in range(10, 0, -1)] + ["spine_01", "spine_02", "spine_03", "neck_01", "neck_02", "neck_03"]]
+    # the pelvis bone lies at the acetabulum: give the sacral stretch of the column to it
+    chain.append(dict(bone="pelvis", head=[-0.85, body_y(-0.85), 0.0], tail=[0.7, body_y(0.7), 0.0]))
+    S.append(dict(bone="pelvis", kind="sweep", region="torso", points=pts, chain=chain, blend=0.05, tag="body",
+                  regions=[dict(x_max=-0.95, region="tail"), dict(x_max=2.45, region="torso"), dict(x_max=99, region="neck")]))
+    # ----- pelvis: pubis + boot, ischium, hip musculature ---------------------------------------
+    S.append(RC("pelvis", "belly", [0.1, 2.85, 0], [0.42, 2.02, 0], 0.25, 0.15, 0.22, scale=[1, 1, 1.25], tag="pubis"))
+    S.append(E("pelvis", "belly", [0.44, 1.98, 0], [0.36, 0.105, 0.19], (0, 0, -0.06), 0.2, tag="pubic_boot"))
+    S.append(E("pelvis", "torso", [-0.55, 2.82, 0], [0.48, 0.3, 0.3], (0, 0, 0.35), 0.2, tag="ischium"))
+    # ventral line: gastralia from the boot to the chest (slightly convex), chest floor
+    S.append(E("spine_02", "belly", [1.25, 2.2, 0], [0.95, 0.24, 0.42], (0, 0, 0.03), 0.25, tag="gastral_belly"))
+    S.append(E("spine_03", "belly", [2.22, 2.3, 0], [0.42, 0.22, 0.34], (0, 0, 0.15), 0.2, tag="chest_floor"))
+    for s, sg in (("r", 1), ("l", -1)):
+        m = lambda p: [p[0], p[1], p[2] * sg]
+        mr = lambda r: r if sg > 0 else [-r[0], -r[1], r[2]]
+        hip, knee, ankle, mtp = legs[s]
+        # hip musculature over the ilium (M. iliofemoralis region)
+        S.append(E("pelvis", "torso", m([-0.05, 3.42, 0.3]), [0.85, 0.3, 0.2], mr([0, 0, 0.02]), 0.16, tag="ilium_muscle"))
+        # ribcage flank and shoulder girdle
+        S.append(E("spine_02", "torso", m([1.35, 2.8, 0.2]), [0.95, 0.55, 0.3], mr([0, 0, 0.03]), 0.2, tag="ribcage_flank"))
+        S.append(E("spine_03", "torso", m([2.12, 3.08, 0.33]), [0.5, 0.42, 0.15], mr([0, 0, -0.55]), 0.16, tag="scapular_muscles"))
+        S.append(E("spine_03", "torso", m([2.38, 2.48, 0.25]), [0.3, 0.34, 0.19], mr([0, 0, 0.1]), 0.16, tag="pectoralis"))
+        # neck: lateral muscles (folds), nape
+        S.append(E("neck_01", "neck", m([2.72, 3.2, 0.18]), [0.4, 0.45, 0.24], mr([0, 0, 0.75]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
+        S.append(E("neck_02", "neck", m([3.05, 3.45, 0.16]), [0.36, 0.42, 0.22], mr([0, 0, 0.8]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
+        S.append(E("neck_03", "neck", m([3.32, 3.65, 0.15]), [0.3, 0.38, 0.2], mr([0, 0, 0.7]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
+        # ---------------- hind limb ----------------------------------------------------------------
+        fd = (knee - hip) / np.linalg.norm(knee - hip)
+        ang = math.atan2(-fd[0], -fd[1])          # rotation about z bringing local +y onto (hip - knee)
+        # thigh: long teardrop along the femur, broadest proximally
+        S.append(E(f"thigh_{s}", "thigh", hip + 0.4 * (knee - hip) + [0.02, 0, 0.1 * sg], [0.47, 0.8, 0.25], mr([0, 0, ang]), 0.12, tag="thigh_main"))
+        S.append(E(f"thigh_{s}", "thigh", hip + [0.02, 0.1, 0.07 * sg], [0.78, 0.42, 0.24], mr([0, 0, 0.08]), 0.14, tag="thigh_iliotibialis"))
+        S.append(RC(f"thigh_{s}", "thigh", hip + 0.55 * (knee - hip) + [0, 0, 0.06 * sg], knee + [0.0, 0.04, 0.0], 0.31, 0.19, 0.1, tag="thigh_lower"))
+        # M. caudofemoralis longus: tail base -> 4th trochanter, bulging under the tail
+        S.append(RC(f"thigh_{s}", "thigh", m([-1.9, 3.0, 0.2]), hip + 0.35 * (knee - hip) + [-0.22, 0, -0.03 * sg], 0.27, 0.27, 0.22, tag="caudofemoralis"))
+        S.append(E(f"shin_{s}", "shin", knee + [0.04, -0.02, 0], [0.2, 0.2, 0.19], (0, 0, 0), 0.09, masks=["joint_folds"], tag="knee"))
+        sd = (ankle - knee) / np.linalg.norm(ankle - knee)
+        post = np.array([sd[1], -sd[0], 0.0]) * (-1 if sd[1] < 0 else 1)
+        post = post if post[0] < 0 else -post
+        sang = math.atan2(-sd[0], -sd[1])
+        S.append(RC(f"shin_{s}", "shin", knee + [0.0, -0.06, 0], ankle + [0, 0.03, 0], 0.205, 0.118, 0.08, scale=[1, 1, 0.92], tag="shank"))
+        S.append(E(f"shin_{s}", "shin", knee + 0.32 * (ankle - knee) + post * 0.1, [0.21, 0.44, 0.18], mr([0, 0, sang]), 0.09, tag="gastrocnemius"))
+        S.append(E(f"shin_{s}", "shin", knee + 0.4 * (ankle - knee) - post * 0.09, [0.11, 0.4, 0.12], mr([0, 0, sang]), 0.07, tag="tibialis"))
+    return S
+
+
+def build(js):
+    bones, nh, legs = make_bones(js)
+    jb = {b["name"]: np.array(b["head"], float) for b in js["bones"]}
+    old_child = {"meta": "toes"}
+    shapes = body_shapes(bones, legs)
+    # ----- re-used JS volumes: metatarsus + toes (re-posed), arms (raised) -------------------------
+    for s0 in js["shapes"]:
+        b = s0["bone"]
+        if not b.startswith(("meta", "toes", "upperArm", "foreArm", "hand")):
+            continue
+        s = {k: v for k, v in s0.items() if k not in ("id", "folds")}
+        masks = classify_js_masks(s)
+        S = b[-1]
+        if b.startswith("meta"):
+            d0 = jb["toes" + S] - jb["meta" + S]
+            d1 = nh["toes_" + S.lower()] - nh["metatarsus_" + S.lower()]
+            s = transform_shape(s, rot_between(d0, d1), jb["meta" + S], nh["metatarsus_" + S.lower()])
+            if s.get("feature") != "claw":
+                s = scale_shape(s, 1.05)
+        elif b.startswith("toes"):
+            s = transform_shape(s, np.eye(3), jb["toes" + S], nh["toes_" + S.lower()])
+        else:
+            s = transform_shape(s, np.eye(3), np.zeros(3), np.array([0, DY, 0.0]))
+        s["bone"] = JS_TO_NEW[b]
+        if masks:
+            s["masks"] = masks
+        shapes.append(s)
+    # ----- head ------------------------------------------------------------------------------------
+    shapes += head_shapes()
+    bone_names = [b["name"] for b in bones]
+    cast = Caster(shapes, bone_names)
+    det, eyes, teeth = head_details(cast, shapes)
+    shapes += det
     for e in eyes:
         bones.append(dict(name=e["bone"], parent="head", head=e["center"], tail=list(np.array(e["center"]) + np.array(e["direction"]) * 0.08),
                           deform=True, js_name=None))

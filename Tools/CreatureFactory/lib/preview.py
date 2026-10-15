@@ -12,7 +12,7 @@ from .sdf import field_at
 
 
 @njit(parallel=True, cache=True, fastmath=True)
-def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, g0, cell, dims, cstart, citems):
+def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems):
     n = ro.shape[0]
     for j in prange(n):
         t = 0.0
@@ -21,7 +21,7 @@ def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, g0, cel
             x = ro[j, 0] + rd[j, 0] * t
             y = ro[j, 1] + rd[j, 1] * t
             z = ro[j, 2] + rd[j, 2] * t
-            d = field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x, y, z)
+            d = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z)
             if d < 4e-4:
                 hit = True
                 break
@@ -33,9 +33,9 @@ def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, g0, cel
             continue
         out_depth[j] = t
         e = 1e-3
-        gx = field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x + e, y, z) - field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x - e, y, z)
-        gy = field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x, y + e, z) - field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x, y - e, z)
-        gz = field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x, y, z + e) - field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x, y, z - e)
+        gx = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x + e, y, z) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x - e, y, z)
+        gy = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y + e, z) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y - e, z)
+        gz = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z + e) - field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x, y, z - e)
         gl = math.sqrt(gx * gx + gy * gy + gz * gz) + 1e-12
         nx = gx / gl
         ny = gy / gl
@@ -46,7 +46,7 @@ def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, g0, cel
         occ = 0.0
         for s in range(1, 6):
             hh = 0.03 * s * s
-            dd = field_at(kind, sign, k, P, LT, g0, cell, dims, cstart, citems, x + nx * hh, y + ny * hh, z + nz * hh)
+            dd = field_at(kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems, x + nx * hh, y + ny * hh, z + nz * hh)
             occ += max(0.0, hh - dd) / hh / s
         out_ao[j] = max(0.0, 1.0 - 0.9 * occ)
 

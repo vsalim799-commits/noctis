@@ -1,5 +1,6 @@
 #include "Noctis/Core/Time.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 
@@ -38,9 +39,13 @@ double SimClock::moonPhase() const
 
 std::string SimClock::formatted() const
 {
+    // Whole minutes of the day. The epsilon absorbs the rounding of seconds -> days -> hours
+    // (05:00 must not print as 04:59); the clamp keeps the last minute of a paleo-day in range.
     const double h = hourOfDay();
-    const int hh = static_cast<int>(h);
-    const int mm = static_cast<int>((h - hh) * 60.0);
+    const long dayMinutes = static_cast<long>(std::floor(spec_.dayLengthHours * 60.0 + 1e-6));
+    const long minutes = std::min(static_cast<long>(std::floor(h * 60.0 + 1e-6)), std::max(0L, dayMinutes - 1));
+    const int hh = static_cast<int>(minutes / 60);
+    const int mm = static_cast<int>(minutes % 60);
     char buf[64];
     std::snprintf(buf, sizeof(buf), "An %d, jour %d, %02d:%02d", year(), static_cast<int>(dayOfYear()) + 1, hh, mm);
     return buf;

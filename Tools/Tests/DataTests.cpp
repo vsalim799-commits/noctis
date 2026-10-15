@@ -130,6 +130,8 @@ NOCTIS_TEST("data.species_physical_sanity")
     std::unique_ptr<FileSystem> fs = makeStdFileSystem();
     EvidenceDatabase db;
     REQUIRE(db.load(*fs, noctistest::dataRoot()));
+    float worstFr = 0.0f;
+    std::string worstFrId;
     for (const SpeciesDefinition& s : db.species())
     {
         const SpeciesSim& sim = s.sim;
@@ -150,15 +152,24 @@ NOCTIS_TEST("data.species_physical_sanity")
         {
             noctistest::fail(__FILE__, __LINE__, "walk speed must be in (0, max speed]" + where);
         }
-        // Dynamic similarity: no terrestrial animal sustains Froude numbers far above ~10.
+        // Dynamic similarity sanity (catches unit slips such as km/h entered as m/s): the fastest living
+        // bipeds sprint at ~19 m/s (ostrich) and cursorial sprinters reach Froude numbers of a few tens
+        // (ostrich ~20), so a maximum speed above 25 m/s or Fr above 40 is a data error.
         const float frMax = sim.locomotion.maxSpeedMs * sim.locomotion.maxSpeedMs / (9.81f * sim.hipHeightM);
-        if (!(frMax < 15.0f))
+        if (frMax > worstFr)
         {
-            noctistest::failf(__FILE__, __LINE__, "max speed gives Froude %.1f%s", static_cast<double>(frMax), where.c_str());
+            worstFr = frMax;
+            worstFrId = s.id;
+        }
+        if (!(frMax < 40.0f && sim.locomotion.maxSpeedMs < 25.0f))
+        {
+            noctistest::failf(__FILE__, __LINE__, "max speed %.1f m/s gives Froude %.1f%s", static_cast<double>(sim.locomotion.maxSpeedMs),
+                              static_cast<double>(frMax), where.c_str());
         }
         if (!(sim.growth.maturityAgeYears > 0.0f && sim.growth.maturityAgeYears < sim.growth.maxLifespanYears))
         {
             noctistest::fail(__FILE__, __LINE__, "maturity age must be below lifespan" + where);
         }
     }
+    NOTE("highest Froude number at maximum speed: %.1f (%s)", static_cast<double>(worstFr), worstFrId.c_str());
 }

@@ -94,9 +94,9 @@
 //   foldAttr        0.35     uFoldAttr: weight of the aFold attribute
 //   foldDirs        [[1,0,0,9],[0,1,0,10],[0.8,0.6,0,14]]  uFoldDirs[3]: rest-space direction ACROSS each fold field + folds per metre
 //                            (x: tail / belly / flank transverse folds, y: limb wrinkles, diagonal: neck)
-//   netScale        0.1      uNetScale (m): cell size of the reticulate crease web
-//   netDepth        0.0022   uNetDepth (m): depth of its grooves
-//   netWidth        0.07     uNetWidth: groove half-width (fraction of a net cell)
+//   netScale        0.12     uNetScale (m): wavelength of the wrinkle web (gradient-noise zero lines, 2 octaves)
+//   netDepth        0.0025   uNetDepth (m): depth of its grooves
+//   netWidth        0.12     uNetWidth: groove half-width (in noise units, |n| < netWidth)
 //   lumpDepth       0.006    uLumpDepth (m): amplitude of the low-frequency fleshy undulation
 //   lumpScale       3.0      uLumpScale (1/m): frequency of that undulation
 //   grainScale      0.045    uGrainScale (m): size of the scale-cluster grain kept at medium distance
@@ -172,13 +172,13 @@ const DEFAULTS = {
   hotspots: [], hotspotBoost: 0.6, midlineBoost: 1.6, midlineWidth: 0.12,
   scuteLength: [0.055, 0.04], scuteSpan: [1.15, 1.35], scuteRadius: [0.125, 0.07], scuteHeight: 0.12, scuteCurve: 0.08, scuteSplit: 0.3,
   metaAxis: [0.32, -0.95, 0], toeAxis: [1, 0, 0], toeHeight: 0.22,
-  foldDepth: 0.016, foldBase: 0.15, foldDirs: [[1, 0, 0, 9], [0, 1, 0, 10], [0.8, 0.6, 0, 14]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.1, netDepth: 0.0022, netWidth: 0.07,
+  foldDepth: 0.06, foldBase: 0.2, foldAniso: 5.0, foldOctave: 0.35, foldWarp: 0.06, foldDirs: [[1, 0, 0, 6], [0, 1, 0, 7], [0.8, 0.6, 0, 6]], lumpDepth: 0.006, lumpScale: 3.0, grainScale: 0.045, grainDepth: 0.0018, grainTint: 0.1, netScale: 0.12, netDepth: 0.0025, netWidth: 0.12,
   dorsalColor: '#322e2b', ventralColor: '#9c907d', lateralTint: [1.06, 1.0, 0.94], counterShade: [-0.7, 0.45], mottle: 0.32, mottleScale: 1.6,
   scaleTint: 0.08, topLight: 0.07, crackDark: 0.22, cavityDark: 0.35, cavityAO: 0.7,
   roughness: 0.68, roughVar: 0.1, crackRough: 0.18, topRough: -0.08, fadeRough: 0.12,
   scatterColor: [1.0, 0.7, 0.55], sss: 0.22, specular: 0.65, sssNormalBlur: 0.45, translucency: 0.0,
   dust: 0.25, dustHeight: 0.7, dustColor: '#8d8270', detailFade: 1.6, detailFull: 8.0, worldScale: 1.0,
-  eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.35,
+  eyeColor: '#2b1a0b', clawColor: '#2e2925', occlusionAO: 0.35, foldAttr: 0.8,
 };
 
 const MAX_HOTSPOTS = 6;
@@ -261,7 +261,7 @@ uniform vec2 uFeatureSize;
 uniform vec3 uMetaAxis, uToeAxis;
 uniform vec2 uScuteLength, uScuteSpan, uScuteRadius;
 uniform float uScuteHeight, uScuteCurve, uScuteSplit, uToeHeight;
-uniform float uFoldDepth, uLumpDepth, uLumpScale, uGrainScale, uGrainDepth, uGrainTint, uNetScale, uNetDepth, uNetWidth;
+uniform float uFoldDepth, uFoldAniso, uFoldOctave, uFoldWarp, uLumpDepth, uLumpScale, uGrainScale, uGrainDepth, uGrainTint, uNetScale, uNetDepth, uNetWidth;
 uniform vec4 uFoldDirs[ 3 ];
 uniform vec3 uDorsalColor, uVentralColor, uLateralTint;
 uniform vec2 uCounterShade;
@@ -306,49 +306,23 @@ vec4 skNoised( vec3 x ) {
 	return vec4( 2.0 * v - 1.0, 2.0 * dv );
 }
 
-// Cellular layer in q = J * p space (J maps rest metres to cell units; anisotropic for scutes).
-// It is a power diagram (each cell has a weight w, "distance" = |r|^2 - w): the borders stay
-// planar, but cells grow or shrink, which gives the natural mix of larger scales surrounded by
-// small ones instead of a uniform cobblestone. wAmp = 0 gives a plain Voronoi diagram.
-// Returns x = distance to the cell border in METRES (soft-min over every neighbour's border
-// plane, which rounds the polygon corners), y = squared q-distance to the feature point.
-// grad = gradient of x w.r.t. p (rest space); cellRnd = 3 random numbers of the cell.
-vec2 skVoronoi( vec3 p, mat3 J, float jitter, float wAmp, float soft, out vec3 grad, out vec3 cellRnd ) {
-	vec3 q = J * p;
-	vec3 iq = floor( q ), fq = q - iq;
-	vec4 r[ 27 ];                                            // xyz = feature - q, w = |r|^2 - weight
-	float dmin = 1e9;
-	int imin = 13;
-	vec4 r1 = vec4( 0.0 );
-	vec3 g1 = vec3( 0.0 );
-	for ( int k = 0; k < 27; k ++ ) {
-		vec3 g = vec3( float( k % 3 ) - 1.0, float( ( k / 3 ) % 3 ) - 1.0, float( k / 9 ) - 1.0 );
-		vec3 o = skHash33( iq + g + uSeed );
-		vec3 rr = g + 0.5 + jitter * ( o - 0.5 ) - fq;
-		float wt = fract( dot( o, vec3( 13.17, 7.71, 3.37 ) ) );
-		float d = dot( rr, rr ) - wAmp * wt * wt;
-		r[ k ] = vec4( rr, d );
-		if ( d < dmin ) { dmin = d; imin = k; r1 = r[ k ]; g1 = g; }
-	}
-	mat3 JT = transpose( J );
-	float s = 0.0;
-	vec3 gs = vec3( 0.0 );
-	float inv = 1.0 / soft;
-	for ( int k = 0; k < 27; k ++ ) {
-		if ( k == imin ) continue;
-		vec3 dr = r[ k ].xyz - r1.xyz;
-		float il2 = inversesqrt( dot( dr, dr ) );
-		vec3 nq = dr * il2;
-		vec3 np = JT * nq;                                   // p-space gradient of the border plane function
-		float il = inversesqrt( dot( np, np ) );
-		float e = 0.5 * ( r[ k ].w - r1.w ) * il2 * il;     // metric distance to that border (>= 0)
-		float wgt = exp( - e * inv );
-		s += wgt;
-		gs += wgt * il * np;
-	}
-	grad = - gs / s;
-	cellRnd = skHash33( iq + g1 + uSeed + 71.31 );
-	return vec2( - soft * log( s ), dmin );
+// Gradient noise with analytic derivatives (I. Quilez, MIT): returns (value ~ -1..1, d/dx, d/dy, d/dz).
+// Used for the skin folds: its zero lines meander without the axis-aligned streaks of value noise.
+vec4 skGnoised( vec3 x ) {
+	vec3 i = floor( x ), f = fract( x );
+	vec3 u = f * f * f * ( f * ( f * 6.0 - 15.0 ) + 10.0 );
+	vec3 du = 30.0 * f * f * ( f * ( f - 2.0 ) + 1.0 );
+	vec3 ga = skHash33( i ) * 2.0 - 1.0, gb = skHash33( i + vec3( 1, 0, 0 ) ) * 2.0 - 1.0;
+	vec3 gc = skHash33( i + vec3( 0, 1, 0 ) ) * 2.0 - 1.0, gd = skHash33( i + vec3( 1, 1, 0 ) ) * 2.0 - 1.0;
+	vec3 ge = skHash33( i + vec3( 0, 0, 1 ) ) * 2.0 - 1.0, gf = skHash33( i + vec3( 1, 0, 1 ) ) * 2.0 - 1.0;
+	vec3 gg = skHash33( i + vec3( 0, 1, 1 ) ) * 2.0 - 1.0, gh = skHash33( i + vec3( 1, 1, 1 ) ) * 2.0 - 1.0;
+	float va = dot( ga, f ), vb = dot( gb, f - vec3( 1, 0, 0 ) ), vc = dot( gc, f - vec3( 0, 1, 0 ) ), vd = dot( gd, f - vec3( 1, 1, 0 ) );
+	float ve = dot( ge, f - vec3( 0, 0, 1 ) ), vf = dot( gf, f - vec3( 1, 0, 1 ) ), vg = dot( gg, f - vec3( 0, 1, 1 ) ), vh = dot( gh, f - vec3( 1, 1, 1 ) );
+	float k7 = - va + vb + vc - vd + ve - vf - vg + vh;
+	float v = va + u.x * ( vb - va ) + u.y * ( vc - va ) + u.z * ( ve - va ) + u.x * u.y * ( va - vb - vc + vd ) + u.y * u.z * ( va - vc - ve + vg ) + u.z * u.x * ( va - vb - ve + vf ) + k7 * u.x * u.y * u.z;
+	vec3 d = ga + u.x * ( gb - ga ) + u.y * ( gc - ga ) + u.z * ( ge - ga ) + u.x * u.y * ( ga - gb - gc + gd ) + u.y * u.z * ( ga - gc - ge + gg ) + u.z * u.x * ( ga - gb - ge + gf ) + ( - ga + gb + gc - gd + ge - gf - gg + gh ) * u.x * u.y * u.z
+		+ du * ( vec3( vb - va, vc - va, ve - va ) + u.yzx * vec3( va - vb - vc + vd, va - vc - ve + vg, va - vb - ve + vf ) + u.zxy * vec3( va - vb - ve + vf, va - vb - vc + vd, va - vc - ve + vg ) + u.yzx * u.zxy * k7 );
+	return vec4( 2.0 * v, 2.0 * d );
 }
 
 // Feature-scale sites: the two nearest "selected" points of a coarse jittered lattice (cell
@@ -381,8 +355,9 @@ float skWobble( vec3 dir, vec3 fr ) {
 	return 1.0 + 0.06 * sin( 5.0 * dir.x + 3.0 * dir.y + 6.28 * fr.z ) + 0.04 * sin( 7.0 * dir.z - 4.0 * dir.x + 6.28 * fr.y );
 }
 
-// Rounded polygonal "pebble" scales of a given size (m), as a smooth-bordered power diagram (see
-// skVoronoi), with up to two round feature scales (sites f1, f2) set into the pebble field: pebble
+// Rounded polygonal "pebble" scales of a given size (m), as a smooth-bordered power diagram (each
+// cell has a weight w, "distance" = |r|^2 - w: the borders stay planar but cells grow or shrink,
+// giving the natural mix of larger scales among small ones instead of a uniform cobblestone), with up to two round feature scales (sites f1, f2) set into the pebble field: pebble
 // cells whose feature point falls inside a feature scale are removed, so the surrounding pebbles
 // grow up to its rim and are cut along it, the way small scales fit around an enlarged scale in
 // archosaur skin, and pebbles in a ring around it are enlarged (uRosette, rosette arrangement).
@@ -620,30 +595,39 @@ float skRoughness;
 	float grainVis = skVisible( uGrainScale, pix );
 	skGradMacro += uGrainDepth / uGrainScale * n4.yzw * grainVis;
 
-	// ---- skin folds: three warped crease-band fields with FIXED rest-space directions, weighted
-	// per region. (Interpolating a direction between regions would compress the band phase into
-	// a hatched seam along every region border.)
+	// ---- skin folds: "billow" relief |n| of anisotropic gradient noise. Its zero lines become sharp
+	// creases and the noise lobes between them rounded rolls of uneven height; stretching the noise
+	// along the fold lines (uFoldAniso) makes long, meandering, roughly parallel folds that end and
+	// branch on their own, like the rolls of a flexed neck or tail. Three fields with FIXED rest-space
+	// directions are weighted per region (interpolating a direction between regions would shear the
+	// pattern into a seam along every region border).
 	float foldCrease = 0.0;
 	if ( vSkinFold.w > 0.005 && dot( vSkinFold.xyz, vec3( 1.0 ) ) > 0.01 ) {
-		vec3 w1 = vec3( 3.1, 5.3, 4.2 ), w2 = vec3( - 6.7, 2.9, 7.7 ), w3 = vec3( 9.3, - 7.1, 3.3 );
-		float warp = 0.5 * sin( dot( p, w1 ) ) + 0.3 * sin( dot( p, w2 ) + 1.7 ) + 0.12 * sin( dot( p, w3 ) + 0.4 );
-		vec3 dwarp = 0.5 * cos( dot( p, w1 ) ) * w1 + 0.3 * cos( dot( p, w2 ) + 1.7 ) * w2 + 0.12 * cos( dot( p, w3 ) + 0.4 ) * w3;
-		// fold lines start and stop along their length instead of ringing the whole body
-		float brk = smoothstep( - 0.35, 0.35, n2.x + 0.35 * n1.x );
+		// low-frequency domain warp: folds curve instead of running straight (Jacobian ignored, small)
+		vec3 pw = p + uFoldWarp * vec3( n1.x, n2.x, 0.6 * n1.x - 0.8 * n2.x );
 		for ( int i = 0; i < 3; i ++ ) {
 			float wi = vSkinFold[ i ];
 			if ( wi < 0.01 ) continue;
-			vec3 K = uFoldDirs[ i ].xyz * uFoldDirs[ i ].w;
-			float t = dot( p, K ) + warp;
-			vec3 dt = K + dwarp;
-			float u = fract( t );
-			float sn = sin( PI * u );
-			float dh = 2.0 * ( 1.0 - sn ) * PI * cos( PI * u );   // profile sn * (2 - sn): rounded roll, sharp crease
-			float band = 0.45 + 0.9 * skHash13( vec3( floor( t ), float( i ), uSeed ) ); // each fold its own depth
-			float fvis = skVisible( 1.0 / uFoldDirs[ i ].w, pix );
-			float a = wi * vSkinFold.w * brk * fvis * band;
-			skGradMacro += uFoldDepth * a * dh * dt;
-			foldCrease = max( foldCrease, ( 1.0 - smoothstep( 0.0, 0.35, sn ) ) * a );
+			vec3 Kd = uFoldDirs[ i ].xyz;
+			float fq = uFoldDirs[ i ].w;
+			float fvis = skVisible( 0.6 / fq, pix );
+			if ( fvis <= 0.0 ) continue;
+			// J: fq across the folds (along Kd), fq / aniso along them
+			float fl = fq / uFoldAniso;
+			mat3 J = mat3( fl ) + ( fq - fl ) * outerProduct( Kd, Kd );
+			float a = wi * vSkinFold.w * fvis;
+			for ( int o = 0; o < 2; o ++ ) {
+				float oa = o == 0 ? 1.0 : uFoldOctave;
+				float of = o == 0 ? 1.0 : 2.13;
+				if ( oa <= 0.0 ) continue;
+				vec4 nz = skGnoised( of * ( J * pw ) + vec3( 7.3, 1.9, 4.4 ) * float( i + 3 * o ) + uSeed );
+				vec3 dn = of * ( J * nz.yzw );                     // J is symmetric
+				// crease softness grows with the pixel footprint: soft at distance, no aliasing
+				float e = clamp( 1.5 * pix * length( dn ), 0.04, 0.6 );
+				float sa = sqrt( nz.x * nz.x + e * e );
+				skGradMacro += uFoldDepth * a * oa * ( nz.x / sa ) * dn;
+				foldCrease = max( foldCrease, a * oa * ( 1.0 - smoothstep( 0.0, 0.18 + e, abs( nz.x ) ) ) );
+			}
 		}
 	}
 
@@ -717,24 +701,28 @@ float skRoughness;
 		vis = mix( vis, sVis, os );
 	}
 
-	// reticulate crease network: shallow grooves along the borders of ~9 cm cells, the wrinkle
-	// web that breaks up large smooth areas (flank, thigh, tail) at medium distance
-	// (weighted like the folds: faint on the face, absent on the scutes)
-	float netVis = skVisible( uNetScale * 0.4, pix ) * ( 1.0 - scuteW ) * clamp( vSkinFold.x + vSkinFold.y + vSkinFold.z + 0.3, 0.0, 1.0 );
+	// wrinkle web: narrow grooves along the zero lines of gradient noise (two octaves), the
+	// meandering "elephant skin" creases that break up large smooth areas (flank, thigh, tail) at
+	// medium distance. Weighted like the folds: faint on the face, absent on the scutes.
+	float netVis = skVisible( uNetScale * 0.35, pix ) * ( 1.0 - scuteW ) * clamp( vSkinFold.x + vSkinFold.y + vSkinFold.z + 0.3, 0.0, 1.0 ) * ( 1.0 - feat );
 	if ( uNetDepth > 0.0 && netVis > 0.0 ) {
-		vec3 eg, cr;
-		vec2 v = skVoronoi( p + 4.41, mat3( 1.0 / uNetScale ), 0.9, 0.45, 0.08 * uNetScale, eg, cr );
-		float e = v.x / uNetScale;
-		float w = uNetWidth * ( 0.5 + cr.x );
 		// grooves come and go along their length: a web of wrinkles, not a crackle glaze
-		float on = smoothstep( - 0.25, 0.45, n4.x + 0.5 * n2.x );
-		float t = clamp( e / w, 0.0, 1.0 );
-		float prof = 1.0 - t * t * ( 3.0 - 2.0 * t );
-		float dprof = ( e > 0.0 && e < w ) ? - 6.0 * t * ( 1.0 - t ) / w : 0.0;
-		float amt = netVis * on * ( 0.35 + 0.65 * cr.y ) * ( 1.0 - feat );   // some grooves fainter than others
-		h -= uNetDepth * amt * prof;
-		g -= uNetDepth * amt * dprof / uNetScale * eg;
-		foldCrease = max( foldCrease, prof * amt * 0.45 );
+		float on = smoothstep( - 0.35, 0.35, n4.x + 0.6 * n2.x );
+		for ( int o = 0; o < 2; o ++ ) {
+			float of = o == 0 ? 1.0 : 2.31;
+			float oa = ( o == 0 ? 1.0 : 0.5 ) * netVis * on * ( o == 0 ? 1.0 : skVisible( uNetScale * 0.35 / of, pix ) );
+			if ( oa <= 0.0 ) continue;
+			vec4 nz = skGnoised( p * ( of / uNetScale ) + vec3( 4.41, 9.2, 1.3 ) * float( o + 1 ) + uSeed );
+			vec3 dn = nz.yzw * ( of / uNetScale );
+			float w = uNetWidth + 1.2 * pix * length( dn );         // wider (and fainter) when small on screen
+			float t = clamp( abs( nz.x ) / w, 0.0, 1.0 );
+			float prof = 1.0 - t * t * ( 3.0 - 2.0 * t );
+			float dprof = t < 1.0 ? - 6.0 * t * ( 1.0 - t ) / w * sign( nz.x ) : 0.0;
+			float amt = oa * uNetWidth / w;
+			h -= uNetDepth * amt * prof;
+			g -= uNetDepth * amt * dprof * dn;
+			foldCrease = max( foldCrease, prof * amt * 0.45 );
+		}
 	}
 	float boss = feat * visF;
 
@@ -907,7 +895,7 @@ export function createSkinMaterial(THREE, opts = {}) {
     uScuteCurve: { value: o.scuteCurve }, uScuteSplit: { value: o.scuteSplit },
     uMetaAxis: { value: v3(THREE, o.metaAxis).normalize() }, uToeAxis: { value: v3(THREE, o.toeAxis).normalize() },
     uToeHeight: { value: o.toeHeight },
-    uFoldDepth: { value: o.foldDepth }, uFoldDirs: { value: o.foldDirs.map((d) => { const a = v3(THREE, d).normalize(); return new THREE.Vector4(a.x, a.y, a.z, d[3]); }) }, uLumpDepth: { value: o.lumpDepth }, uLumpScale: { value: o.lumpScale },
+    uFoldDepth: { value: o.foldDepth }, uFoldAniso: { value: o.foldAniso }, uFoldOctave: { value: o.foldOctave }, uFoldWarp: { value: o.foldWarp }, uFoldDirs: { value: o.foldDirs.map((d) => { const a = v3(THREE, d).normalize(); return new THREE.Vector4(a.x, a.y, a.z, d[3]); }) }, uLumpDepth: { value: o.lumpDepth }, uLumpScale: { value: o.lumpScale },
     uGrainScale: { value: o.grainScale }, uGrainDepth: { value: o.grainDepth }, uGrainTint: { value: o.grainTint },
     uNetScale: { value: o.netScale }, uNetDepth: { value: o.netDepth }, uNetWidth: { value: o.netWidth },
     uDorsalColor: { value: col(o.dorsalColor) }, uVentralColor: { value: col(o.ventralColor) }, uLateralTint: { value: v3(THREE, o.lateralTint) },
@@ -938,7 +926,7 @@ export function createSkinMaterial(THREE, opts = {}) {
       .replace('#include <dithering_fragment>', FRAG_DEBUG);
   };
   // One compiled program is shared by every skin material of the same kind.
-  mat.customProgramCacheKey = () => 'noctis-reptile-skin-v2' + (o.physical ? '-phys' : '');
+  mat.customProgramCacheKey = () => 'noctis-reptile-skin-v3' + (o.physical ? '-phys' : '');
   mat.userData.skinUniforms = U;
   // Debug view: 0 off, 1 albedo, 2 normal, 3 roughness, 4 AO, 5 detail visibility, 6 region params, 7 crack / feature scales.
   mat.userData.setDebug = (mode) => {

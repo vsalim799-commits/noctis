@@ -107,7 +107,8 @@ const seed = +(P.get('seed') || 0);
 const bumpStrength = +(P.get('bump') || 1);
 const flat = shot === 'flat';
 // &phys=1 uses MeshPhysicalMaterial (+ sheen); &debug=1..6 shows a debug channel of the skin
-const matOpts = { seed, bumpStrength: flat ? 0 : bumpStrength, physical: P.get('phys') === '1', debug: +(P.get('debug') || 0) };
+// &o={"foldDepth":0.03,...} overrides any createSkinMaterial option (JSON, URL-encoded)
+const matOpts = { seed, bumpStrength: flat ? 0 : bumpStrength, physical: P.get('phys') === '1', debug: +(P.get('debug') || 0), ...JSON.parse(P.get('o') || '{}') };
 
 // ---- 1. skinned neck: 2.6 m tube along +x, 3 bones, S-bend posed at render time.
 const neckY = 1.6;

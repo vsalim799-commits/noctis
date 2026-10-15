@@ -419,11 +419,13 @@ NOCTIS_TEST("world.atmosphere.illuminance_and_photoperiod")
     SimClock clock;
     SkySystem sky;
     sky.configure(45.0f, 23.44f);
-    clock.configure(spec, 81.25, 12.0, 0);
+    // The clock's day-of-year includes the time of day: day 81 at 12:00 is doy 81.5, 0.25 d after the
+    // model's equinox (declination +0.1 deg, photoperiod 12.01 h).
+    clock.configure(spec, 81.0, 12.0, 0);
     sky.update(clock, 0.0f);
-    CHECK_NEAR(sky.state().photoperiodHours, 12.0, 0.01);
+    CHECK_NEAR(sky.state().photoperiodHours, 12.0, 0.03);
     CHECK(sky.state().phase == DayPhase::Day);
-    clock.configure(spec, 172.5, 12.0, 0);
+    clock.configure(spec, 172.0, 12.0, 0); // doy 172.5 = June solstice of the model, at noon
     sky.update(clock, 0.0f);
     const double expected = 24.0 * std::acos(-std::tan(45.0 * 3.14159265358979 / 180.0) * std::tan(23.44 * 3.14159265358979 / 180.0)) / 3.14159265358979;
     CHECK_NEAR(sky.state().photoperiodHours, expected, 0.01);
@@ -432,8 +434,9 @@ NOCTIS_TEST("world.atmosphere.illuminance_and_photoperiod")
     const float clear = sky.state().illuminanceLux;
     sky.update(clock, 1.0f);
     CHECK_LT(sky.state().illuminanceLux, clear * 0.5f);
-    clock.configure(spec, 172.5, 0.0, 0);
+    clock.configure(spec, 172.0, 0.0, 0); // solstice midnight: sun 21.6 deg below the horizon
     sky.update(clock, 0.0f);
+    CHECK_NEAR(sky.state().sunElevationDeg, -(90.0 - 45.0 - 23.44), 0.2);
     CHECK(sky.state().phase == DayPhase::Night);
     CHECK_LT(sky.state().illuminanceLux, 1.0f);
 }
