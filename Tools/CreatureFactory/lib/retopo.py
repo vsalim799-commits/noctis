@@ -1,12 +1,13 @@
 """Stage 'retopo': animation-ready low-poly from the smooth sculpt.
 
-  base.npz (marching cubes of the smooth SDF) -> Blender -> voxel remesh 2 cm (QuadriFlow input) ->
-  QuadriFlow quad remesh (target = quality retopo_faces quads; topology not mirrored) -> vertices Newton-projected
+  base.npz (marching cubes of the smooth SDF) -> Blender OpenVDB voxel remesh (all quads, voxel size
+  from the quad target; QuadriFlow rejected, see run()) -> vertices Newton-projected
   on the exact SDF surface + tangential relaxation -> lowpoly.blend / lowpoly.npz.
 Accessories: claws decimated to ~360 triangles each, teeth and eyeballs kept as generated.
 LODs are produced from the final skinned mesh in the export stage."""
 from __future__ import annotations
 
+import math
 import pickle
 import numpy as np
 
@@ -39,6 +40,35 @@ def mesh_check(me):
     n = len(me.vertices)
     nc = connected_components(coo_matrix((np.ones(len(e)), (e[:, 0], e[:, 1])), shape=(n, n)), directed=False)[0]
     return sum(1 for c in E.values() if c == 1), sum(1 for c in E.values() if c > 2), nc
+
+
+def densify(bpy, me, spots, bl):
+    """Subdivide the faces around given anatomy-space points: spots = [(centre, radius, levels)].
+    Level k subdivides faces within radius * (0.65 ** (k - 1)) once more."""
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    maxl = max(l for _, _, l in spots)
+    for lev in range(1, maxl + 1):
+        bm.faces.ensure_lookup_table()
+        sel = set()
+        for c, r, l in spots:
+            if lev > l:
+                continue
+            cb = bl.to_bl(c)
+            rr = r * (0.65 ** (lev - 1))
+            for f in bm.faces:
+                if (f.calc_center_median() - __import__("mathutils").Vector(cb)).length < rr:
+                    sel.add(f)
+        edges = list({e for f in sel for e in f.edges})
+        if edges:
+            bmesh.ops.subdivide_edges(bm, edges=edges, cuts=1, use_grid_fill=True, quad_corner_type="INNER_VERT")
+    ngons = [f for f in bm.faces if len(f.verts) > 4]
+    if ngons:
+        bmesh.ops.triangulate(bm, faces=ngons)
+    bm.to_mesh(me)
+    bm.free()
+    me.update()
 
 
 def relax_project(comp, V, polys, iters=4, lam=0.5, log=print):
@@ -77,26 +107,56 @@ def run(ctx):
     ob = bl.mesh_from_numpy("body_src", bl.to_bl(V), F)
     bpy.context.view_layer.objects.active = ob
     ob.select_set(True)
-    # QuadriFlow input: a clean voxel remesh (2 cm). A collapse-decimated input (sliver triangles)
-    # made QuadriFlow collapse the thin tail on this model.
-    ob.data.remesh_voxel_size = 0.02
+    # Quad remesh. QuadriFlow (Blender) was tried first: on this model every seed/target tested lost
+    # whole patches of the tail (max deviation 0.3-0.7 m from the sculpt), with or without its
+    # symmetry option, so the robust OpenVDB voxel remesher is used: an all-quad, uniform mesh whose
+    # voxel size is set from the quad target, then projected exactly on the SDF and relaxed.
+    target = ctx.q["retopo_faces"]
+    vox = ctx.q.get("retopo_voxel") or 0.034 * math.sqrt(48800.0 / target)
+    ob.data.remesh_voxel_size = vox
     ob.data.use_remesh_fix_poles = True
     bpy.ops.object.voxel_remesh()
-    ctx.log(f"  voxel-remeshed input: {len(ob.data.polygons)} faces")
-    target = ctx.q["retopo_faces"]
-    # Note: Blender's QuadriFlow 'use_mesh_symmetry' leaves the two halves unwelded on this mesh and a
-    # bisected half with a preserved boundary ignores the face target, so the topology is not mirrored.
-    bpy.ops.object.quadriflow_remesh(use_mesh_symmetry=False, use_preserve_sharp=False, use_preserve_boundary=False,
-                                     preserve_attributes=False, smooth_normals=False, mode="FACES", target_faces=target, seed=3)
     b, nm, nc = mesh_check(ob.data)
-    ctx.log(f"  quadriflow check: boundary edges {b}, non-manifold {nm}, components {nc}")
-    ctx.log(f"  quadriflow: {len(ob.data.polygons)} faces, {len(ob.data.vertices)} verts")
+    ctx.log(f"  voxel remesh {vox*100:.2f} cm: {len(ob.data.polygons)} quads, boundary edges {b}, non-manifold {nm}, components {nc}")
     me = ob.data
     Vb = np.empty(len(me.vertices) * 3, np.float32)
     me.vertices.foreach_get("co", Vb)
     Va = bl.from_bl(Vb.reshape(-1, 3).astype(np.float64))
     polys = polys_numpy(me)
     Va = relax_project(comp, Va, polys, log=ctx.log)
+    # local density boost where the sculpt has small concave features the 4 cm grid cannot hold:
+    # orbits (eye pit, lids, brow) and nostrils. Subdivide, then project the new vertices.
+    me.vertices.foreach_set("co", bl.to_bl(Va).astype(np.float32).ravel())
+    me.update()
+    spots = [(np.array(e["center"]), 0.17, 2) for e in doc["eyes"]]
+    spots += [(np.array(sh_["center"]), 0.09, 1) for sh_ in doc["shapes"] if sh_.get("tag") == "naris"]
+    densify(bpy, me, spots, bl)
+    Vb = np.empty(len(me.vertices) * 3, np.float32)
+    me.vertices.foreach_get("co", Vb)
+    Va = bl.from_bl(Vb.reshape(-1, 3).astype(np.float64))
+    polys = polys_numpy(me)
+    # inside the boosted spots, project along the mesh normal (ray to the SDF) so the surface dips into
+    # the orbit / naris instead of bridging it; elsewhere Newton projection on the nearest surface
+    from .mesher import vertex_normals
+    tri = np.array([[p[0], p[k], p[k + 1]] for p in polys for k in range(1, len(p) - 1)])
+    Nv = vertex_normals(Va, tri)
+    near = np.zeros(len(Va), bool)
+    for c, r, _ in spots:
+        near |= np.linalg.norm(Va - c, axis=1) < r
+    from .bake import ray_to_surface
+    sv = np.zeros(int(near.sum()))
+    ray_to_surface(np.ascontiguousarray(Va[near]), np.ascontiguousarray(-Nv[near]), sv, 0.09, *comp.args())
+    Va[near] = Va[near] - Nv[near] * sv[:, None]
+    Va[~near] = comp.project(Va[~near], iters=4, max_step=0.02)
+    Va = relax_project(comp, Va, polys, iters=2, lam=0.3, log=ctx.log)
+    ctx.log(f"  after eye/nostril densification: {len(polys)} faces, {len(Va)} verts")
+    # coverage: distance from the sculpt (base mesh) to the low-poly surface
+    from scipy.spatial import cKDTree
+    rng = np.random.default_rng(0)
+    pts = np.concatenate([rng.dirichlet(np.ones(len(p)), 12) @ Va[p] for p in polys])
+    dd, _ = cKDTree(pts).query(V[::4])
+    cover = dict(p99_9_m=round(float(np.percentile(dd, 99.9)), 4), max_m=round(float(dd.max()), 4))
+    ctx.log(f"  sculpt -> low-poly deviation: {cover}")
     me.vertices.foreach_set("co", bl.to_bl(Va).astype(np.float32).ravel())
     me.update()
     ob.name = "body"
@@ -120,7 +180,7 @@ def run(ctx):
     bpy.ops.wm.save_as_mainfile(filepath=ctx.path("lowpoly.blend"), compress=True)
     claw_tris = sum(len(c["F_low"]) for c in acc["claws"])
     teeth_tris = sum(len(t["F"]) for t in acc["teeth"])
-    st = dict(body_quads=len(polys), body_tris=int(ntri), body_verts=int(len(Va)), claw_tris=int(claw_tris), teeth_tris=int(teeth_tris))
+    st = dict(deviation=cover, body_quads=len(polys), body_tris=int(ntri), body_verts=int(len(Va)), claw_tris=int(claw_tris), teeth_tris=int(teeth_tris))
     ctx.save_json("retopo_stats.json", st)
     ctx.log(f"  low-poly: {st}")
     if ctx.options.get("no_preview"):

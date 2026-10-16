@@ -153,6 +153,8 @@ public:
     float batteryCapacityKWh() const { return batteryKWh_; }
     void rechargeWh(float wh) { state_.batteryKWh = std::min(batteryKWh_, state_.batteryKWh + wh / 1000.0f); }
     bool drawWh(float wh);
+    // Source level at 1 m (dB SPL): electric drive, tyre / terrain rolling noise and generator, power-summed.
+    float noiseAt1m(float speedMs, bool engineOn, bool generatorOn) const;
 
 private:
     VehicleState state_;
@@ -171,6 +173,9 @@ private:
     float fordingDepthM_ = 1.0f;
     float auxW_ = 900.0f;
     float noiseElectricDb_ = 52.0f;
+    float noiseTyreRefDb_ = 85.0f;      // rolling noise at 1 m at noiseTyreRefSpeedMs_
+    float noiseTyreRefSpeedMs_ = 14.0f;
+    float noiseTyreSpeedExpDb_ = 35.0f; // dB per decade of speed
     float noiseGeneratorDb_ = 80.0f;
     float dragArea_ = 4.5f;
 };

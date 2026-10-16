@@ -5,8 +5,10 @@ Kinematics mirror the core (Source/NoctisCore/Private/Creatures/Locomotion.cpp):
   * Froude number Fr = v^2 / (g h); duty factor = lerp(walk, run, saturate((Fr - 0.15) / 0.85));
   * stride / hip = max(0.5, 2.3 Fr^0.3) (dynamic similarity, Alexander), contact time = duty x stride period;
   * peak foot force = m g share (1 + 0.6 min(Fr, 2)), share = 1 (biped) or 0.55 (hind foot of a quadruped);
-  * source level (dB SPL at 1 m) = 35 + 12 log10 m + 6 sqrt(Fr), -6 dB mud, +4 dB vegetation, +4 dB water
-    (footfallSound), and the core's 'thump' frequency 600 m^-0.25 + 30 Hz is used as the silt reference.
+  * source level (dB SPL at 1 m) = 35 + 12 log10 m + 6 sqrt(min(Fr, 2)), -6 dB mud, +4 dB vegetation, +4 dB water
+    (footfallSound; the Froude term is bounded like the touchdown velocity of the synthesis, which saturates at
+    Fr >= 1, so that the level and the waveform agree), and the core's 'thump' frequency 600 m^-0.25 + 30 Hz is
+    used as the silt reference.
 
 Synthesis (physically informed, not random noise):
   * thump: the foot + yielding ground is a damped mass-spring system. Natural frequency = core frequency x
@@ -91,8 +93,15 @@ def gait_state(mass, hip, dfw, dfr, v, biped):
     }
 
 
+FROUDE_LEVEL_CAP = 2.0       # footfallSound: 6 sqrt(min(Fr, 2)) (at most +8.5 dB from the gait)
+
+
 def core_level_db(mass, fr, sub):
-    return 35.0 + 12.0 * math.log10(max(0.01, mass)) + 6.0 * math.sqrt(max(0.0, fr)) + SUBSTRATES[sub]["level_adj"]
+    """Footfall level at 1 m. The Froude term is capped (6 sqrt(min(Fr, 2))): without the cap, small fast animals
+    gained 24-29 dB from the gait alone while the synthesised impact energy (touchdown velocity saturating at Fr >= 1)
+    rises by ~10 dB at most. Source/NoctisCore/Private/Creatures/Locomotion.cpp footfallSound must use the same cap."""
+    return (35.0 + 12.0 * math.log10(max(0.01, mass)) + 6.0 * math.sqrt(min(FROUDE_LEVEL_CAP, max(0.0, fr)))
+            + SUBSTRATES[sub]["level_adj"])
 
 
 def core_thump_hz(mass):
@@ -109,6 +118,15 @@ def _thump(n, i0, f, zeta, r, amp=1.0):
     y = np.zeros(n)
     y[i0:] = np.exp(-zeta * w * t) * np.sin(wd * t + r.uniform(-0.2, 0.2)) * (1.0 - np.exp(-t * f * 6.0))
     return amp * C.unit(y)
+
+
+def _relaxing(r, cnt, t0, span, power, sigma):
+    """Times and amplitudes of a compaction / fracture micro-impact train: event rate AND event size relax
+    exponentially (tau_c = span / (power + 1)), so the texture fades smoothly instead of stopping as a gate."""
+    times = C.front_loaded_times(r, cnt, t0, span, power)
+    tau_c = span / (power + 1.0)
+    amps = C.lognormal_amps(r, cnt, sigma) * np.exp(-(times - t0) / tau_c)
+    return times, amps
 
 
 def render_footfall(sub, mass, foot_len, foot_w, gs, r, boots=False):
@@ -129,7 +147,9 @@ def render_footfall(sub, mass, foot_len, foot_w, gs, r, boots=False):
     t_fall = min(0.9, 2.0 * v_up / G)
     if sub == "shallow_water":
         tail = max(tail, t_fall + 0.15, t_release + 0.3)
-    n = C.ns(min(2.6, pre + tail + 0.06))
+    # Generous buffer: texture events follow exponential relaxation laws (tau up to ~0.3 s) and the mud / water tails
+    # ring on; finalize() trims the file at -60 dB re its peak, so nothing is cut while still audible.
+    n = C.ns(min(4.5, pre + tail + 1.2))
     i0 = C.ns(pre)
     t0 = pre
     k_loc = s["k_rel"] * r.uniform(0.8, 1.2)                     # local heterogeneity of the ground
@@ -146,7 +166,7 @@ def render_footfall(sub, mass, foot_len, foot_w, gs, r, boots=False):
     meta = {}
     if sub == "sand":
         cnt = int(np.clip(250 * area_rel * math.sqrt(gs["dynamic_factor"]), 30, 5000))
-        x = C.impulses(n, C.front_loaded_times(r, cnt, t0, 1.2 * t_comp, 1.4), C.lognormal_amps(r, cnt, 0.8))
+        x = C.impulses(n, *_relaxing(r, cnt, t0, 1.2 * t_comp, 1.4, 0.8))
         modes = np.exp(r.uniform(math.log(2500), math.log(8000), 5))
         grains = C.bandpass(x, 1800.0, 11000.0) + C.modal_bank(x, modes, r.uniform(0.0004, 0.001, 5), np.full(5, 0.5))
         shear = C.noise_burst(n, r, max(250.0, 2.5 * f_t), 2500.0, 0.004, 0.4 * t_comp, i0)
@@ -154,7 +174,7 @@ def render_footfall(sub, mass, foot_len, foot_w, gs, r, boots=False):
         meta = {"grain_events": cnt, "grain_modes_hz": [round(float(m), 1) for m in modes]}
     elif sub == "silt":
         cnt = int(np.clip(40 * area_rel, 8, 600))
-        x = C.impulses(n, C.front_loaded_times(r, cnt, t0, 0.8 * t_comp, 1.5), C.lognormal_amps(r, cnt, 0.6))
+        x = C.impulses(n, *_relaxing(r, cnt, t0, 0.8 * t_comp, 1.5, 0.6))
         crumble = C.bandpass(x, 500.0, 4000.0)
         body = C.noise_burst(n, r, max(120.0, 2.5 * f_t), 1400.0 * fs, 0.003, 0.35 * t_comp, i0)
         tex = 0.6 * C.unit(body) + 0.35 * C.unit(crumble)
@@ -187,7 +207,7 @@ def render_footfall(sub, mass, foot_len, foot_w, gs, r, boots=False):
         tb = t0 + r.exponential(0.04 * area_rel ** 0.4, nb)
         bubbles = C.bubble_cloud(n, tb, rad, np.sqrt(rad / rad.max()) * r.lognormal(0, 0.3, nb), r)
         nd = int(np.clip(30 * area_rel, 5, 800))
-        td = t0 + 0.03 + r.uniform(0, 1, nd) ** 0.7 * t_fall
+        td = C.decaying_times(r, nd, t0 + 0.03, 0.6 * t_fall, 2.5)          # spread of ejection speeds: smooth fall-back
         ticks = C.bandpass(C.impulses(n, td, C.lognormal_amps(r, nd, 0.5)), 2000.0, 10000.0)
         ent = r.uniform(0, 1, nd) < 0.35
         drops = C.bubble_cloud(n, td[ent], r.uniform(0.0002, 0.0008, int(ent.sum())), r.uniform(0.3, 1.0, int(ent.sum())), r)
@@ -200,12 +220,15 @@ def render_footfall(sub, mass, foot_len, foot_w, gs, r, boots=False):
     elif sub == "leaf_litter":
         cnt = int(np.clip(80 * area_rel ** 1.2 * math.sqrt(gs["dynamic_factor"]), 15, 3000))
         k_main = int(0.85 * cnt)
-        times = np.concatenate([C.front_loaded_times(r, k_main, t0, 1.5 * t_comp, 1.5),
-                                t0 + t_comp + r.uniform(0.0, 0.25, cnt - k_main)])
+        tm, am = _relaxing(r, k_main, t0, 1.5 * t_comp, 1.5, 0.7)
+        tl = t0 + t_comp + r.exponential(0.08, cnt - k_main)                         # late cracks as the load shifts
+        al = 0.5 * C.lognormal_amps(r, cnt - k_main, 0.7) * np.exp(-(tl - t0 - t_comp) / 0.08)
+        times = np.concatenate([tm, tl])
+        base_amps = np.concatenate([am, al])
         # each fracture is a burst of 1-4 sub-clicks within 3 ms
         reps = r.integers(1, 5, times.size)
         times = np.repeat(times, reps) + r.uniform(0.0, 0.003, int(reps.sum()))
-        amps = C.lognormal_amps(r, times.size, 0.7)
+        amps = np.repeat(base_amps, reps) * r.lognormal(0.0, 0.3, int(reps.sum()))
         grp = r.integers(0, 6, times.size)
         modal = np.zeros(n)
         for gi in range(6):
@@ -320,7 +343,7 @@ def job(ds: D.Dataset, species: str, substrate: str) -> list[M.Sound]:
                 "foot_area_m2": round(fl * fw * FOOT_AREA_FILL, 6),
                 "core_footfall_f0_hz": round(f_core, 2),
                 **info,
-                "level_formula": "35 + 12 log10(m) + 6 sqrt(Fr) + ajustement substrat (Locomotion.cpp footfallSound)",
+                "level_formula": "35 + 12 log10(m) + 6 sqrt(min(Fr, 2)) + ajustement substrat (footfallSound ; plafond de Froude à reporter dans Locomotion.cpp)",
                 "model": "contact masse-ressort amorti + texture physique du substrat (voir docstring footsteps.py)",
             }
             qa = {"peak_dbfs_max": -0.5}
@@ -332,6 +355,12 @@ def job(ds: D.Dataset, species: str, substrate: str) -> list[M.Sound]:
                 qa["low_band_centroid_hz"] = {"band_hz": [20.0, round(1.5 * ft, 2)], "range_hz": [round(0.55 * ft, 2), round(1.0 * ft, 2)]}
             if substrate in ("sand", "leaf_litter", "fern_cover"):
                 qa["band_energy_ratio"] = {"lo_hz": 1000.0, "hi_hz": 20000.0, "min": 0.01}
+            tex = info["texture"]
+            if (substrate == "sand" and tex.get("grain_events", 0) >= 100) or (substrate == "silt" and tex.get("crumble_events", 0) >= 40):
+                # Dense granular texture: qa.py checks on the mean envelope of the 4 variations that it fades out
+                # instead of stopping as a gate (sparse textures - leaf cracks, drops - are trains of discrete events
+                # whose natural ring-down is fast; they are not tested this way).
+                qa["texture_gate_check"] = True
             if substrate == "mud":
                 # Suction release rings at the Minnaert frequency of the foot cavity (high for tiny feet).
                 hi = round(max(1500.0, 2.5 * info["texture"]["suction_hz"]), 1)
@@ -352,8 +381,12 @@ def job(ds: D.Dataset, species: str, substrate: str) -> list[M.Sound]:
                                  "manus_gain_db": None if biped else round(20 * math.log10(0.45 / 0.55), 2),
                                  "trigger": "AnimNotify au contact du pied (phase de gait du cœur)"}),
                 normalize=("peak", -1.0),
-                caption={"fr": f"Pas de {name_fr} ({s['fr']})", "en": f"{name_en} footstep ({s['en']})"},
+                caption={"fr": f"Pas {D.de_fr(name_fr)} ({s['fr']})", "en": f"{name_en} footstep ({s['en']})"},
                 subject=subject,
+                model_confidence="speculative",
+                model_basis_fr=("Loi de niveau (footfallSound), fréquence de contact 600 m^-0,25 + 30 Hz, raideurs et amortissements des "
+                                "substrats, textures : hypothèses de jeu sans source ; seules la cinématique (Froude, facteur de service) et "
+                                "l'existence de l'événement relèvent de confidence."),
             )
             out.append(snd)
     return out

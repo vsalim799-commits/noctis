@@ -276,7 +276,7 @@ void ANoctisEnvironmentController::ApplyFrame(const FNoctisFrameOutput& Previous
 		}
 	}
 
-	// ---- Lightning: thunder sources carry the strike position (500 m above it) ------------------------
+	// ---- Lightning: thunder sources carry the strike position (ground point of the channel) ------------
 	if (Front.Sequence != LastSoundSequence)
 	{
 		LastSoundSequence = Front.Sequence;
@@ -285,7 +285,7 @@ void ANoctisEnvironmentController::ApplyFrame(const FNoctisFrameOutput& Previous
 			if (Sound.kind == noctis::SoundKind::Thunder)
 			{
 				LightningFlash = 1.0f;
-				OnLightning(Space.ToUE(Sound.position - noctis::Vec3(0.0f, 0.0f, 500.0f)));
+				OnLightning(Space.ToUE(Sound.position));
 			}
 		}
 	}

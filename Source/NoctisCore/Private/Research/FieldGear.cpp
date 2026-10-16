@@ -171,6 +171,9 @@ void VehicleSystem::configure(const JsonValue& spec)
     fordingDepthM_ = spec.getFloat("fording_depth_m", fordingDepthM_);
     auxW_ = spec.getFloat("auxiliary_w", auxW_);
     noiseElectricDb_ = spec.getFloat("noise_electric_db_1m", noiseElectricDb_);
+    noiseTyreRefDb_ = spec.getFloat("noise_tyre_db_1m_ref", noiseTyreRefDb_);
+    noiseTyreRefSpeedMs_ = std::max(0.1f, spec.getFloat("noise_tyre_ref_speed_ms", noiseTyreRefSpeedMs_));
+    noiseTyreSpeedExpDb_ = spec.getFloat("noise_tyre_speed_exponent_db", noiseTyreSpeedExpDb_);
     noiseGeneratorDb_ = spec.getFloat("noise_generator_db_1m", noiseGeneratorDb_);
     dragArea_ = spec.getFloat("drag_area_m2", dragArea_);
     state_.batteryKWh = batteryKWh_ * 0.9f;
@@ -187,6 +190,25 @@ void VehicleSystem::wheelGround(const Terrain& terrain, const Vec2& p, float whe
     // Compaction resistance grows with relative sinkage (Bekker-type behaviour, simplified).
     rollingCoef = s.rollingResistance + 0.6f * sinkageM / (2.0f * wheelRadiusM);
     tractionMu = s.tractionMu * (1.0f - 0.5f * saturate(sinkageM / wheelRadiusM));
+}
+
+float VehicleSystem::noiseAt1m(float speedMs, bool engineOn, bool generatorOn) const
+{
+    // Noise at 1 m (game-design assumptions, equipment.json): electric drive + auxiliaries, a separate tyre / terrain
+    // rolling term L_ref + k log10(v / v_ref) (order of magnitude of road-vehicle pass-by noise; it dominates above
+    // ~5 m/s), and the range-extender generator; power sums.
+    const float v = std::max(0.0f, speedMs);
+    float noise = engineOn ? noiseElectricDb_ + 12.0f * std::log10(1.0f + v / 3.0f) : 0.0f;
+    if (v > 0.1f)
+    {
+        const float rolling = noiseTyreRefDb_ + noiseTyreSpeedExpDb_ * std::log10(v / noiseTyreRefSpeedMs_);
+        noise = engineOn ? dbSumPower(noise, rolling) : rolling;
+    }
+    if (generatorOn)
+    {
+        noise = noise > 0.0f ? dbSumPower(noise, noiseGeneratorDb_) : noiseGeneratorDb_;
+    }
+    return noise;
 }
 
 bool VehicleSystem::drawWh(float wh)
@@ -214,13 +236,7 @@ void VehicleSystem::updateAuxiliary(float dt, const VehicleControls& controls, W
         state_.batteryKWh = std::min(batteryKWh_, state_.batteryKWh + kwh);
         state_.fuelL = std::max(0.0f, state_.fuelL - kwh * fuelLPerKWh_);
     }
-    // Noise at 1 m: electric drive + tyre noise rising with speed, the generator dominates when running.
-    float noise = state_.engineOn ? noiseElectricDb_ + 12.0f * std::log10(1.0f + state_.speed / 3.0f) : 0.0f;
-    if (state_.generatorOn)
-    {
-        noise = dbSumPower(noise, noiseGeneratorDb_);
-    }
-    state_.noiseDb = noise;
+    state_.noiseDb = noiseAt1m(state_.speed, state_.engineOn, state_.generatorOn);
 }
 
 void VehicleSystem::update(float dt, const VehicleControls& controls, WorldContext& ctx)

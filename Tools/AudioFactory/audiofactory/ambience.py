@@ -101,16 +101,24 @@ def unit_rms(x: np.ndarray) -> np.ndarray:
     return x / (C.rms(x) + 1e-15)
 
 
-CREST_DB = 17.0                  # mastering: peak-to-RMS ceiling of the ambience loops (game choice)
+OUTLIER_CEILING_DB = 30.0        # mastering: only peaks > 30 dB above the median 50 ms frame RMS are touched
+LIMIT_MAX_GR_DB = 6.0            # ... by at most 6 dB ...
+LIMIT_MAX_FRACTION = 0.01        # ... on less than 1 % of the samples (otherwise the threshold is raised)
 
 
-def limit_crest(y: np.ndarray, crest_db: float = CREST_DB, window_s: float = 0.01) -> tuple[np.ndarray, dict]:
-    """Transparent circular peak limiter. Threshold = crest_db above the *typical* level (median of the 50 ms frame
-    RMS, robust to the rare loud events that dominate a plain RMS). Gain = moving average (window L) of the moving
-    minimum (window L) of the required gain: no sample exceeds the threshold and the gain changes smoothly; 'wrap'
-    boundaries keep the loop seamless. Physical event levels (a rain drop at 40 cm, a frog at 3 m) otherwise give
-    crest factors of 30-40 dB that make a bed unusable in a mix; the reduction is reported in the manifest."""
+def _limiter_gain(a: np.ndarray, thr: float, L: int) -> np.ndarray:
     from scipy.ndimage import minimum_filter1d, uniform_filter1d
+    g = np.minimum(1.0, thr / np.maximum(a, 1e-15))
+    return uniform_filter1d(minimum_filter1d(g, L, mode="wrap"), L, mode="wrap")
+
+
+def limit_outliers(y: np.ndarray, window_s: float = 0.01) -> tuple[np.ndarray, dict]:
+    """Circular outlier limiter for the loops (replaces the 17 dB crest limiter of 1.1, which flattened the drop
+    transients and the U^3 gust dynamics). Loops are then peak-normalised to -1 dBFS and their RMS falls where it
+    does: the absolute level is carried by level.calibration_spl_db_at_0dbfs_rms and 24 bits leave ample headroom.
+    Only true outliers are reduced: threshold = 30 dB above the median 50 ms frame RMS, but never more than 6 dB below
+    the peak, and raised by 1 dB steps until less than 1 % of the samples are touched. Gain = moving average of the
+    moving minimum of the required gain ('wrap' boundaries: the loop stays seamless)."""
     L = max(3, C.ns(window_s))
     a = np.max(np.abs(y), axis=1) if y.ndim == 2 else np.abs(y)
     mono = y.mean(axis=1) if y.ndim == 2 else y
@@ -118,24 +126,27 @@ def limit_crest(y: np.ndarray, crest_db: float = CREST_DB, window_s: float = 0.0
     nfr = mono.size // w
     fr = np.sqrt(np.mean(mono[: nfr * w].reshape(nfr, w) ** 2, axis=1))
     typical = float(np.median(fr[fr > 0])) if np.any(fr > 0) else C.rms(mono)
-    thr = typical * 10.0 ** (crest_db / 20.0)
-    info = {"crest_ceiling_db_above_median_frame_rms": crest_db}
-    if a.max() > thr:
-        g = np.minimum(1.0, thr / np.maximum(a, 1e-15))
-        g = uniform_filter1d(minimum_filter1d(g, L, mode="wrap"), L, mode="wrap")
+    peak = float(a.max())
+    thr = max(typical * 10.0 ** (OUTLIER_CEILING_DB / 20.0), peak * 10.0 ** (-(LIMIT_MAX_GR_DB - 0.1) / 20.0))
+    info = {"ceiling_db_above_median_frame_rms": OUTLIER_CEILING_DB, "max_gain_reduction_allowed_db": LIMIT_MAX_GR_DB,
+            "max_fraction_allowed": LIMIT_MAX_FRACTION, "crest_db_before": round(float(20.0 * np.log10(peak / (C.rms(y) + 1e-15))), 2)}
+    g = None
+    while thr < peak:
+        g = _limiter_gain(a, thr, L)
+        if float(np.mean(g < 0.999)) < LIMIT_MAX_FRACTION:
+            break
+        thr *= 10.0 ** (1.0 / 20.0)
+        g = None
+    if g is not None:
         y = y * (g[:, None] if y.ndim == 2 else g)
-        info.update({"max_gain_reduction_db": round(float(-20.0 * np.log10(max(g.min(), 1e-12))), 2),
+        info.update({"threshold_db_above_median_frame_rms": round(float(20.0 * np.log10(thr / typical)), 2),
+                     "max_gain_reduction_db": round(float(-20.0 * np.log10(max(g.min(), 1e-12))), 2),
                      "fraction_limited": round(float(np.mean(g < 0.999)), 5)})
     else:
-        info.update({"max_gain_reduction_db": 0.0, "fraction_limited": 0.0})
+        info.update({"threshold_db_above_median_frame_rms": None, "max_gain_reduction_db": 0.0, "fraction_limited": 0.0})
     a = np.max(np.abs(y), axis=1) if y.ndim == 2 else np.abs(y)
     info["crest_db_after"] = round(float(20.0 * np.log10(a.max() / (C.rms(y) + 1e-15))), 2)
     return y, info
-
-
-def expected_rms_dbfs(lim: dict, target: float = -20.0, ceiling: float = -1.0) -> float:
-    """RMS after generate.py's normalisation (RMS target with a peak ceiling) given the crest factor of the layer."""
-    return round(min(target, ceiling - lim["crest_db_after"]), 2)
 
 
 def band(f, lo, hi, order=2.0):
@@ -443,6 +454,78 @@ def rain(r, rate_mm_h, surface):
     return y, info
 
 
+def rain_interior(r, rate_mm_h):
+    """Rain heard from inside the rover (the refuge): drops drumming on the roof panel (each impact excites one of many
+    low-damping panel modal sets, plus a short tick), a diffuse drumming bed, and the exterior rain muffled by the
+    cabin (mass-law-like transmission loss: strong low-pass). Game model."""
+    n = N + TAIL
+    f = np.maximum(FB[None, :], 1.0)
+    area = 2.0 if rate_mm_h < 5 else 1.0
+    t, d, amp, info = rain_drops(r, rate_mm_h, area)
+    pans = r.uniform(-0.6, 0.6, t.size)
+    sgn = r.choice([-1.0, 1.0], t.size)
+    drum = modal_crackle_st(n, r, t, amp * sgn, pans, 90.0, 900.0, groups=24, nmodes=3, tau=(0.008, 0.035), broad=0.25,
+                            broad_band=(1500.0, 6000.0))
+    near = wrap(drum)
+    bed_mag = band(f, 80.0, 1200.0) * (f / 300.0) ** -0.4 * (1.0 + 0.12 * ctl(NFR, r, 6, 0.5)[:, None])
+    bed = stereo_noise(r, bed_mag, coherence=0.6)
+    out_mag = band(f, 60.0, 500.0, 3.0) * (1.0 + 0.1 * ctl(NFR, r, 6, 0.5)[:, None])
+    outside = stereo_noise(r, out_mag, coherence=0.3)
+    y = unit_rms(near) + (0.5 if rate_mm_h < 5 else 0.9) * unit_rms(bed) + 0.3 * unit_rms(outside)
+    info.update({"rain_rate_mm_h": rate_mm_h, "surface": "toit du véhicule (intérieur de la cabine)",
+                 "roof_mode_range_hz": [90.0, 900.0], "cabin_transmission": "passe-bas ~500 Hz (hypothèse de jeu)"})
+    return y, info
+
+
+def fire(r, intensity):
+    """Vegetation fire (VegetationSystem::updateFire, FireIgnition events). Physics of the sound: crackles = bursting
+    of pockets of water vapour and volatiles in heated wood and litter (impulsive, heavy-tailed amplitudes, Poisson in
+    time, modulated by the gusts that feed the flames); pops = larger resin / sap pockets; combustion roar of a
+    turbulent flame front (broadband, maximum ~100-300 Hz, decreasing above); branch failures in an active front.
+    Rates, spectra and levels are game assumptions."""
+    n = N + TAIL
+    f = np.maximum(FB[None, :], 1.0)
+    front = intensity == "front"
+    rate = 140.0 if front else 7.0
+    feed = 1.0 + 0.45 * ctl(NFR, r, 14, 0.5)
+    feed_s = frames_to_samples(np.maximum(0.25, feed))
+
+    def rate_fn(t):
+        return rate * feed_s[np.minimum((t * C.SR).astype(np.int64), N - 1)]
+
+    times = C.poisson_times(r, rate_fn, 0.0, LOOP_S, rate * float(feed_s.max()) * 1.01)
+    amps = np.minimum(r.pareto(2.2, times.size) + 1.0, 20.0) * r.choice([-1.0, 1.0], times.size)   # heavy tail, bounded
+    crackle = modal_crackle_st(n, r, times, amps, r.uniform(-1, 1, times.size), 900.0, 7000.0, groups=16, nmodes=2,
+                               tau=(0.0003, 0.0012), broad=1.0, broad_band=(800.0, 14000.0))
+    npop = int(r.poisson((1.5 if front else 0.25) * LOOP_S))
+    tp = r.uniform(0.0, LOOP_S, npop)
+    pops = modal_crackle_st(n, r, tp, r.lognormal(0.0, 0.4, npop) * 3.0 * r.choice([-1.0, 1.0], npop), r.uniform(-1, 1, npop),
+                            250.0, 1500.0, groups=8, nmodes=3, tau=(0.002, 0.006), broad=0.6, broad_band=(300.0, 6000.0))
+    y = unit_rms(wrap(crackle)) + 0.6 * unit_rms(wrap(pops))
+    info = {"intensity": intensity, "crackles": int(times.size), "pops": npop, "crackle_rate_per_s": rate}
+    if front:
+        flicker = 1.0 + 0.35 * ctl(NFR, r, 400, 0.3)[:, None] + 0.25 * feed[:, None]
+        roar_mag = np.where(f < 150.0, (f / 150.0) ** 1.0, (f / 150.0) ** -1.0) * band(f, 25.0, 4000.0) * np.maximum(0.2, flicker)
+        roar = stereo_noise(r, roar_mag, coherence=0.4)
+        nsn = int(r.poisson(0.15 * LOOP_S))
+        snaps = np.zeros((n, 2))
+        for t0 in r.uniform(0.0, LOOP_S, nsn):
+            x = C.impulses(C.ns(1.5), [0.005], [1.0])
+            f1 = r.uniform(150.0, 600.0)
+            sn = C.modal_bank(x, [f1, 2.76 * f1, 5.4 * f1], [0.03, 0.015, 0.008], [1.0, 0.5, 0.3])
+            gl, gr = C.pan_gains(r.uniform(-0.9, 0.9))
+            i0 = C.ns(t0)
+            snaps[i0:i0 + sn.size, 0] += gl * sn
+            snaps[i0:i0 + sn.size, 1] += gr * sn
+        y = y + 1.2 * unit_rms(roar) + (0.4 * unit_rms(wrap(snaps)) if nsn else 0.0)
+        info.update({"roar_peak_hz": 150.0, "branch_failures": nsn})
+    else:
+        hiss_mag = band(f, 2000.0, 8000.0) * (1.0 + 0.3 * ctl(NFR, r, 30, 0.5)[:, None])
+        y = y + 0.25 * unit_rms(stereo_noise(r, hiss_mag, coherence=0.3))
+        info["steam_hiss"] = True
+    return y, info
+
+
 def rain_level_db(rate_mm_h: float) -> float:
     """Core WeatherSystem: rainNoiseDb = 38 + 8 log10(1 + 4 R) x 2."""
     return 38.0 + 16.0 * math.log10(1.0 + 4.0 * rate_mm_h)
@@ -609,7 +692,18 @@ def birds(ds, r, n_ind, d_range, T, RH, foliage_frac):
 # Thunder
 # ------------------------------------------------------------------------------------------------
 THUNDER_DISTANCES = [500.0, 2000.0, 5000.0, 12000.0]
-THUNDER_LEVEL_1M = 125.0         # core WorldSimulation::handleLightning (equivalent SPL at 1 m, game assumption)
+# Thunder level. The channel (several km long) is an incoherent LINE source: up to a distance of the order of its
+# length the received level falls by ~3 dB per doubling, not 6. Core model (SoundField::thunderSpreadingDb): vertical
+# channel of height THUNDER_CHANNEL_H_M, per-metre level L' (SoundSource::levelDb of a thunder source = SPL at 1 m
+# from 1 m of channel), received = L' + 10 log10(atan(H/d) / d) - absorption(60 Hz) d.
+# Absolute calibration: no measured thunder level is in Data/Sources -> « Information insuffisante — recherche
+# nécessaire. » L' is a game assumption chosen to keep the internal consistency constraint thunder(<= 2 km) > heavy rain
+# (70 dB, core rainNoiseDb at 25 mm/h) with margin: ~78 dB at 2 km, ~86 dB at 500 m.
+THUNDER_LINE_LEVEL_DB = 111.0    # core WorldSimulation::handleLightning thunder.levelDb (per-metre level, game assumption)
+THUNDER_CHANNEL_H_M = 4000.0     # core SoundField thunder channel height (the factory draws 3-5 km)
+# The rendered channels are tortuous random walks with a radiation pattern; their summed energy is referred to the
+# straight vertical channel of the core by this constant (mean over the 16 renders, see thunder()).
+THUNDER_GEOMETRY_NORM_DB = -1.36     # mean(geometry - core) over the 16 renders of 1.2.0 (spread +/- 2.4 dB)
 THUNDER_CENTROID_QA = {500.0: [50.0, 1500.0], 2000.0: [35.0, 900.0], 5000.0: [25.0, 500.0], 12000.0: [15.0, 300.0]}
 
 
@@ -692,14 +786,26 @@ def thunder(r, dist_m, T, RH):
     from scipy.signal import fftconvolve
     tail = np.stack([fftconvolve(y[:, ch], rev[:, ch])[:n] for ch in range(2)], axis=1)
     y = y + 0.3 * C.rms(y) / (C.rms(tail) + 1e-15) * tail
-    r_core = math.sqrt(dist_m ** 2 + 500.0 ** 2)
-    received = THUNDER_LEVEL_1M - 20.0 * math.log10(r_core) - float(P.absorption_db_per_m(60.0, T, RH)) * r_core
+    # Received level from the rendered geometry: incoherent sum of the segment energies (amp^2 = g^2 l e^2 / r^2)
+    # with the 60 Hz absorption over each path, referred to the per-metre level of the core.
+    alpha = float(P.absorption_db_per_m(60.0, T, RH))
+    geom_db = 10.0 * math.log10(float(np.sum(amp ** 2 * 10.0 ** (-alpha * rr / 10.0))))
+    received = THUNDER_LINE_LEVEL_DB + geom_db - THUNDER_GEOMETRY_NORM_DB
+    core = thunder_core_received_db(dist_m, T, RH)
     info = {"strike_distance_m": dist_m, "channel_top_m": round(H, 1), "segments": int(S.shape[0]), "branches": len(paths) - 1,
             "delay_after_flash_s": round(float(t_arr.min()), 3), "geometric_rumble_s": round(float(t_arr.max() - t_arr.min()), 3),
             "n_wave_ms_median": round(float(np.median(tn)) * 1e3, 2), "speed_of_sound_ms": round(c, 2),
-            "core_source_distance_m": round(r_core, 1), "received_spl_db_core": round(received, 2),
-            "file_starts_s_after_flash": round(t0, 3)}
+            "channel_energy_sum_db": round(geom_db, 3), "received_spl_db_geometry": round(received, 2),
+            "received_spl_db_core_line_model": round(core, 2),
+            "file_starts_s_after_flash": round(t0, 3), "pre_roll_s": 0.08}
     return y, info, received
+
+
+def thunder_core_received_db(dist_m: float, T: float, RH: float, level_db: float = THUNDER_LINE_LEVEL_DB) -> float:
+    """Mirror of SoundField::receivedLevelDb for SoundKind::Thunder (straight vertical line source, no wind/terrain)."""
+    d = max(1.0, dist_m)
+    return (level_db + 10.0 * math.log10(math.atan(THUNDER_CHANNEL_H_M / d) / d)
+            - float(P.absorption_db_per_m(60.0, T, RH)) * d)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -735,6 +841,15 @@ LAYERS = {
     "hc_insects_day_flybys": ("hell_creek", "flybys", {"when": "day"}, "Passages d'insectes volants (hypothèse)", "Flying insects passing (hypothesis)"),
     "hc_frogs_night_chorus": ("hell_creek", "frogs", {"n": 12, "d": (3.0, 40.0), "when": "night"},
                               "Chœur nocturne d'anoures près d'un bras mort (hypothèse)", "Night frog chorus by an oxbow (hypothesis)"),
+    "hc_frogs_day_sparse": ("hell_creek", "frogs", {"n": 4, "d": (5.0, 40.0), "when": "day"},
+                            "Anoures isolés de jour près d'un bras mort (hypothèse)", "A few frogs calling by day near an oxbow (hypothesis)"),
+    "hc_rain_light_rover_interior": ("hell_creek", "rain_interior", {"rate": 2.0}, "Pluie faible (2 mm/h) entendue depuis le véhicule",
+                                     "Light rain heard from inside the rover"),
+    "hc_rain_heavy_rover_interior": ("hell_creek", "rain_interior", {"rate": 25.0}, "Pluie forte (25 mm/h) entendue depuis le véhicule",
+                                     "Heavy rain heard from inside the rover"),
+    "hc_fire_smoulder": ("hell_creek", "fire", {"intensity": "smoulder"}, "Feu couvant dans la litière (rare)",
+                         "Smouldering litter fire (rare)"),
+    "hc_fire_front": ("hell_creek", "fire", {"intensity": "front"}, "Front de feu de végétation (rare)", "Vegetation fire front (rare)"),
     "hc_birds_day": ("hell_creek", "birds", {"n": 8, "d": (12.0, 120.0), "when": "day", "foliage": 0.3},
                      "Oiseaux du Maastrichtien, activité diurne (hypothèse)", "Maastrichtian birds, daytime activity (hypothesis)"),
     "dj_wind_calm": ("djadochta", "wind_desert", {"u": 2.0}, "Vent sur les dunes — calme (2 m/s)", "Wind over dunes — calm"),
@@ -755,13 +870,18 @@ MIXES = {
                                 ("hc_insects_night_chorus", 38.0), ("hc_frogs_night_chorus", 32.0)]),
     "hc_mix_day_backswamp": ("hell_creek", "day", "Mixage jour — marais arrière à conifères", "Day mix — conifer backswamp",
                              [("hc_wind_conifer_moderate", None), ("hc_river_creek", river_level_db(1.5, 20.0) + 6.0),
-                              ("hc_birds_day", 35.0), ("hc_insects_day_flybys", 28.0), ("hc_frogs_night_chorus", 24.0)]),
+                              ("hc_birds_day", 35.0), ("hc_insects_day_flybys", 28.0), ("hc_frogs_day_sparse", 26.0)]),
     "hc_mix_night_backswamp": ("hell_creek", "night", "Mixage nuit — marais arrière à conifères", "Night mix — conifer backswamp",
                                [("hc_wind_conifer_calm", None), ("hc_frogs_night_chorus", 44.0), ("hc_insects_night_chorus", 36.0)]),
-    "dj_mix_day_dunes": ("djadochta", "day", "Mixage jour — champ de dunes", "Day mix — dune field", [("dj_wind_moderate", None)]),
     "dj_mix_night_dunes": ("djadochta", "night", "Mixage nuit — champ de dunes", "Night mix — dune field",
                            [("dj_wind_calm", None), ("dj_insects_night_sparse", 28.0)]),
 }
+
+
+# Mixes that would contain a single layer are not rendered (they would duplicate a ~17 MB file): the manifest lists
+# them in ue5.aliases and the game plays the layer itself.
+ALIASES = {"amb_dj_mix_day_dunes": {"target": "amb_dj_wind_moderate", "time_of_day": "day", "region": "djadochta",
+                                    "note_fr": "Mixage jour — champ de dunes : une seule couche (vent moyen, saltation intermittente)."}}
 
 
 def layer_level_db(key: str) -> float | None:
@@ -772,7 +892,12 @@ def layer_level_db(key: str) -> float | None:
         return river_level_db(RIVERS[p["key"]]["q"], 5.0)
     if kind == "rain":
         return rain_level_db(p["rate"])
-    return {"katydid": 40.0, "flybys": 26.0, "frogs": 42.0, "birds": 38.0}[kind] - (12.0 if key == "dj_insects_night_sparse" else 0.0)
+    if kind == "rain_interior":
+        return rain_level_db(p["rate"]) - 6.0            # roof drumming vs cabin insulation (game assumption)
+    if kind == "fire":
+        return {"smoulder": 42.0, "front": 72.0}[p["intensity"]]   # at ~5 m / ~30 m (game assumption)
+    lvl = {"katydid": 40.0, "flybys": 26.0, "frogs": 42.0, "birds": 38.0}[kind]
+    return lvl - {"dj_insects_night_sparse": 12.0, "hc_frogs_day_sparse": 10.0}.get(key, 0.0)
 
 
 @lru_cache(maxsize=8)
@@ -793,6 +918,10 @@ def render_layer(key: str):
         y, info = river(r, p["key"])
     elif kind == "rain":
         y, info = rain(r, p["rate"], p["surface"])
+    elif kind == "rain_interior":
+        y, info = rain_interior(r, p["rate"])
+    elif kind == "fire":
+        y, info = fire(r, p["intensity"])
     elif kind == "katydid":
         y, info = insects_katydid(r, p["n"], p["d"], T, RH, "chœur dense" if p["n"] > 8 else "individus épars")
     elif kind == "flybys":
@@ -849,6 +978,23 @@ def _layer_science(ds, key):
                  "sur l'eau, bulles d'entraînement régulier (type I, ~0,2 mm, ~14 kHz) et irrégulier (Prosperetti & Oguz 1993). "
                  "Niveau : rainNoiseDb du cœur.")
         return conf, list(c["sources"]) + [MP, PROSP, MINN], basis, hyp
+    if kind == "rain_interior":
+        c = cl("precipitation")
+        conf = D.conf_min("inferred", c["confidence"])
+        basis = (f"Précipitations [{D.CONFIDENCE_LABEL_FR[c['confidence']]}]. Perspective intérieure du véhicule-refuge : gouttes de "
+                 "Marshall & Palmer (1948) frappant le toit (modes de panneau 90–900 Hz, hypothèse de jeu), lit de tambourinement, pluie "
+                 "extérieure assourdie par la cabine (passe-bas). Niveau : rainNoiseDb du cœur - 6 dB (hypothèse de jeu).")
+        return conf, list(c["sources"]) + [MP], basis, hyp
+    if kind == "fire":
+        c = cl("fire")
+        conf = D.conf_min("inferred", c["confidence"])
+        basis = (f"Incendies [{D.CONFIDENCE_LABEL_FR[c['confidence']]}] : {c['summary']} Événement du cœur : FireIgnition / "
+                 "VegetationSystem::updateFire (rare). Son = modèle physique de jeu : crépitements (éclatement de poches de vapeur et de "
+                 "volatils, amplitudes à queue lourde, processus de Poisson modulé par les rafales), éclats de poches de résine, "
+                 + ("grondement de combustion d'un front turbulent (maximum ~150 Hz) et ruptures de branches."
+                    if p["intensity"] == "front" else "souffle de vapeur d'un feu couvant dans la litière.")
+                 + " Taux, spectres et niveaux : hypothèses de jeu.")
+        return conf, list(c["sources"]), basis, hyp
     if kind == "katydid":
         sp = ds.species["hell_creek_insects"]
         basis = ("HYPOTHÈSE. La stridulation alaire d'Ensifera produisant un ton pur (~6,4 kHz) est reconstituée pour le Jurassique "
@@ -884,6 +1030,17 @@ def _layer_science(ds, key):
     raise KeyError(kind)
 
 
+LAYER_MODEL_FR = {
+    "wind_conifer": "Tons éoliens (f = 0,2 U/d) : physique établie ; diamètres, rafales et loi de niveau windNoiseDb du cœur : hypothèses de jeu.",
+    "wind_broadleaf": "Taux de chocs feuille contre feuille (500 (U/3)² /s × (u/U)³), modes des feuilles et loi de niveau windNoiseDb : hypothèses de jeu.",
+    "wind_desert": "Seuil de saltation (6,5 m/s), taux d'impacts de grains et loi de niveau : hypothèses de jeu.",
+    "river": "Débits (générateur de terrain), poids grondement / bulles / clapotis et loi de niveau WaterSystem::noiseLevelDb : hypothèses de jeu.",
+    "rain": "Distribution de gouttes (Marshall & Palmer) et bulles de Minnaert : physique ; modes d'impact, poids du lit diffus et loi rainNoiseDb : hypothèses de jeu.",
+    "rain_interior": "Modes du toit, isolation de la cabine et niveau (rainNoiseDb - 6 dB) : hypothèses de jeu.",
+    "fire": "Taux de crépitement, spectres et niveaux (42 dB à ~5 m pour un feu couvant, 72 dB à ~30 m pour un front) : hypothèses de jeu.",
+}
+
+
 # ------------------------------------------------------------------------------------------------
 # Jobs
 # ------------------------------------------------------------------------------------------------
@@ -902,20 +1059,24 @@ def job_layer(ds: D.Dataset, key: str) -> list[M.Sound]:
     region, kind, p, label_fr, label_en = LAYERS[key]
     y, info = render_layer(key)
     conf, srcs, basis, hyp = _layer_science(ds, key)
-    # Sparse biophony keeps more of its natural dynamics (near vs far individuals) than wind / rain / water beds.
-    y, lim = limit_crest(y, 22.0 if hyp else CREST_DB)
+    y, lim = limit_outliers(y)
     info = dict(info, mastering_limiter=lim)
     srcs = [s for s in dict.fromkeys(srcs) if ds.has_source(s)]
     conf = ds.capped(conf, srcs)
     T, RH = _cond(ds, region, p.get("when", "day"))
     lvl = layer_level_db(key)
-    weather = kind == "rain"
-    ue = M.ue5("SC_Weather" if weather else "SC_Ambience_Layer",
-               "ATT_Water_Line" if kind == "river" else "ATT_Ambience_Bed2D", True,
-               "CON_Weather_Rain" if weather else "CON_Ambience_Layer", priority=0.5,
+    weather = kind in ("rain", "rain_interior")
+    att = {"river": "ATT_Water_Line", "fire": "ATT_Ambience_Point"}.get(kind, "ATT_Ambience_Bed2D")
+    con = "CON_Weather_Rain" if weather else ("CON_Fire" if kind == "fire" else "CON_Ambience_Layer")
+    ue = M.ue5("SC_Weather" if weather else "SC_Ambience_Layer", att, True, con, priority=0.5,
                extra={"layer_role": kind, "crossfade_with": [k for k in LAYERS if LAYERS[k][1] == kind and k != key and LAYERS[k][0] == region],
                       "drive_parameter": {"wind_conifer": "vent (m/s)", "wind_broadleaf": "vent (m/s)", "wind_desert": "vent (m/s)",
-                                          "river": "débit (m³/s) et distance au chenal", "rain": "intensité (mm/h)"}.get(kind, "heure / saison / profil")})
+                                          "river": "débit (m³/s) et distance au chenal", "rain": "intensité (mm/h)",
+                                          "rain_interior": "intensité (mm/h), joueur dans le véhicule",
+                                          "fire": "intensité du feu (VegetationSystem) et distance au front"}.get(kind, "heure / saison / profil")})
+    if kind == "rain_interior":
+        ue["usage_fr"] = ("Remplace les lits de pluie extérieurs quand le joueur est dans le véhicule-refuge (fondu enchaîné à "
+                          "l'ouverture / fermeture de la porte).")
     if hyp:
         ue["profile_note_fr"] = "Couche de biophonie hypothétique : peut être coupée (option d'accessibilité / profil prudent) ; légende « hypothèse »."
     params = {"layer": key, "kind": kind, **{k: v for k, v in p.items() if k != "d"}, "loop_s": LOOP_S,
@@ -923,7 +1084,7 @@ def job_layer(ds: D.Dataset, key: str) -> list[M.Sound]:
               "synthesis": info, "seamless_method": "rendu circulaire (STFT périodique, contrôles en série de Fourier, queues repliées)"}
     if "d" in p:
         params["distance_range_m"] = list(p["d"])
-    qa = {"loop_seam": True, "rms_dbfs": expected_rms_dbfs(lim), "rms_tolerance_db": 0.6, "peak_dbfs_max": -0.9}
+    qa = {"loop_seam": True, "peak_dbfs_max": -0.9, "limiter": {"max_gain_reduction_db": LIMIT_MAX_GR_DB, "max_fraction": LIMIT_MAX_FRACTION}}
     if kind == "katydid":
         qa["spectral_peak_hz"] = [4400.0, 9200.0]
         qa["spectral_peak_search_hz"] = [200.0, 16000.0]
@@ -937,12 +1098,13 @@ def job_layer(ds: D.Dataset, key: str) -> list[M.Sound]:
     if kind == "frogs":
         qa["band_energy_ratio"] = {"lo_hz": 300.0, "hi_hz": 4000.0, "min": 0.6}
     s = M.Sound(id=f"amb_{key}", category="weather" if weather else "ambience", subcategory=kind, group=f"ambience/{region}",
+                model_confidence="speculative", model_basis_fr=LAYER_MODEL_FR.get(kind, "Biophonie hypothétique : modèle de jeu."),
                 label_fr=f"{_region_fr(region)} — {label_fr}", audio=y, confidence=conf, basis_fr=basis, sources=srcs, params=params,
                 ue5=ue, qa=qa, loop=True, region=region, hypothesis=hyp,
                 level={"ambient_spl_db": round(lvl, 2) if lvl is not None else None,
                        "reference": ("Niveau sonore ambiant au point d'écoute (dB SPL re 20 µPa) pour la condition de la couche ; "
                                      "formules du cœur pour vent / pluie / rivière (5 m de la berge), hypothèse de jeu pour la biophonie")},
-                normalize=("rms", -20.0, -1.0), fade=False, caption={"fr": label_fr, "en": label_en},
+                normalize=("peak", -1.0), fade=False, caption={"fr": label_fr, "en": label_en},
                 subject="paleo" if hyp else "physical_environment", loop_xfade=True,
                 variant={"layer": key})
     return [s]
@@ -956,6 +1118,8 @@ def job_mix(ds: D.Dataset, key: str) -> list[M.Sound]:
     abiotic = [(k, l) for k, l in parts if k not in hyp_parts]
     if hyp_parts and len(abiotic) > 1:
         variants.append(("abiotic", abiotic))
+    if len(parts) == 1:
+        return out                                     # single-layer mix: alias (ALIASES), no duplicate file
     for vname, comp in variants:
         y = np.zeros((N, 2))
         recs, srcs, confs, hyp = [], [], [], False
@@ -972,7 +1136,7 @@ def job_mix(ds: D.Dataset, key: str) -> list[M.Sound]:
             hyp = hyp or h
             recs.append({"layer": f"amb_{k}", "spl_db": round(lvl, 2), "hypothesis": h})
         total = 10.0 * math.log10(tot)
-        y, lim = limit_crest(y)
+        y, lim = limit_outliers(y)
         conf = D.conf_min(*confs)
         T, RH = _cond(ds, region, when)
         sid = f"amb_{key}" + ("" if vname == "full" else "_abiotic")
@@ -989,11 +1153,13 @@ def job_mix(ds: D.Dataset, key: str) -> list[M.Sound]:
                             "environment": {"region": region, "temperature_c": T, "relative_humidity": RH},
                             "mastering_limiter": lim,
                             "abiotic_equivalent": (f"amb_{abiotic[0][0]}" if hyp_parts and len(abiotic) == 1 and vname == "full" else None)},
-                    ue5=ue, qa={"loop_seam": True, "rms_dbfs": expected_rms_dbfs(lim), "rms_tolerance_db": 0.6, "peak_dbfs_max": -0.9},
-                    loop=True,
+                    ue5=ue, qa={"loop_seam": True, "peak_dbfs_max": -0.9,
+                                "limiter": {"max_gain_reduction_db": LIMIT_MAX_GR_DB, "max_fraction": LIMIT_MAX_FRACTION}},
+                    loop=True, model_confidence="speculative",
+                    model_basis_fr="Balance des couches : formules de niveau du cœur (hypothèses de jeu) et niveaux de biophonie de jeu.",
                     region=region, hypothesis=hyp,
                     level={"ambient_spl_db": round(total, 2), "reference": "Somme énergétique des niveaux des couches (dB SPL au point d'écoute)"},
-                    normalize=("rms", -20.0, -1.0), fade=False, caption={"fr": lf, "en": le},
+                    normalize=("peak", -1.0), fade=False, caption={"fr": lf, "en": le},
                     subject="paleo" if hyp else "physical_environment", loop_xfade=True, variant={"mix": key, "variant": vname})
         out.append(s)
     return out
@@ -1012,17 +1178,30 @@ def job_thunder(ds: D.Dataset, dist: float) -> list[M.Sound]:
         basis = ("Orages : probabilité journalière du JSON d'environnement (sim.storm_probability_per_day) ; la physique du tonnerre est "
                  "indépendante de l'époque. Modèle : canal de foudre tortueux, onde en N par segment rayonnée perpendiculairement, "
                  "allongement r^1/4, absorption ISO 9613-1 par tranche de distance, diffusion par la vallée (hypothèse de jeu). "
-                 "Niveau à 1 m équivalent : 125 dB (WorldSimulation::handleLightning).")
+                 "Niveau reçu = somme énergétique des segments du canal rendu (source linéique : ~-3 dB par doublement tant que la "
+                 f"distance reste inférieure à la longueur du canal), rapportée au niveau linéique du cœur ({THUNDER_LINE_LEVEL_DB:g} dB à 1 m "
+                 "de 1 m de canal, WorldSimulation::handleLightning). Calibration absolue : « Information insuffisante — recherche "
+                 "nécessaire. » (aucune mesure de tonnerre dans Data/Sources) ; contrainte de cohérence interne : tonnerre à 2 km ou moins "
+                 "plus fort que la pluie forte (70 dB).")
         dist_fr = f"{dist / 1000:g} km".replace(".", ",")
         s = M.Sound(id=sid, category="weather", subcategory="thunder", group="ambience/thunder",
                     label_fr=f"Tonnerre à {dist_fr} — variation {k + 1}", audio=y, confidence=ds.capped("inferred", srcs), basis_fr=basis,
                     sources=srcs, params={"variation": k + 1, "temperature_c": T, "relative_humidity": RH, **info},
                     ue5=M.ue5("SC_Weather", "ATT_Thunder_DistanceBaked", False, "CON_Weather_Thunder", priority=0.9,
-                              extra={"random_group": f"thunder_{int(dist)}m", "schedule_delay_after_flash_s": info["delay_after_flash_s"],
-                                     "note_fr": "Démarrer le son delay_after_flash_s après l'éclair (le silence initial n'est pas dans le fichier)."}),
-                    qa={"peak_dbfs_max": -0.5, "centroid_hz": THUNDER_CENTROID_QA[dist]}, region=None,
-                    level={"source_spl_db_1m": THUNDER_LEVEL_1M, "received_spl_db": round(received, 2),
-                           "reference": "Niveau reçu (dB SPL) selon le modèle de propagation du cœur à 60 Hz ; fichier normalisé en crête"},
+                              extra={"random_group": f"thunder_{int(dist)}m", "schedule_delay_after_flash_s": info["file_starts_s_after_flash"],
+                                     "distance_class_m": dist,
+                                     "note_fr": ("Démarrer le fichier schedule_delay_after_flash_s après l'éclair : il commence 80 ms avant la "
+                                                 "première arrivée (delay_after_flash_s). Le son doit être spatialisé par le directeur audio au "
+                                                 "point d'impact (direction de l'éclair) ; niveau corrigé d'après le cœur (classe de distance la "
+                                                 "plus proche).")}),
+                    qa={"peak_dbfs_max": -0.5, "centroid_hz": THUNDER_CENTROID_QA[dist],
+                        "thunder": {"geometry_db": info["received_spl_db_geometry"], "core_db": info["received_spl_db_core_line_model"],
+                                    "max_difference_db": 4.0}},
+                    region=None, model_confidence="speculative",
+                    model_basis_fr="Calibration absolue du niveau : information insuffisante (niveau linéique = hypothèse de jeu).",
+                    level={"source_spl_db_1m": THUNDER_LINE_LEVEL_DB, "source_level_kind": "linéique (dB à 1 m de 1 m de canal)",
+                           "received_spl_db": round(received, 2),
+                           "reference": "Niveau reçu (dB SPL) : somme des segments du canal rendu, absorption à 60 Hz ; fichier normalisé en crête"},
                     normalize=("peak", -1.0), caption={"fr": f"Tonnerre lointain ({dist_fr})" if dist > 1000 else "Coup de tonnerre proche",
                                                        "en": f"Thunder ({dist / 1000:g} km)"},
                     subject="physical_environment", variant={"distance_m": dist, "variation": k + 1})

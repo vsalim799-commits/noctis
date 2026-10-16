@@ -271,3 +271,126 @@ NOCTIS_TEST("creatures.growth.mass_at_age_monotonic")
         CHECK_LE(massAtAge(sp, 0.0f, 1.0f), s.adultMassKg * 0.5f);
     }
 }
+
+NOCTIS_TEST("creatures.locomotion.heading_converges_at_coarse_step")
+{
+    // Near/Far LOD integrate locomotion in 1 s sub-steps. The heading controller must converge there too
+    // (explicit Euler with gain 2.5/s used to flip the error sign every step for fast-turning species).
+    std::unique_ptr<WorldSimulation> w = emptyWorld();
+    REQUIRE(w != nullptr);
+    int tested = 0;
+    for (const char* id : {"didelphodon_vorax", "acheroraptor_temertyorum", "triceratops_horridus"})
+    {
+        const int si = agentSpecies(*w, id);
+        if (si < 0)
+        {
+            continue;
+        }
+        const SpeciesRuntime& sp = w->species()[static_cast<size_t>(si)];
+        for (const float h : {1.0f, 0.1f})
+        {
+            const EntityId cid = spawnAdult(*w, si, static_cast<u64>(si) * 13u + 5u);
+            Creature* c = w->creatures().find(cid);
+            REQUIRE(c != nullptr);
+            const float goal = wrapAngle(c->loco.heading + 1.6f); // ~92 deg to the left
+            c->behavior.desiredDir = Vec2::fromHeading(goal);
+            c->behavior.desiredSpeed = sp.sim().locomotion.walkSpeedMs * 0.8f;
+            int flips = 0;
+            float lastErr = angleDelta(c->loco.heading, goal);
+            const int steps = static_cast<int>(30.0f / h);
+            for (int k = 0; k < steps; ++k)
+            {
+                integrateLocomotion(*c, sp, w->context(), h, false);
+                c->pendingFootprints.clear();
+                const float err = angleDelta(c->loco.heading, goal);
+                flips += (err * lastErr < 0.0f && std::fabs(err) > 0.01f) ? 1 : 0;
+                lastErr = err;
+            }
+            CHECK_LT(std::fabs(lastErr), 0.02f);
+            CHECK_LE(flips, 1);
+            NOTE("%-26s h=%.1f s: final heading error %.4f rad, %d sign flips", id, static_cast<double>(h), static_cast<double>(lastErr), flips);
+            c->alive = false;
+        }
+        ++tested;
+    }
+    CHECK_GE(tested, 2);
+}
+
+NOCTIS_TEST("creatures.death_cause.attribution")
+{
+    // Only wounds inflicted by a hunting predator make a death "predation"; a wound from another species
+    // received in a defensive fight or as a counter-attack is an injury death; infection wins when severe.
+    std::unique_ptr<WorldSimulation> w = emptyWorld();
+    REQUIRE(w != nullptr);
+    const int rex = agentSpecies(*w, "tyrannosaurus_rex");
+    const int trike = agentSpecies(*w, "triceratops_horridus");
+    if (rex < 0 || trike < 0)
+    {
+        NOTE("T. rex or Triceratops absent from the data set: skipped");
+        return;
+    }
+    struct Case
+    {
+        int victim;
+        int causeSpecies;
+        bool predatory;
+        float infection;
+        DeathCause expected;
+        const char* what;
+    };
+    const Case cases[] = {
+        {rex, trike, false, 0.0f, DeathCause::Injury, "T. rex bleeding from a Triceratops counter-attack"},
+        {trike, rex, true, 0.0f, DeathCause::Predation, "Triceratops bleeding from a hunting T. rex"},
+        {trike, trike, false, 0.0f, DeathCause::Injury, "Triceratops bleeding from an intraspecific fight"},
+        {trike, rex, true, 0.8f, DeathCause::Infection, "Triceratops with an infected wound"},
+    };
+    u64 seed = 101u;
+    for (const Case& k : cases)
+    {
+        const EntityId id = spawnAdult(*w, k.victim, seed++);
+        Creature* c = w->creatures().find(id);
+        REQUIRE(c != nullptr);
+        Injury inj;
+        inj.region = BodyRegion::Torso;
+        inj.type = InjuryType::Puncture;
+        inj.severity = 0.5f;
+        inj.initialSeverity = 0.5f;
+        inj.bleeding = 2.0f; // fraction of blood volume per hour: exaggerated so the test is short
+        inj.infection = k.infection;
+        inj.time = w->context().now;
+        inj.causeSpecies = static_cast<i16>(k.causeSpecies);
+        inj.predatory = k.predatory;
+        c->injuries.active.push_back(inj);
+        for (int s = 0; s < 3600; ++s)
+        {
+            w->step(1.0);
+            const Creature* x = w->creatures().find(id);
+            if (!x || !x->alive)
+            {
+                break;
+            }
+        }
+        const DeathRecord* rec = nullptr;
+        for (const DeathRecord& d : w->creatures().deaths())
+        {
+            if (d.id == id)
+            {
+                rec = &d;
+            }
+        }
+        DeathCause got = DeathCause::Unknown;
+        if (rec)
+        {
+            got = rec->cause;
+        }
+        else if (const Creature* x = w->creatures().find(id); x && !x->alive)
+        {
+            got = x->deathCause;
+        }
+        if (got != k.expected)
+        {
+            noctistest::failf(__FILE__, __LINE__, "%s: cause %s, expected %s", k.what, deathCauseLabelFr(got), deathCauseLabelFr(k.expected));
+        }
+        NOTE("%-50s -> %s", k.what, deathCauseLabelFr(got));
+    }
+}

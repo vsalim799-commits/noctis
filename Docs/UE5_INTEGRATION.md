@@ -209,7 +209,15 @@ Assets référencés par chemin dans le code (créés par les scripts Python) :
   Un tonnerre à 3 km arrive ~9 s après l'éclair.
 * **Calibration** : `AudioFullScaleDbSpl` (110 dB SPL = 0 dBFS). Les sons enregistrés de `Tools/AudioFactory`
   reçoivent un volume d'asset `10^((calibration_spl_db_at_0dbfs_rms − AudioFullScaleDbSpl)/20)` (`import_audio.py`) :
-  à multiplicateur 1, un cri enregistré sonne à son niveau de source à 1 m, comme un cri synthétisé.
+  à multiplicateur 1, un cri enregistré sonne à son niveau de source à 1 m, comme un cri synthétisé. Les variantes de
+  distance et le tonnerre sont calibrés sur leur niveau **reçu** (`level.received_spl_db`), les lits d'ambiance sur
+  leur niveau ambiant (`level.ambient_spl_db`) : le directeur audio n'applique que l'écart entre le niveau du cœur et
+  cette référence (`RainLoopAmbientDb`, `WindLoopAmbientDb`), sans compter deux fois le niveau absolu.
+* **Événements enregistrés** : tonnerre (classes 0,5 / 2 / 5 / 12 km), éclaboussures et végétation brisée (classes de
+  masse) viennent des bibliothèques de `Tools/AudioFactory` ; le directeur choisit la classe la plus proche
+  (distance ou masse de l'émetteur), une variation au hasard, joue le son au point d'impact / à l'émetteur
+  (spatialisation seule) et corrige le niveau. Le tonnerre est une source **linéique** dans le cœur
+  (`SoundField::spreadingLossDb`), déclenché 80 ms avant la première arrivée (pré-roulement du fichier).
 * **Hypothèses** : toutes les vocalisations de dinosaures non aviens sont des hypothèses (manifeste :
   `hypothesis = true`, classe `SC_Creature_Vocal_Hypothesis`, sous-mélange `SM_Creatures_Hypotheses`) ; les
   métadonnées `Noctis.Confidence` / `Noctis.Hypothesis` voyagent avec chaque asset.
@@ -285,8 +293,9 @@ py "Content/Python/import_creatures.py"         # créatures de Build/Creatures 
 
 ou sans interface : `UnrealEditor-Cmd <Projet>/Noctis.uproject -run=pythonscript -script="Content/Python/setup_project.py"`.
 
-* **`setup_project.py`** crée tout ce que le code référence par chemin, puis la carte depuis le modèle *Open World*
-  (World Partition) et place `PlayerStart` au camp de base calculé **par le cœur** (`unreal.NoctisEditorLibrary.
+* **`setup_project.py`** crée tout ce que le code référence par chemin, puis une carte World Partition **vide**
+  (`new_level(chemin, True)`, équivalent d'*Empty Open World* — pas le modèle *Open World*, dont le paysage d'exemple
+  serait pris pour le terrain Noctis) et place `PlayerStart` au camp de base calculé **par le cœur** (`unreal.NoctisEditorLibrary.
   compute_terrain_info()` génère le terrain sans animaux). L'import du Landscape n'est pas scriptable en Python :
   le script affiche les valeurs exactes (résolution, position, échelle) pour *Landscape > Import from File* avec
   `Build/Terrain/heightmap.png` produit par `noctis_sim export-terrain --out Build/Terrain` (même graine que
@@ -309,8 +318,10 @@ ou sans interface : `UnrealEditor-Cmd <Projet>/Noctis.uproject -run=pythonscript
 * **`import_audio.py`** lit `Data/Audio/manifest.json`, crée la hiérarchie des classes de sons, les préréglages
   d'atténuation et de concurrence, importe les WAV de `Build/Audio` (variantes de distance comprises, pour la
   bibliothèque de référence du carnet), applique classe/atténuation/concurrence/sous-mélange/priorité/volume calibré,
-  écrit les métadonnées de provenance, puis lie les cris `voiceA` aux `DA_<espèce>` (`--prefer-baked` pour les jouer
-  à la place de la synthèse).
+  écrit les métadonnées de provenance (`Noctis.Confidence`, `Noctis.ModelConfidence`, légendes FR/EN, niveaux), construit
+  les cues aléatoires des bibliothèques d'événements (`/Game/Audio/Cues/RC_<groupe>`) et en remplit les cues des réglages
+  (`Weather/SC_Thunder`, `Water/SC_Splash`, `Foley/SC_VegetationCrash` ; plus de cue vide), puis lie les cris `voiceA`
+  aux `DA_<espèce>` (`--prefer-baked` pour les jouer à la place de la synthèse).
 
 ---
 
@@ -490,7 +501,7 @@ pendant 5 minutes ; (6) drone à 120 m au-dessus de la forêt riveraine.
   DataValidation, Enhanced Input (structure des mappings en 5.5/5.6), Gameplay Debugger, IK Rig (contrôleur Python),
   MetaSound et Interchange.
 * **Scripts Python non exécutés** : noms de propriétés Python (`d_b_attenuation_at_max`, `concurrency_set` en
-  `TSet`), factories (`WidgetBlueprintFactory.parent_class`, `AnimBlueprintFactory`), modèle *Open World*. Chaque étape
+  `TSet`), factories (`WidgetBlueprintFactory.parent_class`, `AnimBlueprintFactory`), `new_level(chemin, True)` (carte partitionnée vide). Chaque étape
   est isolée et journalisée : une erreur n'arrête pas le reste.
 * **Chaînes accentuées dans `TEXT()`** : les sources sont en UTF-8 sans BOM. Si MSVC ne compile pas en `/utf-8` sur
   votre version d'UBT, les messages français s'afficheront mal (pas d'erreur de compilation, sauf avertissement

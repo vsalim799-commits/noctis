@@ -278,8 +278,9 @@
       "doi": null,
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+      "verified": true,
+      "verification": "Alias de jerzykiewicz1993_djadokhta (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées.",
+      "alias_of": "jerzykiewicz1993_djadokhta"
     },
     {
       "id": "eberth1993_bayan_mandahu",
@@ -320,8 +321,9 @@
       "doi": null,
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+      "verified": true,
+      "verification": "Alias de fastovsky1997_tugrikin (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées.",
+      "alias_of": "fastovsky1997_tugrikin"
     },
     {
       "id": "loope1998_dune_field",
@@ -362,8 +364,9 @@
       "doi": null,
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+      "verified": true,
+      "verification": "Alias de dashzeveg2005_djadokhta_age (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées.",
+      "alias_of": "dashzeveg2005_djadokhta_age"
     },
     {
       "id": "dingus2008_ukhaa_tolgod_geology",
@@ -376,8 +379,9 @@
       "doi": null,
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+      "verified": true,
+      "verification": "Alias de dingus2008_ukhaa_geology (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées.",
+      "alias_of": "dingus2008_ukhaa_geology"
     },
     {
       "id": "saneyoshi2011_bone_trace_fossils",

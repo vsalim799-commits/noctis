@@ -520,6 +520,32 @@ NOCTIS_TEST("world.sound.spherical_spreading")
     CHECK_LT(SoundField::foliageDbPerM(63.0f), SoundField::foliageDbPerM(8000.0f));
 }
 
+NOCTIS_TEST("world.sound.thunder_line_source")
+{
+    // Thunder is a vertical line source (SoundField::spreadingLossDb): ~3 dB per doubling while the distance is small
+    // compared with the channel, and it stays louder than heavy rain (rainNoiseDb 38 + 16 log10(1 + 4 x 25) = 70 dB)
+    // within 2 km (internal consistency constraint shared with Tools/AudioFactory ambience.py).
+    SoundSource s;
+    s.kind = SoundKind::Thunder;
+    s.levelDb = 111.0f;
+    s.f0Hz = 60.0f;
+    PropagationEnv env;
+    env.temperatureC = 20.0f;
+    env.humidity = 0.9f;
+    const float l250 = SoundField::receivedLevelDb(s, Vec3{250.0f, 0.0f, 0.0f}, env);
+    const float l500 = SoundField::receivedLevelDb(s, Vec3{500.0f, 0.0f, 0.0f}, env);
+    const float l2k = SoundField::receivedLevelDb(s, Vec3{2000.0f, 0.0f, 0.0f}, env);
+    const float l20k = SoundField::receivedLevelDb(s, Vec3{20000.0f, 0.0f, 0.0f}, env);
+    const float l40k = SoundField::receivedLevelDb(s, Vec3{40000.0f, 0.0f, 0.0f}, env);
+    CHECK_LT(l250 - l500, 3.6f);
+    CHECK_GT(l20k - l40k, 5.0f);
+    CHECK_GT(l2k, 70.0f + 5.0f);
+    CHECK_NEAR(l2k, 111.0 + 10.0 * std::log10(std::atan(2.0 / 1.0) / 2000.0) - SoundField::absorptionDbPerM(60.0f, 20.0f, 0.9f) * 2000.0, 0.05);
+    // Point sources keep spherical spreading.
+    SoundSource p;
+    CHECK_NEAR(SoundField::spreadingLossDb(p, 100.0f), 40.0, 1e-4);
+}
+
 NOCTIS_TEST("world.sound.field_thread_safe_collect")
 {
     SoundField field;

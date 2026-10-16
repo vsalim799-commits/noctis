@@ -65,16 +65,16 @@ SKIN = {
 PALETTE = {
     "status": "SPÉCULATIF",
     "note": "Couleur inconnue (science.integument : 'Couleur : inconnue'). Palette terne et contre-ombrée choisie pour la lisibilité ; aucun motif tiré d'une référence.",
-    "dorsal": [0.105, 0.095, 0.075],       # linear RGB
-    "flank": [0.20, 0.175, 0.135],
-    "ventral": [0.42, 0.37, 0.29],
-    "head_top": [0.085, 0.075, 0.06],
-    "lip": [0.30, 0.255, 0.20],
-    "mottle_dark": [0.06, 0.055, 0.045],
-    "band_dark": [0.07, 0.062, 0.05],
-    "scute": [0.075, 0.068, 0.058],
-    "pad": [0.16, 0.14, 0.115],
-    "rugose": [0.13, 0.11, 0.085],
+    "dorsal": [0.062, 0.054, 0.038],       # linear RGB
+    "flank": [0.118, 0.098, 0.068],
+    "ventral": [0.30, 0.25, 0.175],
+    "head_top": [0.05, 0.043, 0.032],
+    "lip": [0.21, 0.165, 0.12],
+    "mottle_dark": [0.032, 0.028, 0.021],
+    "band_dark": [0.036, 0.031, 0.024],
+    "scute": [0.045, 0.04, 0.034],
+    "pad": [0.1, 0.085, 0.065],
+    "rugose": [0.085, 0.07, 0.052],
     "claw": [0.035, 0.03, 0.027],
     "claw_tip": [0.16, 0.14, 0.11],
     "tooth": [0.62, 0.56, 0.45],
@@ -180,21 +180,21 @@ def head_shapes():
         (-0.06, 0.74, 0.27, 0.31, 0.42, 2.0, 2.6),
         (0.04, 0.81, 0.235, 0.38, 0.38, 2.1, 2.8),
         (0.16, 0.845, 0.205, 0.435, 0.34, 2.2, 3.0),
-        (0.30, 0.85, 0.185, 0.425, 0.31, 2.2, 3.0),
-        (0.45, 0.825, 0.165, 0.375, 0.28, 2.15, 3.0),
-        (0.60, 0.785, 0.15, 0.31, 0.26, 2.05, 3.6),
-        (0.76, 0.74, 0.14, 0.262, 0.25, 2.0, 4.0),
-        (0.92, 0.695, 0.135, 0.232, 0.25, 2.0, 4.0),
-        (1.08, 0.65, 0.14, 0.213, 0.26, 2.0, 4.0),
-        (1.21, 0.605, 0.15, 0.198, 0.27, 2.05, 4.0),
-        (1.32, 0.555, 0.165, 0.182, 0.29, 2.1, 3.8),
-        (1.40, 0.50, 0.185, 0.16, 0.32, 2.15, 3.4),
+        (0.30, 0.85, 0.185, 0.425, 0.31, 2.3, 3.0),
+        (0.45, 0.825, 0.165, 0.375, 0.28, 2.4, 3.0),
+        (0.60, 0.785, 0.15, 0.315, 0.26, 2.6, 3.6),
+        (0.76, 0.735, 0.14, 0.27, 0.25, 2.7, 4.0),
+        (0.92, 0.685, 0.135, 0.245, 0.25, 2.8, 4.0),
+        (1.08, 0.635, 0.14, 0.23, 0.26, 2.8, 4.0),
+        (1.21, 0.59, 0.15, 0.22, 0.27, 2.8, 4.0),
+        (1.32, 0.535, 0.165, 0.208, 0.29, 2.7, 3.8),
+        (1.40, 0.47, 0.185, 0.19, 0.32, 2.5, 3.4),
     ]
     secs = []
     for u, vt, vl, hw, fr, nt, nb in up:
         cy = vl + fr * (vt - vl)
         secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vl, hw=hw, nt=nt, nb=nb))
-    S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.16, 0.075], blend=0.12,
+    S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.16, 0.065], blend=0.2,
                   region="head", tag="cranium"))
     # lower jaw: dentary + surangular/angular + intermandibular soft tissue
     lo = [
@@ -206,9 +206,9 @@ def head_shapes():
         (0.66, 0.16, -0.205, 0.268, 2.2),
         (0.84, 0.155, -0.16, 0.226, 2.2),
         (1.02, 0.158, -0.115, 0.198, 2.25),
-        (1.18, 0.168, -0.07, 0.176, 2.3),
-        (1.30, 0.185, -0.025, 0.155, 2.3),
-        (1.38, 0.205, 0.02, 0.13, 2.3),
+        (1.18, 0.168, -0.07, 0.19, 2.3),
+        (1.30, 0.185, -0.025, 0.175, 2.3),
+        (1.38, 0.205, 0.02, 0.15, 2.3),
     ]
     # the upper lip overlaps the lower jaw (as in varanids, the analogue used by Cullen et al. 2023):
     # the dentary's top sits just above the upper lip margin and ~2 cm inside it
@@ -240,13 +240,13 @@ def head_shapes():
         # jaw-closing muscles bulging over the temporal region (M. adductor mandibulae externus)
         S.append(E("head", "head", w((0.22, 0.64, 0.21)), [0.28, 0.16, 0.15], mr(HR((0.25, 0.15, -0.05))), 0.14, tag="adductor"))
         # cheek: jugal + quadratojugal (broad back of the head in dorsal view)
-        S.append(E("head", "head", w((0.4, 0.34, 0.27)), [0.3, 0.1, 0.07], mr(HR((0, 0.3, 0.04))), 0.15, tag="jugal"))
-        S.append(E("head", "head", w((0.1, 0.36, 0.3)), [0.15, 0.14, 0.08], mr(HR((0, 0.25, 0))), 0.12, tag="quadratojugal"))
+        S.append(E("head", "head", w((0.4, 0.34, 0.26)), [0.3, 0.09, 0.06], mr(HR((0, 0.3, 0.04))), 0.15, tag="jugal"))
+        S.append(E("head", "head", w((0.1, 0.36, 0.28)), [0.15, 0.13, 0.07], mr(HR((0, 0.25, 0))), 0.12, tag="quadratojugal"))
         # jowls: M. pterygoideus ventralis wrapping under the back of the lower jaw
-        S.append(E("jaw", "jaw", w((0.0, -0.08, 0.22)), [0.24, 0.15, 0.1], mr(HR((0, 0.2, 0.15))), 0.25, tag="pterygoideus",
+        S.append(E("jaw", "jaw", w((0.0, -0.06, 0.2)), [0.22, 0.12, 0.075], mr(HR((0, 0.2, 0.15))), 0.3, tag="pterygoideus",
                    masks=["jowl"]))
         # surangular shelf above the jaw angle
-        S.append(E("jaw", "jaw", w((0.36, 0.0, 0.32)), [0.28, 0.12, 0.075], mr(HR((0, 0.33, 0.08))), 0.09, tag="surangular"))
+        S.append(E("jaw", "jaw", w((0.36, 0.0, 0.3)), [0.26, 0.1, 0.05], mr(HR((0, 0.33, 0.08))), 0.12, tag="surangular"))
     # throat / gular skin between the rami, blending into the neck
     S.append(E("jaw", "jaw", H(0.3, -0.18), [0.48, 0.13, 0.24], HR((0, 0, 0.06)), 0.15, tag="throat", masks=["throat"]))
     # detail masks (no volume): rugose cornified skin over the nasals; lip margins
@@ -283,7 +283,7 @@ def head_details(cast, base_shapes):
         S.append(E("head", "head", ec, [R_EYE + 0.045, R_EYE + 0.036, R_EYE + 0.02], lid_rot, 0.05, masks=["lid"], tag="lid_shell"))
         S.append(E("head", "head", ec + by * 0.03 + bz * 0.018, [0.08, 0.034, 0.05], lid_rot, 0.035, masks=["lid"], tag="upper_lid"))
         S.append(E("head", "head", ec - by * 0.032 + bz * 0.012, [0.07, 0.024, 0.045], lid_rot, 0.035, masks=["lid"], tag="lower_lid"))
-        S.append(E("head", "head", ec + bz * (R_EYE + 0.032) + bx * 0.004, [0.054, 0.022, 0.048], lid_rot, 0.012, sign=-1, tag="palpebral_opening"))
+        S.append(E("head", "head", ec + bz * (R_EYE + 0.032) + bx * 0.004, [0.064, 0.036, 0.05], lid_rot, 0.014, sign=-1, tag="palpebral_opening"))
         S.append(E("head", "head", ec, [R_EYE + 0.003] * 3, (0, 0, 0), 0.004, sign=-1, tag="eye_pit"))
         # ---------------- brow: lacrimal boss in front, postorbital boss above-behind -------------
         po = cast.cast_at(H(0.47, 0.77, 0.2 * sg), HD(np.array([-0.15, -0.75, -0.65 * sg])))

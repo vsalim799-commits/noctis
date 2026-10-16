@@ -5,6 +5,7 @@
 //   noctis_sim demo  [--out DIR]             vertical-slice field expedition (observation, acoustics, drone,
 //                                            hypotheses, report) driven by the live simulation
 //   noctis_sim export-terrain [--out DIR]    heightmap and weightmaps for Unreal Landscape import
+//   noctis_sim export-ground [--out DIR]     substrate / wetness / water-surface masks (environment art, landscape material)
 //   noctis_sim export-level [--warmup-hours H] [--json FILE] [--out DIR]   level POIs, routes, masks (LevelExport.cpp)
 // Common options: --data DIR --env ID --profile ID --seed N --threads N --scale F
 #include "LevelExport.h"
@@ -370,6 +371,102 @@ int cmdExportTerrain(const Args& a)
     meta.set("note", "Unreal: Landscape > Import from File > heightmap.png (16-bit). Scale Z = (max-min) m * 100 / 512. Layers from weight_*.png.");
     writeText(a.out + "/terrain.json", meta.dump(true));
     std::printf("Terrain exporté : %dx%d, relief %.1f m -> %s\n", h.width(), h.height(), hi - lo, a.out.c_str());
+    return 0;
+}
+
+// Ground masks for the environment art pipeline (Tools/EnvironmentFactory, landscape material, PCG):
+// substrate weightmaps, static wetness index, initial soil moisture and the river/lake water surface.
+// Same orientation as export-terrain (row 0 = north edge); material-cell grid (habitat resolution).
+int cmdExportGround(const Args& a)
+{
+    WorldSimulation w;
+    SimConfig cfg;
+    cfg.dataRoot = a.data;
+    cfg.environmentId = a.env;
+    cfg.profileId = a.profile;
+    cfg.seed = a.seed;
+    cfg.spawnPopulation = false;
+    if (!w.initialize(cfg))
+    {
+        return 1;
+    }
+    std::filesystem::create_directories(a.out);
+    const Terrain& t = w.terrain();
+    const Grid2D<u8>& sub = t.substrates();
+    const int gw = sub.width();
+    const int gh = sub.height();
+    for (int s = 0; s < kSubstrateCount; ++s)
+    {
+        Image img(gw, gh);
+        bool any = false;
+        for (int y = 0; y < gh; ++y)
+        {
+            for (int x = 0; x < gw; ++x)
+            {
+                const bool on = sub.at(x, gh - 1 - y) == s;
+                any = any || on;
+                const u8 v = on ? 255 : 0;
+                img.at(x, y) = Rgb{v, v, v};
+            }
+        }
+        if (any)
+        {
+            writePng(a.out + "/substrate_" + substrateKey(static_cast<Substrate>(s)) + ".png", img);
+        }
+    }
+    auto writeUnit = [&](const Grid2D<float>& g, const std::string& name) {
+        Image img(g.width(), g.height());
+        for (int y = 0; y < g.height(); ++y)
+        {
+            for (int x = 0; x < g.width(); ++x)
+            {
+                const u8 v = static_cast<u8>(std::lround(saturate(g.at(x, g.height() - 1 - y)) * 255.0f));
+                img.at(x, y) = Rgb{v, v, v};
+            }
+        }
+        writePng(a.out + "/" + name, img);
+    };
+    writeUnit(t.baseWetness(), "wetness.png");
+    writeUnit(t.moisture(), "moisture_initial.png");
+    // Water surface (absolute height, 16 bit, normalised like heightmap.png; 0 = dry) and its mask.
+    w.water().rebuildSurface(w.terrain());
+    const Grid2D<float>& ws = w.water().surface();
+    const float lo = t.minHeight();
+    const float hi = t.maxHeight();
+    std::vector<u16> s16(ws.cellCount(), 0);
+    Image wmask(ws.width(), ws.height());
+    int wet = 0;
+    for (int y = 0; y < ws.height(); ++y)
+    {
+        for (int x = 0; x < ws.width(); ++x)
+        {
+            const float s = ws.at(x, ws.height() - 1 - y);
+            const bool water = s > -1.0e5f;
+            wet += water ? 1 : 0;
+            s16[static_cast<size_t>(y) * static_cast<size_t>(ws.width()) + static_cast<size_t>(x)] =
+                water ? static_cast<u16>(std::max(1L, std::lround(saturate((s - lo) / std::max(0.01f, hi - lo)) * 65535.0f))) : 0;
+            const u8 v = water ? 255 : 0;
+            wmask.at(x, y) = Rgb{v, v, v};
+        }
+    }
+    writePng16Gray(a.out + "/water_surface.png", ws.width(), ws.height(), s16);
+    writePng(a.out + "/water_mask.png", wmask);
+    JsonValue meta = JsonValue::makeObject();
+    meta.set("environment", w.environment().id);
+    meta.set("seed", static_cast<double>(a.seed));
+    meta.set("size_m", t.size());
+    meta.set("grid_cells", static_cast<double>(gw));
+    meta.set("cell_size_m", sub.cellSize());
+    meta.set("min_height_m", lo);
+    meta.set("max_height_m", hi);
+    meta.set("water_cells", static_cast<double>(wet));
+    meta.set("river_stage_m", w.water().riverStage(0));
+    meta.set("bankfull_depth_m", w.water().bankfullDepth(0));
+    meta.set("note", "Row 0 = north edge (like export-terrain). substrate_*.png: 255 where the substrate is present. wetness.png: static wetness "
+                     "index (groundwater proximity, 0..1). moisture_initial.png: soil moisture at t0. water_surface.png: 16-bit, "
+                     "z = min + v / 65535 * (max - min), 0 = dry.");
+    writeText(a.out + "/ground.json", meta.dump(true));
+    std::printf("Masques de sol exportés : %dx%d (%.1f m/cellule), %d cellules d'eau -> %s\n", gw, gh, sub.cellSize(), wet, a.out.c_str());
     return 0;
 }
 
@@ -1019,10 +1116,14 @@ int main(int argc, char** argv)
     {
         return cmdExportTerrain(a);
     }
+    if (a.mode == "export-ground")
+    {
+        return cmdExportGround(a);
+    }
     if (a.mode == "export-level")
     {
         return noctistools::cmdExportLevel(argc, argv);
     }
-    std::printf("Usage: noctis_sim validate|run|demo|export-terrain|export-level [--data DIR] [--env ID] [--profile ID] [--seed N] [--days N] [--hours N] [--out DIR]\n");
+    std::printf("Usage: noctis_sim validate|run|demo|export-terrain|export-ground|export-level [--data DIR] [--env ID] [--profile ID] [--seed N] [--days N] [--hours N] [--out DIR]\n");
     return 1;
 }

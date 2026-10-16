@@ -129,6 +129,11 @@ def fbx_report(path):
                         V = np.asarray(c["props"][0]).reshape(-1, 3)
                         e = V.max(0) - V.min(0)
                         ext = e if ext is None else np.maximum(ext, e)
+    lt = [np.linalg.norm(m["Lcl Translation"]) for m in models if m.get("type") == "LimbNode" and "Lcl Translation" in m]
+    if lt:
+        rep["max_bone_local_translation_file_units"] = round(float(max(lt)), 2)
+    sc_ = [m["Lcl Scaling"] for m in models if "Lcl Scaling" in m]
+    rep["node_scalings"] = sorted({tuple(round(x, 3) for x in v) for v in sc_}) if sc_ else [(1.0, 1.0, 1.0)]
     rep["models"] = models[:6]
     rep["n_models"] = len(models)
     if ext is not None:
@@ -236,9 +241,16 @@ def run(ctx):
     bpy.context.view_layer.objects.active = rig
     select_only([rig])
     bpy.ops.object.mode_set(mode="EDIT")
+    # connected bones share head/tail: read everything first, then write (scaling in place would
+    # scale shared joints twice)
+    ht = {eb.name: (eb.head.copy() * 100.0, eb.tail.copy() * 100.0) for eb in rig.data.edit_bones}
     for eb in rig.data.edit_bones:
-        eb.head *= 100.0
-        eb.tail *= 100.0
+        eb.use_connect = False
+    for eb in rig.data.edit_bones:
+        eb.head, eb.tail = ht[eb.name]
+    for eb in rig.data.edit_bones:
+        if eb.parent and (eb.head - eb.parent.tail).length < 1e-3:
+            eb.use_connect = True
     bpy.ops.object.mode_set(mode="OBJECT")
     for o in [sk] + lods:
         me = o.data

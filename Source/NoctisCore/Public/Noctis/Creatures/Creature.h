@@ -106,6 +106,10 @@ struct Injury
     double time = 0.0;
     EntityId cause;
     i16 causeSpecies = -1;
+    // Inflicted by a predator attacking this individual as prey, to feed (a hunting strike or the
+    // continuation of that bout). False for defensive counter-attacks, defence of self or young,
+    // intraspecific fights and accidents. Only such wounds make a death count as predation.
+    bool predatory = false;
 };
 
 struct Scar
@@ -375,6 +379,30 @@ struct BehaviorState
     float urgency = 0.0f;
     double lastCall = -1e9;
     double lastAttack = -1e9;
+    // Anti-predator calling bout (threat display, defence, alarm): start of the bout and last decision at
+    // which the eliciting situation was present. Kept across behaviour switches so call rates keep waning
+    // when an animal flips between Display, Defend and Vigilance in one standoff.
+    double callBoutStart = -1e9;
+    double callBoutSeen = -1e9;
+    // Death-cause attribution only (no effect on behaviour): the prey this predator is fighting in a
+    // hunting bout it started. A hunting predator struck by its prey re-appraises it as a threat and
+    // switches to Defend, so its later blows in the same struggle are still credited to the hunt.
+    EntityId engagedPrey;
+    double engagedPreyUntil = -1e9;
+    // Hunting: the individual given up on after a failed pursuit (not re-targeted until giveUpUntil),
+    // and the start time of the current pursuit (first sprint of the bout).
+    EntityId giveUpTarget;
+    double giveUpUntil = -1e9;
+    double chaseStartedAt = -1e9;
+    // Closed-loop seek command for a chase/attack: re-aimed by locomotion at every sub-step towards
+    // seekPoint + seekVel * t, so contact geometry does not depend on the decision interval. Cleared at
+    // every decision and re-armed only by the hunt's Chase/Attack phases.
+    bool seekActive = false;
+    Vec2 seekPoint;
+    Vec2 seekVel;
+    float seekStandoff = 0.5f;
+    float seekMaxSpeed = 0.0f;
+    float seekElapsed = 0.0f;
     std::array<float, kBehaviorCount> scores{};
     std::vector<ActionIntent> intents;
 };

@@ -203,6 +203,61 @@ def seam_check(x):
     return out
 
 
+def tail_level_db(mono):
+    """Level of the 20-50 ms before the end (just before the 20 ms end fade) re the loudest 5 ms frame."""
+    e, w = envelope_db(mono, 0.005)
+    a, b = mono.size - C.ns(0.05), mono.size - C.ns(0.02)
+    if a <= 0:
+        return -200.0
+    return db(math.sqrt(float(np.mean(mono[a:b] ** 2)))) - float(e.max())
+
+
+def ultrasonic_fraction_db(mono):
+    """Energy above 20 kHz re the total (dB)."""
+    spec = np.abs(np.fft.rfft(mono)) ** 2
+    f = np.fft.rfftfreq(mono.size, 1.0 / C.SR)
+    tot = float(spec[1:].sum())
+    return 10.0 * math.log10(max(float(spec[f > 20000.0].sum()), 1e-30) / max(tot, 1e-30))
+
+
+def hf_frame_energy(mono):
+    hf = C.bandpass(mono, 2000.0, 12000.0, order=4)
+    w = C.ns(0.001)
+    nfr = hf.size // w
+    return np.mean(hf[: nfr * w].reshape(nfr, w) ** 2, axis=1)
+
+
+def ensemble_gate_db(monos, peak_window_db=30.0, smooth_ms=3):
+    """Hard-gate detector for dense granular textures, on the mean 2-12 kHz energy envelope of the variations of a
+    group (1 ms frames, 3 ms smoothing; averaging removes the random gaps of single renders). drop(k) = median level of
+    the 5 ms before k minus the maximum level of the 5 ms starting 2 ms after k, over the k whose preceding median is
+    within 30 dB of the peak. A texture cut by a gate falls and stays low; a smooth relaxation, or a loud grain falling
+    back onto the ongoing texture, gives a few dB. (A truncated texture of 1.1 gave 13-28 dB.)"""
+    from numpy.lib.stride_tricks import sliding_window_view
+    envs = [hf_frame_energy(m) for m in monos]
+    L = max(e.size for e in envs)
+    E = np.zeros(L)
+    for e in envs:
+        E[: e.size] += e
+    E = np.convolve(E / len(envs), np.ones(smooth_ms) / smooth_ms, mode="same")
+    lv = 10.0 * np.log10(E + 1e-30)
+    if lv.size < 14:
+        return 0.0
+    k = np.arange(5, lv.size - 7)
+    before = np.median(sliding_window_view(lv, 5)[k - 5], axis=1)
+    after = sliding_window_view(lv, 5)[k + 2].max(axis=1)
+    cand = before >= lv.max() - peak_window_db
+    return float((before - after)[cand].max()) if np.any(cand) else 0.0
+
+
+TAIL_MAX_DB = -40.0          # pre-fade level of non-transition one-shots re their maximum
+ULTRASONIC_MAX_DB = -30.0    # energy above 20 kHz re total
+DC_MAX_DBFS = -80.0
+GATE_MAX_DB = 12.0
+LIMITER_MAX_GR_DB = 6.0
+LIMITER_MAX_FRACTION = 0.01
+
+
 def transfer_check(base, var, q):
     """Distance variant = base x |G(f)| (ISO 9613-1 absorption + foliage), normalised at ref_hz.
     Compare band-power ratios variant/base at each check frequency with the prediction."""
@@ -340,8 +395,47 @@ def measure(rec):
             m["transfer"] = tr
             check("transfer", len(tr) > 0 and all(e["ok"] for e in tr),
                   "; ".join(f"{e['hz']:.0f} Hz {e['measured_db']}/{e['predicted_db']} dB" for e in tr) or "no measurable band")
+    # Signal hygiene: DC, ultrasonic energy, truncated tails.
+    dc = max(db(abs(float(np.mean(x[:, c] if x.ndim == 2 else x)))) for c in range(ch))
+    m["dc_dbfs"] = round(dc, 1)
+    check("dc_offset", dc < DC_MAX_DBFS, f"{m['dc_dbfs']} dBFS < {DC_MAX_DBFS}")
+    us = ultrasonic_fraction_db(mono)
+    m["energy_above_20khz_db"] = round(us, 1)
+    if rec["category"] != "vocal":
+        # (Vocal hypotheses are exempt: the harmonics above 20 kHz of high-pitched small-mammal calls, e.g. a ~10.5 kHz
+        # distress call, belong to the call model analysed by the in-game recorder; the 1.1 vocal library is unchanged.)
+        check("ultrasonic_energy", us < ULTRASONIC_MAX_DB, f"{m['energy_above_20khz_db']} dB < {ULTRASONIC_MAX_DB}")
+    if not a.get("loop") and not q.get("transition"):
+        tl = tail_level_db(mono)
+        m["pre_fade_tail_db"] = round(tl, 1)
+        check("tail_not_truncated", tl < TAIL_MAX_DB, f"{m['pre_fade_tail_db']} dB re max < {TAIL_MAX_DB} (20-50 ms avant la fin)")
+    if "rms_dbfs" in lv:
+        check("rms_manifest_consistent", abs(m["rms_dbfs"] - lv["rms_dbfs"]) <= 0.05, f"{m['rms_dbfs']} vs {lv['rms_dbfs']}")
+    # Mastering limiter of the loops: only true outliers may be touched.
+    params = rec.get("parameters") or {}
+    lim = params.get("mastering_limiter") or (params.get("synthesis") or {}).get("mastering_limiter")
+    if lim is not None:
+        gr, fr = float(lim.get("max_gain_reduction_db", 0.0)), float(lim.get("fraction_limited", 0.0))
+        m["limiter"] = {"max_gain_reduction_db": gr, "fraction_limited": fr}
+        check("limiter_transparent", gr < LIMITER_MAX_GR_DB and fr < LIMITER_MAX_FRACTION,
+              f"réduction max {gr} dB < {LIMITER_MAX_GR_DB}, fraction {fr} < {LIMITER_MAX_FRACTION}")
+    if "thunder" in q:
+        t = q["thunder"]
+        check("thunder_level_geometry_vs_core", abs(t["geometry_db"] - t["core_db"]) <= t["max_difference_db"],
+              f"{t['geometry_db']} vs {t['core_db']} dB ± {t['max_difference_db']}")
     # Metadata checks.
     check("confidence_label", rec.get("confidence") in ("established", "strongly_supported", "inferred", "speculative", "unknown"))
+    check("model_confidence_label", rec.get("model_confidence") in ("established", "strongly_supported", "inferred", "speculative", "unknown"))
+    cap = rec.get("caption") or {}
+    check("caption_fr_en", bool(cap.get("fr")) and bool(cap.get("en")), cap or "missing")
+    if rec.get("hypothesis"):
+        check("caption_says_hypothesis", "hypoth" in (cap.get("fr") or "").lower() and "hypoth" in (cap.get("en") or "").lower(),
+              cap.get("fr"))
+        check("caption_no_double_hypothesis", (cap.get("fr") or "").lower().count("(hypoth") <= 1
+              and (cap.get("en") or "").lower().count("(hypoth") <= 1, cap.get("fr"))
+    if "distance_variant_m" in (rec.get("ue5") or {}):
+        check("distance_variant_calibrated_at_distance", (rec.get("level") or {}).get("received_spl_db") is not None,
+              (rec.get("level") or {}).get("received_spl_db"))
     check("sources_known", all(s in SOURCES for s in rec.get("sources", [])), [s for s in rec.get("sources", []) if s not in SOURCES])
     if rec["category"] == "vocal":
         check("vocal_is_hypothesis", rec.get("hypothesis") is True)
@@ -447,6 +541,55 @@ def main(argv=None) -> int:
             groups[g] += 1
     few = {g: n for g, n in groups.items() if n < 4}
     lib.append({"name": "variations_per_random_group_ge_4", "ok": not few, "detail": few})
+    # Every vocal one-shot voice belongs to a random group (4 voices).
+    lone = [r["id"] for r in man["sounds"] if r["category"] == "vocal" and (r.get("variant") or {}).get("voice", "").startswith("voice")
+            and "distance_m" not in (r.get("variant") or {}) and not r["ue5"].get("random_group")]
+    lib.append({"name": "vocal_voices_in_random_groups", "ok": not lone, "detail": lone[:20]})
+    # UE5 presets: importer-compatible attenuation (attenuate=false or every numeric field set).
+    att = man["ue5"]["attenuation_presets"]
+    bad_att = [n for n, p in att.items()
+               if not (p.get("attenuate") is False or (p.get("attenuate") is True and all(
+                   p.get(k) is not None for k in ("shape", "distance_algorithm", "inner_radius_cm", "falloff_distance_cm", "db_attenuation_at_max"))))
+               or any(v is None for v in p.values())]
+    lib.append({"name": "attenuation_presets_importable", "ok": not bad_att, "detail": bad_att})
+    # Concurrency: a sound that crossfades with others must not sit in a single-slot group.
+    con = man["ue5"]["concurrency_presets"]
+    by_id = {r["id"]: r for r in man["sounds"]}
+    bad_con = []
+    for r in man["sounds"]:
+        ue = r["ue5"]
+        mates = [by_id[k] for k in ue.get("crossfade_with") or [] if k in by_id]
+        if ue.get("crossfade_parameter") or mates:
+            if con[ue["concurrency"]]["max_count"] < 2:
+                bad_con.append(r["id"])
+            bad_con += [f"{r['id']}~{o['id']}" for o in mates if o["ue5"]["concurrency"] == ue["concurrency"]
+                        and con[ue["concurrency"]]["max_count"] < 2]
+    lib.append({"name": "concurrency_allows_crossfades", "ok": not bad_con, "detail": bad_con[:20]})
+    # Aliases (single-layer mixes) point at an existing sound.
+    aliases = man["ue5"].get("aliases") or {}
+    bad_alias = [a for a, v in aliases.items() if v.get("target") not in by_id]
+    lib.append({"name": "aliases_resolve", "ok": not bad_alias, "detail": bad_alias})
+    # Thunder within 2 km is louder than the heavy-rain bed (internal consistency of the absolute levels).
+    rain_db = max([r["level"].get("ambient_spl_db") or 0.0 for r in man["sounds"] if r["category"] == "weather" and r["subcategory"] == "rain"]
+                  or [0.0])
+    quiet = [r["id"] for r in man["sounds"] if r["subcategory"] == "thunder" and r["variant"].get("distance_m", 1e9) <= 2000.0
+             and r["level"]["received_spl_db"] <= rain_db]
+    lib.append({"name": "thunder_2km_louder_than_heavy_rain", "ok": not quiet, "detail": {"heavy_rain_db": rain_db, "too_quiet": quiet}})
+    # Dense granular footstep textures fade out instead of stopping as a gate (mean envelope of the variations).
+    gate_groups = defaultdict(list)
+    for r in man["sounds"]:
+        if r.get("qa", {}).get("texture_gate_check") and r["ue5"].get("random_group"):
+            gate_groups[r["ue5"]["random_group"]].append(r)
+    gates = {}
+    for g, rs in gate_groups.items():
+        monos = []
+        for r in rs:
+            xx, _, _ = load(C.REPO / r["file"])
+            monos.append(xx if xx.ndim == 1 else xx.mean(axis=1))
+        gates[g] = round(ensemble_gate_db(monos), 2)
+    bad_gate = {g: v for g, v in gates.items() if v >= GATE_MAX_DB}
+    lib.append({"name": "texture_no_hard_gate", "ok": not bad_gate,
+                "detail": {"groups": len(gates), "worst_db": max(gates.values()) if gates else None, "failing": bad_gate}})
 
     fails = [(r["id"], c) for r in results for c in r["checks"] if not c["ok"]]
     by_check = Counter(c["name"] for _, c in fails)

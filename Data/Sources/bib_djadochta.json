@@ -13,7 +13,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : listes de références d'articles (PLoS ONE 4(8): e6738)"
+      "verification": "Alias de arbour2009_tailclub_impact (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : listes de références d'articles (PLoS ONE 4(8): e6738)",
+      "alias_of": "arbour2009_tailclub_impact"
     },
     {
       "id": "arbour2015_tail_club_evolution",
@@ -27,7 +28,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : enregistrement Crossref et liste de références (J Anat 227: 514-523)"
+      "verification": "Alias de arbour2015_tailclub_evolution (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : enregistrement Crossref et liste de références (J Anat 227: 514-523)",
+      "alias_of": "arbour2015_tailclub_evolution"
     },
     {
       "id": "arbour2016_ankylosaurid_systematics",
@@ -713,7 +715,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation Wikipédia (Evolution 70(8): 1734-1746, PMID 27345722) ; co-auteurs suivants non affichés"
+      "verification": "Alias de riede2016_closed_mouth_vocal (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation Wikipédia (Evolution 70(8): 1734-1746, PMID 27345722) ; co-auteurs suivants non affichés",
+      "alias_of": "riede2016_closed_mouth_vocal"
     },
     {
       "id": "roach2007_pack_hunting",
@@ -867,7 +870,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation Wikipédia (Nature 606(7914): 522-526, DOI, PMID 35614213)"
+      "verification": "Alias de wiemann2022_ale_metabolism (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation Wikipédia (Nature 606(7914): 522-526, DOI, PMID 35614213)",
+      "alias_of": "wiemann2022_ale_metabolism"
     },
     {
       "id": "yoshida2023_ankylosaur_larynx",
@@ -1175,7 +1179,8 @@
       "url": null,
       "type": "article",
       "verified": false,
-      "verification": "Titre et résumé retrouvés (GitHub code search 2026-10-03, corpus d'articles) ; auteurs, année et revue non affichés -> non vérifiée."
+      "verification": "Alias de wilson2012_multituberculates (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Titre et résumé retrouvés (GitHub code search 2026-10-03, corpus d'articles) ; auteurs, année et revue non affichés -> non vérifiée.",
+      "alias_of": "wilson2012_multituberculates"
     },
     {
       "id": "yang2019_oviraptorid_clutches",

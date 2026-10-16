@@ -262,7 +262,7 @@ def skin_disp(x, y, z, nx, ny, nz, reg, mk, bone, P, LW, BH, BA, BL, out):
         cf = cols - math.floor(cols)
         colg = _smooth(0.0, 0.1, cf) * _smooth(1.0, 0.9, cf)
         fronty = max(0.0, front) if m_sm >= m_st else max(0.0, 0.6 * upn + 0.6 * front)
-        plate_t = band * (colg + (1.0 - colg) * _smooth(0.55, 0.9, fronty))
+        plate_t = band * (colg + (1.0 - colg) * _smooth(0.15, 0.45, fronty))
         rid = _hash(int(k), int(math.floor(cols)), bone, 91)
         scw = max(m_sm, m_st) * _smooth(0.05, 0.45, fronty)
         if scw > 0.01:

@@ -21,7 +21,7 @@ TOOL_DIR = REPO / "Tools" / "AudioFactory"
 BUILD_DIR = REPO / "Build" / "Audio"
 MANIFEST_PATH = REPO / "Data" / "Audio" / "manifest.json"
 PREVIEW_DIR = REPO / "Output" / "audio"
-GENERATOR_VERSION = "1.1.0"
+GENERATOR_VERSION = "1.2.0"
 MASTER_SEED = 20261015          # changing it changes every random variation of the library
 
 C_AIR_REF = 343.0               # m/s, only used where temperature does not matter
@@ -322,8 +322,20 @@ def modal_bank(x: np.ndarray, freqs, taus, gains) -> np.ndarray:
 
 
 def front_loaded_times(r: np.random.Generator, count: int, t0: float, span: float, power: float = 1.6) -> np.ndarray:
-    """Event times concentrated at the start of [t0, t0 + span] (compaction, crushing...)."""
-    return t0 + span * r.uniform(0.0, 1.0, count) ** power
+    """Event times of a relaxation process starting at t0 (compaction, crushing...): rate ~ exp(-(t - t0) / tau_c)
+    with tau_c = span / (power + 1), i.e. the same mean time as the former truncated power law t0 + span u^power.
+    The density decays smoothly, so a dense micro-impact train fades out instead of stopping as a hard gate."""
+    if power < 1.0:
+        # Crescendo (fibres tearing up to a snap): beta law whose density falls to zero at the end of the span.
+        return t0 + span * r.beta(1.0 / power, 2.0, count)
+    tau_c = span / (power + 1.0)
+    return t0 + r.exponential(tau_c, count)
+
+
+def decaying_times(r: np.random.Generator, count: int, t0: float, mean_s: float, shape: float = 2.0) -> np.ndarray:
+    """Event times after t0 with a smooth, unimodal density (gamma law of given mean): rises from 0, peaks, then
+    decays exponentially (droplets falling back, debris settling). No hard end of the event train."""
+    return t0 + r.gamma(shape, mean_s / shape, count)
 
 
 def lognormal_amps(r: np.random.Generator, count: int, sigma: float = 0.6) -> np.ndarray:
@@ -454,6 +466,22 @@ def env_ad(n: int, attack_s: float, decay_tau_s: float, start: int = 0) -> np.nd
 def noise_burst(n: int, r: np.random.Generator, lo: float, hi: float, attack_s: float, tau_s: float, start: int = 0,
                 order: int = 2) -> np.ndarray:
     return bandpass(r.standard_normal(n), lo, hi, order) * env_ad(n, attack_s, tau_s, start)
+
+
+def trim_tail(x: np.ndarray, floor_db: float = -60.0, frame_s: float = 0.005, keep_s: float = 0.06) -> np.ndarray:
+    """Cut a one-shot rendered with a generous buffer once its 5 ms envelope has fallen below floor_db re the
+    loudest frame for good; keep_s of the decay is kept after that point (covers the 20 ms end fade of finalize)."""
+    mono = x.mean(axis=1) if x.ndim == 2 else x
+    w = max(1, ns(frame_s))
+    nfr = mono.shape[0] // w
+    if nfr < 2:
+        return x
+    e = np.sqrt(np.mean(mono[: nfr * w].reshape(nfr, w) ** 2, axis=1))
+    if e.max() <= 0.0:
+        return x
+    above = np.nonzero(e >= e.max() * float(db2lin(floor_db)))[0]
+    end = min(x.shape[0], (int(above[-1]) + 1) * w + ns(keep_s))
+    return x[:end]
 
 
 def unit(x: np.ndarray) -> np.ndarray:

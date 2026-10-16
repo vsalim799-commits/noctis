@@ -2,9 +2,16 @@
 
 Ce document rassemble les mesures de performance du cœur `NoctisCore` (exécutable autonome, hors
 Unreal), le profil d'une simulation de deux jours, le plan d'optimisation qui en découle et les
-constats QA (tests, déterminisme, portabilité). Toutes les valeurs ont été mesurées le 15 octobre 2026
-sur la machine de développement décrite ci-dessous ; les commandes pour les reproduire sont en fin de
-document.
+constats QA (tests, déterminisme, portabilité). Toutes les valeurs ont été mesurées dans la nuit du
+15 au 16 octobre 2026 sur la machine de développement décrite ci-dessous ; les commandes pour les
+reproduire sont en fin de document.
+
+**Version mesurée.** Benchmark, profils et test d'endurance portent sur le code du commit `27a58e8`
+(15 octobre, 22 h 53) plus les corrections d'ordre d'évaluation de `Sim/WorldSimulation.cpp` décrites
+au § 6.3 (sans effet sur les résultats GCC). Depuis, d'autres chantiers modifient `Private/Creatures`,
+`World/SoundField` et `Research` (copie de travail non validée au 16 octobre, 0 h 55) : avec cette
+copie, les 45 tests rapides passent (§ 6.1) et la boucle d'alarmes du § 6.2 a disparu. Les chiffres
+des §§ 2 à 5 sont donc à re-mesurer une fois ces corrections intégrées.
 
 > **À lire d'abord — limites de ces mesures.** La machine est un conteneur Linux à 4 vCPU partagé avec
 > d'autres agents (charge moyenne 6 à 16 pendant les mesures). Un test de contrôle (boucle de calcul
@@ -88,7 +95,62 @@ pas de 10 s, accélération ×100, 17 280 pas), binaire GCC.
 
 ### 3.1 Callgrind (instructions exécutées)
 
-CALLGRIND_TABLE
+Total : **707,2 G instructions** (96 min sous callgrind), dont 21,2 G (3,0 %) pour l'initialisation
+et 686,0 G (97,0 %) pour `WorldSimulation::advance`. Pourcentages ci-dessous rapportés à
+`advance` (coût inclusif, appels compris) ou au total (coût exclusif). Le profil a été vidé en trois
+tranches, ce qui montre que **le coût d'un pas double en deux jours** alors que la population
+baisse (254 → 215 animaux) :
+
+| Tranche | Pas | Temps simulé | Instructions par pas | Part de la propagation sonore |
+|---|---|---|---|---|
+| 1 | 1 – 4 446 | 0 – 0,51 j | 27,0 M | 0,2 % |
+| 2 | 4 447 – 13 612 | 0,51 – 1,58 j | 40,3 M | 25,5 % |
+| 3 | 13 613 – 17 280 | 1,58 – 2,00 j | 53,6 M | 51,7 % |
+
+La hausse vient entièrement de `SoundField::receivedLevelDb` (le reste du pas passe de 27,0 à
+25,9 M instructions) : chaque animal qui perçoit calcule la propagation de chaque cri audible, et le
+nombre de cris explose avec la boucle d'alarmes décrite au § 6.2. Vérifié en rejouant la même
+simulation et en comptant les événements : aucun cri d'alarme pendant les 30 premières heures, puis
+19 262 entre 30 et 36 h et ≈ 40 000 par tranche de 6 h ensuite (32 cris par animal et par heure, 58 à
+65 sources sonores actives en permanence). Corriger ce défaut est donc aussi la première optimisation
+(P0) ; dans la copie de travail actuelle, la même simulation n'émet plus que 0 à 40 alarmes par
+tranche de 6 h et consomme 24 % de temps CPU en moins pour les deux jours (72,4 s contre 95,8 s,
+GCC, exécutions successives ; 254 → 251 animaux au lieu de 254 → 215).
+
+Coût inclusif par poste (% de `advance`, 2 jours complets) :
+
+| Poste | Part | Remarque |
+|---|---|---|
+| `CreatureSystem::step` | 95,7 % | |
+| — dans les boucles `parallelFor` | 93,4 % | fraction parallélisable (§ 4) |
+| `perceive` | 58,5 % | |
+| — `VegetationSystem::transmittance` (vision et audition) | 29,3 % | `opticalDensity` : 22,2 % du total en exclusif |
+| — `SoundField::receivedLevelDb` | 28,6 % | 0,2 % au début, 52 % à la fin |
+| — `Terrain::lineOfSight` | 14,1 % | |
+| — `CreatureSystem::neighbours` (`SpatialHash::query`) | 4,5 % | |
+| `integrateLocomotion` | 31,6 % | 10 sous-pas de 1 s par pas de 10 s en LOD lointaine |
+| — `Terrain::normalAt` / `Terrain::query` | 7,1 % / 6,0 % | 4 lectures de hauteur par normale |
+| `ResearchSystem::update` → `FieldMap::reveal` | 3,4 % | à chaque pas, chercheur immobile |
+| `drainFootprints` + `TrackSystem::add` | 1,5 % | séquentiel |
+| `decide` + `executeBehavior` + `updatePhysiology` | 2,3 % | |
+| `rebuildIndex`, `updateGroups`, mises à jour horaires, végétation, événements | 1,8 % | |
+| Fonctions de la libm (exclusif : `sincosf`, `expf`, `logf`, `powf`, `pow`, `atanf`…) | 13,1 % du total | |
+
+Coût exclusif (% du total des instructions) :
+
+| Fonction | Part |
+|---|---|
+| `Terrain::heightAt` (interpolation bilinéaire) | 23,5 % |
+| `VegetationSystem::opticalDensity` | 22,2 % |
+| `integrateLocomotion` (corps de la fonction) | 8,0 % |
+| `VegetationSystem::cellIndexAt` | 4,4 % |
+| `SpatialHash::query` | 4,0 % |
+| `perceive` (corps) | 2,4 % + 1,0 % |
+| `sincosf` / `expf` / `pow` / `logf` / `powf` / `atanf` (libm) | 2,2 / 2,0 / 1,7 / 1,7 / 1,3 / 1,2 % |
+| `Terrain::lineOfSight` (corps) | 2,1 % |
+| `VegetationSystem::transmittance` (corps) | 1,7 % |
+| `GradientNoise2D::sample` (génération du terrain) | 1,4 % |
+| `Terrain::query`, `TrackSystem::add`, `WaterSystem::query` | 1,3 / 1,2 / 0,9 % |
 
 ### 3.2 Contrôle par échantillonnage (gprof, même exécution, 2 jours complets)
 
@@ -129,7 +191,7 @@ rapportées au pas de simulation) :
 | Régime | Fraction parallèle p | Accélération prévue à 4 threads | à 8 threads |
 |---|---|---|---|
 | LOD complète (pas de 0,1 s) | 99,4 % | 3,9 | 7,7 |
-| Accéléré ×100 (profil de 2 jours) | PAR_ACCEL | AMDAHL4 | AMDAHL8 |
+| Accéléré ×100 (profil de 2 jours) | 93,4 % | 3,3 | 5,5 |
 
 Ce sont des bornes hautes : elles supposent des cœurs libres et un coût nul de synchronisation. Le
 reste séquentiel du régime accéléré est la résolution des intentions et contacts, la vidange des
@@ -146,27 +208,32 @@ suite de tests (déterminisme compris).
 
 | # | Cible | Part mesurée | Action | Gain attendu | Fichiers |
 |---|---|---|---|---|---|
-| P1 | Audition en LOD complète | 86 % du pas complet ; ACC_HEAR du régime accéléré | a) rejeter tôt les sources inaudibles même en champ libre (divergence + absorption sous le seuil d'audition) avant toute marche de rayon ; b) calculer l'absorption une fois par pas et par bande de fréquence (la météo est constante pendant un pas) au lieu de `pow`/`exp` à chaque couple source-auditeur ; c) précalculer, à chaque mise à jour de la végétation, l'extinction par cellule pour les hauteurs utilisées (0,5 m et 1,5 m) — `opticalDensity` devient une lecture — et parcourir les cellules par DDA (Amanatides-Woo) au lieu d'échantillonner tous les demi-pas de cellule ; d) occultation : pyramide de hauteurs maximales (test conservatif rapide) ou cache par paire de cellules ; e) étaler les instants de perception des animaux sur plusieurs pas (phase aléatoire déterministe) pour supprimer les pics p95 | ×3 à ×5 sur le pas en LOD complète, p95 ramené près de la moyenne | `World/SoundField.cpp`, `World/Vegetation.cpp`, `World/Terrain.cpp`, `Creatures/Perception.cpp` (e) |
-| P2 | Locomotion en LOD lointaine | ACC_LOCO du régime accéléré | En LOD lointaine, un pas de 10 s est découpé en 10 sous-pas de 1 s, chacun appelant `Terrain::query` (normale = 4 lectures de hauteur, mécanique du sol, eau). Sous-pas de 5 s en LOD lointaine, pas de mécanique du sol ni d'enfoncement quand aucune empreinte n'est produite, normale tirée des 4 sommets déjà lus par `heightAt` | −50 à −70 % de ce poste | `Creatures/Locomotion.cpp`, `Creatures/CreatureSystem.cpp`, `World/Terrain.cpp` |
-| P3 | `Terrain::heightAt` | ACC_HEIGHT exclusif | Appelée hors ligne depuis les autres unités de compilation : la déplacer en ligne dans `Terrain.h`, sortir le test `samples_ == 0` du chemin chaud, fournir `sampleHeightNormal` (hauteur et normale en une lecture 4×4), stocker les hauteurs en `int16`/`half` relatives (16 Mo de `float` ne tiennent pas en cache L2) | −30 à −50 % de ce poste | `World/Terrain.h/.cpp` |
-| P4 | Voisinage (`SpatialHash::query`) | ACC_HASH | Réutiliser les vecteurs de sortie (allocations visibles au profil), adapter la taille des cellules au rayon des requêtes de perception, plafonner le nombre de voisins traités | −30 % de ce poste | `Core/SpatialHash.cpp`, `Creatures/CreatureSystem.cpp` |
-| P5 | `FieldMap::reveal` | ACC_REVEAL | Recalcule à chaque pas une ligne de vue vers chaque cellule du rayon, même chercheur immobile : mettre en cache l'ensemble des cellules visibles par cellule d'observation et ne le recalculer qu'au changement de cellule | ≈ ce poste entier | `Research/FieldMap.cpp` |
+| P0 | Boucle d'alarmes (défaut § 6.2) | propagation sonore : 0,2 % du pas au début, 52 % après 1,6 jour | Corriger le déclenchement des alarmes ; ajouter un plafond de sources sonores actives par auditeur | coût du pas en régime accéléré ramené vers 27 M instructions (−50 % en fin de 2ᵉ jour) | `Creatures/Perception.cpp`, `Creatures/Behavior.cpp` |
+| P1 | Audition en LOD complète | 86 % du pas complet ; perception = 58,5 % du régime accéléré (propagation sonore 28,6 %, transmittance 29,3 %, ligne de vue 14,1 %) | a) rejeter tôt les sources inaudibles même en champ libre (divergence + absorption sous le seuil d'audition) avant toute marche de rayon ; b) calculer l'absorption une fois par pas et par bande de fréquence (la météo est constante pendant un pas) au lieu de `pow`/`exp` à chaque couple source-auditeur ; c) précalculer, à chaque mise à jour de la végétation, l'extinction par cellule pour les hauteurs utilisées (0,5 m et 1,5 m) — `opticalDensity` devient une lecture — et parcourir les cellules par DDA (Amanatides-Woo) au lieu d'échantillonner tous les demi-pas de cellule ; d) occultation : pyramide de hauteurs maximales (test conservatif rapide) ou cache par paire de cellules ; e) étaler les instants de perception des animaux sur plusieurs pas (phase aléatoire déterministe) pour supprimer les pics p95 | ×3 à ×5 sur le pas en LOD complète, p95 ramené près de la moyenne | `World/SoundField.cpp`, `World/Vegetation.cpp`, `World/Terrain.cpp`, `Creatures/Perception.cpp` (e) |
+| P2 | Locomotion en LOD lointaine | 31,6 % du régime accéléré | En LOD lointaine, un pas de 10 s est découpé en 10 sous-pas de 1 s, chacun appelant `Terrain::query` (normale = 4 lectures de hauteur, mécanique du sol, eau). Sous-pas de 5 s en LOD lointaine, pas de mécanique du sol ni d'enfoncement quand aucune empreinte n'est produite, normale tirée des 4 sommets déjà lus par `heightAt` | −50 à −70 % de ce poste | `Creatures/Locomotion.cpp`, `Creatures/CreatureSystem.cpp`, `World/Terrain.cpp` |
+| P3 | `Terrain::heightAt` | 23,5 % des instructions (exclusif) | Appelée hors ligne depuis les autres unités de compilation : la déplacer en ligne dans `Terrain.h`, sortir le test `samples_ == 0` du chemin chaud, fournir `sampleHeightNormal` (hauteur et normale en une lecture 4×4), stocker les hauteurs en `int16`/`half` relatives (16 Mo de `float` ne tiennent pas en cache L2) | −30 à −50 % de ce poste | `World/Terrain.h/.cpp` |
+| P4 | Voisinage (`SpatialHash::query`) | 4,5 % (accéléré) | Réutiliser les vecteurs de sortie (allocations visibles au profil), adapter la taille des cellules au rayon des requêtes de perception, plafonner le nombre de voisins traités | −30 % de ce poste | `Core/SpatialHash.cpp`, `Creatures/CreatureSystem.cpp` |
+| P5 | `FieldMap::reveal` | 3,4 % (accéléré) | Recalcule à chaque pas une ligne de vue vers chaque cellule du rayon, même chercheur immobile : mettre en cache l'ensemble des cellules visibles par cellule d'observation et ne le recalculer qu'au changement de cellule | ≈ ce poste entier | `Research/FieldMap.cpp` |
 | P6 | Pool de threads autonome | ×6,6 de pénalité en temps réel (Clang, machine chargée) | Exécution séquentielle sous un seuil de travail, ne réveiller que les threads nécessaires, attendre la fin des lots plutôt que l'arrivée de chaque thread ; dans Unreal, `ParallelFor` avec seuil de lot | supprime la pénalité | `Core/Jobs.cpp` |
 | P7 | Initialisation | 70 % des 2,9 s | Paralléliser par lignes la génération de la plaine d'inondation (cellules indépendantes, donc déterministe), réduire les octaves du bruit fractal hors des zones visibles | −50 % du temps de chargement | `World/TerrainGenerator.cpp` |
-| P8 | libm | ACC_LIBM | Remplacer `atan2`/`sincos` des caps par de l'algèbre vectorielle, mettre en cache les `pow` d'allométrie par individu | −5 % | divers |
+| P8 | libm | 13,1 % des instructions | Remplacer `atan2`/`sincos` des caps par de l'algèbre vectorielle, mettre en cache les `pow` d'allométrie par individu | −5 % | divers |
 
-Ordre recommandé : P1 (le jeu passe l'essentiel de son temps en temps réel, où les animaux proches
-sont en LOD complète), P2 et P3 (régime accéléré et CLI), puis P6 avant toute mesure multi-thread,
-P5, P4, P7, P8.
+Ordre recommandé : P0 (défaut de comportement qui coûte aussi le plus cher), P1 (le jeu passe
+l'essentiel de son temps en temps réel, où les animaux proches sont en LOD complète), P2 et P3
+(régime accéléré et CLI), puis P6 avant toute mesure multi-thread, P5, P4, P7, P8.
 
 ## 6. Constats QA
 
 ### 6.1 Suite de tests
 
-`noctis_tests` (cadre maison sans exceptions, `Tools/Tests/TestFramework.h`) contient 43 tests : 41
-rapides (étiquette CTest `short`, ≈ 25 s sur machine calme, 50 s sous charge) et 2 longs (étiquette
-`long`, lancés seulement avec `NOCTIS_LONG_TESTS=1`). Résultat actuel, identique avec GCC et Clang :
-**40 / 41 tests rapides réussis**. L'échec est un vrai défaut de simulation (§ 6.2).
+`noctis_tests` (cadre maison sans exceptions, `Tools/Tests/TestFramework.h`) contenait 43 tests au
+commit `27a58e8` : 41 rapides (étiquette CTest `short`, ≈ 25 s sur machine calme, 50 s sous charge)
+et 2 longs (étiquette `long`, lancés seulement avec `NOCTIS_LONG_TESTS=1`). Les chantiers
+`Private/Creatures` y ajoutent leurs tests de non-régression (47 tests, dont 45 rapides, dans la copie
+de travail du 16 octobre à 1 h 10). Résultats, identiques avec GCC et Clang : **40 / 41 tests rapides
+réussis sur `27a58e8`** (l'échec est un vrai défaut de simulation, § 6.2) et **45 / 45 avec la copie
+de travail** (48 s avec GCC, 49 s avec Clang, machine chargée), où ce défaut est corrigé. Le tableau
+décrit les 41 tests rapides d'origine.
 
 | Famille | Contenu | État |
 |---|---|---|
@@ -175,7 +242,7 @@ rapides (étiquette CTest `short`, ≈ 25 s sur machine calme, 50 s sous charge)
 | `world` (9) | terrain déterministe par graine, bilan de masse de l'eau, croissance logistique bornée, position du soleil et photopériode (15,43 h à 45° N au solstice), ISO 9613-1 (48 valeurs de la table 2 d'ISO 9613-2, écart maximal 0,89 fois la tolérance d'arrondi) | OK |
 | `creatures` (4) | relation de Froude foulée/vitesse, sens de l'allométrie de Nagy, bornes physiologiques sur longue intégration | OK |
 | `research` (5) | Fisher exact (thé de Fisher p = 34/70, valeurs exactes rationnelles), Mann-Whitney (tables n = 5/5), Spearman, hypothèses jamais déclarées « vraies » | OK |
-| `sim` (3 rapides + 2 longs) | déterminisme 1 thread / N threads, absence de NaN, cohérence du snapshot, taux d'événements ; 20 jours d'endurance et 3 jours de déterminisme (longs) | 1 échec (6.2) |
+| `sim` (3 rapides + 2 longs) | déterminisme 1 thread / N threads, absence de NaN, cohérence du snapshot, taux d'événements ; 20 jours d'endurance et 3 jours de déterminisme (longs) | `27a58e8` : 1 échec (§ 6.2) ; copie de travail : OK |
 
 Valeurs de référence vérifiées indépendamment (Python, arithmétique exacte) : p de Fisher 34/70,
 41/14858, 1/126, 3571/6653325, 1063/46189 ; absorption ISO 9613-1 à 20 °C, 70 % HR : 4,978 dB/km à
@@ -185,7 +252,8 @@ Valeurs de référence vérifiées indépendamment (Python, arithmétique exacte
 
 Sur 12,5 h simulées (graine 1), les animaux émettent 6,4 cris d'alarme par animal et par heure (GCC ;
 5,9 avec Clang) pour une borne de 2, et un même *Edmontosaurus* en émet 38,7 par heure (37,4) pour une
-borne de 20. Cause, lue dans le code (non corrigée, `Private/Creatures` étant hors de mon périmètre) :
+borne de 20 (commit `27a58e8`). Cause, lue dans le code de ce commit (`Private/Creatures` est hors du
+périmètre de ce travail, rien n'y a été modifié) :
 
 - `Perception.cpp` l. 578-579 : entendre l'alarme d'un congénère porte la vigilance à
   0,6 × fraîcheur de l'alarme, soit 0,6 juste après l'avoir entendue ;
@@ -195,7 +263,9 @@ borne de 20. Cause, lue dans le code (non corrigée, `Private/Creatures` étant 
 Entendre une alarme suffit donc à en émettre une : dans un troupeau, le phénomène s'entretient sans
 prédateur. Correction suggérée : n'émettre l'alarme que sur une menace perçue directement (exclure la
 vigilance induite par une alarme), ou plafonner cette vigilance induite sous le seuil d'émission, avec
-une période réfractaire croissante.
+une période réfractaire croissante. Dans la copie de travail du 16 octobre (0 h 55), le déclenchement
+dans `Behavior.cpp` a été réécrit et le test passe : 87 alarmes en 12,5 h, soit 0,08 par animal et par
+heure, 1,0 par heure au plus pour un individu.
 
 ### 6.3 Déterminisme
 
@@ -209,11 +279,14 @@ une période réfractaire croissante.
   expressions tirent deux nombres aléatoires dans des arguments de fonction ou des opérandes dont
   l'ordre d'évaluation n'est pas spécifié par C++ (GCC évalue de droite à gauche, Clang de gauche à
   droite). Corrigé dans `Sim/WorldSimulation.cpp` (4 instructions, en conservant l'ordre de GCC : les
-  empreintes GCC sont inchangées). Il reste 7 sites dans `Private/Creatures` :
-  `Behavior.cpp` l. 689, 893, 1151, 1198, 1280 (`fromHeading(rng) * rng`) et `CreatureSystem.cpp`
-  l. 1199, 1471 (`spawn(…, rng.chance() ?…, …, Vec2{rng, rng})`). Avec ces 7 sites corrigés de la même
-  façon (correctif prêt, vérifié dans une copie de travail), Clang 18 reproduit exactement les
-  empreintes de GCC 13 (`bfbd1605b06877bb` / `75ca6051a8ab19c7`).
+  empreintes GCC sont inchangées). Il reste 7 sites dans `Private/Creatures`, toujours présents dans la
+  copie de travail du 16 octobre (numéros de ligne à cette date) : `Behavior.cpp` l. 769, 1030, 1310,
+  1358, 1440 (`p + Vec2::fromHeading(rng) * rng`) et `CreatureSystem.cpp` l. 1278, 1550
+  (`spawn(…, rng.chance() ? … : …, …, pos + Vec2{rng, rng}, …)`). Avec ces 7 sites corrigés de la même
+  façon (correctif prêt, qui s'applique toujours proprement), Clang 18 reproduit exactement les
+  empreintes de GCC 13 sur `27a58e8` (`bfbd1605b06877bb` / `75ca6051a8ab19c7`) ; sans lui, elles
+  diffèrent dès l'initialisation (réserves d'énergie des animaux). Les listes entre accolades
+  (`Vec2{rng, rng}`) sont, elles, évaluées de gauche à droite par la norme.
 - **Entre plateformes** : la libm de glibc choisit à l'exécution des variantes FMA (`__expf_fma`,
   `__powf_fma`…) ; MSVC et macOS ont leurs propres implémentations. Le déterminisme est garanti pour
   un binaire donné sur une plateforme donnée, pas entre Windows, Linux et macOS (sauvegardes
@@ -221,8 +294,8 @@ une période réfractaire croissante.
 
 ### 6.4 Endurance (20 jours simulés, test long)
 
-`sim.soak.20_days` (GCC, graine 2024, monde réduit, échelle de population 0,25, 4 threads,
-26 min 50 s murales) : **aucune valeur non finie ni hors bornes** chez aucun animal à aucun des 20
+`sim.soak.20_days` sur `27a58e8` (GCC, graine 2024, monde réduit, échelle de population 0,25,
+4 threads, 26 min 50 s murales) : **aucune valeur non finie ni hors bornes** chez aucun animal à aucun des 20
 bilans journaliers, végétation stable (9,44·10⁸ à 9,46·10⁸ kg), magasins bornés (79 000 empreintes au
 plus, 66 carcasses). La communauté passe de 66 à 195 animaux (minimum 66, maximum 199, borne 4×
 respectée), mais le test échoue sur deux défauts réels :
@@ -230,7 +303,8 @@ respectée), mais le test échoue sur deux défauts réels :
 1. **Immigration calibrée sur la population pleine échelle.** Aucune naissance en 20 jours ; toute
    la croissance vient de l'immigration (57 *Edmontosaurus* immigrés pour 11 au départ, adultes 8 → 40 ;
    *Champsosaurus* adultes 5 → 17 ; *Struthiomimus* 2 → 11). `CreatureSystem.cpp` l. 1499-1525 vise
-   0,9 × `initial_count` des données (45 pour *Edmontosaurus* : 0,9 × 45 = 40,5) sans tenir compte de
+   0,9 × `initial_count` des données (45 pour *Edmontosaurus* : 0,9 × 45 = 40,5 ; l. 1593 dans la copie
+   de travail du 16 octobre, toujours sans correction) sans tenir compte de
    `SimConfig::populationScale` : toute partie lancée avec une densité réduite (option `--scale` du CLI,
    tests, réglage de densité) est « remplie » jusqu'à la densité pleine en quelques jours. Correction
    suggérée : multiplier la cible par l'échelle de population (à transmettre au `CreatureSystem`).
@@ -238,7 +312,14 @@ respectée), mais le test échoue sur deux défauts réels :
    cris d'alarme ; un même individu crie 152 fois par heure (toutes les 24 s, soit la période
    réfractaire de 20 s plus le délai de décision) pendant 20 jours.
 
-Le test long de déterminisme (72 h, 1 contre 4 threads) passe (§ 6.3).
+Même test sur la copie de travail du 16 octobre (1 h 10) : 12 min 21 s murales (CPU −35 % : 9 min 43 s
+contre 14 min 59 s), toujours aucune valeur non finie, et **la boucle d'alarmes a disparu** (0,73
+vocalisation par animal et par heure, alarmes 0,00 par animal et par heure, 0,6 par heure au plus pour
+un individu). Le défaut d'immigration subsiste : 66 → 226 animaux, adultes *Edmontosaurus* 8 → 40,
+*Didelphodon* 5 → 21, *Borealosuchus* 3 → 13, *Struthiomimus* 2 → 11, toujours sans aucune naissance ;
+le test échoue sur ces 4 espèces.
+
+Le test long de déterminisme (72 h, 1 contre 4 threads) passe sur `27a58e8` (§ 6.3).
 
 ### 6.5 Mémoire et comportement indéfini
 

@@ -17,7 +17,7 @@ import numpy as np
 SHOTS = {
     "side": ((-0.4, 2.3, 23.0), (-0.6, 2.05, 0.0), 50.0, "idle", 1, None),
     "front34": ((10.8, 3.6, 9.6), (0.9, 2.25, 0.0), 42.0, "idle", 60, None),
-    "head": ((6.75, 4.25, 2.55), (3.98, 3.82, 0.14), 70.0, "idle", 1, 9.0),
+    "head": ((7.3, 4.45, 3.3), (3.75, 3.72, 0.1), 50.0, "idle", 1, 11.0),
     "flank": ((2.6, 2.7, 5.6), (0.5, 2.45, 0.35), 45.0, "idle", 1, None),
     "midstride": ((3.5, 3.0, 15.5), (-0.4, 2.0, 0.0), 45.0, "walk", 0.62, None),
     "foot": ((2.2, 0.75, 2.9), (0.5, 0.35, 0.45), 55.0, "idle", 1, 7.0),
@@ -72,15 +72,15 @@ def studio(bpy, bl):
     from mathutils import Vector
     sc = bpy.context.scene
     bl.emission_world(sc, color=(0.006, 0.006, 0.0065), strength=1.0)
-    cyc = bl.cyclorama(depth=70.0, width=90.0, radius=9.0, height=40.0, back=26.0, color=(0.016, 0.016, 0.017),
-                       floor_color=(0.075, 0.075, 0.078))
+    cyc = bl.cyclorama(depth=70.0, width=90.0, radius=9.0, height=40.0, back=26.0, color=(0.012, 0.012, 0.013),
+                       floor_color=(0.05, 0.05, 0.052))
     cyc.rotation_euler = (0, 0, -math.pi / 2)      # wall behind the creature's right side camera (+X_b is the far side)
     c = Vector((0.0, 0.3, 2.3))
     L = []
-    L.append(bl.area_light("key", (-3.0, -1.5, 12.5), c, size=9.0, size_y=6.0, power=26000, color=(1.0, 0.965, 0.92), spread=100))
-    L.append(bl.area_light("rim_back", (9.0, 4.0, 7.5), c + Vector((0, 0, 1.0)), size=4.0, power=9000, color=(0.85, 0.9, 1.0), spread=70))
-    L.append(bl.area_light("rim_head", (6.0, -9.0, 6.5), Vector((0.0, -4.0, 3.9)), size=2.5, power=3500, color=(0.9, 0.93, 1.0), spread=70))
-    L.append(bl.area_light("fill", (-14.0, -6.0, 3.0), c, size=6.0, power=1600, color=(0.9, 0.93, 1.0), spread=120))
+    L.append(bl.area_light("key", (-3.0, -1.5, 12.5), c, size=9.0, size_y=6.0, power=4200, color=(1.0, 0.965, 0.92), spread=100))
+    L.append(bl.area_light("rim_back", (9.0, 4.0, 7.5), c + Vector((0, 0, 1.0)), size=4.0, power=2200, color=(0.85, 0.9, 1.0), spread=70))
+    L.append(bl.area_light("rim_head", (6.0, -9.0, 6.5), Vector((0.0, -4.0, 3.9)), size=2.5, power=700, color=(0.9, 0.93, 1.0), spread=70))
+    L.append(bl.area_light("fill", (-14.0, -6.0, 3.0), c, size=6.0, power=260, color=(0.9, 0.93, 1.0), spread=120))
     return L
 
 

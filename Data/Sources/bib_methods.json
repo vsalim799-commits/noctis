@@ -125,7 +125,8 @@
       "url": "http://jeb.biologists.org/cgi/content/full/204/22/3917",
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation dans un texte Wikipédia (Tyrannosaurus) et dans la bibliographie de Jagnandan & Higham 2017 (Sci. Rep.) ; DOI non confirmé."
+      "verification": "Alias de carrier2001_theropod_turning (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation dans un texte Wikipédia (Tyrannosaurus) et dans la bibliographie de Jagnandan & Higham 2017 (Sci. Rep.) ; DOI non confirmé.",
+      "alias_of": "carrier2001_theropod_turning"
     },
     {
       "id": "kleiber1932_body_size",
@@ -517,7 +518,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : page de publications de C.M. Eliason (co-auteur) et citations Wikipédia (PMID 27345722)."
+      "verification": "Alias de riede2016_closed_mouth_vocal (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : page de publications de C.M. Eliason (co-auteur) et citations Wikipédia (PMID 27345722).",
+      "alias_of": "riede2016_closed_mouth_vocal"
     },
     {
       "id": "clarke2016_vegavis_syrinx",
@@ -531,7 +533,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citations Wikipédia (PMID 27732575) ; liste complète des auteurs non relevée."
+      "verification": "Alias de clarke2016_mesozoic_syrinx (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citations Wikipédia (PMID 27732575) ; liste complète des auteurs non relevée.",
+      "alias_of": "clarke2016_mesozoic_syrinx"
     },
     {
       "id": "yoshida2023_pinacosaurus_larynx",
@@ -545,7 +548,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation Wikipédia (PMC9932143, PMID 36792659)."
+      "verification": "Alias de yoshida2023_ankylosaur_larynx (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citation Wikipédia (PMC9932143, PMID 36792659).",
+      "alias_of": "yoshida2023_ankylosaur_larynx"
     },
     {
       "id": "senter2008_voices_of_the_past",
@@ -629,7 +633,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : export Scopus (liste de publications de L.M. Witmer)."
+      "verification": "Alias de witmer2009_tyrannosaur_brain (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : export Scopus (liste de publications de L.M. Witmer).",
+      "alias_of": "witmer2009_tyrannosaur_brain"
     },
     {
       "id": "paulinacarabajal2016_pawpawsaurus",
@@ -657,7 +662,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : bibliographie de Paulina-Carabajal et al. 2016 et base de citations tierce ; DOI non confirmé."
+      "verification": "Alias de zelenitsky2009_theropod_olfaction (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : bibliographie de Paulina-Carabajal et al. 2016 et base de citations tierce ; DOI non confirmé.",
+      "alias_of": "zelenitsky2009_theropod_olfaction"
     },
     {
       "id": "zelenitsky2011_olfaction_evolution",
@@ -713,7 +719,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : export Scopus (liste de publications de M.T. Carrano) ; pages non relevées."
+      "verification": "Alias de hall2011_comment_nocturnality (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : export Scopus (liste de publications de M.T. Carrano) ; pages non relevées.",
+      "alias_of": "hall2011_comment_nocturnality"
     },
     {
       "id": "choiniere2021_vision_hearing",
@@ -727,7 +734,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : notice OpenAlex reproduite dans un dépôt GitHub (auteurs, DOI) et base de citations tierce (volume, pages)."
+      "verification": "Alias de choiniere2021_theropod_senses (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : notice OpenAlex reproduite dans un dépôt GitHub (auteurs, DOI) et base de citations tierce (volume, pages).",
+      "alias_of": "choiniere2021_theropod_senses"
     },
     {
       "id": "erickson2004_tyrannosaurid_gigantism",
@@ -741,7 +749,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citations Wikipédia (PMID 15306807) et texte de l'article (dépôt Plazi ggxml2taxpub) lu via raw.githubusercontent.com."
+      "verification": "Alias de erickson2004_tyrannosaurid_growth (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citations Wikipédia (PMID 15306807) et texte de l'article (dépôt Plazi ggxml2taxpub) lu via raw.githubusercontent.com.",
+      "alias_of": "erickson2004_tyrannosaurid_growth"
     },
     {
       "id": "lee2008_sexual_maturity",
@@ -825,7 +834,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : export Scopus (liste de publications de G.M. Erickson)."
+      "verification": "Alias de erickson1996_trex_bitemarks (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : export Scopus (liste de publications de G.M. Erickson).",
+      "alias_of": "erickson1996_trex_bitemarks"
     },
     {
       "id": "erickson1996_trex_bite_force",
@@ -867,7 +877,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citations Wikipédia (PMC2748709, PMID 19789646)."
+      "verification": "Alias de wolff2009_trex_trichomonosis (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : citations Wikipédia (PMC2748709, PMID 19789646).",
+      "alias_of": "wolff2009_trex_trichomonosis"
     },
     {
       "id": "rothschild2001_theropod_stress_fractures",

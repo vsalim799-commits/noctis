@@ -91,7 +91,8 @@ void SignalSynth::render(const SoundSource& src, const EvidenceDatabase* db, dou
     {
         return;
     }
-    const float amp = pascalsPeakAt1m(src.levelDb) / d * std::pow(10.0f, gainExtraDb / 20.0f);
+    // Spreading of the source type (1/r for point sources, line-source law for thunder; SoundField::spreadingLossDb).
+    const float amp = pascalsPeakAt1m(src.levelDb) * std::pow(10.0f, (gainExtraDb - SoundField::spreadingLossDb(src, d)) / 20.0f);
     Rng rng(src.seed ? src.seed : static_cast<u64>(src.id) * 7919u, 0x5A11);
     const float sr = static_cast<float>(sampleRate);
     const float nyquist = 0.45f * sr;

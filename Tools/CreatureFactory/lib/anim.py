@@ -221,7 +221,7 @@ class Skeleton:
 # ----------------------------------------------------------------------------------------------
 # clips
 class Gait:
-    def __init__(self, sk, sim, speed, duty, lift=0.32, name="walk"):
+    def __init__(self, sk, sim, speed, duty, lift=0.32, name="walk", stance_c=-0.2, drop=0.09):
         self.sk = sk
         loc = sim["locomotion"]
         self.h = float(sim["hip_height_m"])
@@ -238,6 +238,8 @@ class Gait:
         self.duty = duty
         self.lift = lift
         self.name = name
+        self.stance_c = stance_c        # stance excursion centre relative to the rest MTP (m, + forward)
+        self.drop = drop                # mean pelvis lowering during the gait (m)
 
     def info(self):
         return dict(speed_ms=round(self.v, 3), froude=round(self.Fr, 4), stride_m=round(self.stride, 3),
@@ -259,7 +261,7 @@ def walk_pose(sk, g, t, cycle_offset=0.0, ampl=1.0):
     T, beta, lam = g.T, g.duty, g.stride
     x_root = g.v * t
     pose = {"root_pos": FWD * x_root, "root_yaw": 0.0, "legs": {}, "rel": {}}
-    stance_c = 0.1                                   # stance excursion centre ahead of the rest MTP (m)
+    stance_c = g.stance_c
     stances = {}
     for s, ph0 in (("r", 0.0), ("l", 0.5)):
         ph = ((t / T) + ph0) % 1.0                   # 0 = touch-down
@@ -307,7 +309,7 @@ def walk_pose(sk, g, t, cycle_offset=0.0, ampl=1.0):
         pose["legs"][s] = dict(Q=Q, toe_dir=toe_dir, meta_dir=meta, pole=FWD)
     # trunk
     w = 2 * math.pi / T
-    bob = -0.035 * math.cos(2 * w * t) * ampl - 0.07 * ampl         # lowest at double support
+    bob = -0.035 * math.cos(2 * w * t) * ampl - g.drop               # lowest at double support
     sway = 0.05 * math.sin(w * t + 0.4) * ampl                      # towards the stance leg (right first)
     pose["pelvis_off"] = UP * bob + LAT * sway
     pr = pitch(math.radians(1.0) * math.sin(2 * w * t - 0.6) * ampl) @ roll(math.radians(2.0) * math.sin(w * t) * ampl) @ yaw(math.radians(3.0) * math.sin(w * t + 1.2) * ampl)
@@ -557,8 +559,8 @@ def run(ctx):
         clips.append(act)
         ctx.log(f"  clip {name}: {info}")
     # --- walk ---------------------------------------------------------------------------------
-    def gait_clip(name, speed, duty, lift, ampl):
-        g = Gait(sk, sim, speed, duty, lift=lift, name=name)
+    def gait_clip(name, speed, duty, lift, ampl, stance_c=-0.2, drop=0.09):
+        g = Gait(sk, sim, speed, duty, lift=lift, name=name, stance_c=stance_c, drop=drop)
         poses, slide, stretch = [], 0.0, 0.0
         prevQ = {}
         for f in range(g.nf + 1):
@@ -583,7 +585,7 @@ def run(ctx):
     vmax = float(loc.get("max_speed_ms", 0))
     if vmax >= 2.5:
         v_fast = min(vmax * 0.5, 2.6)
-        gait_clip("walk_fast", v_fast, max(0.5, loc.get("duty_factor_walk", 0.6) - 0.08), 0.38, 1.35)
+        gait_clip("walk_fast", v_fast, max(0.5, loc.get("duty_factor_walk", 0.6) - 0.08), 0.38, 1.35, stance_c=-0.3, drop=0.24)
     # --- idle & standing behaviours ---------------------------------------------------------------
     dur = 8.0
     add("idle", [idle_pose(sk, f / FPS, dur) for f in range(int(dur * FPS))], True)

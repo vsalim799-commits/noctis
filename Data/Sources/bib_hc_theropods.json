@@ -503,7 +503,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_methods.json (id gleich2005_basilar_papilla) par une autre fiche du projet : bibliographie de Paulina-Carabajal et al. 2016"
+      "verification": "Alias de gleich2005_basilar_papilla (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Reprise de la vérification enregistrée dans Data/Sources/bib_methods.json (id gleich2005_basilar_papilla) par une autre fiche du projet : bibliographie de Paulina-Carabajal et al. 2016",
+      "alias_of": "gleich2005_basilar_papilla"
     },
     {
       "id": "choiniere2021_theropod_senses",
@@ -531,7 +532,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id schmitz2011_nocturnality) par une autre fiche du projet : WebSearch 2026-10-03 — page Science, Semantic Scholar, Zenodo"
+      "verification": "Alias de schmitz2011_nocturnality (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id schmitz2011_nocturnality) par une autre fiche du projet : WebSearch 2026-10-03 — page Science, Semantic Scholar, Zenodo",
+      "alias_of": "schmitz2011_nocturnality"
     },
     {
       "id": "bell2017_tyrannosaur_integument",
@@ -881,7 +883,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_hc_ornithischians.json (id erickson2017_incubation) par une autre fiche du projet : WebSearch 2026-10-03 — PNAS, PMC5255600 ; Protoceratops ~83 j, Hypacrosaurus ~171 j"
+      "verification": "Alias de erickson2017_incubation (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Reprise de la vérification enregistrée dans Data/Sources/bib_hc_ornithischians.json (id erickson2017_incubation) par une autre fiche du projet : WebSearch 2026-10-03 — PNAS, PMC5255600 ; Protoceratops ~83 j, Hypacrosaurus ~171 j",
+      "alias_of": "erickson2017_incubation"
     },
     {
       "id": "grady2014_mesothermy",
@@ -909,7 +912,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_methods.json (id wiemann2022_ale_metabolism) par une autre fiche du projet : WebSearch 2026-10-03 — notice Nature"
+      "verification": "Alias de wiemann2022_ale_metabolism (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Reprise de la vérification enregistrée dans Data/Sources/bib_methods.json (id wiemann2022_ale_metabolism) par une autre fiche du projet : WebSearch 2026-10-03 — notice Nature",
+      "alias_of": "wiemann2022_ale_metabolism"
     },
     {
       "id": "lockley1994_tyrannosauripus",
@@ -1035,7 +1039,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id fowler2011_deinonychus_rpr) par une autre fiche du projet : WebSearch 2026-10-03 — notice PLoS ONE et PMC3237572"
+      "verification": "Alias de fowler2011_deinonychus_rpr (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id fowler2011_deinonychus_rpr) par une autre fiche du projet : WebSearch 2026-10-03 — notice PLoS ONE et PMC3237572",
+      "alias_of": "fowler2011_deinonychus_rpr"
     },
     {
       "id": "turner2007_velociraptor_quills",
@@ -1049,7 +1054,8 @@
       "url": null,
       "type": "article",
       "verified": true,
-      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id turner2007_velociraptor_quill_knobs) par une autre fiche du projet : WebSearch 2026-10-03 — notice Science et ADS"
+      "verification": "Alias de turner2007_velociraptor_quill_knobs (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id turner2007_velociraptor_quill_knobs) par une autre fiche du projet : WebSearch 2026-10-03 — notice Science et ADS",
+      "alias_of": "turner2007_velociraptor_quill_knobs"
     },
     {
       "id": "lamanna2014_anzu",

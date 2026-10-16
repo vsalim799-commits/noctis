@@ -322,12 +322,42 @@ void CreatureSystem::assignLod(WorldContext& ctx)
             }
         }
     }
+    // Engagement LOD: a pursuit is decided by sub-second contact geometry (strike ranges of 1-4 m against
+    // 30-70 m covered per Far-LOD command), so a predator closing on prey and the prey itself run at full
+    // temporal resolution while the engagement lasts, wherever the observer is. Engagements are short
+    // (a few hundred seconds per simulated day), so the cost is small.
+    std::vector<u32> engaged;
+    for (const Creature& c : creatures_)
+    {
+        if (!c.alive || c.behavior.current != BehaviorId::Hunt || !c.behavior.target.valid())
+        {
+            continue;
+        }
+        const HuntPhase h = c.behavior.hunt;
+        bool e = h == HuntPhase::Approach || h == HuntPhase::Chase || h == HuntPhase::Attack;
+        if (h == HuntPhase::Stalk)
+        {
+            const Awareness* a = c.perception.find(c.behavior.target);
+            e = a && distance(c.pos2(), a->estimatedPos) < 80.0f;
+        }
+        if (!e)
+        {
+            continue;
+        }
+        engaged.push_back(c.id.value);
+        if (c.behavior.target.kind() == EntityKind::Creature)
+        {
+            engaged.push_back(c.behavior.target.value);
+        }
+    }
+    std::sort(engaged.begin(), engaged.end());
     for (Creature& c : creatures_)
     {
         if (!c.alive)
         {
             continue;
         }
+        const bool isEngaged = std::binary_search(engaged.begin(), engaged.end(), c.id.value);
         float best = 1e9f;
         float fullR = lod_.fullRadiusM;
         for (const auto& o : observers)
@@ -347,6 +377,14 @@ void CreatureSystem::assignLod(WorldContext& ctx)
         else if (best < lod_.nearRadiusM)
         {
             l = LodLevel::Near;
+        }
+        if (isEngaged && l != LodLevel::Full)
+        {
+            l = lod_.allowFull ? LodLevel::Full : LodLevel::Near;
+            if (static_cast<int>(l) < static_cast<int>(c.lod))
+            {
+                c.behavior.nextDecision = std::min(c.behavior.nextDecision, ctx.now); // re-decide at the finer rate now
+            }
         }
         if (l == LodLevel::Full && c.lod != LodLevel::Full)
         {
@@ -585,6 +623,28 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
     const BodyRegion region = pickRegion(a.rng, rel, a.massKg < b.massKg * 0.15f);
     const bool predatory = sa.predation.style != HuntStyle::None && a.behavior.current == BehaviorId::Hunt;
     const float strength = predatory ? sa.predation.attackStrength : std::max(sa.defense.defenseStrength, sa.predation.attackStrength);
+    // Death-cause attribution (labels only; no effect on behaviour or random draws). A wound is
+    // predatory when the attacker is a predator hunting this very individual, or still in the struggle of
+    // a hunting bout it started (after the prey's first blow the predator re-appraises it as a threat and
+    // switches to Defend). Defence of self or young, counter-attacks and intraspecific fights are not
+    // predation. Game assumption: one predatory bout lasts up to 120 s after the last hunting blow.
+    constexpr double kHuntBoutS = 120.0;
+    auto engaged = [&](const Creature& x, const SpeciesSim& sx, const Creature& y) {
+        return sx.predation.style != HuntStyle::None && ((x.behavior.current == BehaviorId::Hunt && x.behavior.target == y.id) ||
+                                                         (x.behavior.engagedPrey == y.id && ctx.now < x.behavior.engagedPreyUntil));
+    };
+    const bool predation = engaged(a, sa, b);
+    if (predation)
+    {
+        a.behavior.engagedPrey = b.id;
+        a.behavior.engagedPreyUntil = ctx.now + kHuntBoutS;
+    }
+    if (b.behavior.current == BehaviorId::Hunt && b.behavior.target == a.id)
+    {
+        // The predator was struck first by its own hunt target: the struggle that follows is its hunt.
+        b.behavior.engagedPrey = a.id;
+        b.behavior.engagedPreyUntil = ctx.now + kHuntBoutS;
+    }
     const float sizeTerm = clampf(std::sqrt(a.massKg / std::max(0.1f, b.massKg)), 0.15f, 2.5f);
     const float armor = spB.regions[static_cast<size_t>(region)].armor;
     float ritual = 1.0f;
@@ -605,6 +665,7 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
     inj.time = ctx.now;
     inj.cause = a.id;
     inj.causeSpecies = a.speciesIndex;
+    inj.predatory = predation;
     applyInjury(b, inj, ctx);
 
     SimEvent e;
@@ -645,9 +706,11 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
         b.phys.stress = 1.0f;
         rememberPlace(b, MemoryKind::Danger, b.pos2(), -1.0f, ctx.now, a.id);
         b.behavior.nextDecision = ctx.now; // react immediately
-        if (!sb.vocal.calls.empty())
+        // Distress call on being struck, at most one per 3 s under repeated bites (game assumption).
+        if (!sb.vocal.calls.empty() && ctx.now - b.behavior.lastCall >= 3.0)
         {
             emitCall(b, CallContext::Distress, ctx);
+            b.behavior.lastCall = ctx.now;
         }
     }
     // Counter-attack with the prey's own weapons (horns face forward, tail clubs swing behind/sideways).
@@ -682,6 +745,7 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
         back.time = ctx.now;
         back.cause = b.id;
         back.causeSpecies = b.speciesIndex;
+        back.predatory = engaged(b, sb, a); // a prey hitting back is never predation
         applyInjury(a, back, ctx);
         SimEvent ce;
         ce.type = EventType::Attack;
@@ -697,18 +761,23 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
     // Death of the victim.
     if (b.injuries.healthIndex <= 0.0f || b.phys.bloodLoss > 0.45f)
     {
-        kill(b, DeathCause::Predation, ctx);
+        kill(b, predation ? DeathCause::Predation : DeathCause::Injury, ctx);
         const EntityId carcass = EntityId::make(EntityKind::Carcass, ctx.carcasses->nextSerial() - 1);
-        BiteMark m;
-        m.makerSpecies = a.speciesIndex;
-        m.type = BiteMarkType::Puncture;
-        m.bodyRegion = static_cast<u8>(region);
-        m.toothSpacingMm = spA.toothSpacingMmPerM * a.lengthM;
-        m.depthMm = severity * 30.0f;
-        m.time = ctx.now;
-        ctx.carcasses->addBiteMark(carcass, m);
+        // Perimortem tooth mark only for a bite wound (a horn goring or a kick leaves no bite mark).
+        if (sa.hasWeapon(Weapon::Bite) && (inj.type == InjuryType::Puncture || inj.type == InjuryType::Laceration))
+        {
+            BiteMark m;
+            m.makerSpecies = a.speciesIndex;
+            m.type = BiteMarkType::Puncture;
+            m.bodyRegion = static_cast<u8>(region);
+            m.toothSpacingMm = spA.toothSpacingMmPerM * a.lengthM;
+            m.depthMm = severity * 30.0f;
+            m.time = ctx.now;
+            ctx.carcasses->addBiteMark(carcass, m);
+        }
         if (predatory)
         {
+            a.behavior.seekActive = false;
             ++a.history.huntsAttempted;
             ++a.history.huntsSucceeded;
             a.behavior.current = BehaviorId::FeedCarcass;
@@ -1114,30 +1183,40 @@ void CreatureSystem::handleDeaths(WorldContext& ctx)
         {
             continue;
         }
-        DeathCause cause = DeathCause::Injury;
+        // Cause of death. Predation only when recent wounds inflicted by a hunting predator (Injury::predatory)
+        // outweigh all other active wounds (by initial severity): a wound received from another species in a
+        // defensive fight, a counter-attack or any other contact is an injury death. Game assumptions: the
+        // 6 h window and the weighting rule.
+        const bool wounded = c.injuries.healthIndex <= 0.0f || c.phys.bloodLoss > 0.45f;
         float maxInfection = 0.0f;
-        double lastAttack = -1e9;
+        float predatoryW = 0.0f;
+        float otherW = 0.0f;
         for (const Injury& i : c.injuries.active)
         {
             maxInfection = std::max(maxInfection, i.infection);
-            if (i.causeSpecies >= 0 && i.causeSpecies != c.speciesIndex)
+            if (i.predatory && ctx.now - i.time < 6.0 * 3600.0)
             {
-                lastAttack = std::max(lastAttack, i.time);
+                predatoryW += i.initialSeverity;
+            }
+            else
+            {
+                otherW += i.initialSeverity;
             }
         }
+        DeathCause cause = DeathCause::Injury;
         if (c.phys.hydration <= 0.0f)
         {
             cause = DeathCause::Dehydration;
         }
-        else if (c.phys.condition <= 0.0f && c.injuries.active.empty())
+        else if (!wounded || (c.phys.condition <= 0.0f && c.injuries.active.empty()))
         {
-            cause = DeathCause::Starvation;
+            cause = DeathCause::Starvation; // only the starvation trigger remains (a bruise does not make it an injury death)
         }
         else if (maxInfection > 0.5f)
         {
             cause = DeathCause::Infection;
         }
-        else if (ctx.now - lastAttack < 6.0 * 3600.0)
+        else if (predatoryW > 0.0f && predatoryW >= otherW)
         {
             cause = DeathCause::Predation;
         }

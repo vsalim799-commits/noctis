@@ -183,10 +183,22 @@ float SoundField::hearingThresholdDb(float f, float minHz, float maxHz, float be
     return thr;
 }
 
+float SoundField::spreadingLossDb(const SoundSource& s, float r)
+{
+    r = std::max(1.0f, r);
+    if (s.kind == SoundKind::Thunder)
+    {
+        // Channel of several km: line source (Tools/AudioFactory ambience.py sums the segments of rendered channels and
+        // refers them to this closed form).
+        return -10.0f * std::log10(std::atan(kThunderChannelHeightM / r) / r);
+    }
+    return 20.0f * std::log10(r);
+}
+
 float SoundField::receivedLevelDb(const SoundSource& s, const Vec3& listener, const PropagationEnv& env, float* outFoliageDb)
 {
     const float r = std::max(1.0f, distance(s.position, listener));
-    float level = s.levelDb - 20.0f * std::log10(r);
+    float level = s.levelDb - spreadingLossDb(s, r);
     level -= absorptionDbPerM(s.f0Hz, env.temperatureC, env.humidity, env.pressureKPa) * r;
     float foliageDb = 0.0f;
     if (env.vegetation && r > 10.0f)

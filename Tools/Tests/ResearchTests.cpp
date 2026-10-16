@@ -2,6 +2,7 @@
 // hypothesis system (it reports support, never truth).
 #include "TestFramework.h"
 
+#include "Noctis/Research/FieldGear.h"
 #include "Noctis/Research/Hypothesis.h"
 #include "Noctis/Research/Observation.h"
 #include "Noctis/Research/Statistics.h"
@@ -101,6 +102,18 @@ SessionSample sample(double t, i16 species, float spacing, bool drone, float obs
     return s;
 }
 } // namespace
+
+NOCTIS_TEST("research.vehicle.noise_terms")
+{
+    // Defaults = equipment.json: the generator dominates at standstill, tyre / terrain rolling noise at speed.
+    const VehicleSystem v;
+    const float idle = v.noiseAt1m(0.0f, true, false);
+    CHECK_NEAR(idle, 52.0, 1e-3);
+    CHECK_GT(v.noiseAt1m(0.0f, true, true), idle + 25.0f);
+    CHECK_NEAR(v.noiseAt1m(14.0f, false, false), 85.0, 1e-3);
+    CHECK_GT(v.noiseAt1m(15.0f, true, false), 85.0f);
+    CHECK_GT(v.noiseAt1m(8.0f, true, false) - v.noiseAt1m(3.0f, true, false), 10.0f);
+}
 
 NOCTIS_TEST("research.stats.fisher_exact_textbook")
 {

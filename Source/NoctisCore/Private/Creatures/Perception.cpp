@@ -227,6 +227,10 @@ void perceive(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world
         a.identification *= std::exp(-dt / 900.0f);
         a.uncertaintyM += dt * (1.0f + a.estimatedVel.length());
         a.estimatedPos += a.estimatedVel * dt * 0.5f;
+        // Unobserved motion is not extrapolated for ever: the remembered velocity fades (game assumption:
+        // ~10 s memory of heading and speed). Without this, dead reckoning dragged estimates hundreds of
+        // metres away from a prey that had stopped.
+        a.estimatedVel *= std::exp(-dt / 10.0f);
     }
 
     std::vector<u32> nearby;
@@ -306,14 +310,19 @@ void perceive(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world
             const float err = d * (0.02f + 0.1f * (1.0f - quality));
             const float blend = saturate(rate * dt * 2.0f);
             a.estimatedPos = lerp(a.estimatedPos, op + Vec2{c.rng.normal() * err * 0.3f, c.rng.normal() * err * 0.3f}, blend);
-            a.uncertaintyM = std::min(a.uncertaintyM, err + 1.0f);
+            // Confidence improves only as much as the observation is weighted: a barely visible animal
+            // (blend ~0) does not pin down its position (it used to be reported known to ~28 m at 230 m
+            // while the estimate hardly moved).
+            a.uncertaintyM = lerpf(a.uncertaintyM, std::min(a.uncertaintyM, err + 1.0f), blend);
             a.estimatedVel = lerp(a.estimatedVel, o.loco.velocity, blend);
         }
         if (smellRate > 0.0f)
         {
             a.modalities |= ModSmell;
             a.identification += 0.25f * smellRate * dt;
-            if (a.uncertaintyM > d * 0.3f)
+            // Re-anchor on scent only when nothing better is known: never over a sighting in this update,
+            // and only if the current estimate is worse than scent's own precision (~0.4 d).
+            if (rate <= 0.0f && a.uncertaintyM > d * 0.4f)
             {
                 // Smell gives direction upwind and a rough range only.
                 const Vec2 upwind = wind.length() > 0.1f ? -wind.normalized() : (op - p).normalized();
@@ -421,9 +430,11 @@ void perceive(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world
             a.evidence = std::min(1.5f, a.evidence + (rate + smellRate) * dt);
             a.modalities |= (rate > 0.0f ? ModVision : 0) | (smellRate > 0.0f ? ModSmell : 0);
             a.identification += (quality * 1.0f + smellRate * 0.2f) * dt;
-            a.estimatedPos = lerp(a.estimatedPos, ep, saturate((rate + smellRate) * dt * 2.0f));
+            const float blend = saturate((rate + smellRate) * dt * 2.0f);
+            a.estimatedPos = lerp(a.estimatedPos, ep, blend);
             a.estimatedVel = e.velocity;
-            a.uncertaintyM = std::min(a.uncertaintyM, d * (rate > 0.0f ? 0.05f : 0.4f) + 1.0f);
+            // As for animals: confidence improves in proportion to the observation's weight.
+            a.uncertaintyM = lerpf(a.uncertaintyM, std::min(a.uncertaintyM, d * (rate > 0.0f ? 0.05f : 0.4f) + 1.0f), blend);
             a.lastUpdate = now;
             const EntityKind kind = e.id.kind();
             a.relation = kind == EntityKind::Vehicle ? Relation::Vehicle : (kind == EntityKind::Drone ? Relation::Drone : Relation::Researcher);
@@ -510,10 +521,13 @@ void perceive(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world
         const float dirErr = (s.f0Hz < 200.0f ? 0.35f : 0.18f) * (1.0f - 0.5f * saturate(snr / 30.0f));
         const float angle = (s.position.xy() - p).heading() + c.rng.normal() * dirErr;
         const float rangeGuess = d * (1.0f + 0.3f * c.rng.normal());
-        if (a.uncertaintyM > d * 0.25f)
+        // A sound re-anchors the estimate only if it localises better than what is already known (it used
+        // to overwrite a fresh visual fix at close range, where err + 1 m exceeds 0.25 d).
+        const float soundUnc = d * (0.25f + dirErr);
+        if (soundUnc < a.uncertaintyM)
         {
             a.estimatedPos = p + Vec2::fromHeading(angle) * std::max(5.0f, rangeGuess);
-            a.uncertaintyM = std::min(a.uncertaintyM, d * (0.25f + dirErr));
+            a.uncertaintyM = soundUnc;
         }
         a.lastUpdate = now;
         if (s.kind == SoundKind::Vocalization)

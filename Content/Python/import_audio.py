@@ -24,6 +24,9 @@ Asset layout:
     /Game/Audio/Concurrency/CON_*       manifest presets + SCON_Noctis_Calls
     /Game/Audio/Creatures/<species>/voc_*   vocalisations (metadata tags Noctis.* carry confidence and hypothesis flags)
     /Game/Audio/<Category>/...          other categories when the factory produces them
+    /Game/Audio/Cues/RC_<random_group>  Random cues of the director's event libraries (thunder by distance class, splash /
+                                        vegetation crash by mass class); the UNoctisSettings cues (Weather/SC_Thunder,
+                                        Water/SC_Splash, Foley/SC_VegetationCrash) are built from the same variations
 """
 from __future__ import annotations
 
@@ -75,16 +78,18 @@ def create_attenuations(manifest: dict) -> dict:
     for name, p in presets.items():
         def configure(asset, p=p):
             settings = asset.get_editor_property("attenuation")
-            nc.set_props(settings, spatialize=bool(p.get("spatialize", True)), attenuate=bool(p.get("attenuate", True)),
-                         attenuate_with_lpf=bool(p.get("attenuate_with_lpf", False)))
-            if p.get("attenuate", True):
+            # Manifest presets without a distance model carry attenuate = false; `or` defaults also tolerate null values.
+            attenuate = bool(p.get("attenuate", True))
+            nc.set_props(settings, spatialize=bool(p.get("spatialize", True)), attenuate=attenuate,
+                         attenuate_with_lpf=bool(p.get("attenuate_with_lpf") or False))
+            if attenuate:
                 nc.set_props(settings,
-                             attenuation_shape=_enum(unreal.AttenuationShape, p.get("shape", "Sphere")),
-                             distance_algorithm=_enum(unreal.AttenuationDistanceModel, p.get("distance_algorithm", "NaturalSound")),
-                             attenuation_shape_extents=unreal.Vector(float(p.get("inner_radius_cm", 100.0)), 0.0, 0.0),
-                             falloff_distance=float(p.get("falloff_distance_cm", 10000.0)))
+                             attenuation_shape=_enum(unreal.AttenuationShape, p.get("shape") or "Sphere"),
+                             distance_algorithm=_enum(unreal.AttenuationDistanceModel, p.get("distance_algorithm") or "NaturalSound"),
+                             attenuation_shape_extents=unreal.Vector(float(p.get("inner_radius_cm") or 100.0), 0.0, 0.0),
+                             falloff_distance=float(p.get("falloff_distance_cm") or 10000.0))
                 # dBAttenuationAtMax: Python snake-cases the "dB" prefix differently across versions (VERIFY).
-                db_max = float(p.get("db_attenuation_at_max", -60.0))
+                db_max = float(p.get("db_attenuation_at_max") or -60.0)
                 try:
                     settings.set_editor_property("d_b_attenuation_at_max", db_max)
                 except Exception:  # noqa: BLE001
@@ -116,13 +121,63 @@ def create_submix(name: str):
     return nc.create_asset(f"{AUDIO}/Submixes/{name}", unreal.SoundSubmix, unreal.SoundSubmixFactory())
 
 
-def ensure_settings_sounds() -> None:
-    """UNoctisSettings points at these USoundBase paths; empty cues keep the references valid until real assets exist."""
-    for path in ("Weather/SC_Thunder", "Water/SC_Splash", "Foley/SC_VegetationCrash", "Foley/SC_Impact"):
+# UNoctisSettings sound paths -> the manifest random group whose variations feed them (fallback cues; the audio director
+# itself picks the class closest to the event: thunder by distance, splash / crash by mass, see ANoctisAudioDirector).
+SETTINGS_CUES = {
+    "Weather/SC_Thunder": "thunder_2000m",
+    "Water/SC_Splash": "fol_water_stroke_medium",
+    "Foley/SC_VegetationCrash": "fol_vegetation_crash_large",
+    "Foley/SC_Impact": None,
+}
+# Random groups turned into Random cues (/Game/Audio/Cues/RC_<group>): the director's event libraries.
+CUE_GROUP_PATTERNS = (r"^thunder_\d+m$", r"^fol_water_(enter|stroke|exit)_[a-z]+$", r"^fol_vegetation_crash_[a-z]+$")
+
+
+def _random_cue(path: str, waves) -> object:
+    """SoundCue with a Random node over `waves` (SoundCueFactoryNew.InitialSoundWaves builds the Random node when it is
+    given several waves; VERIFY on 5.4: if the property is not exposed to Python, fall back to a single-wave cue)."""
+    factory = unreal.SoundCueFactoryNew()
+    try:
+        factory.set_editor_property("initial_sound_waves", list(waves))
+    except Exception:  # noqa: BLE001 - property not exposed in this engine version
+        try:
+            factory.set_editor_property("initial_sound_wave", waves[0])
+            nc.warn(f"{path} : nœud Random indisponible depuis Python, une seule variation branchée (compléter à la main).")
+        except Exception:  # noqa: BLE001
+            nc.warn(f"{path} : impossible de pré-remplir le cue (créer le nœud Random à la main).")
+    if nc.load_asset(path):
+        # create_asset() keeps an existing asset as is: delete it so that the factory rebuilds the Random node.
+        unreal.EditorAssetLibrary.delete_asset(path)
+    return nc.create_asset(path, unreal.SoundCue, factory)
+
+
+def build_random_cues(manifest: dict) -> dict:
+    groups = {}
+    for entry in manifest.get("sounds") or []:
+        g = (entry.get("ue5") or {}).get("random_group")
+        if g and any(re.match(pat, g) for pat in CUE_GROUP_PATTERNS):
+            wave = nc.load_asset(f"{destination(entry)}/{entry['id']}")
+            if wave:
+                groups.setdefault(g, []).append(wave)
+    cues = {}
+    for g, waves in sorted(groups.items()):
+        cues[g] = nc.step(f"RC_{g}", lambda g=g, waves=waves: _random_cue(f"{AUDIO}/Cues/RC_{g}", waves))
+    nc.info(f"{len(cues)} cue(s) aléatoire(s) d'événements.")
+    return groups
+
+
+def ensure_settings_sounds(groups: dict | None = None) -> None:
+    """UNoctisSettings points at these USoundBase paths: each becomes a Random cue over the variations of its manifest
+    group (no more silent placeholder cues). Impact has no baked library yet: an empty cue keeps the reference valid."""
+    groups = groups or {}
+    for path, group in SETTINGS_CUES.items():
         full = f"{AUDIO}/{path}"
-        if not nc.load_asset(full):
+        waves = groups.get(group) if group else None
+        if waves:
+            nc.step(path, lambda full=full, waves=waves: _random_cue(full, waves))
+        elif not nc.load_asset(full):
             nc.create_asset(full, unreal.SoundCue, unreal.SoundCueFactoryNew())
-            nc.warn(f"{full} créé vide (silencieux) : y brancher les sons de météo/bruitage quand Tools/AudioFactory les produira.")
+            nc.warn(f"{full} créé vide (silencieux) : aucune variation « {group} » importée.")
 
 
 def describe_footstep_metasound() -> None:
@@ -184,6 +239,11 @@ def configure_wave(wave, entry: dict, classes, attenuations, concurrency, submix
         "Noctis.CallType": ((entry.get("parameters") or {}).get("call_type")) or "",
         "Noctis.Variant": ",".join(f"{k}={v}" for k, v in sorted((entry.get("variant") or {}).items())),
         "Noctis.Confidence": entry.get("confidence", ""),
+        "Noctis.ModelConfidence": entry.get("model_confidence", ""),
+        "Noctis.CaptionFr": (entry.get("caption") or {}).get("fr", ""),
+        "Noctis.CaptionEn": (entry.get("caption") or {}).get("en", ""),
+        "Noctis.AmbientSplDb": str(level.get("ambient_spl_db", "")),
+        "Noctis.ReceivedSplDb": str(level.get("received_spl_db", "")),
         "Noctis.Hypothesis": "true" if entry.get("hypothesis") else "false",
         "Noctis.LabelFr": entry.get("label_fr", ""),
         "Noctis.Sources": ",".join(entry.get("sources") or []),
@@ -251,7 +311,6 @@ def main(argv) -> int:
     attenuations = nc.step("atténuations", lambda: create_attenuations(manifest)) or {}
     concurrency = nc.step("concurrence", lambda: create_concurrency(manifest)) or {}
     submixes = {}
-    nc.step("sons des réglages", ensure_settings_sounds)
 
     batch = 64
     imported = 0
@@ -271,6 +330,8 @@ def main(argv) -> int:
                     imported += 1
             task.enter_progress_frame(len(chunk))
     nc.info(f"{imported} son(s) importé(s).")
+    groups = nc.step("cues aléatoires d'événements", lambda: build_random_cues(manifest)) or {}
+    nc.step("sons des réglages", lambda: ensure_settings_sounds(groups))
 
     species_ids = {s.get("species") for s in sounds if s.get("species")}
     nc.step("liaison des cris aux fiches d'espèces", lambda: link_species_calls(species_ids, args.prefer_baked))

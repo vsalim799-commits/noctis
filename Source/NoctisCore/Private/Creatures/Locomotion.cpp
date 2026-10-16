@@ -99,9 +99,38 @@ void integrateLocomotion(Creature& c, const SpeciesRuntime& sp, const WorldConte
         vmax *= 1.0f - 0.6f * saturate(grade / std::max(0.05f, maxGrade));
     }
 
+    // --- Command: the behaviour's direction/speed, or closed-loop interception during a chase ---
+    float commandSpeed = c.behavior.desiredSpeed;
+    Vec2 commandDir = c.behavior.desiredDir;
+    if (c.behavior.seekActive)
+    {
+        // Re-aim at the predicted prey position on every sub-step and follow a braking curve, so the
+        // predator arrives at the stand-off distance at the prey's own speed instead of running through it
+        // with a command held for a whole decision interval (up to ~8 s at Far LOD). The 0.8 margin on
+        // the braking deceleration and the 3 s cap on extrapolation are game assumptions.
+        BehaviorState& b = c.behavior;
+        const Vec2 target = b.seekPoint + b.seekVel * std::min(b.seekElapsed, 3.0f);
+        const Vec2 rel = target - p;
+        const float dist = rel.length();
+        if (dist > 1e-3f)
+        {
+            const Vec2 dir = rel / dist;
+            const float look = std::max(2.0f, std::min(dist, std::max(4.0f, std::min(40.0f, L.speed * 2.5f + len))));
+            // Infeasible straight line (bank, deep water): keep the obstacle-avoiding command set at the decision.
+            if (stepFeasible(c, sp, ctx, dir, look))
+            {
+                commandDir = dir;
+                const float along = dot(b.seekVel, dir);
+                const float brake = std::sqrt(2.0f * 0.8f * lo.maxDecelMs2 * std::max(0.0f, dist - b.seekStandoff));
+                commandSpeed = clampf(along + brake, 0.0f, b.seekMaxSpeed);
+            }
+        }
+        b.seekElapsed += dt;
+    }
+
     // --- Yaw: rotational inertia and traction limit turning ---
-    const float desiredSpeed = std::min(c.behavior.desiredSpeed, std::max(0.0f, vmax));
-    const float desiredHeading = c.behavior.desiredDir.lengthSq() > 1e-6f ? c.behavior.desiredDir.heading() : L.heading;
+    const float desiredSpeed = std::min(commandSpeed, std::max(0.0f, vmax));
+    const float desiredHeading = commandDir.lengthSq() > 1e-6f ? commandDir.heading() : L.heading;
     const float alphaMax = std::max(0.15f, mu * kGravity * 0.3f * hip / (sp.yawInertiaK * len * len));
     const float speedFrac = vmax > 0.0f ? saturate(L.speed / vmax) : 0.0f;
     float yawMax = lo.maxYawRateDps * kDegToRad * lerpf(1.0f, 0.5f, speedFrac);
@@ -110,9 +139,23 @@ void integrateLocomotion(Creature& c, const SpeciesRuntime& sp, const WorldConte
         yawMax = std::min(yawMax, mu * kGravity * 0.7f / L.speed); // centripetal traction limit
     }
     const float err = angleDelta(L.heading, desiredHeading);
-    const float targetYawRate = clampf(err * 2.5f, -yawMax, yawMax);
+    // Heading control that is stable for any step size. The commanded yaw rate (gain 2.5/s, capped by
+    // yawMax) is further limited to what can still be braked to zero under alphaMax before the error
+    // closes, and to what closes the error within this step; the step itself never overshoots.
+    // (Plain explicit Euler with gain 2.5/s is unstable for dt > 0.8 s: at the 1 s sub-step used at
+    // Near/Far LOD the error flipped sign every step, so fast-turning animals such as Didelphodon
+    // oscillated about +/-90 deg around their goal and made no headway.)
+    const float absErr = std::fabs(err);
+    const float rateCap = std::min(std::min(yawMax, std::sqrt(2.0f * alphaMax * absErr)), absErr / dt);
+    const float targetYawRate = std::copysign(std::min(rateCap, 2.5f * absErr), err);
     L.yawRate += clampf(targetYawRate - L.yawRate, -alphaMax * dt, alphaMax * dt);
-    L.heading = wrapAngle(L.heading + L.yawRate * dt);
+    float dHeading = L.yawRate * dt;
+    if (dHeading * err > 0.0f && std::fabs(dHeading) > absErr)
+    {
+        dHeading = err;
+        L.yawRate = 0.0f;
+    }
+    L.heading = wrapAngle(L.heading + dHeading);
 
     // --- Forward speed: leg force and traction limit acceleration and braking ---
     const float turnFactor = std::max(0.15f, std::cos(std::min(std::fabs(err), kHalfPi)));
@@ -160,7 +203,10 @@ void integrateLocomotion(Creature& c, const SpeciesRuntime& sp, const WorldConte
     {
         const float rise = ctx.terrain->heightAt(next) - tq.height;
         const float stepLen = std::max(0.01f, distance(next, p));
-        if (rise > 0.0f && rise / stepLen > maxGrade * 1.6f)
+        // The slope limit is symmetric: an animal does not walk (or slide) down a cutbank it could not
+        // climb back up, unless it drops into water deep enough to swim (which it can then leave by swimming).
+        const bool intoSwimWater = canSwim && ctx.water && ctx.water->depthAt(next, *ctx.terrain) > hip * 0.9f;
+        if (std::fabs(rise) / stepLen > maxGrade * 1.6f && (rise > 0.0f || !intoSwimWater))
         {
             next = p;
             L.speed *= 0.3f;

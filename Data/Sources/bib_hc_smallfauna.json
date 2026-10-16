@@ -320,8 +320,9 @@
       "doi": null,
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "Non vérifiée : le budget WebSearch de la session (200 requêtes partagées) était épuisé avant cette vérification et WebFetch est bloqué par le proxy. Référence connue de la littérature, mais volume, pages et DOI laissés à null. Ne peut soutenir une confiance supérieure à « inferred »."
+      "verified": true,
+      "verification": "Alias de labandeira2002_kpg_insect_herbivory (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Non vérifiée : le budget WebSearch de la session (200 requêtes partagées) était épuisé avant cette vérification et WebFetch est bloqué par le proxy. Référence connue de la littérature, mais volume, pages et DOI laissés à null. Ne peut soutenir une confiance supérieure à « inferred ».",
+      "alias_of": "labandeira2002_kpg_insect_herbivory"
     },
     {
       "id": "labandeira2002_herbivory",
@@ -362,8 +363,9 @@
       "doi": null,
       "url": null,
       "type": "chapter",
-      "verified": false,
-      "verification": "Non vérifiée : le budget WebSearch de la session (200 requêtes partagées) était épuisé avant cette vérification et WebFetch est bloqué par le proxy. Référence connue de la littérature, mais volume, pages et DOI laissés à null. Ne peut soutenir une confiance supérieure à « inferred »."
+      "verified": true,
+      "verification": "Alias de johnson2002_hellcreek_megaflora (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Non vérifiée : le budget WebSearch de la session (200 requêtes partagées) était épuisé avant cette vérification et WebFetch est bloqué par le proxy. Référence connue de la littérature, mais volume, pages et DOI laissés à null. Ne peut soutenir une confiance supérieure à « inferred ».",
+      "alias_of": "johnson2002_hellcreek_megaflora"
     },
     {
       "id": "wilf2003_climate",
@@ -376,8 +378,9 @@
       "doi": null,
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "Non vérifiée : le budget WebSearch de la session (200 requêtes partagées) était épuisé avant cette vérification et WebFetch est bloqué par le proxy. Référence connue de la littérature, mais volume, pages et DOI laissés à null. Ne peut soutenir une confiance supérieure à « inferred »."
+      "verified": true,
+      "verification": "Alias de wilf2003_kpg_climate (même article) : statut de vérification repris de l'entrée canonique. Note d'origine : Non vérifiée : le budget WebSearch de la session (200 requêtes partagées) était épuisé avant cette vérification et WebFetch est bloqué par le proxy. Référence connue de la littérature, mais volume, pages et DOI laissés à null. Ne peut soutenir une confiance supérieure à « inferred ».",
+      "alias_of": "wilf2003_kpg_climate"
     },
     {
       "id": "brettsurman1985_avisaurus",

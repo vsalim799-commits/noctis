@@ -26,6 +26,9 @@ NOCTISCORE_API void rememberPlace(Creature& c, MemoryKind kind, const Vec2& pos,
 // Utility-based decision making and behaviour execution (sets locomotion goals and intents).
 NOCTISCORE_API void decide(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world, const WorldContext& ctx);
 NOCTISCORE_API void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world, const WorldContext& ctx, float dtSince);
+// Feasibility of a short step in direction dir: world bounds, slope (up, and down a bank the animal could
+// not climb back), water too deep for non-swimmers. Used by steering and by the chase seek command.
+NOCTISCORE_API bool stepFeasible(const Creature& c, const SpeciesRuntime& sp, const WorldContext& ctx, const Vec2& dir, float lookahead);
 
 // Physical locomotion with gait, footfalls, terrain and water interaction.
 NOCTISCORE_API void integrateLocomotion(Creature& c, const SpeciesRuntime& sp, const WorldContext& ctx, float dt, bool withFeet);

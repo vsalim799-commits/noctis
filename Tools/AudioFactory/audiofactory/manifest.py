@@ -35,30 +35,42 @@ SOUND_CLASSES = {
 }
 
 
-def _att(inner_m, falloff_m, spatial=True, lpf=True, note=None):
+def _att(inner_m, falloff_m, lpf=True, note=None):
+    """Spatialised preset with a distance model (Sphere / NaturalSound). Every numeric field is set: the UE importer
+    (Content/Python/import_audio.py) configures the attenuation from them when attenuate is true."""
     d = {
-        "spatialize": spatial,
-        "shape": "Sphere" if spatial else None,
-        "distance_algorithm": "NaturalSound" if spatial else None,
+        "spatialize": True,
+        "attenuate": True,
+        "shape": "Sphere",
+        "distance_algorithm": "NaturalSound",
         "inner_radius_m": inner_m,
         "falloff_distance_m": falloff_m,
-        "inner_radius_cm": None if inner_m is None else round(inner_m * 100.0),
-        "falloff_distance_cm": None if falloff_m is None else round(falloff_m * 100.0),
-        "db_attenuation_at_max": -60.0 if spatial else None,
-        "attenuate_with_lpf": lpf and spatial,
+        "inner_radius_cm": round(inner_m * 100.0),
+        "falloff_distance_cm": round(falloff_m * 100.0),
+        "db_attenuation_at_max": -60.0,
+        "attenuate_with_lpf": bool(lpf),
     }
     if note:
         d["note_fr"] = note
     return d
 
 
+def _att_no_distance(spatial: bool, note: str) -> dict:
+    """No distance model (attenuate = false): 2D beds and first-person sounds (spatialize = false), or distance-baked
+    files that UE5 only spatialises (direction) because the propagation loss is already in the file / in the level."""
+    return {"spatialize": spatial, "attenuate": False, "attenuate_with_lpf": False, "note_fr": note}
+
+
+_BAKED = ("Variante de distance : divergence, absorption ISO 9613-1 (et feuillage) déjà dans le fichier et dans "
+          "level.received_spl_db (calibration) — UE5 ne fait que spatialiser (direction), sans modèle de distance, "
+          "pour ne compter ni la perte de niveau ni l'absorption deux fois.")
+
 ATTENUATION_PRESETS = {
     "ATT_Vocal_Short": _att(2, 150),
     "ATT_Vocal_Medium": _att(5, 600),
     "ATT_Vocal_Long": _att(10, 2000),
     "ATT_Vocal_VeryLong": _att(20, 5000),
-    "ATT_Vocal_DistanceBaked": _att(50, 5000, lpf=False,
-                                    note="Variantes de distance : absorption ISO 9613-1 et feuillage déjà appliqués dans le fichier — désactiver le filtre passe-bas de distance d'UE5 pour ne pas compter l'absorption deux fois."),
+    "ATT_Vocal_DistanceBaked": _att_no_distance(True, _BAKED),
     "ATT_Footstep_Small": _att(1, 40),
     "ATT_Footstep_Medium": _att(2, 150),
     "ATT_Footstep_Large": _att(5, 600),
@@ -66,15 +78,16 @@ ATTENUATION_PRESETS = {
     "ATT_Foley_Medium": _att(2, 120),
     "ATT_Foley_Large": _att(4, 400),
     "ATT_Ambience_Point": _att(10, 400),
-    "ATT_Ambience_Bed2D": _att(None, None, spatial=False, lpf=False, note="Lit d'ambiance stéréo non spatialisé."),
-    "ATT_Thunder_DistanceBaked": _att(None, None, spatial=False, lpf=False,
-                                      note="Tonnerre : distance (retard, absorption, durée du roulement) intégrée au fichier ; lecture 2D."),
+    "ATT_Ambience_Bed2D": _att_no_distance(False, "Lit d'ambiance stéréo non spatialisé."),
+    "ATT_Thunder_DistanceBaked": _att_no_distance(
+        True, "Tonnerre : retard, absorption et durée du roulement intégrés au fichier ; niveau reçu dans level.received_spl_db. "
+              "Le directeur audio (ANoctisAudioDirector) place le son au point d'impact (direction de l'éclair) et corrige le "
+              "niveau d'après le cœur : UE5 ne fait que spatialiser."),
     "ATT_Vehicle": _att(3, 1500),
     "ATT_Drone": _att(2, 1000),
-    "ATT_Drone_DistanceBaked": _att(50, 1500, lpf=False),
-    "ATT_Handheld_FirstPerson": _att(None, None, spatial=False, lpf=False, note="Matériel tenu par le joueur : 2D, sans atténuation."),
-    "ATT_Generator_DistanceBaked": _att(50, 3000, lpf=False,
-                                        note="Variantes de distance du groupe électrogène : absorption ISO 9613-1 déjà appliquée dans le fichier."),
+    "ATT_Drone_DistanceBaked": _att_no_distance(True, _BAKED),
+    "ATT_Handheld_FirstPerson": _att_no_distance(False, "Matériel tenu par le joueur : 2D, sans atténuation."),
+    "ATT_Generator_DistanceBaked": _att_no_distance(True, _BAKED),
     "ATT_Water_Line": _att(5, 400, note="Rivière : source linéique ; placer plusieurs émetteurs le long du chenal (-3 dB par doublement de distance)."),
 }
 
@@ -84,13 +97,23 @@ CONCURRENCY_PRESETS = {
     "CON_Footsteps_PerOwner": {"max_count": 4, "resolution_rule": "StopOldest", "limit_to_owner": True},
     "CON_Foley": {"max_count": 12, "resolution_rule": "StopQuietest", "limit_to_owner": False},
     "CON_Breathing_PerOwner": {"max_count": 1, "resolution_rule": "StopOldest", "limit_to_owner": True},
+    "CON_Player_Foley": {"max_count": 4, "resolution_rule": "StopOldest", "limit_to_owner": True},
+    "CON_Flight_PerOwner": {"max_count": 2, "resolution_rule": "StopOldest", "limit_to_owner": True},
     "CON_Ambience_Bed": {"max_count": 4, "resolution_rule": "StopOldest", "limit_to_owner": False},
     "CON_Ambience_Layer": {"max_count": 8, "resolution_rule": "StopQuietest", "limit_to_owner": False},
     "CON_Weather_Thunder": {"max_count": 2, "resolution_rule": "StopOldest", "limit_to_owner": False},
-    "CON_Weather_Rain": {"max_count": 1, "resolution_rule": "StopOldest", "limit_to_owner": False},
+    # Light / heavy and forest / water rain beds crossfade and overlap (riverbank under trees), interior + exterior.
+    "CON_Weather_Rain": {"max_count": 4, "resolution_rule": "StopQuietest", "limit_to_owner": False},
+    # Rover: two speed loops crossfade; the generator (with its start -> run hand-off), the doors and the drive are
+    # separate groups so that a door never stops the engine and generator + electric drive play together.
+    "CON_Vehicle_Drive": {"max_count": 2, "resolution_rule": "StopQuietest", "limit_to_owner": True},
+    "CON_Vehicle_Generator": {"max_count": 2, "resolution_rule": "StopOldest", "limit_to_owner": True},
+    "CON_Vehicle_Foley": {"max_count": 2, "resolution_rule": "StopOldest", "limit_to_owner": True},
+    "CON_Drone_Rotor": {"max_count": 2, "resolution_rule": "StopQuietest", "limit_to_owner": True},
     "CON_Equipment_Unique": {"max_count": 1, "resolution_rule": "StopOldest", "limit_to_owner": True},
     "CON_Equipment_Handheld": {"max_count": 3, "resolution_rule": "StopOldest", "limit_to_owner": False},
     "CON_Water_Splash": {"max_count": 8, "resolution_rule": "StopQuietest", "limit_to_owner": False},
+    "CON_Fire": {"max_count": 3, "resolution_rule": "StopQuietest", "limit_to_owner": False},
 }
 
 
@@ -156,6 +179,11 @@ class Sound:
     caption: dict = field(default_factory=dict)  # {"fr": ..., "en": ...} accessibility caption
     subject: str = "paleo"        # paleo | physical_environment | researcher | modern_equipment
     loop_xfade: bool = False      # loop already made seamless by construction (circular rendering)
+    # Confidence scope: `confidence` covers the existence of the event and its documented inputs (mass, kinematics,
+    # discharge, rain rate...); `model_confidence` covers the synthesis model (timbre, level law), usually a game model.
+    model_confidence: str | None = None
+    model_basis_fr: str | None = None
+    transition: bool = False      # one-shot that intentionally ends at full level (hand-off to a loop)
 
     def record(self, ds: D.Dataset) -> dict:
         r = {
@@ -181,10 +209,20 @@ class Sound:
         if self.subject in ("researcher", "modern_equipment"):
             r["confidence_note_fr"] = ("Son moderne de conception de jeu (equipment.json : hypothèses de conception) ; "
                                        "le niveau de confiance ne porte pas sur une question paléontologique.")
+        mc = self.model_confidence or self.confidence
+        r["model_confidence"] = mc
+        r["model_confidence_label_fr"] = D.CONFIDENCE_LABEL_FR[mc]
+        r["overall_confidence"] = D.conf_min(self.confidence, mc)
+        if self.model_basis_fr:
+            r["model_basis_fr"] = self.model_basis_fr
         if self.caption:
             cap = dict(self.caption)
             if self.hypothesis:
-                cap = {"fr": cap["fr"] + " (hypothèse)", "en": cap["en"] + " (hypothesis)"}
+                # Append the label only when the caption does not already say it.
+                if "hypoth" not in cap["fr"].lower():
+                    cap["fr"] = cap["fr"] + " (hypothèse)"
+                if "hypoth" not in cap["en"].lower():
+                    cap["en"] = cap["en"] + " (hypothesis)"
             r["caption"] = cap
         if self.profile_toggle:
             r["profile_toggle"] = self.profile_toggle

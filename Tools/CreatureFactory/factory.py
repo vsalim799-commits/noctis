@@ -63,4 +63,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    code = main()
+    sys.stdout.flush()
+    sys.stderr.flush()
+    # bpy (module build) can segfault while tearing down after heavy scenes: skip interpreter teardown
+    os._exit(code or 0)

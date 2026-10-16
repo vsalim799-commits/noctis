@@ -2,14 +2,21 @@
 
 What it does (each stage is logged; every stage can be re-run, generated actors are replaced, never duplicated):
 
-  1. level          open /Game/Maps/HellCreek, or create it as a World Partition ("Open World") map
+  1. level          open /Game/Maps/HellCreek, or create it as an EMPTY World Partition map (new_level(path, True)),
+                    never from the "Open World" template whose sample landscape would be taken for the Noctis terrain
   2. textures       import the export-terrain weightmaps / foliage density masks and the export-level gameplay masks
                     as linear, uncompressed-enough, mip-less Texture2D assets (PCG and gameplay sample them)
-  3. landscape      import heightmap.png as a Landscape with the exact scale / location below, or verify / fix an
-                    existing one (see "Landscape import" — Unreal 5.4 has no stable Python call that creates a
-                    Landscape from a file, so a project helper is used when present, otherwise exact manual steps)
-  4. partition      check World Partition, set the runtime grid, create the data layers used by the level
-  5. pois           place editor-only POI markers (placeholder meshes + labels) from Data/Levels/<level>.json
+  3. landscape      import heightmap.png as a Landscape with the exact scale / location below, or verify an existing
+                    one: a landscape that is not the Noctis one (no 'noctis.landscape' tag and wrong component count /
+                    extent, e.g. a template landscape) stops the stage with an error, and a Noctis landscape whose
+                    transform differs is never moved or rescaled (World Partition streaming proxies would not follow
+                    and a wrong import cannot be repaired by scaling): the stage stops with reimport instructions
+                    (Unreal 5.4 has no stable Python call that creates a Landscape from a file, so a project helper is
+                    used when present, otherwise exact manual steps)
+  4. partition      check World Partition, runtime grid (manual step when the property is not scriptable), create
+                    the editor data layers used by the level
+  5. pois           place editor-only POI markers (placeholder meshes + labels) from Data/Levels/<level>.json and
+                    assign them to their editor data layer
   6. trails         predicted game corridors as spline actors (or marker chains when no spline Blueprint exists)
   7. pcg            PCG volumes (partitioned) for foliage, trails, exposures and river debris, driven by the masks
   8. start          PlayerStart at the base camp (the only POI the player knows at the start)
@@ -54,13 +61,19 @@ Expected PCG graphs (create them once in /Game/Noctis/PCG; this script only assi
                         noctis.clearing) -> Transform Points (random yaw / scale) -> Static Mesh Spawner (placeholder meshes)
   PCG_Noctis_Trails     Get Spline Data (actors tagged noctis.trail) -> Spline Sampler (2 m) -> width from the spline
                         tag "wear" -> Difference against foliage points -> ground-cover / decal placeholders
-  PCG_Noctis_Exposures  POI markers tagged noctis.poi.type:exposure_site -> Get Landscape Data around them (60 m)
-                        -> Normal / slope filter (> 30 deg) -> strata / rock placeholder meshes facing the channel
+  PCG_Noctis_Exposures  T_WeightCutbankCliff (weight_cutbank_cliff.png) and the exposure markers -> points along the
+                        cutbank edge (Get Texture Data -> threshold 0.5 -> edge detection / Spline from the mask border)
+                        -> Static Mesh Spawner of blocking cliff / strata placeholder meshes (collision preset
+                        BlockAll, yaw aligned to the edge, face towards the channel; the 4.06 m landscape turns the
+                        vertical cutbank into a 30-51 deg ramp, so the mesh IS the wall), plus a thin walkable bench
+                        mesh at the face foot (metrics.access_point of each exposure). Default WalkableFloorAngle
+                        44.77 deg: banks are reached only at the creek fords, point bars and watering points.
   PCG_Noctis_RiverDebris T_WeightSandbar + T_MaskFloodRisk -> driftwood / gravel placeholders on bars and flood lines
   Texture asset names: <file>.png -> T_<CamelCase> (weight_sandbar.png -> T_WeightSandbar), imported under
   /Game/Noctis/Level/Textures/Terrain (export-terrain) and /Game/Noctis/Level/Textures/Level (export-level masks).
   Image row 0 is the north edge = Unreal Y = -size: with U -> +X and V -> +Y over the landscape bounds no flip is needed.
-  All volumes are partitioned (PCG partition grid 256 m) and generated on demand in the editor (baked, not runtime).
+  One volume per graph covers the whole landscape (8192 m); generation is partitioned (PCG partition grid 256 m) and
+  done on demand in the editor (baked, not runtime). This matches world_partition.pcg in the level JSON.
 
 Lines marked  # VERIFY  use Unreal Python API that could not be checked against a running 5.4 editor when this script
 was written (no engine available in the authoring environment). Each of them is wrapped so that a failure is logged
@@ -90,7 +103,7 @@ TEXTURE_ROOT = "/Game/Noctis/Level/Textures"
 PCG_ROOT = "/Game/Noctis/PCG"
 TRAIL_BLUEPRINT = "/Game/Noctis/Level/BP_NoctisTrail"
 LANDSCAPE_MATERIAL = "/Game/Noctis/Landscape/M_NoctisLandscape"
-OPEN_WORLD_TEMPLATE = "/Engine/Maps/Templates/OpenWorld"
+LANDSCAPE_TAG = "noctis.landscape"  # set on the ALandscape actor once it is known to be the Noctis import
 
 # Placeholder mesh and marker size per POI type (meshes from /Engine/BasicShapes, 100 cm unit shapes).
 MARKERS = {
@@ -125,11 +138,13 @@ PCG_GRAPHS = {
     "PCG_Noctis_Exposures": ["weight_cutbank_cliff"],
     "PCG_Noctis_RiverDebris": ["weight_sandbar", "mask_flood_risk"],
 }
+# Editor-only data layers (world_partition.data_layers of the level JSON). There is no runtime layer: POI markers are
+# editor-only, and in game the speculative nesting zones follow profile_toggle read from the JSON by the game code.
 DATA_LAYERS = {
-    "DL_POI_Markers": "editor-only markers of every POI",
-    "DL_Nesting_Speculative": "nesting-area markers; runtime state follows the profile toggle nesting_grounds",
-    "DL_Basecamp": "base camp props, always loaded",
+    "DL_POI_Markers": "editor-only markers of every POI except the speculative nesting areas",
+    "DL_Nesting_Speculative": "editor-only markers of the SPECULATIVE nesting areas (designers can hide them)",
 }
+DATA_LAYER_INSTANCES = {}  # name -> UDataLayerInstance, filled by stage_partition
 RUNTIME_GRID = {"name": "MainGrid", "cell_size_cm": 25600, "loading_range_cm": 102400}
 
 
@@ -207,18 +222,26 @@ def project_dir():
 def parse_args(argv):
     root = project_dir()
     p = argparse.ArgumentParser(description="Build the Noctis Hell Creek level in the Unreal Editor.")
-    terrain_default = os.path.join(root, "Build", "Terrain")
-    if not os.path.isdir(terrain_default):
-        terrain_default = os.path.join(root, "Output", "terrain")
-    p.add_argument("--terrain-dir", default=terrain_default, help="export-terrain output directory (Build/Terrain, else Output/terrain)")
+    p.add_argument("--terrain-dir", default=None, help="export-terrain output directory (Build/Terrain, else Output/terrain)")
     p.add_argument("--level-json", default=os.path.join(root, "Data", "Levels", "hell_creek_valley.json"))
     p.add_argument("--masks-dir", default=None, help="export-level masks directory (default: masks.directory of the JSON)")
     p.add_argument("--map", default="/Game/Maps/HellCreek", help="map asset path (EditorStartupMap in DefaultEngine.ini)")
     p.add_argument("--offset-cm", default="0,0,0", help="UNoctisSettings::WorldOffsetCm as X,Y,Z")
     p.add_argument("--skip", default="", help="comma-separated stages to skip (textures,landscape,partition,pois,trails,pcg,start)")
     p.add_argument("--generate-pcg", action="store_true", help="also generate the PCG components (slow; default: assign only)")
+    p.add_argument("--replace-foreign-landscape", action="store_true",
+                   help="delete a landscape that is not the Noctis import (e.g. an Open World template landscape) before importing")
     p.add_argument("--dry-run", action="store_true", help="parse inputs and print the plan without touching the editor")
     args = p.parse_args(argv)
+    if args.terrain_dir is None:
+        args.terrain_dir = os.path.join(root, "Build", "Terrain")
+        if not os.path.isdir(args.terrain_dir):
+            fallback = os.path.join(root, "Output", "terrain")
+            LOG.warn("Dossier export-terrain %s absent : repli sur %s%s" % (args.terrain_dir, fallback, "" if os.path.isdir(fallback) else
+                     " (absent lui aussi : lancer 'noctis_sim export-terrain --out Build/Terrain')"))
+            args.terrain_dir = fallback
+    elif not os.path.isdir(args.terrain_dir):
+        LOG.warn("Dossier export-terrain introuvable : %s" % args.terrain_dir)
     args.offset = tuple(float(v) for v in args.offset_cm.split(","))
     args.skip = set(s.strip() for s in args.skip.split(",") if s.strip())
     if not IN_UNREAL:
@@ -341,17 +364,14 @@ def stage_level(args):
         return
     created = False
     try:
-        # VERIFY: the is_partitioned_world argument exists on LevelEditorSubsystem.new_level in recent 5.x releases.
-        created = les.new_level(args.map, True)
+        # Empty World Partition map (= "Empty Open World"). Never the "Open World" template: its sample landscape would
+        # be found by stage_landscape instead of the Noctis terrain.
+        created = les.new_level(args.map, True)  # VERIFY: is_partitioned_world argument of NewLevel (UE 5.1+)
     except TypeError:
         created = False
     if not created:
-        # The "Open World" template is a World Partition map with a default landscape-free setup.
-        created = les.new_level_from_template(args.map, OPEN_WORLD_TEMPLATE)  # VERIFY template path in 5.4
-        if created:
-            LOG.warn("Carte créée depuis le gabarit Open World : supprimer le paysage d'exemple du gabarit s'il existe")
-    if not created:
-        raise RuntimeError("création de %s impossible : créer une carte Open World (World Partition) à la main" % args.map)
+        raise RuntimeError("création de %s impossible par script : File > New Level > Empty Open World, enregistrer sous %s, puis relancer "
+                           "(pas le gabarit Open World : son paysage d'exemple n'est pas le terrain Noctis)" % (args.map, args.map))
     LOG.info("Carte créée (World Partition) : %s" % args.map)
 
 
@@ -425,19 +445,50 @@ def print_manual_landscape_steps(plan, heightmap):
     LOG.warn("  Location (cm)           : X=%.1f Y=%.1f Z=%.1f" % plan["location"])
     LOG.warn("  Scale                   : X=%.4f Y=%.4f Z=%.5f" % plan["scale"])
     LOG.warn("  World Partition         : activé, Grid Size = 1 composant par proxy de streaming")
-    LOG.warn("  Puis relancer ce script : il vérifiera la transformation et poursuivra.")
+    LOG.warn("  Puis relancer ce script : il reconnaîtra le paysage (transformation exacte), le marquera '%s' et poursuivra." % LANDSCAPE_TAG)
+
+
+def landscape_transform_gap(landscape, plan):
+    """Position (cm) and scale differences between an existing landscape and the Noctis plan."""
+    loc = landscape.get_actor_location()
+    scl = landscape.get_actor_scale3d()
+    want_loc, want_scl = plan["location"], plan["scale"]
+    dl = math.sqrt((loc.x - want_loc[0]) ** 2 + (loc.y - want_loc[1]) ** 2 + (loc.z - want_loc[2]) ** 2)
+    ds = max(abs(scl.x - want_scl[0]), abs(scl.y - want_scl[1]), abs(scl.z - want_scl[2]))
+    return dl, ds
+
+
+def loaded_landscape_footprint(actors):
+    """Landscape components and XY bounds (cm) of the LOADED landscape actors (World Partition may keep proxies
+    unloaded, so a partial count is not an error by itself)."""
+    comps = 0
+    box = None
+    for a in actors:
+        try:
+            comps += len(a.get_components_by_class(unreal.LandscapeComponent))  # VERIFY: AActor::K2_GetComponentsByClass
+            origin, extent = a.get_actor_bounds(False)  # VERIFY: returns (origin, box_extent)
+        except Exception:
+            continue
+        if extent.x <= 0.0 and extent.y <= 0.0:
+            continue
+        b = (origin.x - extent.x, origin.x + extent.x, origin.y - extent.y, origin.y + extent.y)
+        box = b if box is None else (min(box[0], b[0]), max(box[1], b[1]), min(box[2], b[2]), max(box[3], b[3]))
+    return comps, box
 
 
 @guarded("3. Paysage")
 def stage_landscape(args, plan):
+    """Returns 'ok', 'manual' (import still to do) or 'foreign' (a landscape that is not the Noctis terrain is present)."""
     heightmap = os.path.join(args.terrain_dir, "heightmap.png")
     LOG.info("Échantillons %d (quads %d), échelle XY %.4f cm, échelle Z %.5f, position %s, pas vertical %.2f mm"
              % (plan["samples"], plan["quads"], plan["scale"][0], plan["scale"][2], tuple(round(v, 1) for v in plan["location"]), plan["z_step_mm"]))
     if plan["layout"]:
         LOG.info("Découpage : %(components)dx%(components)d composants, %(sections_per_component)dx%(sections_per_component)d sections de %(section_quads)d quads" % plan["layout"])
+    if not os.path.exists(heightmap):
+        LOG.warn("Heightmap absente : %s (lancer 'noctis_sim export-terrain --out Build/Terrain')" % heightmap)
     if args.dry_run:
-        LOG.info("[simulation] paysage : %s" % heightmap)
-        return
+        LOG.info("[simulation] paysage : %s ; un paysage existant sans le tag '%s' et dont la transformation diffère sera refusé (gabarit)" % (heightmap, LANDSCAPE_TAG))
+        return "manual"
     try:
         # Same computation in C++ (NoctisEditor module, FNoctisSpace): returns (ok, info) or info depending on the version.
         result = unreal.NoctisEditorLibrary.compute_terrain_info()
@@ -450,6 +501,39 @@ def stage_landscape(args, plan):
     except Exception as exc:
         LOG.info("NoctisEditorLibrary.compute_terrain_info indisponible (%s) : contrôle croisé ignoré" % exc)
     landscape, proxies = find_landscape()
+    if landscape is not None:
+        dl, ds = landscape_transform_gap(landscape, plan)
+        comps, box = loaded_landscape_footprint(proxies)
+        want = (plan["layout"] or {}).get("components", 16) ** 2
+        size_cm = plan["size_m"] * 100.0
+        box_ok = box is None or (box[0] > -plan["scale"][0] and box[1] < size_cm + plan["scale"][0] and box[2] > -size_cm - plan["scale"][0] and box[3] < plan["scale"][0])
+        tagged = has_tag(landscape, LANDSCAPE_TAG)
+        matches = dl <= 1.0 and ds <= 1e-3 and comps <= want and box_ok
+        if not tagged and not matches:
+            msg = ("Paysage étranger détecté (%s : écart position %.0f cm, échelle %.4f, %d composants chargés, emprise %s) — probablement le paysage "
+                   "d'exemple du gabarit Open World. Ce n'est pas le terrain Noctis : supprimer ce paysage et ses proxys puis importer heightmap.png, "
+                   "ou relancer avec --replace-foreign-landscape."
+                   % (landscape.get_actor_label(), dl, ds, comps, tuple(round(v) for v in box) if box else "inconnue"))
+            if not args.replace_foreign_landscape:
+                LOG.error(msg)
+                return "foreign"
+            LOG.warn(msg + " Suppression demandée (--replace-foreign-landscape).")
+            eas = subsystem("EditorActorSubsystem")
+            for a in proxies:
+                eas.destroy_actor(a)
+            landscape = None
+        elif tagged and not matches:
+            # Never move / rescale: under World Partition the streaming proxies would not follow, and a heightmap imported
+            # with wrong settings cannot be repaired by scaling the actor.
+            LOG.error("Le paysage Noctis '%s' n'a pas la transformation attendue (écart position %.1f cm, échelle %.4f, %d composants chargés) : "
+                      "le supprimer et le réimporter avec les réglages ci-dessous (aucune correction automatique)." % (landscape.get_actor_label(), dl, ds, comps))
+            print_manual_landscape_steps(plan, heightmap)
+            return "foreign"
+        elif not tagged:
+            set_tags(landscape, [str(t) for t in landscape.tags] + [LANDSCAPE_TAG])
+            LOG.info("Paysage importé à la main reconnu (transformation exacte, %d composants chargés) : marqué '%s'" % (comps, LANDSCAPE_TAG))
+        else:
+            LOG.info("Paysage Noctis conforme (%d acteurs de paysage/proxys chargés, %d composants)" % (len(proxies), comps))
     if landscape is None:
         helper = getattr(unreal, "NoctisEditorLibrary", None)
         if helper is not None and hasattr(helper, "import_landscape_from_heightmap"):
@@ -459,45 +543,43 @@ def stage_landscape(args, plan):
             lay = plan["layout"]
             landscape = helper.import_landscape_from_heightmap(heightmap, lay["section_quads"], lay["sections_per_component"], lay["components"],
                                                                unreal.Vector(*plan["location"]), unreal.Vector(*plan["scale"]))
-            LOG.info("Paysage importé par NoctisEditorLibrary")
+            set_tags(landscape, [LANDSCAPE_TAG])
+            LOG.info("Paysage importé par NoctisEditorLibrary et marqué '%s'" % LANDSCAPE_TAG)
         else:
             print_manual_landscape_steps(plan, heightmap)
-            return
-    # Verify / fix the transform of an existing landscape (moving and scaling a Landscape actor is supported).
-    loc = landscape.get_actor_location()
-    scl = landscape.get_actor_scale3d()
-    want_loc = unreal.Vector(*plan["location"])
-    want_scl = unreal.Vector(*plan["scale"])
-    dl = math.sqrt((loc.x - want_loc.x) ** 2 + (loc.y - want_loc.y) ** 2 + (loc.z - want_loc.z) ** 2)
-    ds = max(abs(scl.x - want_scl.x), abs(scl.y - want_scl.y), abs(scl.z - want_scl.z))
-    if dl > 1.0 or ds > 1e-3:
-        LOG.warn("Transformation du paysage corrigée (écart position %.1f cm, échelle %.4f)" % (dl, ds))
-        landscape.set_actor_location(want_loc, False, True)
-        landscape.set_actor_scale3d(want_scl)
-    else:
-        LOG.info("Transformation du paysage conforme (%d acteurs de paysage/proxys)" % len(proxies))
+            return "manual"
     if unreal.EditorAssetLibrary.does_asset_exist(LANDSCAPE_MATERIAL):
         landscape.set_editor_property("landscape_material", unreal.EditorAssetLibrary.load_asset(LANDSCAPE_MATERIAL))
         LOG.info("Matériau du paysage : %s" % LANDSCAPE_MATERIAL)
     else:
         LOG.warn("Matériau %s absent : couches à créer (une par habitat weight_*.png)" % LANDSCAPE_MATERIAL)
     LOG.info("Couches de peinture : Landscape Mode > Paint > Target Layers > Import pour chaque weight_<habitat>.png de %s" % args.terrain_dir)
+    return "ok"
 
 
 @guarded("4. World Partition et couches de données")
 def stage_partition(args):
+    manual_grid = ("World Settings > World Partition Setup > Runtime Settings > Grids[0] : Cell Size %(cell_size_cm)d, Loading Range "
+                   "%(loading_range_cm)d (grille %(name)s)" % RUNTIME_GRID)
     if args.dry_run:
-        LOG.info("[simulation] grille %(name)s : cellules %(cell_size_cm)d cm, chargement %(loading_range_cm)d cm" % RUNTIME_GRID)
+        # AWorldSettings::WorldPartition is not an editor-visible property: in the editor this step is expected to be manual.
+        LOG.warn("[simulation] grille d'exécution : étape manuelle probable — %s" % manual_grid)
         for name, desc in DATA_LAYERS.items():
-            LOG.info("[simulation] couche de données %s (%s)" % (name, desc))
+            LOG.info("[simulation] couche de données éditeur %s (%s)" % (name, desc))
         return
     world = editor_world()
-    partitioned = False
+    partitioned = None
     try:
-        ws = world.get_world_settings()  # VERIFY: UWorld::K2_GetWorldSettings is exposed as get_world_settings
-        wp = ws.get_editor_property("world_partition")  # VERIFY property name / visibility
-        partitioned = wp is not None
-        if partitioned:
+        # VERIFY: UWorldPartitionBlueprintLibrary::GetEditorWorldBounds (5.1+) returns an empty box on a non-partitioned world.
+        bounds = unreal.WorldPartitionBlueprintLibrary.get_editor_world_bounds()
+        partitioned = bool(bounds.is_valid) if hasattr(bounds, "is_valid") else None
+    except Exception:
+        partitioned = None
+    grid_set = False
+    getter = getattr(world, "get_world_partition", None)  # VERIFY: UWorld::GetWorldPartition is normally NOT exposed to Python
+    if getter is not None:
+        try:
+            wp = getter()
             runtime_hash = wp.get_editor_property("runtime_hash")  # VERIFY
             grids = list(runtime_hash.get_editor_property("grids"))  # VERIFY: TArray<FSpatialHashRuntimeGrid>
             if grids:
@@ -506,13 +588,18 @@ def stage_partition(args):
                 g.set_editor_property("loading_range", float(RUNTIME_GRID["loading_range_cm"]))
                 grids[0] = g
                 runtime_hash.set_editor_property("grids", grids)
+                grid_set = True
                 LOG.info("Grille d'exécution réglée : cellules %d cm, chargement %d cm" % (RUNTIME_GRID["cell_size_cm"], RUNTIME_GRID["loading_range_cm"]))
-    except Exception as exc:
-        LOG.warn("Réglage automatique de la grille impossible (%s) : World Settings > World Partition > Runtime Settings > Grids[0] = "
-                 "CellSize %d, LoadingRange %d" % (exc, RUNTIME_GRID["cell_size_cm"], RUNTIME_GRID["loading_range_cm"]))
-    if not partitioned:
-        LOG.warn("World Partition non détecté par script : vérifier (Tools > Convert Level) — le niveau de 8 km en a besoin")
-    # Data layers (5.1+ asset-based). Creation by script is best-effort; tags carry the same information.
+        except Exception as exc:
+            LOG.info("Réglage de la grille par script impossible (%s)" % exc)
+    if not grid_set:
+        LOG.warn("Grille d'exécution : étape manuelle — %s" % manual_grid)
+    if partitioned is False:
+        LOG.warn("World Partition non actif sur cette carte : Tools > Convert Level (le niveau de 8 km en a besoin)")
+    elif partitioned is None:
+        LOG.warn("World Partition non vérifiable par script : contrôler World Settings > Enable World Partition")
+    # Editor data layers (5.1+ asset-based). Creation by script is best-effort; the tags noctis.data_layer:<name> carry the
+    # same information, and stage_pois assigns the markers when the instances exist.
     try:
         dle = subsystem("DataLayerEditorSubsystem")
         for name in DATA_LAYERS:
@@ -520,13 +607,19 @@ def stage_partition(args):
             if not unreal.EditorAssetLibrary.does_asset_exist(asset_path):
                 unreal.AssetToolsHelpers.get_asset_tools().create_asset(name, "/Game/Noctis/Level/DataLayers", unreal.DataLayerAsset, unreal.DataLayerFactory())  # VERIFY factory class
             asset = unreal.EditorAssetLibrary.load_asset(asset_path)
-            params = unreal.DataLayerCreationParameters()  # VERIFY struct and field names
-            params.set_editor_property("data_layer_asset", asset)
-            if dle.get_data_layer_instance(asset) is None:  # VERIFY
-                dle.create_data_layer_instance(params)  # VERIFY
-            LOG.info("Couche de données prête : %s" % name)
+            try:
+                asset.set_editor_property("data_layer_type", unreal.DataLayerType.EDITOR)  # VERIFY enum / property name
+            except Exception as exc:
+                LOG.warn("Type de %s à régler à la main sur Editor (%s)" % (name, exc))
+            instance = dle.get_data_layer_instance(asset)  # VERIFY
+            if instance is None:
+                params = unreal.DataLayerCreationParameters()  # VERIFY struct and field names
+                params.set_editor_property("data_layer_asset", asset)
+                instance = dle.create_data_layer_instance(params)  # VERIFY
+            DATA_LAYER_INSTANCES[name] = instance
+            LOG.info("Couche de données éditeur prête : %s" % name)
     except Exception as exc:
-        LOG.warn("Couches de données non créées (%s) : les créer à la main (%s) ; les marqueurs portent déjà le tag noctis.data_layer:<nom>"
+        LOG.warn("Couches de données non créées (%s) : les créer à la main (%s, type Editor) ; les marqueurs portent le tag noctis.data_layer:<nom>"
                  % (exc, ", ".join(DATA_LAYERS)))
 
 
@@ -567,6 +660,7 @@ def stage_pois(args, level):
         return
     destroy_generated("noctis.poi")
     materials = {}
+    by_layer = {}
     with unreal.ScopedEditorTransaction("Noctis : POI"):
         for p in pois:
             loc = ue_location(p, args.offset)
@@ -595,7 +689,8 @@ def stage_pois(args, level):
                 actor.set_editor_property("is_editor_only_actor", True)  # VERIFY property name (bIsEditorOnlyActor)
             except Exception:
                 pass
-            layer = "DL_Nesting_Speculative" if p.get("profile_toggle") == "nesting_grounds" else ("DL_Basecamp" if p["type"] == "basecamp" else "DL_POI_Markers")
+            layer = "DL_Nesting_Speculative" if p.get("profile_toggle") == "nesting_grounds" else "DL_POI_Markers"
+            by_layer.setdefault(layer, []).append(actor)
             set_tags(actor, [GENERATED_TAG, "noctis.poi", "noctis.poi.id:" + p["id"], "noctis.poi.type:" + p["type"],
                              "noctis.confidence:" + p["confidence"], "noctis.placement:" + p["placement"], "noctis.data_layer:" + layer]
                      + (["noctis.profile_toggle:" + p["profile_toggle"]] if p.get("profile_toggle") else [])
@@ -610,6 +705,17 @@ def stage_pois(args, level):
             text.set_folder_path("%s/%s" % (POI_FOLDER, p["type"]))
             text.set_actor_hidden_in_game(True)
             set_tags(text, [GENERATED_TAG, "noctis.poi", "noctis.poi.label"])
+            by_layer.setdefault("DL_Nesting_Speculative" if p.get("profile_toggle") == "nesting_grounds" else "DL_POI_Markers", []).append(text)
+    for layer, actors in by_layer.items():
+        instance = DATA_LAYER_INSTANCES.get(layer)
+        if instance is None:
+            LOG.warn("Couche %s indisponible : %d marqueurs à y assigner à la main (tag noctis.data_layer:%s)" % (layer, len(actors), layer))
+            continue
+        try:
+            subsystem("DataLayerEditorSubsystem").add_actors_to_data_layer(actors, instance)  # VERIFY: AddActorsToDataLayer(actors, instance)
+            LOG.info("%d marqueurs assignés à %s" % (len(actors), layer))
+        except Exception as exc:
+            LOG.warn("Assignation à %s impossible (%s) : %d marqueurs à assigner à la main" % (layer, exc, len(actors)))
     LOG.info("%d marqueurs de POI placés (cachés en jeu ; données lues à l'exécution depuis %s)" % (len(pois), os.path.basename(args.level_json)))
 
 
@@ -675,11 +781,24 @@ def stage_trails(args, level, plan):
     LOG.info("Corridors placés (altitude = terrain à l'export ; PCG projette les splines sur le paysage)")
 
 
+def check_pcg_masks(args):
+    """Warn about every mask a PCG graph expects that is missing on disk (e.g. weight_oxbow_lake.png when the seed has no
+    oxbow lake): the corresponding graph branch must then be skipped, not silently sample an empty texture."""
+    import glob
+    for graph, masks in PCG_GRAPHS.items():
+        for m in masks:
+            folder = args.masks_dir if m.startswith("mask_") else args.terrain_dir
+            if not glob.glob(os.path.join(folder, m + ".png")):
+                hint = " (aucun bras mort pour cette graine : branche d'exclusion à ignorer dans le graphe)" if m == "weight_oxbow_lake" else ""
+                LOG.warn("PCG %s : masque %s.png absent de %s%s" % (graph, m, folder, hint))
+
+
 @guarded("7. Volumes PCG")
 def stage_pcg(args, plan):
     size_cm = plan["size_m"] * 100.0
     center = (size_cm * 0.5 + args.offset[0], -size_cm * 0.5 + args.offset[1], plan["location"][2])
     height_cm = (plan["max_m"] - plan["min_m"]) * 100.0 + 20000.0
+    check_pcg_masks(args)
     if args.dry_run:
         for g, masks in PCG_GRAPHS.items():
             LOG.info("[simulation] volume %s centré %s, %.0f x %.0f x %.0f cm, masques %s" % (g, tuple(round(c) for c in center), size_cm, size_cm, height_cm, masks))
@@ -719,7 +838,8 @@ def stage_start(args, level):
     loc = ue_location(camps[0], args.offset)
     loc = (loc[0], loc[1], loc[2] + 200.0)
     t = level.get("time", {})
-    LOG.info("Départ : %s jour %s à %sh, profil %s" % (camps[0]["id"], t.get("start_day_of_year"), t.get("start_hour"), level["generation"]["profile"]))
+    LOG.info("Départ : %s jour %s (indice %s en base 0) à %sh, profil %s" % (camps[0]["id"], t.get("start_day_display", "?"), t.get("start_day_of_year"),
+                                                                           t.get("start_hour"), level["generation"]["profile"]))
     if args.dry_run:
         LOG.info("[simulation] PlayerStart en %s" % (tuple(round(v) for v in loc),))
         return
@@ -743,9 +863,10 @@ def summarize(level, plan):
     LOG.info("Résumé du niveau %s : %s" % (level["id"], json.dumps(s.get("poi_counts", {}), ensure_ascii=False)))
     LOG.info("Corridors %s, liaisons %s, composantes à pied %s, POI accessibles en véhicule %s, couverture radio %s"
              % (s.get("trails"), s.get("connections"), s.get("foot_components"), s.get("rover_reachable_pois"), s.get("radio_coverage_fraction")))
-    rc = level.get("river_crossing", {})
+    rc = level.get("river_crossing", {}).get("main_river", {})
     if rc:
-        LOG.info("Rivière principale franchissable à pied maintenant : %s (gués %s)" % (rc.get("fordable_on_foot_now"), ", ".join(rc.get("main_river_fords", []))))
+        LOG.info("Rivière principale : jamais guéable %s (débit minimal simulé %s, niveau >= %s m) ; traversée en packraft possible maintenant aux points %s"
+                 % (rc.get("never_fordable"), rc.get("baseflow_fraction_min"), rc.get("stage_min_simulated_m"), ", ".join(rc.get("packraft_crossings_now", [])) or "aucun"))
 
 
 def main(argv=None):
@@ -758,8 +879,13 @@ def main(argv=None):
         stage_level(args)
     if "textures" not in args.skip:
         stage_textures(args, level)
+    landscape = "skipped"
     if "landscape" not in args.skip:
-        stage_landscape(args, plan)
+        landscape = stage_landscape(args, plan)
+    if landscape == "foreign":
+        # Content placed now would sit on the wrong terrain: stop before POIs, trails, PCG and the start point.
+        LOG.error("Paysage non conforme : étapes POI, corridors, PCG et départ annulées (voir l'étape 3)")
+        args.skip |= {"pois", "trails", "pcg", "start"}
     if "partition" not in args.skip:
         stage_partition(args)
     if "pois" not in args.skip:

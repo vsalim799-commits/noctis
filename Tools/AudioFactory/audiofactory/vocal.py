@@ -21,7 +21,11 @@ from . import data as D
 from . import manifest as M
 from . import propagation as P
 
-VOICES = [("voiceA", 0.15), ("voiceB", 0.50), ("voiceC", 0.85)]   # marking seeds -> individual voices
+# Marking seeds -> individual voices. voiceD (added in 1.2) completes the 4 variations per one-shot; A-C are unchanged.
+VOICES = [("voiceA", 0.15), ("voiceB", 0.50), ("voiceC", 0.85), ("voiceD", 0.35)]
+INFRASONIC_HZ = 20.0
+LOW_REPRO_HZ = 30.0         # below ~30 Hz most speakers and headphones reproduce almost nothing
+LOW_REPRO_FLAG = 0.25       # energy fraction below 30 Hz above which a visual cue is mandatory (accessibility)
 SUBADULT_SIZE_RATIO = 0.10                                          # subadult variant: 10 % of adult mass
 DISTANCES = {
     "hell_creek": [("d50_open", 50.0, 0.0), ("d200_open", 200.0, 0.0), ("d800_open", 800.0, 0.0), ("d200_forest", 200.0, 60.0)],
@@ -37,6 +41,8 @@ ARCHOSAUR_PLANS = ("biped_", "facultative_quadruped_hadrosaur", "quadruped_cerat
                    "quadruped_crocodylian", "bird_flyer")
 CONTEXT_FR = {"contact": "contact", "alarm": "alarme", "distress": "détresse", "threat": "menace",
               "courtship": "parade", "begging": "juvénile / quémande", "territorial": "territorial", "other": "autre"}
+CONTEXT_EN = {"contact": "contact", "alarm": "alarm", "distress": "distress", "threat": "threat",
+              "courtship": "courtship", "begging": "juvenile / begging", "territorial": "territorial", "other": "other"}
 STYLE_FR = {
     "closed": "vocalisation à bouche fermée (quasi sinusoïdale, harmoniques en h^-2,5)",
     "open": "vocalisation à bouche ouverte (source harmonique filtrée par des formants de conduit vocal)",
@@ -187,7 +193,7 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
             voice_A = (x, f0_exp, pitch, dur_v)
         out.append(_sound(ds, sp, call, stem + "_" + vname, group, x, style, ctx, f0, f0_exp, pitch, 1.0, dur_v, lvl, T, RH,
                           conf, srcs, basis, toggle, {"voice": vname, "marking_seed": mseed, "size_ratio": 1.0},
-                          f"{sp.name_fr} — {call['id']} ({fr_ctx}) — voix {vname[-1]} — hypothèse"))
+                          f"{_label_head(sp, call, fr_ctx)} — voix {vname[-1]}", random_group=f"{stem}_adult"))
     # Subadult voice: only for the first contact-type call of species heavier than 20 kg.
     if ctx == "contact" and sp.mass >= 20.0 and ci == next((i for i, c in enumerate(sp.sim["vocal"]["call_types"])
                                                          if D.parse_call_context(c.get("context", "")) == "contact"), -1):
@@ -198,7 +204,7 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
         out.append(_sound(ds, sp, call, stem + "_subadult", group, x, style, ctx, f0, _expected_f0(f, benv), pitch,
                           SUBADULT_SIZE_RATIO, dur, lvl_s, T, RH, conf, srcs, basis, toggle,
                           {"voice": "subadult", "marking_seed": 0.5, "size_ratio": SUBADULT_SIZE_RATIO},
-                          f"{sp.name_fr} — {call['id']} ({fr_ctx}) — subadulte (10 % de la masse adulte) — hypothèse"))
+                          f"{_label_head(sp, call, fr_ctx)} — subadulte (10 % de la masse adulte)"))
     # Distance variants from voice A.
     xA, f0A, pitchA, durA = voice_A
     for dname, dist, fol in DISTANCES.get(sp.region, []):
@@ -209,8 +215,13 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
         s = _sound(ds, sp, call, f"{stem}_{dname}", group, y, style, ctx, f0, f0A, pitchA, 1.0, durA, lvl, T, RH, conf,
                    list(dict.fromkeys(srcs + [ISO1] + ([ISO2] if fol > 0 else []))), basis, toggle,
                    {"voice": "voiceA", "distance_m": dist, "foliage_equivalent_m": fol},
-                   f"{sp.name_fr} — {call['id']} ({fr_ctx}) — entendu à {dist:.0f} m"
-                   + (" à travers la forêt riveraine" if fol > 0 else " en terrain découvert") + " — hypothèse")
+                   f"{_label_head(sp, call, fr_ctx)} — entendu à {dist:.0f} m"
+                   + (" à travers la forêt riveraine" if fol > 0 else " en terrain découvert"),
+                   distance_m=dist)
+        # Calibrate the file on the level received at that distance (finalize: level.received_spl_db), not at 1 m.
+        s.level["received_spl_db"] = round(rec, 2)
+        s.level["reference"] = ("Niveau reçu à f0 (dB SPL) à la distance de la variante : divergence sphérique + ISO 9613-1"
+                                + (" + feuillage" if fol > 0 else "") + " ; source_spl_db_1m = niveau de la voix à 1 m")
         s.params["propagation"] = {
             "distance_m": dist, "temperature_c": T, "relative_humidity": RH, "pressure_kpa": 101.325,
             "foliage_equivalent_m": fol, "reference_hz": round(f0A, 3),
@@ -224,14 +235,31 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
                             "foliage_m": fol, "ref_hz": round(f0A, 3),
                             "check_hz": [round(f0A * h, 3) for h in (2, 3, 4) if f0A * h < 20000.0] if style in ("closed", "open")
                             else [round(v, 1) for v in np.geomspace(max(200.0, f0A), 9000.0, 4)]}
+        acc = s.ue5.get("accessibility")
         s.ue5 = M.ue5("SC_Creature_Vocal_Hypothesis", "ATT_Vocal_DistanceBaked", False, "CON_Vocal_PerSpecies",
-                      priority=0.6, falloff_m=None, extra={"distance_variant_m": dist})
+                      priority=0.6, falloff_m=None, extra={"distance_variant_m": dist, **({"accessibility": acc} if acc else {})})
         out.append(s)
     return out
 
 
+def _label_head(sp, call, fr_ctx) -> str:
+    """UI label: the call is named as a hypothesis with its *supposed* context (never as a known function)."""
+    return f"{sp.name_fr} — cri hypothétique [{call['id']}] (contexte supposé : {fr_ctx})"
+
+
+def low_fractions(x: np.ndarray) -> tuple[float, float]:
+    """Fractions of the signal energy below 20 Hz (infrasound) and below 30 Hz (closed-mouth rumbles of the largest
+    species): the second one decides the accessibility flag, the first one is reported."""
+    spec = np.abs(np.fft.rfft(np.asarray(x, dtype=np.float64))) ** 2
+    f = np.fft.rfftfreq(x.shape[0], 1.0 / C.SR)
+    tot = float(spec[1:].sum())
+    if tot <= 0:
+        return 0.0, 0.0
+    return float(spec[1:][f[1:] < INFRASONIC_HZ].sum() / tot), float(spec[1:][f[1:] < LOW_REPRO_HZ].sum() / tot)
+
+
 def _sound(ds, sp, call, sid, group, x, style, ctx, f0, f0_exp, pitch, size_ratio, dur, lvl, T, RH, conf, srcs, basis, toggle,
-           variant, label):
+           variant, label, random_group=None, distance_m=None):
     rng_m = P.audible_range_m(lvl, f0_exp, T, RH, RANGE_FLOOR_DB)
     att = M.vocal_attenuation_for(rng_m)
     qa = {"active_duration_s": [round(dur * 0.72, 3), round(dur * 1.12 + 0.03, 3)], "peak_dbfs_max": -0.5}
@@ -266,12 +294,36 @@ def _sound(ds, sp, call, sid, group, x, style, ctx, f0, f0_exp, pitch, size_rati
     }
     if style == "open":
         params["vocal_tract_length_m"] = round(vocal_tract_length_m(sp.mass * size_ratio), 4)
+    infra, low = low_fractions(x)
+    params["infrasonic_energy_fraction"] = round(infra, 4)
+    params["below_30hz_energy_fraction"] = round(low, 4)
+    extra = {"random_group": random_group} if random_group else {}
+    name_en = sp.raw.get("common_names", {}).get("en", sp.name)
+    ctx_fr, ctx_en = CONTEXT_FR[ctx], CONTEXT_EN[ctx]
+    cap_fr = f"Cri hypothétique {D.de_fr(sp.name_fr)} (contexte supposé : {ctx_fr})"
+    cap_en = f"Hypothetical call of {name_en} (supposed context: {ctx_en})"
+    if distance_m is not None:
+        cap_fr += f", entendu à {distance_m:.0f} m"
+        cap_en += f", heard at {distance_m:.0f} m"
+    if low >= LOW_REPRO_FLAG:
+        cap_fr += " — très grave" + (", en partie infrasonore" if infra >= 0.05 else "")
+        cap_en += " — very low" + (", partly infrasonic" if infra >= 0.05 else "")
+        extra["accessibility"] = {
+            "visual_cue_required": True,
+            "note_fr": (f"{100 * low:.0f} % de l'énergie sous 30 Hz (dont {100 * infra:.0f} % sous 20 Hz) : presque inaudible sur la "
+                        "plupart des haut-parleurs et casques. "
+                        "Toujours afficher la légende et le spectrogramme ; une couche « proxy audible » éventuelle devra être étiquetée "
+                        "comme telle (à trancher lors de la passe d'écoute)."),
+        }
     return M.Sound(
         id=sid, category="vocal", subcategory=f"call_{ctx}", group=group, label_fr=label, audio=x,
         confidence=conf, basis_fr=basis, sources=srcs, params=params, qa=qa, region=sp.region, species=sp.id,
         hypothesis=True, profile_toggle=toggle, variant=variant,
         level={"source_spl_db_1m": round(lvl, 2), "reference": "RMS de la partie tenue du cri, dB SPL re 20 µPa à 1 m (convention SoundSource::levelDb)"},
         ue5=M.ue5("SC_Creature_Vocal_Hypothesis", att, False, "CON_Vocal_PerSpecies", priority=min(1.0, 0.4 + lvl / 200.0),
-                  falloff_m=rng_m),
+                  falloff_m=rng_m, extra=extra or None),
         normalize=("peak", -1.0),
+        caption={"fr": cap_fr, "en": cap_en},
+        model_confidence=D.conf_min(conf, "speculative"),
+        model_basis_fr="Timbre et contour = modèle de production hypothétique (SignalSynth) ; aucun cri de dinosaure non avien n'est connu.",
     )

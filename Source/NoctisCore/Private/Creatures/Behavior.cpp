@@ -65,6 +65,26 @@ float effectiveThreat(const Awareness& a)
     return a.stage == AwarenessStage::Identified ? a.threat : std::max(a.threat * 0.6f, 0.3f * saturate(a.evidence));
 }
 
+// Threat the animal itself perceives from another species (or a researcher, vehicle, drone). It
+// excludes conspecific callers and the alertness floor injected by heard alarms (Perception.cpp), so
+// alarm calls are produced only by individuals that detect the danger themselves. Listeners answer a
+// heard alarm with vigilance or escape, not with a new call; otherwise one call echoes through a
+// herd indefinitely (one Borealosuchus detection kept ~44 Edmontosaurus calling for 36 h).
+// Game assumption: there are no data on hadrosaur alarm calling (the toggle is marked speculative).
+float ownAlarmThreat(const Creature& c)
+{
+    float best = 0.0f;
+    for (const Awareness& a : c.perception.known)
+    {
+        if (a.stage < AwarenessStage::Oriented || a.speciesIndex == c.speciesIndex)
+        {
+            continue;
+        }
+        best = std::max(best, effectiveThreat(a));
+    }
+    return best;
+}
+
 Vec2 fleeVector(const Creature& c)
 {
     Vec2 v;
@@ -83,6 +103,8 @@ Vec2 fleeVector(const Creature& c)
     return v;
 }
 
+} // namespace behaviorimpl
+
 // Feasibility of a short step in direction dir (water depth, slope, bounds).
 bool stepFeasible(const Creature& c, const SpeciesRuntime& sp, const WorldContext& ctx, const Vec2& dir, float lookahead)
 {
@@ -98,6 +120,23 @@ bool stepFeasible(const Creature& c, const SpeciesRuntime& sp, const WorldContex
     {
         return false;
     }
+    {
+        // Local (one-stride) grade, both up and down, with the same limit as locomotion: a cutbank the
+        // animal could not climb back up is not walked down either, unless it drops into water deep
+        // enough to swim. (Animals used to slide into river channels under 2-3 m banks and die of thirst
+        // there, unable to climb back to the drink site on the bank top.)
+        const float stride = std::clamp(c.lengthM * 0.3f, 0.5f, 2.0f);
+        const Vec2 q1 = p + dir * stride;
+        const float g1 = (ctx.terrain->heightAt(q1) - ctx.terrain->heightAt(p)) / stride;
+        if (std::fabs(g1) > std::tan(sp.sim().locomotion.maxSlopeDeg * kDegToRad) * 1.6f)
+        {
+            const bool swimInto = g1 < 0.0f && sp.sim().locomotion.swim && ctx.water && ctx.water->depthAt(q1, *ctx.terrain) > c.hipHeightM * 0.9f;
+            if (!swimInto)
+            {
+                return false;
+            }
+        }
+    }
     if (ctx.water)
     {
         const float depth = ctx.water->depthAt(q, *ctx.terrain);
@@ -110,6 +149,8 @@ bool stepFeasible(const Creature& c, const SpeciesRuntime& sp, const WorldContex
     return true;
 }
 
+namespace behaviorimpl
+{
 Vec2 steer(const Creature& c, const SpeciesRuntime& sp, const WorldContext& ctx, const Vec2& desired, float speed)
 {
     if (desired.lengthSq() < 1e-6f)
@@ -202,6 +243,23 @@ void requestCall(Creature& c, CallContext context, double now, float minInterval
     c.behavior.lastCall = now;
 }
 
+// Calling bouts wane while the eliciting situation persists: the minimum interval grows linearly with
+// the time since the bout began (base at onset, 2x after 1 min, ...) up to cap, so the number of calls in a
+// standoff grows only logarithmically with its length. A bout ends after 10 min without the situation.
+// The bout clock is kept across behaviour switches (Display <-> Defend <-> Vigilance), which otherwise
+// restarted the fast initial rate at every flip. Game assumptions reflecting habituation of call rates in
+// extant animals; no dinosaur data.
+float boutInterval(Creature& c, double now, float base, float cap)
+{
+    BehaviorState& b = c.behavior;
+    if (now - b.callBoutSeen > 600.0)
+    {
+        b.callBoutStart = now;
+    }
+    b.callBoutSeen = now;
+    return std::min(cap, base * (1.0f + static_cast<float>(std::max(0.0, now - b.callBoutStart)) / 60.0f));
+}
+
 bool findWater(Context& k, Vec2& out)
 {
     const Vec2 p = k.c.pos2();
@@ -250,10 +308,13 @@ bool knownCarcass(Context& k, float radiusM, EntityId& out, Vec2& pos)
     const Vec2 p = k.c.pos2();
     const Vec2 wind = k.ctx.weather->state().wind;
     const float olf = k.sp.sim().senses.olfaction;
+    // Worth visiting: at least 5 kg of soft tissue, less for small carnivores (0.1 x own mass, min 0.3 kg),
+    // which otherwise ignored their own 1-5 kg kills. Thresholds are game assumptions.
+    const float minTissueKg = std::min(5.0f, std::max(0.3f, 0.1f * k.c.massKg));
     for (const EntityId id : ids)
     {
         const Carcass* cc = k.ctx.carcasses->find(id);
-        if (!cc || cc->softTissueKg < 5.0f)
+        if (!cc || cc->softTissueKg < minTissueKg)
         {
             continue;
         }
@@ -329,6 +390,19 @@ void emitEvent(const WorldContext& ctx, EventType t, const Creature& c, EntityId
     e.magnitude = magnitude;
     e.param = param;
     ctx.events->emit(e);
+}
+
+// Memory of a failed pursuit, so the predator does not re-target the same, now alerted, individual on
+// the very next decision (which turned one pursuit into dozens of chases). Game assumptions: 10 min
+// without re-targeting, or 1 min if a strike landed during the pursuit (a wounded animal is worth
+// following up soon).
+void noteFailedPursuit(Creature& c, EntityId target, double now)
+{
+    BehaviorState& b = c.behavior;
+    const bool struck = b.chaseStartedAt > -1e8 && b.lastAttack >= b.chaseStartedAt;
+    b.giveUpTarget = target;
+    b.giveUpUntil = now + (struck ? 60.0 : 600.0);
+    b.chaseStartedAt = -1e9;
 }
 } // namespace behaviorimpl
 
@@ -559,6 +633,7 @@ void decide(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world, 
             (c.behavior.hunt == HuntPhase::Stalk || c.behavior.hunt == HuntPhase::Chase || c.behavior.hunt == HuntPhase::Attack || c.behavior.hunt == HuntPhase::Approach))
         {
             emitEvent(ctx, EventType::HuntAbandon, c, c.behavior.target, c.behavior.chaseSeconds);
+            noteFailedPursuit(c, c.behavior.target, now);
         }
         if (best != BehaviorId::Hunt)
         {
@@ -631,6 +706,7 @@ void executeHunt(Context& k, float dt)
             emitEvent(k.ctx, EventType::HuntAbandon, c, b.target, b.chaseSeconds, 1);
             ++c.history.huntsAttempted;
             rememberPlace(c, MemoryKind::Food, p, 0.3f, now);
+            noteFailedPursuit(c, b.target, now);
         }
         target = nullptr;
         b.target = kNoEntity;
@@ -641,6 +717,18 @@ void executeHunt(Context& k, float dt)
             if (!preyLike || a.stage < AwarenessStage::Oriented)
             {
                 continue;
+            }
+            if (a.entity == b.giveUpTarget && now < b.giveUpUntil)
+            {
+                continue; // recently escaped and now alerted: not pursued again straight away
+            }
+            if (a.entity.kind() == EntityKind::Creature)
+            {
+                const Creature* o = k.world.find(a.entity);
+                if (!o || !o->alive)
+                {
+                    continue; // a motionless body is a carcass (FeedCarcass/Scavenge), not prey
+                }
             }
             const float d = distance(p, a.estimatedPos);
             const float u = a.opportunity / (1.0f + d / 250.0f) * (0.7f + 0.6f * c.personality.get(PersonalityAxis::RiskTolerance));
@@ -715,128 +803,184 @@ void executeHunt(Context& k, float dt)
     const float strike = reach(c, k.sp) + preyRadius + 0.6f;
     const float rushDistance = std::max(12.0f, vmax * 2.5f);
     const Vec2 preyVel = target->estimatedVel;
-    const bool preyFleeing = preyVel.length() > walk * 1.4f && dot(preyVel, (tp - p).normalized()) > 0.0f;
-
-    switch (b.hunt)
+    const Vec2 los = d > 1e-3f ? (tp - p) / d : Vec2::fromHeading(c.loco.heading);
+    const float preyAlong = dot(preyVel, los); // > 0: prey moving away along the line of sight
+    const bool preyFleeing = preyVel.length() > walk * 1.4f && preyAlong > 0.0f;
+    // The movement command holds until the next decision (0.5 s near an observer, ~8 s far away), so the
+    // approach is planned over that horizon instead of running at full speed through the prey.
+    const float horizon = std::max(0.5f, dt);
+    // Localisation quality. A sprint needs the prey in sight (vision localises to ~2-12 % of range; smell
+    // and hearing only to 25-60 %), and a strike needs it within about a body reach.
+    const bool trackable = target->uncertaintyM < std::max(2.0f * strike, 0.3f * d);
+    const bool located = target->uncertaintyM < std::max(3.0f, 2.0f * strike);
+    const float maxChase = std::max(5.0f, s.predation.maxChaseS) * (0.8f + 0.4f * c.personality.get(PersonalityAxis::Aggression));
+    if (b.hunt == HuntPhase::Chase)
     {
-    case HuntPhase::Stalk:
-    {
-        // Slow approach using cover; drift to stay downwind of the prey (scent carries downwind).
-        Vec2 dir = (tp - p).normalized();
-        const Vec2 wind = k.ctx.weather->state().wind;
-        if (wind.length() > 0.5f)
-        {
-            const Vec2 fromPrey = (p - tp).normalized();
-            const float downwindness = dot(fromPrey, wind.normalized());
-            if (downwindness < 0.3f)
-            {
-                dir = (dir + wind.normalized().perp() * (cross(wind, fromPrey) > 0.0f ? 0.5f : -0.5f)).normalized();
-            }
-        }
-        if (s.predation.style == HuntStyle::Ambush)
-        {
-            // Ambush: hold still near water/cover until prey is within striking distance.
-            face(c, tp);
-            b.posture = Posture::Crouch;
-            if (d < strike + 2.5f)
-            {
-                b.hunt = HuntPhase::Attack;
-                b.huntPhaseStart = now;
-                emitEvent(k.ctx, EventType::HuntChase, c, b.target, d);
-            }
-            else if (d > 60.0f)
-            {
-                setMove(c, steer(c, k.sp, k.ctx, dir, walk * 0.3f), walk * 0.3f, Posture::Crouch);
-            }
-            break;
-        }
-        setMove(c, steer(c, k.sp, k.ctx, dir, walk * 0.45f), walk * 0.45f, Posture::Crouch);
-        if (now - b.huntPhaseStart < 1.0)
-        {
-            emitEvent(k.ctx, EventType::HuntStalk, c, b.target, d);
-        }
-        if (d < rushDistance || (preyFleeing && d < rushDistance * 3.0f))
-        {
-            b.hunt = HuntPhase::Chase;
-            b.huntPhaseStart = now;
-            b.chaseSeconds = 0.0f;
-            b.bestGap = d;
-            emitEvent(k.ctx, EventType::HuntChase, c, b.target, d);
-        }
-        else if (preyFleeing)
-        {
-            b.hunt = HuntPhase::Abandon;
-        }
-        break;
+        b.chaseSeconds += dt; // the sprint budget counts sprint time only
     }
-    case HuntPhase::Approach:
-    {
-        setMove(c, steer(c, k.sp, k.ctx, tp - p, walk * 1.4f), walk * 1.4f, Posture::Normal);
-        if (d < rushDistance * 2.5f || preyFleeing)
-        {
-            b.hunt = HuntPhase::Chase;
-            b.huntPhaseStart = now;
-            b.chaseSeconds = 0.0f;
-            b.bestGap = d;
-            emitEvent(k.ctx, EventType::HuntChase, c, b.target, d);
-        }
-        break;
-    }
-    case HuntPhase::Chase:
-    {
-        b.chaseSeconds += dt;
-        // Pure pursuit with lead: aim at the predicted interception point.
-        const float tIntercept = d / std::max(1.0f, vmax);
-        const Vec2 aim = tp + preyVel * std::min(3.0f, tIntercept);
-        setMove(c, steer(c, k.sp, k.ctx, aim - p, vmax), vmax, Posture::Normal);
-        if (d < b.bestGap - 0.5f)
-        {
-            b.bestGap = d;
-            b.huntPhaseStart = now;
-        }
-        const bool losing = now - b.huntPhaseStart > 4.0 && d > b.bestGap + 3.0f;
-        const float maxChase = std::max(5.0f, s.predation.maxChaseS) * (0.8f + 0.4f * c.personality.get(PersonalityAxis::Aggression));
-        if (d < strike)
-        {
-            b.hunt = HuntPhase::Attack;
-            b.huntPhaseStart = now;
-        }
-        else if (losing || b.chaseSeconds > maxChase || c.phys.fatigue > 0.85f)
-        {
-            b.hunt = HuntPhase::Abandon;
-        }
-        break;
-    }
-    case HuntPhase::Attack:
-    {
-        const float speed = std::min(vmax, preyVel.length() + 1.0f);
-        setMove(c, (tp - p), speed, Posture::Normal);
-        if (d < strike + 0.5f)
-        {
-            // The serial phase rate-limits strikes (attack cooldown), so asking every tick is safe.
-            pushIntent(c, ActionKind::Attack, b.target, tp, 1.0f);
-        }
-        else if (d > strike * 2.5f)
-        {
-            b.hunt = HuntPhase::Chase;
-            b.huntPhaseStart = now;
-        }
-        break;
-    }
-    case HuntPhase::Abandon:
-    {
-        emitEvent(k.ctx, EventType::HuntAbandon, c, b.target, b.chaseSeconds);
+    auto startChase = [&]() {
+        b.hunt = HuntPhase::Chase;
+        b.huntPhaseStart = now;
+        b.chaseSeconds = 0.0f;
+        b.bestGap = d;
+        b.chaseStartedAt = now;
+        emitEvent(k.ctx, EventType::HuntChase, c, b.target, d);
+    };
+    // Closing speed that brings the predator to half the strike distance by the next decision, matching
+    // the prey's own speed on arrival (no overshoot), capped by the predator's current capacity.
+    auto arrivalSpeed = [&]() { return clampf(preyAlong + (d - 0.5f * strike) / horizon, 0.0f, vmax); };
+    // Closed-loop interception carried out by locomotion between decisions (see integrateLocomotion).
+    auto armSeek = [&](float cap) {
+        b.seekActive = true;
+        b.seekPoint = tp;
+        b.seekVel = preyVel;
+        b.seekStandoff = 0.5f * strike;
+        b.seekMaxSpeed = cap;
+        b.seekElapsed = 0.0f;
+    };
+    auto giveUp = [&](u32 param) {
+        emitEvent(k.ctx, EventType::HuntAbandon, c, b.target, b.chaseSeconds, param);
         ++c.history.huntsAttempted;
         rememberPlace(c, MemoryKind::Food, tp, 0.3f, now); // prey was here
+        noteFailedPursuit(c, b.target, now);
         b.target = kNoEntity;
         b.hunt = HuntPhase::Search;
         b.commitUntil = now; // allow re-evaluation (rest after a failed chase is likely: fatigue)
         setMove(c, c.behavior.desiredDir, 0.0f, Posture::Normal);
-        break;
-    }
-    default:
-        b.hunt = HuntPhase::Search;
-        break;
+    };
+
+    // Phase changes take effect in the same decision (up to 3 transitions), so a predator never spends a
+    // whole decision interval executing the previous phase's movement command.
+    for (int pass = 0; pass < 3; ++pass)
+    {
+        const HuntPhase before = b.hunt;
+        switch (b.hunt)
+        {
+        case HuntPhase::Stalk:
+        {
+            // Slow approach using cover; drift to stay downwind of the prey (scent carries downwind).
+            Vec2 dir = (tp - p).normalized();
+            const Vec2 wind = k.ctx.weather->state().wind;
+            if (wind.length() > 0.5f)
+            {
+                const Vec2 fromPrey = (p - tp).normalized();
+                const float downwindness = dot(fromPrey, wind.normalized());
+                if (downwindness < 0.3f)
+                {
+                    dir = (dir + wind.normalized().perp() * (cross(wind, fromPrey) > 0.0f ? 0.5f : -0.5f)).normalized();
+                }
+            }
+            if (s.predation.style == HuntStyle::Ambush)
+            {
+                // Ambush: hold still near water/cover until located prey is within striking distance, then lunge.
+                face(c, tp);
+                b.posture = Posture::Crouch;
+                if (d < strike + 2.5f && located)
+                {
+                    startChase();
+                    b.hunt = HuntPhase::Attack;
+                }
+                else if (d > 60.0f)
+                {
+                    setMove(c, steer(c, k.sp, k.ctx, dir, walk * 0.3f), walk * 0.3f, Posture::Crouch);
+                }
+                break;
+            }
+            setMove(c, steer(c, k.sp, k.ctx, dir, walk * 0.45f), walk * 0.45f, Posture::Crouch);
+            if (now - b.huntPhaseStart < 1.0)
+            {
+                emitEvent(k.ctx, EventType::HuntStalk, c, b.target, d);
+            }
+            if (trackable && (d < rushDistance || (preyFleeing && d < rushDistance * 3.0f)))
+            {
+                startChase();
+            }
+            else if (preyFleeing)
+            {
+                b.hunt = HuntPhase::Abandon;
+            }
+            break;
+        }
+        case HuntPhase::Approach:
+        {
+            setMove(c, steer(c, k.sp, k.ctx, tp - p, walk * 1.4f), walk * 1.4f, Posture::Normal);
+            if (trackable && (d < rushDistance * 2.5f || preyFleeing))
+            {
+                startChase();
+            }
+            break;
+        }
+        case HuntPhase::Chase:
+        {
+            // Pursuit with lead: aim at the predicted interception point (over at most one decision horizon).
+            const float tIntercept = d / std::max(1.0f, vmax);
+            const Vec2 aim = tp + preyVel * std::min(std::min(3.0f, tIntercept), horizon);
+            // Out of sight (estimate from smell, sound or dead reckoning): no blind sprint, close in cautiously.
+            const float v = trackable ? arrivalSpeed() : std::min(arrivalSpeed(), walk * 1.4f);
+            setMove(c, steer(c, k.sp, k.ctx, aim - p, v), v, Posture::Normal);
+            armSeek(trackable ? vmax : walk * 1.4f);
+            if (d < strike + 0.5f && located)
+            {
+                pushIntent(c, ActionKind::Attack, b.target, tp, 1.0f); // opportunistic strike as the prey comes within reach
+            }
+            if (d < b.bestGap - 0.5f)
+            {
+                b.bestGap = d;
+                b.huntPhaseStart = now;
+            }
+            // "Losing" = the gap has not shrunk for several seconds (at least two decisions) and is growing.
+            const bool losing = now - b.huntPhaseStart > std::max(4.0, 2.0 * static_cast<double>(horizon)) && d > b.bestGap + 3.0f;
+            if (d < strike && located)
+            {
+                b.hunt = HuntPhase::Attack;
+                b.huntPhaseStart = now;
+            }
+            else if (d < strike)
+            {
+                // Arrived where the prey was believed to be, but it is not in sight: the trail is lost.
+                giveUp(1);
+            }
+            else if (losing || b.chaseSeconds > maxChase || c.phys.fatigue > 0.85f)
+            {
+                b.hunt = HuntPhase::Abandon;
+            }
+            break;
+        }
+        case HuntPhase::Attack:
+        {
+            // Stay with the prey: match its velocity and hold about half the strike distance.
+            const Vec2 aim = tp + preyVel * std::min(1.0f, horizon);
+            setMove(c, aim - p, arrivalSpeed(), Posture::Normal);
+            armSeek(vmax);
+            if (d < strike + 0.5f && located)
+            {
+                // The serial phase rate-limits strikes (attack cooldown), so asking every tick is safe.
+                pushIntent(c, ActionKind::Attack, b.target, tp, 1.0f);
+            }
+            else if (d > strike * 2.5f || !located)
+            {
+                b.hunt = HuntPhase::Chase;
+                b.huntPhaseStart = now;
+            }
+            // Game assumption: a struggle is given up on exhaustion, on pain from the prey's defence, or
+            // after a stalemate of more than 90 s beyond the sprint budget.
+            if (c.phys.fatigue > 0.9f || c.phys.pain > 0.6f || now - b.chaseStartedAt > static_cast<double>(maxChase) + 90.0)
+            {
+                b.hunt = HuntPhase::Abandon;
+            }
+            break;
+        }
+        case HuntPhase::Abandon:
+            giveUp(0);
+            break;
+        default:
+            b.hunt = HuntPhase::Search;
+            break;
+        }
+        if (b.hunt == before || b.hunt == HuntPhase::Search)
+        {
+            break;
+        }
     }
 }
 } // namespace behaviorimpl
@@ -856,6 +1000,7 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
     const float vmax = maxSpeed(c, sp);
     const float dt = std::max(0.05f, dtSince);
     BehaviorState& b = c.behavior;
+    b.seekActive = false; // re-armed below only by a hunt's Chase/Attack decision
     const Group* group = c.social.groupId ? world.findGroup(c.social.groupId) : nullptr;
     const float sizeRatio = c.hipHeightM / std::max(0.05f, s.hipHeightM);
 
@@ -964,15 +1109,34 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
             setMove(c, b.desiredDir, walk, Posture::Normal);
             break;
         }
-        const float d = distance(p, b.targetPos);
-        if (d > std::max(2.0f, c.lengthM * 0.35f))
+        const float litresPerS = 0.0003f * c.massKg + 0.002f;
         {
-            setMove(c, steer(c, sp, ctx, cohesionBias(b.targetPos - p), walk), walk * (d > 300.0f ? 1.2f : 0.8f), Posture::Normal);
+            // Drink wherever the muzzle or the body is in water (standing in the shallows or at the edge),
+            // not only at the remembered spot, which is the dry cell beside the water and may sit on top of
+            // a 2-3 m bank above an animal already standing in the channel.
+            const Vec2 muzzle = p + Vec2::fromHeading(c.loco.heading) * reach(c, sp);
+            const bool wetHere = c.loco.waterDepth > 0.02f;
+            const bool wetAhead = ctx.water && ctx.water->depthAt(muzzle, *ctx.terrain) > 0.02f;
+            if (wetHere || wetAhead)
+            {
+                setMove(c, b.desiredDir, 0.0f, Posture::HeadDown);
+                pushIntent(c, ActionKind::Drink, kNoEntity, wetAhead ? muzzle : p, litresPerS * dt);
+                break;
+            }
+        }
+        const float d = distance(p, b.targetPos);
+        const float arrive = std::max(2.0f, c.lengthM * 0.35f);
+        if (d > arrive)
+        {
+            // Slow down on the final approach so the command held until the next decision (~8 s apart at
+            // Far LOD) does not carry the animal past the arrival radius.
+            const float cruise = walk * (d > 300.0f ? 1.2f : 0.8f);
+            const float v = std::min(cruise, std::max(0.1f, (d - 0.5f * arrive) / dt));
+            setMove(c, steer(c, sp, ctx, cohesionBias(b.targetPos - p), v), v, Posture::Normal);
         }
         else
         {
             setMove(c, b.desiredDir, 0.0f, Posture::HeadDown);
-            const float litresPerS = 0.0003f * c.massKg + 0.002f;
             pushIntent(c, ActionKind::Drink, kNoEntity, b.targetPos, litresPerS * dt);
         }
         break;
@@ -1025,10 +1189,11 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         {
             c.behavior.desiredSpeed = 0.0f;
         }
-        // Social species with alarm calls (speculative reconstruction toggle) call on strong unidentified threats.
-        if (s.social.alarmCalls && ctx.toggle("alarm_calls") && c.perception.alertness > 0.55f)
+        // Social species with alarm calls (speculative reconstruction toggle) call on strong threats they
+        // perceive themselves; a heard alarm alone raises vigilance but is not relayed (see ownAlarmThreat).
+        if (s.social.alarmCalls && ctx.toggle("alarm_calls") && ownAlarmThreat(c) > 0.55f)
         {
-            requestCall(c, CallContext::Alarm, now, 20.0f);
+            requestCall(c, CallContext::Alarm, now, boutInterval(c, now, 20.0f, 600.0f));
         }
         break;
     }
@@ -1045,7 +1210,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         }
         const Vec2 dir = steer(c, sp, ctx, away + separation(c, sp, world) * 1.5f, vmax);
         setMove(c, dir, vmax * (0.65f + 0.35f * saturate(b.urgency)), Posture::Normal);
-        if (s.social.alarmCalls && ctx.toggle("alarm_calls") && now - b.startedAt < 2.0)
+        // Alarm at flight onset only when the animal itself perceives the danger (not when it flees because
+        // it heard an alarm or its group bolted).
+        if (s.social.alarmCalls && ctx.toggle("alarm_calls") && now - b.startedAt < 2.0 && ownAlarmThreat(c) > 0.4f)
         {
             requestCall(c, CallContext::Alarm, now, 15.0f);
         }
@@ -1095,7 +1262,7 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         {
             pushIntent(c, ActionKind::Attack, t->entity, t->estimatedPos, 0.8f);
         }
-        requestCall(c, CallContext::Threat, now, 12.0f);
+        requestCall(c, CallContext::Threat, now, boutInterval(c, now, 12.0f, 1800.0f)); // waning bout in a standoff
         break;
     }
     case BehaviorId::Display:
@@ -1112,7 +1279,7 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         }
         b.posture = Posture::Display;
         pushIntent(c, ActionKind::Display, t ? t->entity : kNoEntity, p, 1.0f);
-        requestCall(c, CallContext::Threat, now, 15.0f);
+        requestCall(c, CallContext::Threat, now, boutInterval(c, now, 15.0f, 1800.0f)); // waning bout in a standoff
         break;
     }
     case BehaviorId::Investigate:
@@ -1166,7 +1333,8 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
     case BehaviorId::Scavenge:
     {
         const Carcass* cc = b.target.kind() == EntityKind::Carcass ? ctx.carcasses->find(b.target) : nullptr;
-        if (!cc || cc->softTissueKg < 1.0f)
+        // Feeding stops when little is left: 1 kg, less for small animals (0.02 x own mass, min 0.05 kg; game assumption).
+        if (!cc || cc->softTissueKg < std::min(1.0f, std::max(0.05f, 0.02f * c.massKg)))
         {
             b.commitUntil = now;
             setMove(c, b.desiredDir, 0.0f, Posture::Normal);

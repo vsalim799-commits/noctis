@@ -19,6 +19,30 @@
 #include "Sound/SoundConcurrency.h"
 #include "ProfilingDebugging/CpuProfilerTrace.h"
 
+namespace NoctisAudioDirectorImpl
+{
+// Baked event libraries produced by Tools/AudioFactory (manifest ue5.random_group, 4 variations per class) and imported
+// by Content/Python/import_audio.py under /Game/Audio/<Category>/<subcategory>/<id>. Class keys and reference levels
+// mirror the manifest (ambience.py THUNDER_DISTANCES, foley.py SPLASH_CLASSES / CRASH_CLASSES and their level laws).
+constexpr int32 Variations = 4;
+constexpr float ThunderClassesM[] = {500.0f, 2000.0f, 5000.0f, 12000.0f};
+// Thunder files start 80 ms before the first arrival (manifest parameters.file_starts_s_after_flash).
+constexpr double ThunderPreRollS = 0.08;
+struct FMassClass
+{
+	const TCHAR* Name;
+	float MassKg;
+};
+constexpr FMassClass SplashMassClasses[] = {{TEXT("small"), 1.0f}, {TEXT("medium"), 30.0f}, {TEXT("large"), 500.0f}, {TEXT("huge"), 5000.0f}};
+constexpr FMassClass CrashMassClasses[] = {{TEXT("medium"), 100.0f}, {TEXT("large"), 1000.0f}, {TEXT("huge"), 6000.0f}};
+
+USoundBase* LoadSound(const FString& Folder, const FString& Name)
+{
+	const FString Path = FString::Printf(TEXT("%s/%s.%s"), *Folder, *Name, *Name);
+	return LoadObject<USoundBase>(nullptr, *Path, nullptr, LOAD_NoWarn | LOAD_Quiet);
+}
+} // namespace NoctisAudioDirectorImpl
+
 ANoctisAudioDirector::ANoctisAudioDirector()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,9 +59,58 @@ void ANoctisAudioDirector::BeginPlay()
 	SplashSound = Settings.SplashSound.LoadSynchronous();
 	CrashSound = Settings.VegetationCrashSound.LoadSynchronous();
 	ImpactSound = Settings.ImpactSound.LoadSynchronous();
+	LoadBakedLibraries();
 	if (UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this))
 	{
 		FramePublishedHandle = Sub->OnFramePublished.AddUObject(this, &ANoctisAudioDirector::OnFramePublished);
+	}
+}
+
+void ANoctisAudioDirector::LoadBakedLibraries()
+{
+	using namespace NoctisAudioDirectorImpl;
+	BakedLibraryAssets.Reset();
+	ThunderClasses.Reset();
+	SplashClasses.Reset();
+	CrashClasses.Reset();
+	auto Fill = [this](FBakedClass& Class, const FString& Folder, const FString& Stem) {
+		for (int32 K = 1; K <= Variations; ++K)
+		{
+			if (USoundBase* Sound = LoadSound(Folder, FString::Printf(TEXT("%s_%02d"), *Stem, K)))
+			{
+				BakedLibraryAssets.Add(Sound);
+				Class.Sounds.Add(Sound);
+			}
+		}
+	};
+	for (const float D : ThunderClassesM)
+	{
+		FBakedClass& Class = ThunderClasses.AddDefaulted_GetRef();
+		Class.Key = D;
+		Fill(Class, TEXT("/Game/Audio/Weather/thunder"), FString::Printf(TEXT("amb_thunder_%dm"), FMath::RoundToInt(D)));
+	}
+	for (const FMassClass& C : SplashMassClasses)
+	{
+		FBakedClass& Class = SplashClasses.AddDefaulted_GetRef();
+		Class.Key = C.MassKg;
+		Class.ReferenceDb = 40.0f + 8.0f * FMath::LogX(10.0f, C.MassKg); // foley.py: water stroke level law at 1 m
+		Fill(Class, TEXT("/Game/Audio/Foley/water"), FString::Printf(TEXT("fol_water_stroke_%s"), C.Name));
+	}
+	for (const FMassClass& C : CrashMassClasses)
+	{
+		FBakedClass& Class = CrashClasses.AddDefaulted_GetRef();
+		Class.Key = C.MassKg;
+		Class.ReferenceDb = 55.0f + 8.0f * FMath::LogX(10.0f, C.MassKg / 100.0f); // foley.py: vegetation crash level law at 1 m
+		Fill(Class, TEXT("/Game/Audio/Foley/vegetation_crash"), FString::Printf(TEXT("fol_vegetation_crash_%s"), C.Name));
+	}
+	// Default ambient beds (their reference levels are the UPROPERTY defaults RainLoopAmbientDb / WindLoopAmbientDb).
+	if (!RainLoop)
+	{
+		RainLoop = LoadSound(TEXT("/Game/Audio/Weather/rain"), TEXT("amb_hc_rain_heavy_forest"));
+	}
+	if (!WindLoop)
+	{
+		WindLoop = LoadSound(TEXT("/Game/Audio/Ambience/wind_broadleaf"), TEXT("amb_hc_wind_broadleaf_moderate"));
 	}
 }
 
@@ -98,6 +171,10 @@ void ANoctisAudioDirector::OnFramePublished(const FNoctisFrameOutput& Front)
 		Sound.ReceivedLevelDb = Extra.ReceivedLevelDb;
 		Sound.ExtraGainDb = Extra.ExtraGainDb;
 		Sound.ArrivalSimTime = Source.startTime + double(Extra.DistanceM / SpeedOfSound);
+		if (Source.kind == noctis::SoundKind::Thunder)
+		{
+			Sound.ArrivalSimTime -= NoctisAudioDirectorImpl::ThunderPreRollS; // baked files start before the first arrival
+		}
 		Sound.TemperatureC = Weather.temperatureC;
 		Sound.Humidity = Weather.humidity;
 	}
@@ -154,15 +231,55 @@ void ANoctisAudioDirector::Tick(float DeltaSeconds)
 	});
 }
 
-USoundBase* ANoctisAudioDirector::FindBakedSound(const noctis::SoundSource& Source) const
+USoundBase* ANoctisAudioDirector::FindBakedSound(const FScheduledSound& Sound, float& OutReferenceDb) const
 {
+	const noctis::SoundSource& Source = Sound.Source;
+	OutReferenceDb = Source.levelDb;
+	auto Nearest = [](const TArray<FBakedClass>& Classes, float Value) -> const FBakedClass* {
+		const FBakedClass* Best = nullptr;
+		float BestDist = TNumericLimits<float>::Max();
+		for (const FBakedClass& Class : Classes)
+		{
+			const float Dist = FMath::Abs(FMath::Loge(FMath::Max(Value, 1e-3f) / Class.Key));
+			if (Class.Sounds.Num() > 0 && Dist < BestDist)
+			{
+				BestDist = Dist;
+				Best = &Class;
+			}
+		}
+		return Best;
+	};
+	auto Pick = [](const FBakedClass& Class, uint64 Seed) { return Class.Sounds[static_cast<int32>(Seed % static_cast<uint64>(Class.Sounds.Num()))]; };
+	auto EmitterMassKg = [this](const noctis::SoundSource& S) {
+		UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this);
+		const FNoctisSpeciesInfo* Info = Sub ? Sub->GetSpeciesInfo(S.speciesIndex) : nullptr;
+		return Info ? Info->AdultMassKg : 100.0f;
+	};
 	switch (Source.kind)
 	{
 	case noctis::SoundKind::Thunder:
+		if (const FBakedClass* Class = Nearest(ThunderClasses, Sound.DistanceM))
+		{
+			// The file is calibrated on the level received at its class distance; refer it to the core's line-source
+			// model at that distance (no wind / terrain) so that the director only applies the difference.
+			OutReferenceDb = Source.levelDb - noctis::SoundField::spreadingLossDb(Source, Class->Key) -
+							 noctis::SoundField::absorptionDbPerM(Source.f0Hz, Sound.TemperatureC, Sound.Humidity) * Class->Key;
+			return Pick(*Class, Source.seed);
+		}
 		return ThunderSound;
 	case noctis::SoundKind::Splash:
+		if (const FBakedClass* Class = Nearest(SplashClasses, EmitterMassKg(Source)))
+		{
+			OutReferenceDb = Class->ReferenceDb;
+			return Pick(*Class, Source.seed + Source.id);
+		}
 		return SplashSound;
 	case noctis::SoundKind::VegetationCrash:
+		if (const FBakedClass* Class = Nearest(CrashClasses, EmitterMassKg(Source)))
+		{
+			OutReferenceDb = Class->ReferenceDb;
+			return Pick(*Class, Source.seed + Source.id);
+		}
 		return CrashSound;
 	case noctis::SoundKind::Impact:
 		return ImpactSound;
@@ -224,15 +341,17 @@ void ANoctisAudioDirector::Play(const FScheduledSound& Sound)
 		}
 	}
 
-	USoundBase* Baked = FindBakedSound(Sound.Source);
+	float ReferenceDb = Sound.Source.levelDb;
+	USoundBase* Baked = FindBakedSound(Sound, ReferenceDb);
 	UAudioComponent* Component = nullptr;
 	double DurationS = 0.0;
 	bool bProcedural = false;
 	if (Baked)
 	{
-		// Baked assets are normalised so that volume 1 = the source level at 1 m (import_audio.py).
-		// The attenuation asset only spatialises: the whole propagation loss is applied here.
-		const float Volume = FMath::Clamp(FMath::Pow(10.0f, (Sound.ReceivedLevelDb - Sound.Source.levelDb) / 20.0f), 0.0f, 1.0f);
+		// Baked assets are calibrated by import_audio.py: volume 1 = ReferenceDb (a call's or a splash's level at 1 m, the
+		// level a thunder file represents at its class distance). The attenuation asset only spatialises: the whole
+		// propagation loss predicted by the core is applied here. Up to +12 dB when the event is closer than its class.
+		const float Volume = FMath::Clamp(FMath::Pow(10.0f, (Sound.ReceivedLevelDb - ReferenceDb) / 20.0f), 0.0f, 4.0f);
 		Component = AttachTo ? UGameplayStatics::SpawnSoundAttached(Baked, AttachTo, AttachBone, FVector::ZeroVector, EAttachLocation::SnapToTarget, false, Volume, 1.0f, 0.0f,
 																	CallAttenuation, CallConcurrency, true)
 							 : UGameplayStatics::SpawnSoundAtLocation(this, Baked, Location, FRotator::ZeroRotator, Volume, 1.0f, 0.0f, CallAttenuation, CallConcurrency, true);
@@ -289,9 +408,11 @@ void ANoctisAudioDirector::UpdateAmbience(const FNoctisFrameOutput& Front)
 			Component->SetVolumeMultiplier(FMath::Clamp(Volume, 0.0f, 2.0f));
 		}
 	};
-	// Levels relative to the beds' authored loudness; the core's rain/wind noise (dB) drives them.
-	SetLevel(EnsureLoop(RainAudio, RainLoop, TEXT("RainBed")), Weather.precipMmPerHour > 0.0f ? FMath::Pow(10.0f, (Weather.rainNoiseDb - 60.0f) / 20.0f) : 0.0f);
-	SetLevel(EnsureLoop(WindAudio, WindLoop, TEXT("WindBed")), FMath::Pow(10.0f, (Weather.windNoiseDb - 55.0f) / 20.0f));
+	// The bed assets already play at their manifest ambient level (import_audio.py calibration): apply only the difference
+	// between the core's level and that reference (counting the absolute level once).
+	SetLevel(EnsureLoop(RainAudio, RainLoop, TEXT("RainBed")),
+			 Weather.precipMmPerHour > 0.0f ? FMath::Pow(10.0f, (Weather.rainNoiseDb - RainLoopAmbientDb) / 20.0f) : 0.0f);
+	SetLevel(EnsureLoop(WindAudio, WindLoop, TEXT("WindBed")), FMath::Pow(10.0f, (Weather.windNoiseDb - WindLoopAmbientDb) / 20.0f));
 	SetLevel(EnsureLoop(InsectAudio, InsectLoop, TEXT("InsectBed")), Front.InsectChorus);
 	SetLevel(EnsureLoop(BirdAudio, BirdLoop, TEXT("BirdBed")), Front.BirdActivity);
 }

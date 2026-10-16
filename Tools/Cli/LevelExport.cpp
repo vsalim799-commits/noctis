@@ -3,15 +3,21 @@
 // The level is not hand-placed: every point of interest is selected by an explicit algorithm over the
 // world that 'run' generates (same seed, same SimConfig) and over a short warm-up of the live simulation:
 //
-//   basecamp        WorldSimulation's own choice (dry, gentle ground ~250 m from water, central)
-//   exposure_site   PaleontologySystem sites on eroding outer banks (older strata in cutbanks / bluffs)
+//   basecamp        WorldSimulation's own choice (gentle ground ~250 m from water, central; no flood criterion
+//                   in the core -> flood alert rule in the level)
+//   exposure_site   PaleontologySystem sites on eroding outer banks (older strata in cutbanks / bluffs), with a
+//                   bench access point at the foot of the face
 //   oxbow_lake      abandoned meanders from the terrain generator
-//   water_access    drinking sites ranked by observed drinking events and herbivore presence
-//   ford            river / creek cross-sections ranked by max depth, bank slope, bed firmness,
-//                   trail wear and predicted corridor crossings (fordability computed per stage)
+//   water_access    simulation drinking sites whose stance is at the water edge (<= 0.5 m above it, bank <= 20°),
+//                   ranked by activity, drinking events, herbivore presence, habitat and point bars
+//   ford            candidate crossing points at inflections (|curvature| <= 0.0015 /m), ranked by banks, bed,
+//                   trail wear and predicted corridors; fordability against the simulated minimum discharge,
+//                   packraft crossings of the main river
 //   overlook        greedy maximum coverage of an activity-weighted viewshed (terrain horizon,
-//                   dense canopy as an opaque layer, foliage extinction near the target)
-//   blind           concealed, downwind hide 70–200 m from the busiest targets with a clear line of sight
+//                   dense canopy as an opaque layer, foliage extinction near the target), >= 150 m from
+//                   exposures and set back from bank edges
+//   blind           concealed, downwind hide 70–240 m from the busiest targets with a clear line of sight,
+//                   set back from bank edges and below the skyline seen from the target
 //   nesting_area    SPECULATIVE habitat-model zones per species (flood-safe, substrate, slope, water)
 //   carcass_site    carcasses present at export time (dynamic state)
 //   camera_trap / audio_recorder / mic_array   sensor spots on corridors / acoustic coverage / open quiet ground
@@ -66,6 +72,22 @@ constexpr float kResearcherMassKg = 95.0f; // researcher + field pack (game assu
 constexpr float kRadioMastM = 10.0f;       // basecamp antenna mast height (game assumption)
 constexpr float kOverlookRadiusM = 1500.0f;
 constexpr float kHerbivoreMassKg = 3000.0f; // representative large herbivore for corridor costs (game assumption)
+constexpr float kEdgeMarginM = 300.0f;      // POIs keep this distance from the map edge (= study-area warning distance)
+constexpr float kWadeBankSlopeMaxDeg = 30.0f;  // steepest bank the researcher may climb into / out of the water (game safety rule)
+constexpr float kRoverBankSlopeMaxDeg = 25.0f; // same slope cap as the rover practicability mask
+constexpr float kFordKappaMax = 0.0015f;       // crossings only at inflections between bends (|curvature| below this, 1/m)
+// Baseflow floor of WaterSystem::update (Source/NoctisCore/Private/World/Water.cpp): with no rain the inflow tends to
+// meanQ * base, so discharge never drops below base x mean. Keep these two values in sync with Water.cpp.
+constexpr float kPerennialBaseflow = 0.45f;
+constexpr float kEphemeralBaseflow = 0.05f;
+constexpr float kFloodAlertFraction = 0.8f;    // flood alert (skip interrupted, camp x360 forbidden) above 0.8 x bankfull stage
+constexpr float kOverlookExposureMinM = 150.0f; // an overlook is a separate place from the exposure it may overlook
+constexpr float kEdgeSetbackM = 18.0f;          // overlooks and blinds stay back from steep bank edges
+constexpr float kEdgeSteepDeg = 25.0f;          // slope that marks a bank edge for the setback test
+constexpr float kDrinkMaxDropM = 0.5f;          // a drinking site stands at most this high above the water surface
+constexpr float kDrinkMaxBankSlopeDeg = 20.0f;  // steepest bank (10 m transect to the water) an animal walks down to drink
+constexpr float kNestSuitabilityMin = 0.4f;     // below this the habitat model proposes no nesting zone for the species
+constexpr float kWearPassage = 0.05f;           // trail wear above this = at least one recent passage (wear saturates fast)
 
 struct Options
 {
@@ -574,6 +596,8 @@ struct Poi
     float score = 0.0f;
     size_t footCell = 0;
     bool footOk = false;
+    Vec2 access;          // separate access point (exposure bench), when hasAccess
+    bool hasAccess = false;
 };
 
 struct Trail
@@ -588,8 +612,11 @@ struct Trail
     float wearMax = 0.0f;
     float presence = 0.0f;
     float maxWaterM = 0.0f;
+    float maxSlopeDeg = 0.0f;
     bool crossesRiver = false;
     float costPerM = 0.0f;
+    std::vector<std::string> usableBy;    // herbivore species whose depth / slope limits allow the whole corridor
+    std::vector<std::string> notUsableBy; // herbivore species stopped by deep water (non-swimmers) or slope
 };
 
 struct Edge
@@ -600,6 +627,7 @@ struct Edge
     float lengthM = 0.0f;
     float maxSlopeDeg = 0.0f;
     float maxWaterM = 0.0f;
+    int packraftCells = 0; // > 0: the route crosses the main river by packraft
     std::vector<Vec2> path;
 };
 
@@ -774,6 +802,7 @@ public:
         buildCorridors();
         lap("corridors");
         addFords();
+        buildPackraftNetwork();
         addWaterAccess();
         addOverlooks();
         lap("points de vue");
@@ -827,15 +856,35 @@ private:
         wheelWidthM_ = v.getFloat("wheel_width_m", wheelWidthM_);
         wheelRadiusM_ = v.getFloat("wheel_radius_m", wheelRadiusM_);
         noiseElectricDb_ = v.getFloat("noise_electric_db_1m", noiseElectricDb_);
+        noiseTyreRefDb_ = v.getFloat("noise_tyre_db_1m_ref", noiseTyreRefDb_);
+        noiseTyreRefSpeedMs_ = v.getFloat("noise_tyre_ref_speed_ms", noiseTyreRefSpeedMs_);
+        noiseTyreSpeedExpDb_ = v.getFloat("noise_tyre_speed_exponent_db", noiseTyreSpeedExpDb_);
         noiseGeneratorDb_ = v.getFloat("noise_generator_db_1m", noiseGeneratorDb_);
         batteryKWh_ = v.getFloat("battery_kwh", batteryKWh_);
         droneRadioRangeM_ = r.value.get("drone").getFloat("radio_range_m", droneRadioRangeM_);
+        for (const JsonValue& it : r.value.get("items").items())
+        {
+            if (it.getString("id") == "packraft")
+            {
+                const JsonValue& s = it.get("specs");
+                packraftFound_ = true;
+                packraftMaxCurrentMs_ = s.getFloat("max_crossing_current_ms", packraftMaxCurrentMs_);
+                packraftBankSlopeDeg_ = s.getFloat("bank_slope_max_deg", packraftBankSlopeDeg_);
+                packraftPaddleMs_ = s.getFloat("paddle_speed_ms", packraftPaddleMs_);
+                packraftSetupMin_ = s.getFloat("setup_min", packraftSetupMin_);
+                packraftMassKg_ = it.getFloat("mass_kg", packraftMassKg_);
+            }
+        }
+        if (!packraftFound_)
+        {
+            NOCTIS_LOG_WARN("equipment.json : pas d'article 'packraft' — valeurs par défaut pour la traversée de la rivière");
+        }
     }
 
     void initFields()
     {
         for (Field* f : {&height_, &slope_, &water_, &wetFrac_, &canopy_, &cover_, &trail_, &har_, &riverDist_, &creekDist_, &creekHar_, &noise_,
-                         &prominence_, &blockH_, &suitability_, &presence_, &herbPresence_, &predPresence_, &drinkEv_, &callEv_, &activity_, &flood_,
+                         &prominence_, &blockH_, &backdropH_, &suitability_, &presence_, &herbPresence_, &predPresence_, &drinkEv_, &callEv_, &activity_, &flood_,
                          &footCost_, &roverCost_, &roverPract_, &animalCost_, &radio_, &nestSuit_, &corridorUse_})
         {
             f->init(n_, 0.0f);
@@ -1015,6 +1064,7 @@ private:
                 }
                 const float treeTop = dsum > 0.0f ? hsum / dsum : 0.0f;
                 blockH_.v[i] = treeTop * 0.8f * smoothstep(0.45f, 0.8f, canopy_.v[i]);
+                backdropH_.v[i] = treeTop * smoothstep(0.2f, 0.5f, canopy_.v[i]); // visual backdrop: even open woodland breaks a silhouette
                 float suit = 0.0f;
                 for (const auto& hb : herbivores)
                 {
@@ -1171,6 +1221,139 @@ private:
     {
         // WaterSystem caps the stage at 1.6 x bankfull depth: 2.4 m above the bankfull level for a 4 m channel.
         return har < 0.5f ? "frequent" : har < 1.5f ? "occasional" : har < 2.4f ? "extreme_only" : "never";
+    }
+
+    // Height of p above the bankfull (floodplain) reference of the nearest main-river point. Computed at the point
+    // itself, not from its 32 m analysis cell (a cell can mix the channel and the bluff top).
+    float harAt(const Vec2& p) const
+    {
+        int ri = -1;
+        int pi = -1;
+        float d = 0.0f;
+        if (w_.layout().rivers.empty() || !rivers_.nearest(p, 0, ri, pi, d))
+        {
+            return 99.0f;
+        }
+        return terrainZ(p) - w_.layout().rivers[0].points[static_cast<size_t>(pi)].floodplainZ;
+    }
+
+    // Flood risk 0..1 of the point itself (same formula as the flood_ mask, evaluated at the point).
+    float floodRiskAt(const Vec2& p) const
+    {
+        const float har = harAt(p);
+        float risk = har < 0.0f ? 1.0f : 1.0f - smoothstep(0.0f, 2.5f, har);
+        const Habitat h = w_.terrain().habitatAt(p);
+        if (h == Habitat::Backswamp || h == Habitat::OxbowLake)
+        {
+            risk = std::max(risk, 0.7f);
+        }
+        int ri = -1;
+        int pi = -1;
+        float d = 0.0f;
+        if (w_.layout().rivers.size() > 1 && rivers_.nearest(p, 1, ri, pi, d) && d < 30.0f &&
+            terrainZ(p) - w_.layout().rivers[1].points[static_cast<size_t>(pi)].floodplainZ < 1.0f)
+        {
+            risk = std::max(risk, 0.6f);
+        }
+        return risk;
+    }
+
+    // Hydraulic geometry of WaterSystem: stage = 0.6 * bankfull * (Q/Qmean)^0.4, mean velocity = Q / (0.66 * width * stage).
+    float bankfullOf(int ri) const { return w_.water().bankfullDepth(ri); }
+    float baseflowOf(int ri) const { return w_.layout().rivers[static_cast<size_t>(ri)].perennial ? kPerennialBaseflow : kEphemeralBaseflow; }
+    float stageAtFraction(int ri, float f) const { return 0.6f * bankfullOf(ri) * std::pow(std::max(1e-4f, f), 0.4f); }
+    float fractionAtStage(int ri, float s) const { return s <= 0.0f ? 0.0f : std::pow(s / std::max(0.01f, 0.6f * bankfullOf(ri)), 2.5f); }
+    float currentAtFraction(int ri, float f) const
+    {
+        const RiverDesc& rd = w_.layout().rivers[static_cast<size_t>(ri)];
+        const float width = rd.points.empty() ? 10.0f : rd.points.front().width;
+        const float area = std::max(0.5f, width * std::max(0.1f, stageAtFraction(ri, f)) * 0.66f);
+        return clampf(f * rd.meanDischargeM3s / area, 0.0f, 3.5f);
+    }
+    // Largest discharge fraction at which the mean current stays at or below vmax (current grows as Q^0.6).
+    float fractionAtCurrent(int ri, float vmax) const
+    {
+        const RiverDesc& rd = w_.layout().rivers[static_cast<size_t>(ri)];
+        const float width = rd.points.empty() ? 10.0f : rd.points.front().width;
+        const float k = 0.66f * width * 0.6f * bankfullOf(ri) / std::max(0.01f, rd.meanDischargeM3s); // v = f^0.6 / k
+        return std::pow(std::max(0.0f, vmax * k), 1.0f / 0.6f);
+    }
+
+    // No steep edge (slope above steepDeg), no cutbank-cliff ground and no sudden drop (> 2 m) within 'setback' metres.
+    bool edgeSetbackOk(const Vec2& p, float setback, float steepDeg = kEdgeSteepDeg) const
+    {
+        const Terrain& t = w_.terrain();
+        const float z0 = t.heightAt(p);
+        if (t.slopeDegAt(p) > steepDeg || t.habitatAt(p) == Habitat::CutbankCliff)
+        {
+            return false;
+        }
+        for (const float r : {4.0f, 8.0f, 12.0f, 16.0f, setback})
+        {
+            if (r > setback)
+            {
+                continue;
+            }
+            for (int a = 0; a < 16; ++a)
+            {
+                const Vec2 q = t.clampToBounds(p + Vec2::fromHeading(kTwoPi * static_cast<float>(a) / 16.0f) * r, 1.0f);
+                if (t.slopeDegAt(q) > steepDeg || t.heightAt(q) < z0 - 2.0f || t.habitatAt(q) == Habitat::CutbankCliff)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Reachable from the base camp on foot, crossing the main river by packraft at the selected crossing points.
+    bool reachableWithPackraft(const Vec2& p) const
+    {
+        size_t c = 0;
+        return !footPackFromBase_.dist.empty() && snapPassable(footPackCost_, p, 120.0f, c) && std::isfinite(footPackFromBase_.dist[c]);
+    }
+
+    // A hide must not stand out against the sky as seen from its target: the background behind it along the sight line
+    // (terrain plus woodland, out to 3 km or the map edge) rises above the line from the target's eye through the top of
+    // the hide, or the hide itself stands under woodland. A hide on a crest or a cliff edge above the target fails.
+    bool belowSkyline(const Vec2& hide, float hideTopZ, const Vec2& target, float targetEyeZ) const
+    {
+        const Terrain& t = w_.terrain();
+        const float dist = distance(hide, target);
+        if (dist < 1.0f || backdropH_.sample(hide) > 3.0f)
+        {
+            return true;
+        }
+        const Vec2 dir = (hide - target).normalized();
+        const float hideTan = (hideTopZ - targetEyeZ) / dist;
+        for (float s = 8.0f; s <= 3000.0f; s += (s < 400.0f ? 8.0f : 24.0f))
+        {
+            const Vec2 q = hide + dir * s;
+            if (!t.bounds().contains(q))
+            {
+                break;
+            }
+            if ((t.heightAt(q) + backdropH_.sample(q) - targetEyeZ) / (dist + s) >= hideTan)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Shallowest water left at the main-river crossing points when the river is at its simulated minimum.
+    float minCrossingDepthAtBaseflow() const
+    {
+        const float drop = w_.water().riverStage(0) - stageAtFraction(0, kPerennialBaseflow);
+        float m = kInf;
+        for (const Poi& p : pois_)
+        {
+            if (p.type == "ford" && p.metrics.get("river").asString("") == "main")
+            {
+                m = std::min(m, p.metrics.getFloat("max_depth_m", 0.0f) - drop);
+            }
+        }
+        return std::isfinite(m) ? std::max(0.0f, m) : 0.0f;
     }
 
     // ------------------------------------------------------------------ helpers
@@ -1348,16 +1531,25 @@ private:
         {
             dWater = distance(ds.position, bc);
         }
-        char buf[512];
+        const float har = harAt(bc);
+        const float bankfull = bankfullOf(0);
+        const float floodStage = bankfull + std::max(0.0f, har); // the camp ground goes under water above this stage
+        char buf[1100];
         std::snprintf(buf, sizeof(buf),
-                      "Choisi par WorldSimulation : sol sec et peu pentu (%.1f°) en %s, à %.0f m de l'eau la plus proche (cible 250 m : assez près pour la "
-                      "logistique, assez loin pour ne pas occuper un point d'abreuvement), près du centre de la vallée. Antenne radio de %.0f m, recharge "
-                      "du véhicule, laboratoire de terrain.",
-                      w_.terrain().slopeDegAt(bc), habitatFr(c), dWater, kRadioMastM);
+                      "Choisi par WorldSimulation : sol hors d'eau au moment du choix et peu pentu (%.1f°) en %s, à %.0f m de l'eau la plus proche "
+                      "(cible 250 m : assez près pour la logistique, assez loin pour ne pas occuper un point d'abreuvement), près du centre de la "
+                      "vallée. Le choix du cœur n'a pas de critère de crue : le camp est sur la plaine d'inondation basse, %.1f m au-dessus du "
+                      "niveau de plein bord (classe de crue « %s ») ; il est inondé dès que le niveau de la rivière dépasse %.1f m (%.2f x plein "
+                      "bord). Règle de jeu associée (rules.flood_alert) : alerte de crue au-dessus de %.1f m, qui interrompt tout saut de temps et "
+                      "interdit le saut x360 au camp ; repli sur FR01. Antenne radio de %.0f m, recharge du véhicule, laboratoire de terrain.",
+                      w_.terrain().slopeDegAt(bc), habitatFr(c), dWater, har, floodClass(har), floodStage, floodStage / bankfull,
+                      kFloodAlertFraction * bankfull, kRadioMastM);
         p.rationaleFr = buf;
         p.metrics.set("distance_to_water_m", rnd(dWater, 0));
         p.metrics.set("habitat", habitatKey(static_cast<Habitat>(habitat_[c])));
-        p.metrics.set("flood_risk", rnd(flood_.v[c], 2));
+        p.metrics.set("height_above_bankfull_m", rnd(har, 2));
+        p.metrics.set("flood_stage_m", rnd(floodStage, 2));
+        p.metrics.set("flood_discharge_fraction", rnd(fractionAtStage(0, floodStage), 2));
         p.metrics.set("radio_mast_m", kRadioMastM);
         basecampIdx_ = pois_.size() - 1;
     }
@@ -1393,13 +1585,13 @@ private:
         p.confidence = Confidence::Unknown;
         p.confidenceSubject = "règle de sécurité du jeu — sans objet paléontologique";
         p.placement = "game_design";
-        const float bcHar = har_.sample(w_.basecamp());
+        const float bcHar = harAt(w_.basecamp());
         char buf[700];
         std::snprintf(buf, sizeof(buf),
                       "Le camp de base est sur la plaine d'inondation (%.1f m au-dessus du niveau de plein bord, crue « %s ») : point de repli le plus "
                       "proche en véhicule (%.0f m de trajet effectif, ~%.0f min) sur un sol que le niveau maximal de la rivière simulée (1,6 x la "
                       "profondeur de plein bord) n'atteint jamais : %.1f m au-dessus du plein bord, pente %.0f°, %s. Le camp y replie le véhicule, "
-                      "les échantillons et la radio lors des alertes de crue.",
+                      "les échantillons et la radio lors des alertes de crue ; pendant une alerte, c'est le seul lieu où le saut x360 reste permis.",
                       bcHar, floodClass(bcHar), best, best / kRoverSpeedMs / 60.0f, har_.v[bestCell], slope_.v[bestCell], habitatFr(bestCell));
         p.rationaleFr = buf;
         p.metrics.set("height_above_bankfull_m", rnd(har_.v[bestCell], 2));
@@ -1464,14 +1656,18 @@ private:
             {
                 break;
             }
-            // Wettest point of the patch: lowest height above the bankfull reference.
-            size_t best = comps[static_cast<size_t>(id)].second;
+            // Wettest point of the patch (lowest height above the bankfull reference) at least kEdgeMarginM from the map edge.
+            size_t best = label.size();
             for (size_t i = 0; i < label.size(); ++i)
             {
-                if (label[i] == id && har_.v[i] < har_.v[best])
+                if (label[i] == id && insideMargin(height_.centerOf(i), kEdgeMarginM) && (best == label.size() || har_.v[i] < har_.v[best]))
                 {
                     best = i;
                 }
+            }
+            if (best == label.size())
+            {
+                continue;
             }
             const Vec2 pos = height_.centerOf(best);
             const int bank = campBank(pos) ? 0 : 1;
@@ -1519,19 +1715,21 @@ private:
             p.nameEn = "Exposure " + site.nameFr.substr(site.nameFr.size() - 1);
             p.radiusM = 45.0f;
             p.confidence = Confidence::StronglySupported;
-            p.confidenceSubject = "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)";
             p.placement = "generated_terrain";
             p.sources = {"fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"};
+            p.confidenceSubject = "principe : berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à "
+                                  "méandres) ; la hauteur du bluff est une hypothèse de jeu du générateur (metrics.bluff_height_basis)";
             int ri = -1;
             int pi = -1;
             float d = 0.0f;
             float relief = 0.0f;
+            float top = t.heightAt(site.position);
+            float surface = top;
             Vec2 face{1.0f, 0.0f};
             if (!layout.rivers.empty() && rivers_.nearest(site.position, 0, ri, pi, d))
             {
                 const RiverPoint& rp = layout.rivers[static_cast<size_t>(ri)].points[static_cast<size_t>(pi)];
-                const float surface = rp.floodplainZ - rp.depth + w_.water().riverStage(ri);
-                float top = t.heightAt(site.position);
+                surface = rp.floodplainZ - rp.depth + w_.water().riverStage(ri);
                 for (int a = 0; a < 16; ++a)
                 {
                     for (const float r : {15.0f, 30.0f, 45.0f})
@@ -1542,19 +1740,63 @@ private:
                 relief = top - surface;
                 face = (rp.position - site.position).normalized();
             }
+            // Access point: walking from the site towards the channel, the first dry ground at least 2.5 m below the
+            // bluff top is the bench at the foot of the face (levee level), above the channel bank that drops into the
+            // water. It is reached laterally along the levee, from the flanks of the bluff.
+            Vec2 access = site.position;
+            bool hasBench = false;
+            for (float s = 1.0f; s <= 70.0f; s += 1.0f)
+            {
+                const Vec2 q = site.position + face * s;
+                if (w_.water().query(q, t).isWater)
+                {
+                    break;
+                }
+                if (t.heightAt(q) < top - 2.5f)
+                {
+                    access = q;
+                    hasBench = true;
+                    break;
+                }
+            }
+            const float benchZ = t.heightAt(access);
+            const float faceH = hasBench ? top - benchZ : relief;
+            const float bankH = hasBench ? benchZ - surface : 0.0f;
             p.heading = face.heading();
             p.hasHeading = true;
-            char buf[900];
+            char buf[1500];
             std::snprintf(buf, sizeof(buf),
                           "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ %.1f m "
-                          "au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence "
-                          "fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), "
-                          "leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est "
-                          "généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou "
-                          "depuis la barre de méandre opposée en basses eaux.",
-                          relief);
+                          "au-dessus de l'eau : talus du bluff (%.1f m, du sommet à la banquette) au-dessus de la berge du chenal (%.1f m, de la "
+                          "banquette à l'eau ; son pied est sous l'eau au niveau actuel). Dans la vallée maastrichtienne, ces couches sont des "
+                          "alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge "
+                          "relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — "
+                          "recherche nécessaire). Hauteur du bluff : surélévation fixe de 3,5 m du générateur aux boucles serrées (hypothèse de "
+                          "jeu) ; dans une plaine côtière en aggradation (pente 0,0004), une coupe plus haute que plein bord + levée (~5,3 m "
+                          "au-dessus du lit) supposerait une terrasse plus ancienne. Le contenu fossile est généré (SPÉCULATIF) et tiré de la faune "
+                          "simulée. Accès : %s ; le talus est une paroi bloquante en jeu (PCG_Noctis_Exposures).",
+                          relief, faceH, bankH,
+                          hasBench ? "banquette au pied du talus (metrics.access_point), rejointe latéralement par la levée depuis les flancs du bluff"
+                                   : "aucune banquette sèche au pied du talus au niveau actuel : coupe observée depuis le sommet ou depuis l'eau "
+                                     "(packraft)");
             p.rationaleFr = buf;
             p.metrics.set("section_height_m", rnd(relief, 1));
+            p.metrics.set("bluff_face_height_m", rnd(faceH, 1));
+            p.metrics.set("channel_bank_height_m", rnd(bankH, 1));
+            p.metrics.set("bluff_height_basis", "game_assumption: surélévation fixe de 3,5 m de TerrainGenerator.cpp aux boucles serrées (|courbure| > 0,004 /m)");
+            if (hasBench)
+            {
+                p.metrics.set("access_point", vec3Json(access, benchZ));
+                p.metrics.set("access_point_ue_cm", ueJson(access, benchZ));
+                p.metrics.set("access_kind", "bench_at_face_foot");
+                p.metrics.set("access_point_height_above_water_m", rnd(benchZ - surface, 2));
+                p.access = access;
+                p.hasAccess = true;
+            }
+            else
+            {
+                p.metrics.set("access_kind", "top_or_water_only");
+            }
             p.metrics.set("specimens_hidden", static_cast<int>(site.specimens.size()));
             p.metrics.set("fossil_content_confidence", confidenceKey(Confidence::Speculative));
             p.metrics.set("relative_age", "plus ancien que la surface actuelle (âge absolu : information insuffisante)");
@@ -1607,23 +1849,125 @@ private:
     }
 
     // ------------------------------------------------------------------ water access and corridors
+    struct WaterInfo
+    {
+        Vec2 stand;           // last dry ground before the water, where an animal stands to drink
+        float dropM = 0.0f;   // stand height above the water surface
+        float bankDeg = 0.0f; // steepest 2 m segment of the 10 m transect ending at the water edge
+        float surfaceZ = 0.0f;
+        bool pointBar = false;
+        float drinks = 0.0f;  // Drink events observed within ~100 m during the warm-up
+        float activity = 0.0f;
+        float drinkTerm = 0.0f;
+        float herb = 0.0f;
+        float suit = 0.0f;
+    };
+
+    // Usable drinking stance near a simulation drink site. WaterSystem's own test (Water.cpp, drinkSites_) only checks
+    // the slope of the dry cell, so a site can sit on a cliff top above the water; here the stance must be the last dry
+    // ground before the water, at most kDrinkMaxDropM above it, with a bank no steeper than kDrinkMaxBankSlopeDeg.
+    bool drinkStance(const Vec2& site, WaterInfo& wi) const
+    {
+        const Terrain& t = w_.terrain();
+        const WaterSystem& water = w_.water();
+        auto nearest = [&](const Vec2& from, bool wantWet, Vec2& out) {
+            for (float r = 0.0f; r <= 30.0f; r += 1.0f)
+            {
+                const int az = r < 0.5f ? 1 : 24;
+                for (int a = 0; a < az; ++a)
+                {
+                    const Vec2 q = t.clampToBounds(from + Vec2::fromHeading(kTwoPi * static_cast<float>(a) / static_cast<float>(az)) * r, 1.0f);
+                    if (water.query(q, t).isWater == wantWet)
+                    {
+                        out = q;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+        Vec2 wet;
+        Vec2 dry;
+        if (!nearest(site, true, wet) || !nearest(wet, false, dry))
+        {
+            return false;
+        }
+        const Vec2 dir = (wet - dry).normalized();
+        Vec2 stand = dry;
+        Vec2 edge = wet;
+        for (float s = 0.0f; s <= distance(dry, wet) + 0.01f; s += 0.5f)
+        {
+            const Vec2 q = dry + dir * s;
+            if (water.query(q, t).isWater)
+            {
+                edge = q;
+                break;
+            }
+            stand = q;
+        }
+        wi.stand = stand;
+        wi.surfaceZ = water.query(edge, t).surfaceZ;
+        wi.dropM = t.heightAt(stand) - wi.surfaceZ;
+        wi.bankDeg = std::atan(std::max(0.0f, wi.dropM) / std::max(0.5f, distance(stand, edge))) * kRadToDeg;
+        for (int k = 0; k < 5; ++k)
+        {
+            const Vec2 a = stand - dir * (2.0f * static_cast<float>(k));
+            const Vec2 b = stand - dir * (2.0f * static_cast<float>(k + 1));
+            wi.bankDeg = std::max(wi.bankDeg, std::atan(std::fabs(t.heightAt(b) - t.heightAt(a)) / 2.0f) * kRadToDeg);
+        }
+        wi.pointBar = t.habitatAt(stand) == Habitat::Sandbar;
+        return true;
+    }
+
     void rankWaterAccess()
     {
         std::vector<Candidate> c;
+        std::vector<WaterInfo> info;
         const std::vector<DrinkSite>& sites = w_.water().drinkSites();
         for (size_t k = 0; k < sites.size(); ++k)
         {
             const DrinkSite& s = sites[k];
-            if (s.slopeDeg > 18.0f || !insideMargin(s.position, 150.0f))
+            if (s.slopeDeg > 18.0f || !insideMargin(s.position, kEdgeMarginM))
             {
                 continue;
             }
-            const float sc = activity_.sample(s.position) + drinkBlur_.sample(s.position) + 0.5f * herbPresBlur_.sample(s.position) + 0.3f * suitNorm_.sample(s.position);
-            c.push_back({s.position, sc, static_cast<int>(k)});
+            WaterInfo wi;
+            if (!drinkStance(s.position, wi) || wi.dropM > kDrinkMaxDropM || wi.bankDeg > kDrinkMaxBankSlopeDeg)
+            {
+                ++drinkRejected_;
+                continue;
+            }
+            int cx = 0;
+            int cy = 0;
+            drinkEv_.cellOf(wi.stand, cx, cy);
+            for (int dy = -1; dy <= 1; ++dy)
+            {
+                for (int dx = -1; dx <= 1; ++dx)
+                {
+                    if (cx + dx >= 0 && cy + dy >= 0 && cx + dx < n_ && cy + dy < n_)
+                    {
+                        wi.drinks += drinkEv_.at(cx + dx, cy + dy);
+                    }
+                }
+            }
+            wi.activity = activity_.sample(wi.stand);
+            wi.drinkTerm = drinkBlur_.sample(wi.stand);
+            wi.herb = 0.5f * herbPresBlur_.sample(wi.stand);
+            wi.suit = 0.3f * suitNorm_.sample(wi.stand);
+            // Point bars: gentle sandy slope down to the water, the classic drinking and crossing approach.
+            const float sc = wi.activity + wi.drinkTerm + wi.herb + wi.suit + (wi.pointBar ? 0.3f : 0.0f);
+            c.push_back({wi.stand, sc, static_cast<int>(k)});
+            info.push_back(wi);
         }
-        std::sort(c.begin(), c.end(), [](const Candidate& a, const Candidate& b) { return a.score > b.score; });
-        for (const Candidate& cand : c)
+        std::vector<size_t> order(c.size());
+        for (size_t k = 0; k < order.size(); ++k)
         {
+            order[k] = k;
+        }
+        std::sort(order.begin(), order.end(), [&](size_t a, size_t b) { return c[a].score > c[b].score; });
+        for (const size_t k : order)
+        {
+            const Candidate& cand = c[k];
             bool far = true;
             for (const Candidate& q : waterAccess_)
             {
@@ -1632,6 +1976,7 @@ private:
             if (far)
             {
                 waterAccess_.push_back(cand);
+                waterInfo_.push_back(info[k]);
             }
             if (waterAccess_.size() >= 14)
             {
@@ -1798,6 +2143,7 @@ private:
             const size_t c = height_.indexOf(p);
             presSum += herbPresBlur_.v[c];
             tr.maxWaterM = std::max(tr.maxWaterM, water_.v[c]);
+            tr.maxSlopeDeg = std::max(tr.maxSlopeDeg, slope_.v[c]);
             if (static_cast<Habitat>(habitat_[c]) == Habitat::Channel && riverDist_.v[c] < 30.0f)
             {
                 tr.crossesRiver = true;
@@ -1806,6 +2152,20 @@ private:
         }
         tr.wearMean = wearSum / static_cast<float>(fine.size());
         tr.presence = presSum / static_cast<float>(fine.size());
+        // The cost model uses one generic 3000 kg herbivore; tag the corridor with the agent herbivores whose own
+        // limits allow it (Locomotion.cpp: a non-swimmer stops where the water exceeds ~0.95 x its hip height).
+        for (const int si : w_.speciesInWorld())
+        {
+            const SpeciesDefinition& d = w_.db().speciesAt(si);
+            const SpeciesSim& s = d.sim;
+            if (s.role != SimRole::Agent || isPredator(s) || s.locomotion.fly || s.population.initialCount <= 0.0f || s.adultMassKg < 100.0f)
+            {
+                continue;
+            }
+            const bool swims = s.locomotion.swim && s.locomotion.swimSpeedMs > 0.0f;
+            const bool ok = (swims || tr.maxWaterM <= 0.95f * s.hipHeightM) && tr.maxSlopeDeg <= s.locomotion.maxSlopeDeg + 5.0f;
+            (ok ? tr.usableBy : tr.notUsableBy).push_back(d.id);
+        }
         for (const size_t c : cells)
         {
             corridorUse_.v[c] += 1.0f;
@@ -1827,7 +2187,19 @@ private:
         return hits;
     }
 
-    // ------------------------------------------------------------------ fords
+    // ------------------------------------------------------------------ fords / crossing points
+    // The generated channel has no riffle / pool contrast (its depth is nearly uniform along the river), so these are
+    // candidate crossing points ranked by banks, bed, trails and corridors at inflections between bends, not shallow
+    // fords. Fordability is evaluated against the lowest stage the water model can reach (baseflow floor).
+    struct CrossingSeg
+    {
+        size_t poi = 0;
+        Vec2 a;
+        Vec2 b;
+        Vec2 normal;
+        bool packraftNow = false;
+    };
+
     void addFords()
     {
         const WorldLayout& layout = w_.layout();
@@ -1838,16 +2210,20 @@ private:
             int river = 0;
             size_t point = 0;
             Vec2 pos;
+            Vec2 mid;
             Vec2 normal;
             float score = 0.0f;
             float maxDepth = 0.0f;
             float wetWidth = 0.0f;
+            float bankSlopeA = 0.0f;
+            float bankSlopeB = 0.0f;
             float bankSlope = 0.0f;
             float firm = 0.0f;
             float wear = 0.0f;
             int hits = 0;
             float kappa = 0.0f;
             float along = 0.0f;
+            bool gate = false;
             Substrate bed = Substrate::Sand;
             Vec2 bankA;
             Vec2 bankB;
@@ -1859,8 +2235,14 @@ private:
             for (size_t i = 10; i + 10 < rd.points.size(); i += 5)
             {
                 const RiverPoint& rp = rd.points[i];
-                if (!insideMargin(rp.position, 250.0f))
+                if (!insideMargin(rp.position, kEdgeMarginM))
                 {
+                    continue;
+                }
+                ++sampledSections_[ri];
+                if (std::fabs(rp.curvature) > kFordKappaMax)
+                {
+                    ++kappaRejected_[ri]; // apex of a bend: pool against the outer bank, never a crossing
                     continue;
                 }
                 FordCand fc;
@@ -1870,58 +2252,86 @@ private:
                 fc.normal = rp.tangent.perp();
                 fc.kappa = rp.curvature;
                 fc.along = rp.distanceAlong;
-                const float half = rp.width * 0.5f + 30.0f;
-                Vec2 deepest = rp.position;
-                bool banks[2] = {false, false};
-                Vec2 bankPos[2] = {rp.position, rp.position};
-                int wet = 0;
-                for (int side = 0; side < 2; ++side)
+                // Wet / dry profile across the channel at 1 m steps; keep the wetted run nearest to the centreline
+                // (the centreline sample itself can be dry, e.g. on the creek where the reference level drops).
+                const int ns = static_cast<int>(std::floor(rp.width * 0.5f + 30.0f));
+                const int count = 2 * ns + 1;
+                std::vector<u8> wetS(static_cast<size_t>(count), 0);
+                std::vector<float> depthS(static_cast<size_t>(count), 0.0f);
+                for (int k = 0; k < count; ++k)
                 {
-                    const float sgn = side == 0 ? -1.0f : 1.0f;
-                    for (float o = 0.0f; o <= half; o += 2.0f)
+                    const WaterQuery wq = w_.water().query(rp.position + fc.normal * static_cast<float>(k - ns), t);
+                    wetS[static_cast<size_t>(k)] = wq.isWater ? 1 : 0;
+                    depthS[static_cast<size_t>(k)] = wq.isWater ? wq.depth : 0.0f;
+                }
+                int runA = -1;
+                int runB = -1;
+                int bestOff = count;
+                for (int k = 0; k < count;)
+                {
+                    if (!wetS[static_cast<size_t>(k)])
                     {
-                        const Vec2 q = rp.position + fc.normal * (sgn * o);
-                        const WaterQuery wq = w_.water().query(q, t);
-                        if (wq.isWater)
-                        {
-                            if (wq.depth > fc.maxDepth)
-                            {
-                                fc.maxDepth = wq.depth;
-                                deepest = q;
-                            }
-                            ++wet;
-                        }
-                        else
-                        {
-                            banks[side] = true;
-                            bankPos[side] = q;
-                            break;
-                        }
+                        ++k;
+                        continue;
+                    }
+                    const int a = k;
+                    while (k < count && wetS[static_cast<size_t>(k)])
+                    {
+                        ++k;
+                    }
+                    const int b = k - 1;
+                    if (a == 0 || b == count - 1)
+                    {
+                        continue; // not bounded by dry banks within the scan
+                    }
+                    const int off = (a <= ns && b >= ns) ? 0 : std::min(std::abs(a - ns), std::abs(b - ns));
+                    if (off < bestOff)
+                    {
+                        bestOff = off;
+                        runA = a;
+                        runB = b;
                     }
                 }
-                if (!banks[0] || !banks[1])
+                if (runA < 0)
                 {
+                    ++drySections_[ri]; // "lit à sec" at the current stage: reported separately, never ranked as a ford
                     continue;
                 }
-                fc.bankA = bankPos[0];
-                fc.bankB = bankPos[1];
-                fc.wetWidth = static_cast<float>(wet) * 2.0f;
+                fc.bankA = rp.position + fc.normal * static_cast<float>(runA - 1 - ns);
+                fc.bankB = rp.position + fc.normal * static_cast<float>(runB + 1 - ns);
+                fc.mid = (fc.bankA + fc.bankB) * 0.5f;
+                fc.wetWidth = static_cast<float>(runB - runA + 1);
+                Vec2 deepest = fc.mid;
+                for (int k = runA; k <= runB; ++k)
+                {
+                    if (depthS[static_cast<size_t>(k)] > fc.maxDepth)
+                    {
+                        fc.maxDepth = depthS[static_cast<size_t>(k)];
+                        deepest = rp.position + fc.normal * static_cast<float>(k - ns);
+                    }
+                }
                 for (int side = 0; side < 2; ++side)
                 {
                     const float sgn = side == 0 ? -1.0f : 1.0f;
+                    const Vec2 bank = side == 0 ? fc.bankA : fc.bankB;
+                    float& s = side == 0 ? fc.bankSlopeA : fc.bankSlopeB;
                     for (const float k : {0.0f, 4.0f, 8.0f, 12.0f, 16.0f})
                     {
-                        const Vec2 q = bankPos[side] + fc.normal * (sgn * k);
-                        fc.bankSlope = std::max(fc.bankSlope, t.slopeDegAt(q));
+                        const Vec2 q = bank + fc.normal * (sgn * k);
+                        s = std::max(s, t.slopeDegAt(q));
                         fc.wear = std::max(fc.wear, veg.trail(q));
                     }
                 }
+                fc.bankSlope = std::max(fc.bankSlopeA, fc.bankSlopeB);
                 fc.bed = t.substrateAt(deepest);
                 fc.firm = substrateFirmness(fc.bed);
-                fc.hits = trailHits(rp.position, 80.0f);
-                const float pres = herbPresBlur_.sample(rp.position + fc.normal * 40.0f) + herbPresBlur_.sample(rp.position - fc.normal * 40.0f);
-                fc.score = -1.5f * fc.maxDepth - 0.04f * fc.bankSlope + 0.6f * fc.firm + 1.2f * std::min(1.0f, fc.wear * 3.0f) +
-                           0.8f * std::min(1.0f, static_cast<float>(fc.hits)) + 0.5f * (1.0f - std::min(1.0f, std::fabs(fc.kappa) * 300.0f)) + 0.4f * pres;
+                fc.hits = trailHits(fc.mid, 80.0f);
+                const float pres = herbPresBlur_.sample(fc.mid + fc.normal * 40.0f) + herbPresBlur_.sample(fc.mid - fc.normal * 40.0f);
+                // Gate: banks the player can use (packraft launch on the river, wading on the creek).
+                fc.gate = fc.bankSlope <= (ri == 0 ? packraftBankSlopeDeg_ : kWadeBankSlopeMaxDeg);
+                fc.score = -1.5f * fc.maxDepth - 0.04f * fc.bankSlope + 0.6f * fc.firm + 0.6f * (fc.wear >= kWearPassage ? 1.0f : 0.0f) +
+                           0.8f * std::min(1.0f, static_cast<float>(fc.hits)) + 0.5f * (1.0f - std::fabs(fc.kappa) / kFordKappaMax) + 0.4f * pres -
+                           0.005f * fc.wetWidth + (fc.gate ? 2.0f : 0.0f);
                 cands.push_back(fc);
             }
             std::sort(cands.begin(), cands.end(), [](const FordCand& a, const FordCand& b) { return a.score > b.score; });
@@ -1945,77 +2355,242 @@ private:
                 }
             }
             const float stage = w_.water().riverStage(ri);
-            const float bankfull = w_.water().bankfullDepth(ri);
+            const float bankfull = bankfullOf(ri);
+            const float base = baseflowOf(ri);
+            const float stageMin = stageAtFraction(ri, base);
+            const float qNow = w_.water().riverDischarge(ri) / std::max(0.01f, rd.meanDischargeM3s);
+            const float currentNow = currentAtFraction(ri, qNow);
+            const float stagePack = std::min(stageAtFraction(ri, fractionAtCurrent(ri, packraftMaxCurrentMs_)), kFloodAlertFraction * bankfull);
             for (const FordCand& fc : chosen)
             {
-                Poi& p = addPoi("FD", "ford", fc.pos);
+                const WaterQuery mq = w_.water().query(fc.mid, t);
+                Poi& p = addPoi("FD", "ford", fc.mid);
                 const int k = idCounters_["FD"];
-                p.nameFr = (ri == 0 ? "Gué de la rivière " : "Gué du ruisseau ") + std::to_string(k);
-                p.nameEn = (ri == 0 ? "River ford " : "Creek ford ") + std::to_string(k);
+                p.nameFr = ri == 0 ? "Point de franchissement candidat " + std::to_string(k) + " (rivière)"
+                                   : "Gué candidat " + std::to_string(k) + " (ruisseau)";
+                p.nameEn = ri == 0 ? "Candidate river crossing " + std::to_string(k) : "Candidate creek ford " + std::to_string(k);
                 p.radiusM = std::max(30.0f, fc.wetWidth * 0.6f);
                 p.heading = fc.normal.heading();
                 p.hasHeading = true;
                 p.confidence = Confidence::Inferred;
-                p.confidenceSubject = "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu "
-                                      "profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré";
+                p.confidenceSubject = "lieu de traversée préférentiel prédit par le modèle (berges, fond, pistes, corridors) à une inflexion entre deux "
+                                      "boucles ; le chenal généré n'a ni seuils ni mouilles (profondeur quasi uniforme) : point de franchissement "
+                                      "candidat, pas un haut-fond";
                 p.placement = "model_prediction";
                 p.sources = {"leopold1953_hydraulic_geometry", "langbein1966_meanders"};
-                p.z = w_.water().query(fc.pos, t).isWater ? w_.water().query(fc.pos, t).surfaceZ : p.z;
+                p.z = mq.isWater ? std::max(mq.surfaceZ, terrainZ(fc.mid)) : terrainZ(fc.mid);
                 const float stageFoot = stage - (fc.maxDepth - kWadeLimitM);
                 const float stageRover = stage - (fc.maxDepth - fordingDepthM_);
-                // Hydraulic geometry used by WaterSystem: stage = 0.6 * bankfull * (Q/Qmean)^0.4.
-                auto qFrac = [&](float s) { return s <= 0.0f ? 0.0f : std::pow(s / std::max(0.01f, 0.6f * bankfull), 2.5f); };
-                char buf[1100];
+                const bool bankFoot = fc.bankSlope <= kWadeBankSlopeMaxDeg;
+                const bool bankRover = fc.bankSlope <= kRoverBankSlopeMaxDeg;
+                const bool footNow = bankFoot && fc.maxDepth <= kWadeLimitM;
+                const bool roverNow = bankRover && fc.maxDepth <= fordingDepthM_;
+                const bool footEver = bankFoot && stageFoot >= stageMin;
+                const bool roverEver = bankRover && stageRover >= stageMin;
+                auto state = [&](bool bankOk, float limitDeg, float depthLimit, float stageMax) {
+                    char s[260];
+                    if (!bankOk)
+                    {
+                        std::snprintf(s, sizeof(s), "impraticable (berges à %.0f° > %.0f°)", fc.bankSlope, limitDeg);
+                    }
+                    else if (fc.maxDepth <= depthLimit)
+                    {
+                        std::snprintf(s, sizeof(s), "praticable maintenant");
+                    }
+                    else if (stageMax >= stageMin)
+                    {
+                        std::snprintf(s, sizeof(s), "seulement en basses eaux (niveau ≤ %.2f m, débit ≤ %.0f %% du débit moyen)", stageMax,
+                                      100.0f * fractionAtStage(ri, stageMax));
+                    }
+                    else
+                    {
+                        std::snprintf(s, sizeof(s), "impraticable (débit minimal simulé %.0f %% : le niveau ne descend jamais sous %.2f m)", 100.0f * base,
+                                      stageMin);
+                    }
+                    return std::string(s);
+                };
+                const std::string footTxt = state(bankFoot, kWadeBankSlopeMaxDeg, kWadeLimitM, stageFoot);
+                const std::string roverTxt = state(bankRover, kRoverBankSlopeMaxDeg, fordingDepthM_, stageRover);
+                const bool packUsable = ri == 0 && fc.bankSlope <= packraftBankSlopeDeg_;
+                const bool packNow = packUsable && stage <= stagePack;
+                char pack[400] = "";
+                if (ri == 0)
+                {
+                    std::snprintf(pack, sizeof(pack),
+                                  " Packraft (equipment.json, id packraft) : %s ; interdit au-dessus de %.2f m (courant moyen > %.1f m/s ou alerte de "
+                                  "crue).",
+                                  !packUsable ? "berges trop raides pour mettre à l'eau"
+                                              : (packNow ? "traversée possible maintenant" : "traversée interdite au niveau actuel"),
+                                  stagePack, packraftMaxCurrentMs_);
+                }
+                char buf[1800];
                 std::snprintf(buf, sizeof(buf),
-                              "Section transversale la mieux notée sur %s : profondeur max %.2f m pour %.0f m de largeur mouillée au niveau actuel "
-                              "(%.2f m), berges à %.0f° max, fond %s, usure de piste %.2f, %d corridor(s) prédit(s) à moins de 80 m, courbure %.4f /m "
-                              "(%s). À pied (≤ %.1f m d'eau) : %s. Véhicule (gué %.1f m) : %s. Lieu attendu de traversée des troupeaux et de "
-                              "concentration des empreintes.",
-                              ri == 0 ? "la rivière principale" : "le ruisseau affluent", fc.maxDepth, fc.wetWidth, stage, fc.bankSlope,
-                              substrateLabelFr(fc.bed), fc.wear, fc.hits, fc.kappa,
-                              std::fabs(fc.kappa) < 0.0015f ? "zone d'inflexion entre deux boucles" : "dans une boucle", kWadeLimitM,
-                              fc.maxDepth <= kWadeLimitM ? "praticable maintenant"
-                                                         : (stageFoot > 0.0f ? "seulement en basses eaux" : "impraticable, même en basses eaux"),
-                              fordingDepthM_,
-                              fc.maxDepth <= fordingDepthM_ ? "praticable maintenant" : (stageRover > 0.0f ? "seulement en basses eaux" : "impraticable"));
+                              "Section transversale la mieux notée sur %s, à une inflexion entre deux boucles (courbure %.4f /m ; les sections de "
+                              "|courbure| > %.4f /m sont exclues) : chenal mouillé de %.0f m, profondeur max %.2f m au niveau actuel (%.2f m), berges à "
+                              "%.0f° et %.0f°, fond %s, %s, %d corridor(s) prédit(s) à moins de 80 m. Le chenal généré n'a pas de contraste seuil/mouille "
+                              "(profondeur presque uniforme) : franchissement candidat, pas un haut-fond. Débit minimal simulé %.0f %% du débit moyen "
+                              "(niveau jamais sous %.2f m). À pied (≤ %.1f m d'eau, berges ≤ %.0f°) : %s. Véhicule (gué %.1f m, berges ≤ %.0f°) : %s.%s",
+                              ri == 0 ? "la rivière principale" : "le ruisseau affluent", fc.kappa, kFordKappaMax, fc.wetWidth, fc.maxDepth, stage,
+                              fc.bankSlopeA, fc.bankSlopeB, substrateLabelFr(fc.bed),
+                              fc.wear >= kWearPassage ? "passage d'animaux observé sur les berges" : "aucun passage observé sur les berges", fc.hits,
+                              100.0f * base, stageMin, kWadeLimitM, kWadeBankSlopeMaxDeg, footTxt.c_str(), fordingDepthM_, kRoverBankSlopeMaxDeg,
+                              roverTxt.c_str(), pack);
                 p.rationaleFr = buf;
                 p.metrics.set("river", ri == 0 ? "main" : "creek");
+                p.metrics.set("crossing_kind", "candidate_crossing");
                 p.metrics.set("river_point", static_cast<int>(fc.point));
                 p.metrics.set("max_depth_m", rnd(fc.maxDepth, 2));
                 p.metrics.set("wet_width_m", rnd(fc.wetWidth, 0));
                 p.metrics.set("stage_now_m", rnd(stage, 2));
                 p.metrics.set("bankfull_depth_m", rnd(bankfull, 2));
+                p.metrics.set("stage_min_simulated_m", rnd(stageMin, 2));
+                p.metrics.set("baseflow_fraction_min", rnd(base, 2));
+                p.metrics.set("bank_slope_a_deg", rnd(fc.bankSlopeA, 1));
+                p.metrics.set("bank_slope_b_deg", rnd(fc.bankSlopeB, 1));
                 p.metrics.set("bank_slope_max_deg", rnd(fc.bankSlope, 1));
                 p.metrics.set("bed_substrate", substrateKey(fc.bed));
                 p.metrics.set("trail_wear", rnd(fc.wear, 3));
                 p.metrics.set("corridor_hits", fc.hits);
                 p.metrics.set("curvature_per_m", rnd(fc.kappa, 5));
-                p.metrics.set("fordable_on_foot_now", fc.maxDepth <= kWadeLimitM);
-                p.metrics.set("fordable_rover_now", fc.maxDepth <= fordingDepthM_);
-                p.metrics.set("stage_max_on_foot_m", rnd(std::max(0.0f, stageFoot), 2));
-                p.metrics.set("stage_max_rover_m", rnd(std::max(0.0f, stageRover), 2));
-                p.metrics.set("discharge_fraction_on_foot", rnd(qFrac(stageFoot), 3));
-                p.metrics.set("discharge_fraction_rover", rnd(qFrac(stageRover), 3));
+                p.metrics.set("current_now_ms", rnd(currentNow, 2));
+                p.metrics.set("fordable_on_foot_now", footNow);
+                p.metrics.set("fordable_rover_now", roverNow);
+                p.metrics.set("fordable_on_foot_ever", footEver);
+                p.metrics.set("fordable_rover_ever", roverEver);
+                p.metrics.set("never_fordable", !footEver && !roverEver);
+                p.metrics.set("on_foot", footTxt);
+                p.metrics.set("rover", roverTxt);
+                if (footEver)
+                {
+                    p.metrics.set("stage_max_on_foot_m", rnd(std::max(0.0f, stageFoot), 2));
+                    p.metrics.set("discharge_fraction_on_foot", rnd(fractionAtStage(ri, stageFoot), 3));
+                }
+                if (roverEver)
+                {
+                    p.metrics.set("stage_max_rover_m", rnd(std::max(0.0f, stageRover), 2));
+                    p.metrics.set("discharge_fraction_rover", rnd(fractionAtStage(ri, stageRover), 3));
+                }
+                if (ri == 0)
+                {
+                    p.metrics.set("packraft_usable", packUsable);
+                    p.metrics.set("packraft_ok_now", packNow);
+                    p.metrics.set("packraft_stage_max_m", rnd(stagePack, 2));
+                }
                 p.metrics.set("bank_a", polylineJson({fc.bankA}));
                 p.metrics.set("bank_b", polylineJson({fc.bankB}));
                 p.score = fc.score;
+                if (ri == 0)
+                {
+                    crossingSegs_.push_back({pois_.size() - 1, fc.bankA, fc.bankB, fc.normal, packNow});
+                }
             }
         }
+    }
+
+    // Foot network plus packraft crossings of the main river at the selected crossing points (only those usable at the
+    // current stage). The rover never crosses: fording depth 1.0 m against a river that never drops below ~1.7 m.
+    void buildPackraftNetwork()
+    {
+        footPackCost_ = footCost_;
+        packraftCell_.assign(footCost_.v.size(), 0);
+        // Cost per metre relative to walking on flat ground: paddling speed, plus inflating / packing the boat
+        // (setup time) spread over a typical two-cell crossing. Game assumption.
+        const float paddleCost = kFootSpeedMs / std::max(0.1f, packraftPaddleMs_) + packraftSetupMin_ * 60.0f * kFootSpeedMs / (2.0f * kCellM);
+        for (const CrossingSeg& cs : crossingSegs_)
+        {
+            if (!cs.packraftNow)
+            {
+                continue;
+            }
+            const Vec2 a = cs.a - cs.normal * 40.0f;
+            const Vec2 b = cs.b + cs.normal * 40.0f;
+            const float len = distance(a, b);
+            for (float s = 0.0f; s <= len; s += 4.0f)
+            {
+                const size_t c = footPackCost_.indexOf(a + (b - a) * (s / std::max(1.0f, len)));
+                if (!std::isfinite(footPackCost_.v[c]))
+                {
+                    footPackCost_.v[c] = paddleCost;
+                    packraftCell_[c] = 1;
+                }
+            }
+            packraftCrossings_.push_back(pois_[cs.poi].id);
+        }
+        size_t bc = 0;
+        if (snapPassable(footPackCost_, w_.basecamp(), 300.0f, bc))
+        {
+            dijkstra(footPackCost_, {bc}, footPackFromBase_);
+        }
+        else
+        {
+            footPackFromBase_.dist.assign(footPackCost_.v.size(), kInf);
+            footPackFromBase_.parent.assign(footPackCost_.v.size(), -1);
+        }
+        footLabel_ = labelComponents(footCost_);
+        footPackLabel_ = labelComponents(footPackCost_);
+    }
+
+    // 8-connected components of the passable cells (-1 = impassable).
+    std::vector<int> labelComponents(const Field& cost) const
+    {
+        std::vector<int> label(cost.v.size(), -1);
+        int next = 0;
+        const size_t sn = static_cast<size_t>(cost.n);
+        for (size_t s0 = 0; s0 < cost.v.size(); ++s0)
+        {
+            if (label[s0] >= 0 || !std::isfinite(cost.v[s0]))
+            {
+                continue;
+            }
+            std::vector<size_t> stack{s0};
+            label[s0] = next;
+            while (!stack.empty())
+            {
+                const size_t c = stack.back();
+                stack.pop_back();
+                const int x = static_cast<int>(c % sn);
+                const int y = static_cast<int>(c / sn);
+                for (int dy = -1; dy <= 1; ++dy)
+                {
+                    for (int dx = -1; dx <= 1; ++dx)
+                    {
+                        const int nx = x + dx;
+                        const int ny = y + dy;
+                        if ((dx == 0 && dy == 0) || nx < 0 || ny < 0 || nx >= cost.n || ny >= cost.n)
+                        {
+                            continue;
+                        }
+                        const size_t j = cost.idx(nx, ny);
+                        if (label[j] < 0 && std::isfinite(cost.v[j]))
+                        {
+                            label[j] = next;
+                            stack.push_back(j);
+                        }
+                    }
+                }
+            }
+            ++next;
+        }
+        return label;
     }
 
     void addWaterAccess()
     {
         int added = 0;
         int perBank[2] = {0, 0};
-        for (const Candidate& wa : waterAccess_)
+        const auto it = eventCounts_.find("Drink");
+        const int totalDrinks = it == eventCounts_.end() ? 0 : it->second;
+        for (size_t k = 0; k < waterAccess_.size(); ++k)
         {
+            const Candidate& wa = waterAccess_[k];
+            const WaterInfo& wi = waterInfo_[k];
             const int bank = campBank(wa.pos) ? 0 : 1;
-            if (perBank[bank] >= 2 || !farFromPois(wa.pos, "ford", 400.0f) || !farFromPois(wa.pos, "water_access", 600.0f))
+            if (perBank[bank] >= 2 || !farFromPois(wa.pos, "ford", 150.0f) || !farFromPois(wa.pos, "water_access", 600.0f))
             {
                 continue;
             }
             ++perBank[bank];
-            Poi& p = addPoi("WA", "water_access", wa.pos);
+            Poi& p = addPoi("WA", "water_access", wi.stand);
             p.nameFr = "Abreuvoir " + std::to_string(added + 1);
             p.nameEn = "Watering point " + std::to_string(added + 1);
             p.radiusM = 35.0f;
@@ -2023,15 +2598,31 @@ private:
             p.confidenceSubject = "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation";
             p.placement = "simulation_state";
             const DrinkSite& ds = w_.water().drinkSites()[static_cast<size_t>(wa.ref)];
-            char buf[600];
+            char buf[1200];
             std::snprintf(buf, sizeof(buf),
-                          "Site d'abreuvement de la simulation (pente %.0f°) classé par les événements « boire » observés pendant le préchauffage, "
-                          "la présence d'herbivores et l'habitat favorable (score %.2f). Les animaux y convergent : cible prioritaire pour les "
-                          "affûts, pièges photographiques et relevés d'empreintes.",
-                          ds.slopeDeg, wa.score);
+                          "Point d'abreuvement à la lisière de l'eau%s : sol à %.2f m au-dessus de l'eau, berge à %.0f° au plus sur les 10 derniers "
+                          "mètres (sites de la simulation rejetés au-delà de %.1f m ou de %.0f° : %d). Classement (score %.2f) = activité animale "
+                          "%.2f + événements « boire » %.2f + présence d'herbivores %.2f + habitat favorable %.2f%s. Événements « boire » observés à "
+                          "moins de ~100 m pendant le préchauffage : %.0f (sur %d dans toute la carte)%s. Cible pour affûts, pièges photographiques "
+                          "et relevés d'empreintes.",
+                          wi.pointBar ? " sur une barre de méandre" : "", wi.dropM, wi.bankDeg, kDrinkMaxDropM, kDrinkMaxBankSlopeDeg, drinkRejected_, wa.score,
+                          wi.activity, wi.drinkTerm, wi.herb, wi.suit, wi.pointBar ? " + barre de méandre 0,30" : "", wi.drinks, totalDrinks,
+                          wi.drinks < 0.5f ? " : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés" : "");
             p.rationaleFr = buf;
             p.metrics.set("drink_body", ds.bodyId >= 1000 ? "lake" : (ds.bodyId == 0 ? "main_river" : "creek"));
-            p.metrics.set("drink_events_warmup", rnd(drinkEv_.sample(wa.pos), 0));
+            p.metrics.set("drink_events_warmup", rnd(wi.drinks, 0));
+            p.metrics.set("drink_events_warmup_total", totalDrinks);
+            p.metrics.set("height_above_water_m", rnd(wi.dropM, 2));
+            p.metrics.set("bank_slope_10m_deg", rnd(wi.bankDeg, 1));
+            p.metrics.set("point_bar", wi.pointBar);
+            p.metrics.set("simulation_drink_site", polylineJson({ds.position}));
+            JsonValue sc = JsonValue::makeObject();
+            sc.set("activity", rnd(wi.activity, 3));
+            sc.set("drink_events", rnd(wi.drinkTerm, 3));
+            sc.set("herbivore_presence", rnd(wi.herb, 3));
+            sc.set("habitat_suitability", rnd(wi.suit, 3));
+            sc.set("point_bar", wi.pointBar ? 0.3 : 0.0);
+            p.metrics.set("score_terms", sc);
             p.metrics.set("score", rnd(wa.score, 3));
             p.score = wa.score;
             if (++added >= 4)
@@ -2051,7 +2642,8 @@ private:
             {
                 const size_t i = height_.idx(x, y);
                 const Vec2 p = height_.center(x, y);
-                if (water_.v[i] > 0.0f || har_.v[i] < 0.5f || slope_.v[i] > 25.0f || canopy_.v[i] > 0.55f || !insideMargin(p, 150.0f))
+                if (water_.v[i] > 0.0f || har_.v[i] < 0.5f || slope_.v[i] > 25.0f || canopy_.v[i] > 0.55f || !insideMargin(p, kEdgeMarginM) ||
+                    !farFromPois(p, "exposure_site", kOverlookExposureMinM))
                 {
                     continue;
                 }
@@ -2071,22 +2663,27 @@ private:
                 }
                 if (isMax && prominence_.v[i] > 0.3f)
                 {
-                    // Refine to the highest 8-m sub-sample of the cell.
+                    // Refine to the highest 10-m sub-sample of the cell that keeps the setback from steep bank edges
+                    // (no crest-edge overlooks) and the distance to the exposures.
                     Vec2 best = p;
-                    float bz = terrainZ(p);
+                    float bz = -kInf;
                     for (int sy = -1; sy <= 1; ++sy)
                     {
                         for (int sx = -1; sx <= 1; ++sx)
                         {
                             const Vec2 q = p + Vec2{static_cast<float>(sx) * 10.0f, static_cast<float>(sy) * 10.0f};
-                            if (terrainZ(q) > bz && w_.water().depthAt(q, w_.terrain()) <= 0.0f)
+                            if (terrainZ(q) > bz && w_.water().depthAt(q, w_.terrain()) <= 0.0f && edgeSetbackOk(q, kEdgeSetbackM) &&
+                                farFromPois(q, "exposure_site", kOverlookExposureMinM))
                             {
                                 bz = terrainZ(q);
                                 best = q;
                             }
                         }
                     }
-                    cand.push_back({best, s, static_cast<int>(i)});
+                    if (std::isfinite(bz))
+                    {
+                        cand.push_back({best, s, static_cast<int>(i)});
+                    }
                 }
             }
         }
@@ -2163,10 +2760,11 @@ private:
             char buf[800];
             std::snprintf(buf, sizeof(buf),
                           "Sélection gloutonne par couverture maximale : parmi %zu hauteurs candidates (proéminence locale, hors forêt dense, hors "
-                          "zone inondable), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain %.1f). Champ de vision "
-                          "calculé à 1,7 m d'œil sur %.0f m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : %.2f km² "
-                          "visibles. Proéminence %.1f m, %s.",
-                          pool.size(), bestGain, kOverlookRadiusM, sheds[best].areaKm2, prominence_.v[cell], habitatFr(cell));
+                          "zone inondable, à %.0f m au moins de tout affleurement et en retrait de %.0f m de toute arête de berge), ce point ajoute "
+                          "le plus d'« activité animale visible » non encore couverte (gain %.1f). Champ de vision calculé à 1,7 m d'œil sur %.0f m "
+                          "(horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : %.2f km² visibles. Proéminence %.1f m, %s.",
+                          pool.size(), kOverlookExposureMinM, kEdgeSetbackM, bestGain, kOverlookRadiusM, sheds[best].areaKm2, prominence_.v[cell],
+                          habitatFr(cell));
             p.rationaleFr = buf;
             p.metrics.set("eye_height_m", 1.7);
             p.metrics.set("viewshed_radius_m", kOverlookRadiusM);
@@ -2174,7 +2772,20 @@ private:
             p.metrics.set("activity_value", rnd(sheds[best].value, 2));
             p.metrics.set("marginal_gain", rnd(bestGain, 2));
             p.metrics.set("prominence_m", rnd(prominence_.v[cell], 2));
-            p.metrics.set("height_above_river_m", rnd(har_.v[cell], 2));
+            p.metrics.set("height_above_river_m", rnd(harAt(pos), 2));
+            float nearestEx = kInf;
+            for (const Poi& q : pois_)
+            {
+                if (q.type == "exposure_site")
+                {
+                    nearestEx = std::min(nearestEx, distance(q.pos, pos));
+                }
+            }
+            if (std::isfinite(nearestEx))
+            {
+                p.metrics.set("nearest_exposure_m", rnd(nearestEx, 0));
+            }
+            p.metrics.set("edge_setback_min_m", kEdgeSetbackM);
             p.score = bestGain;
             overlookSheds_.push_back({pois_.size() - 1, sheds[best]});
         }
@@ -2230,32 +2841,72 @@ private:
             float bestCover = 0.0f;
             float bestDown = 0.0f;
             bool bestNatural = false;
+            bool bestRaised = false;
+            float bestEye = 1.2f;
             for (const float r : {70.0f, 100.0f, 130.0f, 160.0f, 200.0f, 240.0f})
             {
                 for (int a = 0; a < 32; ++a)
                 {
                     const Vec2 dir = Vec2::fromHeading(kTwoPi * static_cast<float>(a) / 32.0f);
                     const Vec2 b = target.pos + dir * r;
-                    if (!insideMargin(b, 50.0f) || w_.water().depthAt(b, t) > 0.0f || t.slopeDegAt(b) > 15.0f || har_.sample(b) < 0.3f ||
-                        (pass == 0 && !campBank(b)))
+                    if (!insideMargin(b, kEdgeMarginM) || w_.water().depthAt(b, t) > 0.0f || t.slopeDegAt(b) > 15.0f || harAt(b) < 0.3f)
                     {
+                        ++blindReject_["terrain"];
+                        continue;
+                    }
+                    if ((pass == 0 && !campBank(b)) || (pass == 1 && !reachableWithPackraft(b)))
+                    {
+                        ++blindReject_["access"];
+                        continue;
+                    }
+                    if (!edgeSetbackOk(b, 15.0f, 35.0f))
+                    {
+                        ++blindReject_["edge_setback"];
                         continue;
                     }
                     const float cov = veg.cover(b);
-                    const bool natural = cov >= 0.15f; // otherwise a portable hide (tent) replaces natural cover
-                    const float hb = t.heightAt(b) + 1.2f;
-                    if (!t.lineOfSight(Vec3{b, hb}, Vec3{target.pos, tZ}, 4.0f))
+                    const Vec2 toT = (target.pos - b).normalized();
+                    // Ground hide (seated, eye 1.2 m) when the view clears the understorey; otherwise a raised hide
+                    // (portable platform, eye 3.5 m, above the fern / shrub layer and below the canopy).
+                    bool raised = false;
+                    float eye = 1.2f;
+                    float trans = 0.0f;
+                    bool los = false;
+                    for (const float e : {1.2f, 3.5f})
                     {
+                        if (!t.lineOfSight(Vec3{b, t.heightAt(b) + e}, Vec3{target.pos, tZ}, 4.0f))
+                        {
+                            continue;
+                        }
+                        los = true;
+                        const float tr = veg.transmittance(b + toT * 8.0f, target.pos, e);
+                        if (tr >= 0.3f)
+                        {
+                            eye = e;
+                            trans = tr;
+                            raised = e > 2.0f;
+                            break;
+                        }
+                    }
+                    if (!los)
+                    {
+                        ++blindReject_["line_of_sight"];
                         continue;
                     }
-                    const Vec2 toT = (target.pos - b).normalized();
-                    const float trans = veg.transmittance(b + toT * 8.0f, target.pos, 1.2f);
                     if (trans < 0.3f)
                     {
+                        ++blindReject_["foliage"];
                         continue;
                     }
+                    if (!belowSkyline(b, t.heightAt(b) + eye + (raised ? 1.0f : 0.4f), target.pos, tZ))
+                    {
+                        ++blindReject_["skyline"];
+                        continue;
+                    }
+                    const bool natural = !raised && cov >= 0.15f; // otherwise a portable hide (tent) replaces natural cover
                     const float down = 0.5f + 0.5f * dot(dir, downwind);
-                    const float s = trans * (natural ? 0.4f + 0.6f * cov : 0.3f) * (0.3f + 0.7f * down) * (1.0f - 0.25f * std::fabs(r - 120.0f) / 80.0f);
+                    const float s = trans * (natural ? 0.4f + 0.6f * cov : 0.3f) * (raised ? 0.8f : 1.0f) * (0.3f + 0.7f * down) *
+                                    (1.0f - 0.25f * std::fabs(r - 120.0f) / 80.0f);
                     if (s > bestScore)
                     {
                         bestScore = s;
@@ -2264,6 +2915,8 @@ private:
                         bestCover = cov;
                         bestDown = down;
                         bestNatural = natural;
+                        bestRaised = raised;
+                        bestEye = eye;
                     }
                 }
             }
@@ -2283,22 +2936,28 @@ private:
             p.confidenceSubject = "installation d'observation (choix méthodologique) — sans objet paléontologique";
             p.placement = "model_prediction";
             p.links.push_back(target.id);
-            char buf[800];
+            char buf[1200];
             std::snprintf(buf, sizeof(buf),
-                          "Affût au sol pour %s (%s), à %.0f m : %s (couvert végétal %.2f), ligne de visée dégagée par le relief à 1,2 m "
-                          "d'œil (assis), transmission du feuillage %.2f, sous le vent dominant (alignement %.2f) pour limiter la détection olfactive "
-                          "par les animaux observés. Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez "
-                          "loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
-                          target.id.c_str(), target.nameFr.c_str(), distance(best, target.pos),
-                          bestNatural ? "dissimulé dans la végétation" : "tente-affût portable (couvert naturel insuffisant)", bestCover, bestTrans, bestDown);
+                          "%s pour %s (%s), à %.0f m : %s (couvert végétal %.2f), ligne de visée dégagée par le relief à %.1f m d'œil, "
+                          "transmission du feuillage %.2f, sous le vent dominant (alignement %.2f) pour limiter la détection olfactive par les "
+                          "animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff et sous la ligne d'horizon vue depuis "
+                          "la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez "
+                          "près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de "
+                          "tolérance est une question de recherche du jeu).%s",
+                          bestRaised ? "Affût surélevé" : "Affût au sol", target.id.c_str(), target.nameFr.c_str(), distance(best, target.pos),
+                          bestRaised ? "plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible)"
+                                     : (bestNatural ? "dissimulé dans la végétation" : "tente-affût portable (couvert naturel insuffisant)"),
+                          bestCover, bestEye, bestTrans, bestDown, campBank(best) ? "" : " Sur la rive opposée : accès en packraft.");
             p.rationaleFr = buf;
             p.metrics.set("target", target.id);
             p.metrics.set("distance_to_target_m", rnd(distance(best, target.pos), 0));
             p.metrics.set("cover", rnd(bestCover, 2));
-            p.metrics.set("hide_type", bestNatural ? "natural_cover" : "portable_hide");
+            p.metrics.set("hide_type", bestRaised ? "raised_platform" : (bestNatural ? "natural_cover" : "portable_hide"));
             p.metrics.set("foliage_transmittance", rnd(bestTrans, 2));
             p.metrics.set("downwind_alignment", rnd(bestDown, 2));
-            p.metrics.set("eye_height_m", 1.2);
+            p.metrics.set("eye_height_m", rnd(bestEye, 1));
+            p.metrics.set("below_skyline", true);
+            p.metrics.set("edge_setback_min_m", 15);
             p.score = bestScore;
             if (++made >= 4 || (pass == 0 && made >= 2))
             {
@@ -2306,6 +2965,12 @@ private:
             }
         }
         }
+        std::printf("Affûts : %d placés ; positions candidates rejetées :", made);
+        for (const auto& r : blindReject_)
+        {
+            std::printf(" %s %d", r.first.c_str(), r.second);
+        }
+        std::printf("\n");
     }
 
     // ------------------------------------------------------------------ speculative nesting areas
@@ -2365,7 +3030,7 @@ private:
             for (size_t i = 0; i < height_.v.size(); ++i)
             {
                 const Vec2 p = height_.centerOf(i);
-                if (water_.v[i] > 0.0f || !insideMargin(p, 200.0f))
+                if (water_.v[i] > 0.0f || !insideMargin(p, kEdgeMarginM))
                 {
                     continue;
                 }
@@ -2391,8 +3056,9 @@ private:
                     bestCell = i;
                 }
             }
-            if (best < 0.15f)
+            if (best < kNestSuitabilityMin)
             {
+                nestNotPlaced_.push_back({d.id, best}); // no zone forced per species: the model finds no favourable ground
                 continue;
             }
             const Vec2 pos = height_.centerOf(bestCell);
@@ -2405,28 +3071,62 @@ private:
             p.placement = "model_prediction";
             p.profileToggle = "nesting_grounds";
             const Claim* repro = d.claim("reproduction");
-            if (repro)
+            // Evidence for the nest TYPE used by the simulation comes from sim_basis["reproduction.nest_type"], not from
+            // the general reproduction claim: a game assumption is SPECULATIVE, a derived value is at best INFERRED and
+            // never stronger than the species' reproduction claim. Sources = the references that basis cites (analogies).
+            const std::string basis = d.basisFor("reproduction.nest_type");
+            const bool assumed = d.isAssumption("reproduction.nest_type");
+            Confidence nestEv = assumed ? Confidence::Speculative : Confidence::Inferred;
+            if (repro && static_cast<int>(repro->confidence) > static_cast<int>(nestEv))
             {
-                p.sources = repro->sources;
+                nestEv = repro->confidence;
+            }
+            {
+                std::string tok;
+                for (size_t ci = 0; ci <= basis.size(); ++ci)
+                {
+                    const char ch = ci < basis.size() ? basis[ci] : ' ';
+                    if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_')
+                    {
+                        tok.push_back(ch);
+                        continue;
+                    }
+                    if (tok.size() > 6 && w_.db().findSource(tok) && std::find(p.sources.begin(), p.sources.end(), tok) == p.sources.end())
+                    {
+                        p.sources.push_back(tok);
+                    }
+                    tok.clear();
+                }
             }
             int nestsSeen = 0;
             for (const auto& ne : nestEvents_)
             {
                 nestsSeen += (ne.second == sp.first && distance(ne.first, pos) < 300.0f) ? 1 : 0;
             }
-            char buf[1100];
+            char buf[1800];
             std::snprintf(buf, sizeof(buf),
-                          "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour %s (type de nid de la simulation : %s ; preuve de ce type : "
-                          "%s) : habitat préféré (%s, poids %.2f), sol hors d'atteinte des crues de plein bord (%.1f m au-dessus), substrat %s, pente "
-                          "%.0f°, %.0f m de l'eau, faible activité de prédateurs. %d ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. "
-                          "Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
-                          d.scientificName.c_str(), nestTypeLabelFrLocal(nt), repro ? confidenceLabelFr(repro->confidence) : "INCONNU",
+                          "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour %s (aptitude %.2f, seuil %.2f) — type de nid de la "
+                          "simulation : %s, preuve de ce type : %s (%s%s). Critères : habitat préféré (%s, poids %.2f), sol hors d'atteinte des crues "
+                          "de plein bord (%.1f m au-dessus), substrat %s, pente %.0f°, %.0f m de l'eau, faible activité de prédateurs. %d ponte(s) "
+                          "simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle "
+                          "oriente la recherche, elle ne prouve rien.",
+                          d.scientificName.c_str(), best, kNestSuitabilityMin, nestTypeLabelFrLocal(nt), confidenceLabelFr(nestEv), basis.c_str(),
+                          p.sources.empty() ? " ; aucune source citée pour ce type de nid dans la fiche espèce (sim_basis) : Information insuffisante — recherche nécessaire." : "",
                           habitatFr(bestCell), d.sim.habitat[habitat_[bestCell]], har_.v[bestCell], substrateLabelFr(static_cast<Substrate>(substrate_[bestCell])),
                           slope_.v[bestCell], dWater.v[bestCell], nestsSeen);
             p.rationaleFr = buf;
             p.metrics.set("species", d.id);
             p.metrics.set("nest_type", nestTypeKeyLocal(nt));
-            p.metrics.set("nest_type_evidence", repro ? confidenceKey(repro->confidence) : "unknown");
+            p.metrics.set("nest_type_evidence", confidenceKey(nestEv));
+            p.metrics.set("nest_type_basis", basis);
+            if (repro)
+            {
+                JsonValue rc = JsonValue::makeObject();
+                rc.set("confidence", confidenceKey(repro->confidence));
+                rc.set("sources", strings(repro->sources));
+                rc.set("note_fr", "fiche espèce, reproduction en général (oviparité, soins) : ne documente pas le type ni l'emplacement du nid");
+                p.metrics.set("species_reproduction_claim", rc);
+            }
             p.metrics.set("suitability", rnd(best, 3));
             JsonValue doy = JsonValue::makeArray();
             doy.push(rnd(d.sim.reproduction.breedingStartDoy, 0));
@@ -2445,7 +3145,7 @@ private:
         const double now = w_.clock().seconds();
         for (const Carcass& c : w_.carcasses().all())
         {
-            if (!c.active || !insideMargin(c.position, 20.0f))
+            if (!c.active || !insideMargin(c.position, kEdgeMarginM))
             {
                 continue;
             }
@@ -2477,31 +3177,65 @@ private:
     // ------------------------------------------------------------------ sensors
     void addSensors()
     {
-        // Camera traps (PIR, ~20 m range): on predicted corridors near water or fords, facing the trail.
+        // Camera traps (PIR, ~20 m range): on predicted corridors (at least one), preferably near a crossing point or a
+        // watering point, facing the trail. Trail wear saturates within minutes of loitering (VegetationSystem::trample),
+        // so it only counts as "passage observed" (>= kWearPassage); the magnitude comes from herbivore presence sampled
+        // every 10 min of the warm-up, which is normalised by the warm-up duration (Field::normalize of the counts).
         {
-            std::vector<Candidate> cand;
+            struct TrapCand
+            {
+                Vec2 pos;
+                float score = 0.0f;
+                size_t cell = 0;
+                int target = -1; // nearest ford / water_access within 200 m
+                float targetDist = 0.0f;
+            };
+            std::vector<TrapCand> cand;
             for (size_t i = 0; i < corridorUse_.v.size(); ++i)
             {
                 const Vec2 p = height_.centerOf(i);
-                if ((corridorUse_.v[i] < 1.0f && trail_.v[i] < 0.1f) || water_.v[i] > 0.0f || !insideMargin(p, 150.0f))
+                if (corridorUse_.v[i] < 1.0f || water_.v[i] > 0.0f || !insideMargin(p, kEdgeMarginM))
                 {
                     continue;
                 }
-                float nearWater = 0.0f;
-                for (const Poi& q : pois_)
+                TrapCand tc;
+                tc.pos = p;
+                tc.cell = i;
+                float bestD = 200.0f;
+                for (size_t q = 0; q < pois_.size(); ++q)
                 {
-                    if ((q.type == "ford" || q.type == "water_access") && distance(q.pos, p) < 200.0f)
+                    const Poi& o = pois_[q];
+                    const float dd = distance(o.pos, p);
+                    if ((o.type == "ford" || o.type == "water_access") && dd < bestD)
                     {
-                        nearWater = 1.0f;
+                        bestD = dd;
+                        tc.target = static_cast<int>(q);
                     }
                 }
-                const float s = 0.4f * std::min(corridorUse_.v[i], 3.0f) + 2.0f * trail_.v[i] + herbPresBlur_.v[i] + 0.6f * nearWater;
-                cand.push_back({p, s, static_cast<int>(i)});
+                tc.targetDist = bestD;
+                if (tc.target >= 0)
+                {
+                    // The trap goes on the side the researcher reaches without crossing: camp bank for a main-river
+                    // crossing point, the target's own bank for a watering point.
+                    const Poi& o = pois_[static_cast<size_t>(tc.target)];
+                    const bool mainCrossing = o.type == "ford" && o.metrics.get("river").asString("") == "main";
+                    if ((mainCrossing && !campBank(p)) || (!mainCrossing && campBank(p) != campBank(o.pos)))
+                    {
+                        continue;
+                    }
+                }
+                if (!campBank(p) && !reachableWithPackraft(p))
+                {
+                    continue;
+                }
+                tc.score = 0.4f * std::min(corridorUse_.v[i], 3.0f) + 1.0f * herbPresBlur_.v[i] + (tc.target >= 0 ? 0.8f : 0.0f) +
+                           (trail_.v[i] >= kWearPassage ? 0.3f : 0.0f);
+                cand.push_back(tc);
             }
-            std::sort(cand.begin(), cand.end(), [](const Candidate& a, const Candidate& b) { return a.score > b.score; });
+            std::sort(cand.begin(), cand.end(), [](const TrapCand& a, const TrapCand& b) { return a.score > b.score; });
             int made = 0;
             int perBank[2] = {0, 0};
-            for (const Candidate& c : cand)
+            for (const TrapCand& c : cand)
             {
                 if (!farFromPois(c.pos, "camera_trap", 500.0f) || !farFromPois(c.pos, "blind", 60.0f))
                 {
@@ -2530,6 +3264,8 @@ private:
                 }
                 const Vec2 side = dir.perp();
                 const Vec2 pos = c.pos + side * 6.0f;
+                const std::string targetId = c.target >= 0 ? pois_[static_cast<size_t>(c.target)].id : std::string();
+                const std::string targetName = c.target >= 0 ? pois_[static_cast<size_t>(c.target)].nameFr : std::string();
                 Poi& p = addPoi("CT", "camera_trap", pos);
                 const int k = idCounters_["CT"];
                 p.nameFr = "Emplacement de piège photo " + std::to_string(k);
@@ -2540,15 +3276,39 @@ private:
                 p.confidence = Confidence::Unknown;
                 p.confidenceSubject = "emplacement d'instrument (choix méthodologique) — sans objet paléontologique";
                 p.placement = "model_prediction";
-                char buf[500];
+                char where[300];
+                if (c.target >= 0)
+                {
+                    std::snprintf(where, sizeof(where), "à %.0f m de %s (%s), du côté atteint sans traverser", c.targetDist, targetId.c_str(),
+                                  targetName.c_str());
+                    p.links.push_back(targetId);
+                }
+                else
+                {
+                    std::snprintf(where, sizeof(where), "en zone de passage, à plus de 200 m de tout gué ou abreuvoir");
+                }
+                const float wear = trail_.v[c.cell];
+                char buf[900];
                 std::snprintf(buf, sizeof(buf),
-                              "Sur un corridor prédit (%.0f tracé(s) superposé(s), usure observée %.2f), %s. Piège à détection infrarouge passive "
-                              "(portée ~20 m, champ 50°) posé à 6 m du passage et orienté perpendiculairement à la piste.",
-                              corridorUse_.v[static_cast<size_t>(c.ref)], trail_.v[static_cast<size_t>(c.ref)],
-                              c.score > 1.5f ? "près d'un gué ou d'un abreuvoir" : "en zone de passage");
+                              "Sur %.0f corridor(s) prédit(s) superposé(s), %s ; présence d'herbivores pendant le préchauffage %.2f (relevés toutes les "
+                              "10 min, normalisés) ; %s. Piège à détection infrarouge passive (portée ~20 m, champ 50°) posé à 6 m du passage et "
+                              "orienté perpendiculairement à la piste.%s",
+                              corridorUse_.v[c.cell], where, herbPresBlur_.v[c.cell],
+                              wear >= kWearPassage ? "passage observé (l'usure de végétation sature après quelques passages ou un stationnement : "
+                                                     "indice de passage, pas de piste établie)"
+                                                   : "aucun passage observé pendant le préchauffage",
+                              bank == 1 ? " Rive opposée : accès en packraft." : "");
                 p.rationaleFr = buf;
-                p.metrics.set("corridor_overlap", rnd(corridorUse_.v[static_cast<size_t>(c.ref)], 0));
-                p.metrics.set("trail_wear", rnd(trail_.v[static_cast<size_t>(c.ref)], 3));
+                p.metrics.set("corridor_overlap", rnd(corridorUse_.v[c.cell], 0));
+                p.metrics.set("trail_wear", rnd(wear, 3));
+                p.metrics.set("passage_observed", wear >= kWearPassage);
+                p.metrics.set("herbivore_presence", rnd(herbPresBlur_.v[c.cell], 3));
+                p.metrics.set("near_water", c.target >= 0);
+                if (c.target >= 0)
+                {
+                    p.metrics.set("target", targetId);
+                    p.metrics.set("distance_to_target_m", rnd(c.targetDist, 0));
+                }
                 p.metrics.set("equipment", "camera_trap");
                 p.score = c.score;
                 if (++made >= 4)
@@ -2744,16 +3504,18 @@ private:
     void buildRoutes()
     {
         const size_t np = pois_.size();
+        // Routes use the foot network plus the packraft crossings of the main river; reachability on foot alone is
+        // reported separately (bank, reachable_on_foot_from_basecamp, foot_component).
         for (Poi& p : pois_)
         {
-            p.footOk = snapPassable(footCost_, p.pos, 250.0f, p.footCell);
+            p.footOk = snapPassable(footPackCost_, p.pos, 250.0f, p.footCell);
         }
         std::vector<PathField> pf(np);
         for (size_t i = 0; i < np; ++i)
         {
             if (pois_[i].footOk)
             {
-                dijkstra(footCost_, {pois_[i].footCell}, pf[i]);
+                dijkstra(footPackCost_, {pois_[i].footCell}, pf[i]);
             }
         }
         auto cost = [&](size_t a, size_t b) {
@@ -2827,11 +3589,47 @@ private:
             }
             ++ncomp;
         }
-        components_ = ncomp;
+        componentsPack_ = ncomp;
+        // Foot-only components (the main river splits the valley): compact numbering of the grid labels.
+        std::map<int, int> footComp;
+        std::vector<int> poiFootComp(np, -1);
+        std::vector<size_t> poiFootCell(np, 0);
+        std::vector<u8> poiFootOk(np, 0);
         for (size_t i = 0; i < np; ++i)
         {
-            pois_[i].metrics.set("foot_component", comp[i]);
-            pois_[i].metrics.set("reachable_on_foot_from_basecamp", comp[i] == comp[basecampIdx_] && pois_[i].footOk);
+            size_t c = 0;
+            if (snapPassable(footCost_, pois_[i].pos, 250.0f, c))
+            {
+                poiFootOk[i] = 1;
+                poiFootCell[i] = c;
+                const int lab = footLabel_.empty() ? 0 : footLabel_[c];
+                if (footComp.find(lab) == footComp.end())
+                {
+                    const int next = static_cast<int>(footComp.size());
+                    footComp[lab] = next;
+                }
+                poiFootComp[i] = footComp[lab];
+            }
+        }
+        components_ = static_cast<int>(footComp.size());
+        for (size_t i = 0; i < np; ++i)
+        {
+            const bool footReach = poiFootOk[i] && std::isfinite(footFromBase_.dist[poiFootCell[i]]);
+            const bool reach = comp[i] == comp[basecampIdx_] && pois_[i].footOk;
+            reachableFromBase_ += reach ? 1 : 0;
+            pois_[i].metrics.set("foot_component", poiFootComp[i]);
+            pois_[i].metrics.set("reachable_on_foot_from_basecamp", footReach);
+            pois_[i].metrics.set("reachable_from_basecamp", reach);
+            pois_[i].metrics.set("needs_packraft", reach && !footReach);
+            pois_[i].metrics.set("bank", !poiFootOk[i] ? "none" : (footReach ? "camp_bank" : "far_bank"));
+            if (footReach)
+            {
+                pois_[i].metrics.set("walk_time_from_basecamp_min", rnd(footFromBase_.dist[poiFootCell[i]] / kFootSpeedMs / 60.0f, 1));
+            }
+            else if (reach && std::isfinite(footPackFromBase_.dist[pois_[i].footCell]))
+            {
+                pois_[i].metrics.set("travel_time_from_basecamp_min", rnd(footPackFromBase_.dist[pois_[i].footCell] / kFootSpeedMs / 60.0f, 1));
+            }
         }
         for (const auto& e : edgeSet)
         {
@@ -2843,7 +3641,12 @@ private:
             std::vector<Vec2> pts{pois_[e.first].pos};
             for (const size_t c : cells)
             {
-                pts.push_back(footCost_.centerOf(c));
+                pts.push_back(footPackCost_.centerOf(c));
+                if (packraftCell_[c])
+                {
+                    ++ed.packraftCells;
+                    continue;
+                }
                 ed.maxSlopeDeg = std::max(ed.maxSlopeDeg, slope_.v[c]);
                 ed.maxWaterM = std::max(ed.maxWaterM, water_.v[c]);
             }
@@ -2854,8 +3657,8 @@ private:
             pois_[e.second].links.push_back(pois_[e.first].id);
             edges_.push_back(ed);
         }
-        // Rover access from the basecamp: drop-off on practicable terrain, walking part on the foot network of
-        // the POI itself (so a drop-off on the other bank of the river is never proposed).
+        // Rover access from the basecamp: drop-off on practicable terrain, then the POI's own route (on foot, with a
+        // packraft crossing when the POI is on the far bank). The rover itself never crosses the main river.
         for (size_t i = 0; i < np; ++i)
         {
             Poi& p = pois_[i];
@@ -2896,22 +3699,34 @@ private:
             if (std::isfinite(bestScore))
             {
                 const Vec2 drop = roverCost_.centerOf(bestCell);
+                bool viaPack = false;
+                for (const size_t c : tracePath(pf[i], bestCell))
+                {
+                    viaPack = viaPack || packraftCell_[c] != 0;
+                }
                 ra.set("drop_off", polylineJson({drop}));
                 ra.set("walk_cost_m", rnd(pf[i].dist[bestCell], 0));
                 ra.set("walk_time_min", rnd(pf[i].dist[bestCell] / kFootSpeedMs / 60.0f, 1));
                 ra.set("drive_cost_m", rnd(roverFromBase_.dist[bestCell], 0));
                 ra.set("drive_time_min", rnd(roverFromBase_.dist[bestCell] / kRoverSpeedMs / 60.0f, 1));
+                ra.set("via_packraft", viaPack);
                 ++roverReachable_;
             }
             p.metrics.set("rover_access", ra);
             p.metrics.set("radio_coverage", radio_.sample(p.pos) > 0.5f);
-            p.metrics.set("flood_risk", rnd(flood_.sample(p.pos), 2));
-            p.metrics.set("flood_class", floodClass(har_.sample(p.pos)));
-            p.metrics.set("bank", !p.footOk ? "none" : (std::isfinite(footFromBase_.dist[p.footCell]) ? "camp_bank" : "far_bank"));
-            if (std::isfinite(footFromBase_.dist[p.footCell]) && p.footOk)
+            // Flood class from the POI's own ground height above the local bankfull level (not its 32 m cell).
+            const float har = harAt(p.pos);
+            p.metrics.set("height_above_bankfull_m", rnd(har, 2));
+            p.metrics.set("flood_risk", rnd(floodRiskAt(p.pos), 2));
+            p.metrics.set("flood_class", floodClass(har));
+            if (p.hasAccess)
             {
-                p.metrics.set("walk_time_from_basecamp_min", rnd(footFromBase_.dist[p.footCell] / kFootSpeedMs / 60.0f, 1));
+                // The bench is narrower than the 32 m analysis cell: reachability is that of the nearest walkable cell.
+                size_t ac = 0;
+                p.metrics.set("access_point_reachable_on_foot", snapPassable(footCost_, p.access, 64.0f, ac) && std::isfinite(footFromBase_.dist[ac]));
+                p.metrics.set("access_point_reachable_with_packraft", reachableWithPackraft(p.access));
             }
+            p.metrics.set("distance_to_map_edge_m", rnd(std::min(std::min(p.pos.x, p.pos.y), std::min(size_ - p.pos.x, size_ - p.pos.y)), 0));
         }
     }
 
@@ -3209,20 +4024,75 @@ private:
                 }
             }
         }
-        // POI icons and labels.
+        // POI icons, then labels placed greedily around their icon so that no label covers another label or an icon;
+        // a leader line joins a displaced label to its icon.
+        struct Box
+        {
+            int x0, y0, x1, y1;
+            bool hits(const Box& o) const { return x0 < o.x1 && o.x0 < x1 && y0 < o.y1 && o.y0 < y1; }
+        };
+        std::vector<Box> boxes;
         for (const Poi& p : pois_)
         {
             float px = 0.0f;
             float py = 0.0f;
             cv.toPx(p.pos, px, py);
             drawIcon(cv.img, p.type, px, py, p.type == "basecamp" ? 9.0f : 7.0f);
-            drawText(cv.img, static_cast<int>(px) + 11, static_cast<int>(py) - 7, p.id, poiColor(p.type), 2);
+            boxes.push_back({static_cast<int>(px) - 10, static_cast<int>(py) - 10, static_cast<int>(px) + 10, static_cast<int>(py) + 10});
+        }
+        for (const Poi& p : pois_)
+        {
+            float px = 0.0f;
+            float py = 0.0f;
+            cv.toPx(p.pos, px, py);
+            const int w = static_cast<int>(p.id.size()) * 12;
+            const int h = 14;
+            const int ix = static_cast<int>(px);
+            const int iy = static_cast<int>(py);
+            Box chosen{ix + 11, iy - 7, ix + 11 + w, iy - 7 + h};
+            bool placed = false;
+            bool displaced = false;
+            for (int ring = 1; ring <= 4 && !placed; ++ring)
+            {
+                const int r = 11 + (ring - 1) * 16;
+                const int cand[8][2] = {{r, -7},          {-r - w, -7},     {-w / 2, -r - h}, {-w / 2, r},
+                                        {r, -r - h + 4}, {r, r - 4},       {-r - w, -r - h + 4}, {-r - w, r - 4}};
+                for (const auto& c : cand)
+                {
+                    const Box b{ix + c[0], iy + c[1], ix + c[0] + w, iy + c[1] + h};
+                    if (b.x0 < 0 || b.y0 < 0 || b.x1 >= mo.size || b.y1 >= mo.size)
+                    {
+                        continue;
+                    }
+                    bool free = true;
+                    for (const Box& o : boxes)
+                    {
+                        free = free && !b.hits(o);
+                    }
+                    if (free)
+                    {
+                        chosen = b;
+                        placed = true;
+                        displaced = ring > 1;
+                        break;
+                    }
+                }
+            }
+            if (displaced)
+            {
+                const float lx = static_cast<float>(std::clamp(ix, chosen.x0, chosen.x1));
+                const float ly = static_cast<float>(std::clamp(iy, chosen.y0, chosen.y1));
+                cv.img.line(px, py, lx, ly, poiColor(p.type), 0.8f);
+            }
+            drawText(cv.img, chosen.x0, chosen.y0, p.id, poiColor(p.type), 2);
+            boxes.push_back(chosen);
         }
         // Title, scale bar, north arrow.
         drawText(cv.img, 14, 12, "NOCTIS - " + w_.environment().nameFr + " - NIVEAU " + levelId_, Rgb{255, 255, 255}, 3);
         char sub[200];
-        std::snprintf(sub, sizeof(sub), "GRAINE %llu  PROFIL %s  PRECHAUFFAGE %.0f H  %s", static_cast<unsigned long long>(opt_.seed), opt_.profile.c_str(),
-                      opt_.warmupHours, w_.clock().formatted().c_str());
+        std::snprintf(sub, sizeof(sub), "GRAINE %llu  PROFIL %s  DEPART JOUR %d %02d:00  PRECHAUFFAGE %.0f H  EXPORT %s",
+                      static_cast<unsigned long long>(opt_.seed), opt_.profile.c_str(), static_cast<int>(w_.config().startDayOfYear) + 1,
+                      static_cast<int>(w_.config().startHour), opt_.warmupHours, w_.clock().formatted().c_str());
         drawText(cv.img, 14, 42, sub, Rgb{230, 230, 230}, 2);
         const int bar = static_cast<int>(1000.0f / cv.mPerPx);
         cv.img.rect(14, mo.size - 30, 14 + bar, mo.size - 24, Rgb{255, 255, 255});
@@ -3240,7 +4110,7 @@ private:
             {"basecamp", "CAMP DE BASE"},
             {"overlook", "POINT DE VUE (ZONE JAUNE = VISIBLE)"},
             {"blind", "AFFUT (LIGNE = VISEE)"},
-            {"ford", "GUE"},
+            {"ford", "FRANCHISSEMENT CANDIDAT (PACKRAFT / GUE)"},
             {"water_access", "ABREUVOIR"},
             {"oxbow_lake", "BRAS MORT"},
             {"backswamp", "MARAIS ARRIERE"},
@@ -3425,13 +4295,18 @@ private:
               "Le temps de jeu reste 1:1 pendant l'observation : vitesses, taux d'appels par minute, distances de fuite et budgets d'activité sont "
               "mesurés par le joueur et testés statistiquement ; les comprimer fausserait ses données. L'accéléré « time-lapse » est plafonné à x8 "
               "(FullDetailMaxTimeScale : simulation complète des animaux), signalé à l'écran et exclu des mesures de comportement. Les longues attentes "
-              "(nuit, pluie) se font au camp ou dans le véhicule avec un saut à x360 en simulation grossière.");
+              "(nuit, pluie) se font au camp ou dans le véhicule avec un saut à x360 en simulation grossière — sauf pendant une alerte de crue "
+              "(rules.flood_alert) : l'alerte interrompt tout saut et le x360 n'est plus permis qu'au repli hors crue.");
+        t.set("day_convention_fr",
+              "Jours affichés (horloge du jeu, cartes, documents) numérotés à partir de 1 : « jour 141 ». start_day_of_year est l'indice en base 0 "
+              "de SimConfig (140 = jour 141).");
         t.set("start_day_of_year", w_.config().startDayOfYear);
+        t.set("start_day_display", static_cast<int>(w_.config().startDayOfYear) + 1);
         t.set("start_hour", w_.config().startHour);
         t.set("start_justification_fr",
-              "Jour 140 : dans la saison humide supposée (jours 100–200) et dans la fenêtre de reproduction simulée de plusieurs espèces ; 05:00 : "
-              "aube, pic d'activité attendu des animaux diurnes et crépusculaires et des chœurs d'aube (hypothèses). Ce biais de départ rend la "
-              "première heure riche sans scénario.");
+              "Jour 141 (indice 140) : dans la saison humide supposée (indices 100–200) et dans la fenêtre de reproduction simulée de plusieurs "
+              "espèces ; 05:00 : aube, pic d'activité attendu des animaux diurnes et crépusculaires et des chœurs d'aube (hypothèses). Ce biais de "
+              "départ rend la première heure riche sans scénario.");
         JsonValue ex = JsonValue::makeObject();
         ex.set("default_days", 3);
         ex.set("min_days", 1);
@@ -3467,20 +4342,67 @@ private:
         veh.set("refuge", true);
         veh.set("fording_depth_m", fordingDepthM_);
         veh.set("noise_electric_db_1m", noiseElectricDb_);
+        veh.set("noise_tyre_db_1m_ref", noiseTyreRefDb_);
+        veh.set("noise_tyre_ref_speed_ms", noiseTyreRefSpeedMs_);
+        veh.set("noise_tyre_speed_exponent_db", noiseTyreSpeedExpDb_);
         veh.set("noise_generator_db_1m", noiseGeneratorDb_);
         veh.set("practicability_fr",
                 "Praticable si : eau <= profondeur de gué, pente <= min(25°, atan(mu_traction - résistance au roulement)), enfoncement Bekker < 70 % "
                 "du seuil d'enlisement de VehicleSystem, canopée <= 0,55 (troncs), hors berges abruptes. Masque mask_rover_practicable.png "
                 "(255 = praticable et relié au camp, 128 = praticable isolé, 0 = impraticable).");
-        veh.set("disturbance_fr", "Le véhicule est une source sonore simulée : moteur électrique ~52 dB à 1 m, générateur ~80 dB à 1 m ; le "
-                                  "générateur porte donc beaucoup plus loin et perturbe la faune (événement VehicleNoticed).");
+        veh.set("disturbance_fr", "Le véhicule est une source sonore simulée (VehicleSystem::noiseAt1m) : moteur électrique ~52 dB à 1 m, "
+                                  "générateur ~80 dB à 1 m (il porte donc beaucoup plus loin et perturbe la faune, événement VehicleNoticed), "
+                                  "plus le bruit de roulement pneus / terrain 85 + 35 log10(v / 14 m/s) dB à 1 m, qui domine dès ~5 m/s "
+                                  "(hypothèses de conception).");
         r.set("vehicle", veh);
         JsonValue onfoot = JsonValue::makeObject();
-        onfoot.set("walk_speed_ms", kFootSpeedMs);
-        onfoot.set("max_wading_depth_m", kWadeLimitM);
-        onfoot.set("note_fr", "Le joueur ne nage pas : la rivière principale n'est franchissable qu'aux gués en basses eaux (metrics.stage_max_on_foot_m). "
-                              "Coûts de marche : pente, eau, couvert, enfoncement (mask_foot_passable.png).");
+        onfoot.set("walk_speed_ms", rnd(kFootSpeedMs, 2));
+        onfoot.set("max_wading_depth_m", rnd(kWadeLimitM, 2));
+        onfoot.set("max_wading_bank_slope_deg", kWadeBankSlopeMaxDeg);
+        char note[700];
+        std::snprintf(note, sizeof(note),
+                      "Le joueur ne nage pas. La rivière principale n'est jamais guéable : le modèle d'eau garde au moins %.0f %% du débit moyen "
+                      "(niveau ≥ %.2f m), soit encore ~%.1f m d'eau aux points de franchissement. On la traverse en packraft (rules.packraft). "
+                      "Le ruisseau, non pérenne, se passe à gué ou à sec. Coûts de marche : pente, eau, couvert, enfoncement (mask_foot_passable.png).",
+                      100.0f * kPerennialBaseflow, stageAtFraction(0, kPerennialBaseflow), minCrossingDepthAtBaseflow());
+        onfoot.set("note_fr", note);
         r.set("on_foot", onfoot);
+        JsonValue pr = JsonValue::makeObject();
+        pr.set("equipment_id", "packraft");
+        pr.set("in_equipment_json", packraftFound_);
+        pr.set("mass_kg", rnd(packraftMassKg_, 2));
+        pr.set("max_crossing_current_ms", rnd(packraftMaxCurrentMs_, 2));
+        pr.set("bank_slope_max_deg", packraftBankSlopeDeg_);
+        pr.set("paddle_speed_ms", rnd(packraftPaddleMs_, 2));
+        pr.set("setup_min", packraftSetupMin_);
+        pr.set("max_stage_m", rnd(std::min(stageAtFraction(0, fractionAtCurrent(0, packraftMaxCurrentMs_)), kFloodAlertFraction * bankfullOf(0)), 2));
+        pr.set("rule_fr", "Traversée de la rivière principale uniquement aux points de franchissement candidats dont les berges permettent la mise à "
+                          "l'eau (packraft_usable), courant moyen ≤ max_crossing_current_ms et hors alerte de crue ; gilet obligatoire, bateau "
+                          "porté dans le sac ensuite. Le véhicule reste sur la rive du camp : la rive opposée n'a pas de refuge proche. Règle de "
+                          "sécurité moderne, sans objet paléontologique.");
+        r.set("packraft", pr);
+        JsonValue fa = JsonValue::makeObject();
+        const float campHar = harAt(w_.basecamp());
+        fa.set("alert_stage_fraction_of_bankfull", rnd(kFloodAlertFraction, 2));
+        fa.set("alert_stage_m", rnd(kFloodAlertFraction * bankfullOf(0), 2));
+        fa.set("alert_discharge_fraction", rnd(fractionAtStage(0, kFloodAlertFraction * bankfullOf(0)), 2));
+        fa.set("camp_flood_stage_m", rnd(bankfullOf(0) + std::max(0.0f, campHar), 2));
+        fa.set("camp_flood_discharge_fraction", rnd(fractionAtStage(0, bankfullOf(0) + std::max(0.0f, campHar)), 2));
+        fa.set("refuge_poi", "FR01");
+        fa.set("rule_fr", "Quand le niveau de la rivière dépasse alert_stage_m, la radio du camp lance l'alerte de crue (jauge sur la carte, "
+                          "sous-titre, vibration optionnelle) : tout saut de temps en cours s'arrête, le saut x360 est interdit au camp et dans le véhicule garé "
+                          "en plaine, il reste permis au repli FR01 ; traversées en packraft interdites. Le camp est inondé au-dessus de "
+                          "camp_flood_stage_m. Avec le réservoir linéaire de 3 jours du modèle d'eau, un orage fort peut faire passer le niveau du "
+                          "seuil d'alerte à l'inondation du camp en quelques heures de jeu : quelques secondes en x360, d'où l'interruption.");
+        r.set("flood_alert", fa);
+        JsonValue ta = JsonValue::makeObject();
+        ta.set("ue_walkable_floor_angle_deg", 44.765);
+        ta.set("landscape_quad_m", rnd(w_.terrain().spacing(), 3));
+        ta.set("rule_fr", "Au pas du paysage (4,06 m), les berges verticales deviennent des rampes de 30–51° : les talus des bluffs et les berges "
+                          "concaves sont des parois bloquantes (maillages à collision BlockAll de PCG_Noctis_Exposures), pas des pentes. Accès à "
+                          "l'eau à pied uniquement aux gués du ruisseau, aux barres de méandre et aux abreuvoirs (berge ≤ 20° sur 10 m) ; mise à "
+                          "l'eau du packraft aux points de franchissement.");
+        r.set("terrain_access", ta);
         JsonValue lightning = JsonValue::makeObject();
         lightning.set("rule_fr", "Orage : les points de vue dégagés deviennent dangereux ; se réfugier dans le véhicule (carrosserie métallique) ou "
                                  "redescendre en contrebas. Règle de sécurité moderne, sans objet paléontologique.");
@@ -3720,15 +4642,22 @@ private:
         hlod.push("HLOD_Foliage_Instanced (forêts et levées, 1–4 km)");
         p.set("hlod_layers", hlod);
         JsonValue dl = JsonValue::makeArray();
-        dl.push("DL_POI_Markers (éditeur uniquement)");
-        dl.push("DL_Nesting_Speculative (runtime, activée par le profil nesting_grounds)");
-        dl.push("DL_Basecamp (toujours chargée)");
+        dl.push("DL_POI_Markers (éditeur : marqueurs de tous les POI sauf les aires de nidification)");
+        dl.push("DL_Nesting_Speculative (éditeur : marqueurs des aires de nidification SPÉCULATIVES, masquables par les concepteurs)");
         p.set("data_layers", dl);
+        p.set("runtime_data_layers", JsonValue::makeArray());
+        p.set("data_layers_note_fr", "Aucune couche runtime : les marqueurs de POI sont réservés à l'éditeur. En jeu, l'affichage des aires de "
+                                     "nidification suit profile_toggle (nesting_grounds) lu dans ce JSON par le code de jeu ; build_level.py "
+                                     "assigne chaque marqueur à sa couche éditeur.");
         JsonValue pcg = JsonValue::makeObject();
         pcg.set("partition_grid_cm", 25600);
-        pcg.set("volume_tile_m", 2048);
+        pcg.set("volume_size_m", size_);
+        pcg.set("volumes_note_fr", "Un volume PCG par graphe couvrant tout le paysage, génération partitionnée (Is Partitioned) sur la grille PCG "
+                                   "de 256 m : le découpage vient de la partition, pas de volumes multiples.");
         pcg.set("graphs", strings({"PCG_Noctis_Foliage (masques foliage_*.png d'export-terrain)", "PCG_Noctis_Trails (corridors du JSON)",
-                                    "PCG_Noctis_Exposures (affleurements, pente > 30°)", "PCG_Noctis_RiverDebris (barres sableuses, laisses de crue)"}));
+                                    "PCG_Noctis_Exposures (parois et strates à collision BlockAll le long de weight_cutbank_cliff, alignées sur "
+                                    "l'arête de berge ; banquette marchable au pied, metrics.access_point)",
+                                    "PCG_Noctis_RiverDebris (barres sableuses, laisses de crue)"}));
         p.set("pcg", pcg);
         return p;
     }
@@ -3773,40 +4702,104 @@ private:
             ec.set(e.first, e.second);
         }
         gen.set("warmup_event_counts", ec);
-        gen.set("command", "noctis_sim export-level --env " + opt_.env + " --seed " + std::to_string(opt_.seed) + " --profile " + opt_.profile);
+        {
+            char cmd[300];
+            std::snprintf(cmd, sizeof(cmd), "noctis_sim export-level --env %s --seed %llu --profile %s --scale %g --warmup-hours %g", opt_.env.c_str(),
+                          static_cast<unsigned long long>(opt_.seed), opt_.profile.c_str(), static_cast<double>(opt_.scale), opt_.warmupHours);
+            gen.set("command", std::string(cmd));
+        }
         root.set("generation", gen);
         root.set("frame", framesJson());
         JsonValue playable = JsonValue::makeObject();
         playable.set("bounds_m", polylineJson({Vec2{0.0f, 0.0f}, Vec2{size_, size_}}));
-        playable.set("note_fr", "Zone jouable = tout le terrain généré par 'run' ; les bords sont des limites naturelles (terrasses boisées, amont et "
-                                "aval de la rivière) signalées dans le carnet, sans mur invisible arbitraire.");
+        playable.set("poi_edge_margin_m", kEdgeMarginM);
+        {
+            JsonValue edges = JsonValue::makeObject();
+            edges.set("north_south_fr", "Terrasses et plateaux boisés de la marge de vallée : limite naturelle du relief, renforcée par la limite "
+                                        "d'étude ci-dessous.");
+            edges.set("east_west_fr", "Le bord coupe la plaine et la rivière sans obstacle naturel : c'est la « limite de la zone d'étude ». La "
+                                      "radio du camp prévient à 300 m du bord (« vous sortez de la zone d'étude »), le carnet trace la limite sur la "
+                                      "carte du joueur ; à 100 m, la coordinatrice demande de faire demi-tour ; au bord, un volume bloquant invisible "
+                                      "(seul mur invisible du niveau). Aucun POI à moins de 300 m d'un bord.");
+            edges.set("warning_distance_m", 300);
+            edges.set("turn_back_distance_m", 100);
+            playable.set("edges", edges);
+        }
+        playable.set("note_fr", "Zone jouable = tout le terrain généré par 'run'. Nord et sud : terrasses de la marge de vallée ; est et ouest : "
+                                "limite de la zone d'étude signalée par la radio et le carnet (voir edges).");
         root.set("playable_area", playable);
         root.set("time", timeJson());
         {
             JsonValue rc = JsonValue::makeObject();
-            std::vector<std::string> fords;
+            std::vector<std::string> mainFords;
+            std::vector<std::string> creekFords;
             bool footNow = false;
+            bool footEver = false;
+            bool roverEver = false;
             for (const Poi& p : pois_)
             {
-                if (p.type == "ford" && p.metrics.get("river").asString("") == "main")
+                if (p.type != "ford")
                 {
-                    fords.push_back(p.id);
+                    continue;
+                }
+                if (p.metrics.get("river").asString("") == "main")
+                {
+                    mainFords.push_back(p.id);
                     footNow = footNow || p.metrics.get("fordable_on_foot_now").asBool(false);
+                    footEver = footEver || p.metrics.get("fordable_on_foot_ever").asBool(false);
+                    roverEver = roverEver || p.metrics.get("fordable_rover_ever").asBool(false);
+                }
+                else
+                {
+                    creekFords.push_back(p.id);
                 }
             }
-            rc.set("main_river_fords", strings(fords));
-            rc.set("fordable_on_foot_now", footNow);
-            rc.set("stage_now_m", rnd(w_.water().riverStage(0), 2));
-            rc.set("bankfull_depth_m", rnd(w_.water().bankfullDepth(0), 2));
+            JsonValue mr = JsonValue::makeObject();
+            mr.set("crossing_points", strings(mainFords));
+            mr.set("perennial", true);
+            mr.set("baseflow_fraction_min", rnd(kPerennialBaseflow, 2));
+            mr.set("stage_min_simulated_m", rnd(stageAtFraction(0, kPerennialBaseflow), 2));
+            mr.set("stage_now_m", rnd(w_.water().riverStage(0), 2));
+            mr.set("bankfull_depth_m", rnd(bankfullOf(0), 2));
+            mr.set("min_crossing_depth_at_baseflow_m", rnd(minCrossingDepthAtBaseflow(), 2));
+            mr.set("fordable_on_foot_now", footNow);
+            mr.set("fordable_on_foot_ever", footEver);
+            mr.set("fordable_rover_ever", roverEver);
+            mr.set("never_fordable", !footEver && !roverEver);
+            mr.set("packraft_crossings_now", strings(packraftCrossings_));
+            mr.set("sections_sampled", sampledSections_[0]);
+            mr.set("sections_rejected_curvature", kappaRejected_[0]);
+            rc.set("main_river", mr);
+            JsonValue cr = JsonValue::makeObject();
+            if (w_.layout().rivers.size() > 1)
+            {
+                cr.set("fords", strings(creekFords));
+                cr.set("perennial", w_.layout().rivers[1].perennial);
+                cr.set("baseflow_fraction_min", rnd(baseflowOf(1), 2));
+                cr.set("stage_min_simulated_m", rnd(stageAtFraction(1, baseflowOf(1)), 2));
+                cr.set("stage_now_m", rnd(w_.water().riverStage(1), 2));
+                cr.set("sections_sampled", sampledSections_[1]);
+                cr.set("sections_rejected_curvature", kappaRejected_[1]);
+                cr.set("sections_dry_bed", drySections_[1]);
+                cr.set("dry_bed_note_fr", "« lit à sec » : section sans eau au niveau actuel (le niveau de référence du ruisseau descend par "
+                                          "endroits sous le lit creusé) ; franchissable à pied, jamais classée comme gué.");
+            }
+            rc.set("creek", cr);
             rc.set("foot_components", components_);
-            rc.set("design_fr",
-                   "La rivière principale traverse toute la carte et sépare la rive du camp (camp_bank) de la rive opposée (far_bank). En "
-                   "saison humide elle n'est franchissable ni à pied (<= 0,7 m) ni en véhicule (gué 1,0 m) : voir stage_max_on_foot_m et "
-                   "discharge_fraction_* de chaque gué. Proposition : un packraft dans l'équipement du joueur (absent de "
-                   "Data/Equipment/equipment.json — décision ouverte) pour traverser aux gués, là où le courant est le plus faible ; le véhicule "
-                   "reste sur la rive du camp, donc la rive opposée est plus exposée (pas de refuge proche). En basses eaux, les gués deviennent "
-                   "praticables à pied puis en véhicule, ce qui change la géographie du jeu au fil de la saison.");
-            rc.set("equipment_proposal", "packraft");
+            rc.set("components_with_packraft", componentsPack_);
+            char design[1400];
+            std::snprintf(design, sizeof(design),
+                          "La rivière principale traverse toute la carte et sépare la rive du camp (camp_bank) de la rive opposée (far_bank). Elle "
+                          "n'est jamais guéable : le modèle d'eau garde au moins %.0f %% du débit moyen même sans pluie (niveau ≥ %.2f m), soit encore "
+                          "~%.1f m d'eau aux points de franchissement, au-delà des limites à pied (%.1f m) et en véhicule (gué %.1f m). Décision : "
+                          "un packraft dans l'équipement du joueur (Data/Equipment/equipment.json, id packraft), utilisable aux points de "
+                          "franchissement candidats dont les berges permettent la mise à l'eau, sous %.1f m/s de courant et hors alerte de crue. Le "
+                          "véhicule reste sur la rive du camp : la rive opposée n'a pas de refuge proche. Le ruisseau affluent (non pérenne, débit "
+                          "minimal %.0f %%) se passe à gué ou à sec ; c'est lui, pas la rivière, dont la praticabilité change avec la saison.",
+                          100.0f * kPerennialBaseflow, stageAtFraction(0, kPerennialBaseflow), minCrossingDepthAtBaseflow(), kWadeLimitM, fordingDepthM_,
+                          packraftMaxCurrentMs_, 100.0f * kEphemeralBaseflow);
+            rc.set("design_fr", std::string(design));
+            rc.set("equipment", "packraft");
             root.set("river_crossing", rc);
         }
         root.set("rules", rulesJson());
@@ -3846,6 +4839,9 @@ private:
             o.set("herbivore_presence", rnd(t.presence, 3));
             o.set("max_water_depth_m", rnd(t.maxWaterM, 2));
             o.set("crosses_main_river", t.crossesRiver);
+            o.set("max_cell_slope_deg", rnd(t.maxSlopeDeg, 1));
+            o.set("usable_by", strings(t.usableBy));
+            o.set("not_usable_by", strings(t.notUsableBy));
             o.set("model_cost_per_m", rnd(t.costPerM, 3));
             o.set("evidence", t.wearMean > 0.05f ? "observed_wear" : "predicted_only");
             o.set("confidence", confidenceKey(Confidence::Inferred));
@@ -3867,11 +4863,15 @@ private:
             JsonValue o = JsonValue::makeObject();
             o.set("from", pois_[e.a].id);
             o.set("to", pois_[e.b].id);
-            o.set("mode", "foot");
+            o.set("mode", e.packraftCells > 0 ? "foot_packraft" : "foot");
             o.set("length_m", rnd(e.lengthM, 0));
             o.set("time_min", rnd(e.costM / kFootSpeedMs / 60.0f, 1));
             o.set("max_slope_deg", rnd(e.maxSlopeDeg, 1));
             o.set("max_water_depth_m", rnd(e.maxWaterM, 2));
+            if (e.packraftCells > 0)
+            {
+                o.set("note_fr", "traversée de la rivière principale en packraft (max_water_depth_m = parties à pied)");
+            }
             o.set("path", polylineJson(e.path));
             ca.push(o);
         }
@@ -3939,7 +4939,22 @@ private:
         sum.set("trails", static_cast<int>(trails_.size()));
         sum.set("connections", static_cast<int>(edges_.size()));
         sum.set("foot_components", components_);
+        sum.set("components_with_packraft", componentsPack_);
+        sum.set("reachable_from_basecamp_pois", reachableFromBase_);
         sum.set("rover_reachable_pois", roverReachable_);
+        sum.set("drink_sites_rejected_bank", drinkRejected_);
+        {
+            JsonValue nn = JsonValue::makeArray();
+            for (const auto& e : nestNotPlaced_)
+            {
+                JsonValue o = JsonValue::makeObject();
+                o.set("species", e.first);
+                o.set("best_suitability", rnd(e.second, 3));
+                nn.push(o);
+            }
+            sum.set("nesting_species_without_zone", nn);
+            sum.set("nesting_suitability_min", rnd(kNestSuitabilityMin, 2));
+        }
         float pract = 0.0f;
         float covered = 0.0f;
         for (size_t i = 0; i < roverPract_.v.size(); ++i)
@@ -3962,8 +4977,9 @@ private:
             std::printf("  %-5s %-15s (%6.0f, %6.0f, %5.1f)  %-18s %-17s %s\n", p.id.c_str(), p.type.c_str(), p.pos.x, p.pos.y, p.z,
                         confidenceKey(p.confidence), p.placement.c_str(), p.nameFr.c_str());
         }
-        std::printf("Corridors prédits : %zu ; liaisons à pied : %zu ; composantes à pied : %d ; POI accessibles en véhicule : %d/%zu\n", trails_.size(),
-                    edges_.size(), components_, roverReachable_, pois_.size());
+        std::printf("Corridors prédits : %zu ; liaisons : %zu ; composantes à pied : %d (avec packraft : %d) ; POI atteignables depuis le camp : %d/%zu ; "
+                    "POI accessibles en véhicule : %d/%zu\n",
+                    trails_.size(), edges_.size(), components_, componentsPack_, reachableFromBase_, pois_.size(), roverReachable_, pois_.size());
         std::printf("JSON : %s\nCartes et masques : %s/overview.png, constraints.png, mask_*.png\nDurée totale : %.0f s\n", jsonPath.c_str(), opt_.out.c_str(),
                     secs);
     }
@@ -3975,7 +4991,7 @@ private:
     float size_ = 8192.0f;
     int n_ = 256;
     RiverIndex rivers_;
-    Field height_, slope_, water_, wetFrac_, canopy_, cover_, trail_, har_, riverDist_, creekDist_, creekHar_, noise_, prominence_, blockH_;
+    Field height_, slope_, water_, wetFrac_, canopy_, cover_, trail_, har_, riverDist_, creekDist_, creekHar_, noise_, prominence_, blockH_, backdropH_;
     Field suitability_, presence_, herbPresence_, predPresence_, drinkEv_, callEv_, activity_, flood_;
     Field footCost_, roverCost_, roverPract_, animalCost_, radio_, nestSuit_, corridorUse_;
     Field herbPresBlur_, predPresBlur_, drinkBlur_, suitNorm_;
@@ -4005,9 +5021,35 @@ private:
     float wheelWidthM_ = 0.42f;
     float wheelRadiusM_ = 0.6f;
     float noiseElectricDb_ = 52.0f;
+    float noiseTyreRefDb_ = 85.0f;
+    float noiseTyreRefSpeedMs_ = 14.0f;
+    float noiseTyreSpeedExpDb_ = 35.0f;
     float noiseGeneratorDb_ = 80.0f;
     float batteryKWh_ = 200.0f;
     float droneRadioRangeM_ = 6000.0f;
+    bool packraftFound_ = false;
+    float packraftMaxCurrentMs_ = 1.2f;
+    float packraftBankSlopeDeg_ = 30.0f;
+    float packraftPaddleMs_ = 0.8f;
+    float packraftSetupMin_ = 10.0f;
+    float packraftMassKg_ = 3.5f;
+    // Packraft network (foot costs + main-river crossings at the selected crossing points).
+    Field footPackCost_;
+    std::vector<u8> packraftCell_;
+    PathField footPackFromBase_;
+    std::vector<int> footLabel_;
+    std::vector<int> footPackLabel_;
+    int componentsPack_ = 0;
+    int reachableFromBase_ = 0;
+    std::vector<std::string> packraftCrossings_;
+    int drySections_[2] = {0, 0};
+    int sampledSections_[2] = {0, 0};
+    std::vector<CrossingSeg> crossingSegs_;
+    int kappaRejected_[2] = {0, 0};
+    std::vector<std::pair<std::string, float>> nestNotPlaced_;
+    std::vector<WaterInfo> waterInfo_; // parallel to waterAccess_
+    int drinkRejected_ = 0;
+    std::map<std::string, int> blindReject_;
 };
 } // namespace levelimpl
 

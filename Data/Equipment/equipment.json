@@ -151,6 +151,20 @@
       "category": "sensor",
       "mass_kg": 3.5,
       "battery_wh": 60
+    },
+    {
+      "id": "packraft",
+      "name_fr": "Packraft (canot gonflable léger), pagaie démontable et gilet",
+      "category": "watercraft",
+      "mass_kg": 4.5,
+      "specs": {
+        "max_crossing_current_ms": 1.2,
+        "bank_slope_max_deg": 30,
+        "paddle_speed_ms": 0.8,
+        "setup_min": 10,
+        "payload_kg": 130,
+        "note_fr": "Seul moyen de franchir la rivière principale (jamais guéable dans le modèle d'eau). Limites = règles de sécurité du jeu (courant moyen, pente des berges de mise à l'eau, alerte de crue), hypothèses de conception."
+      }
     }
   ],
   "vehicle": {
@@ -170,6 +184,10 @@
     "fording_depth_m": 1.0,
     "auxiliary_w": 900,
     "noise_electric_db_1m": 52,
+    "noise_tyre_db_1m_ref": 85,
+    "noise_tyre_ref_speed_ms": 14,
+    "noise_tyre_speed_exponent_db": 35,
+    "noise_tyre_note_fr": "Bruit de roulement pneus / terrain, séparé de la traction électrique : L = 85 + 35 log10(v / 14 m/s) dB à 1 m. Hypothèse de conception (ordre de grandeur des mesures de bruit au passage des véhicules routiers, ~70 dB à 7,5 m à 50 km/h) ; aucune source dans Data/Sources.",
     "noise_generator_db_1m": 80,
     "drag_area_m2": 4.5,
     "lab": {

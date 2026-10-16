@@ -72,6 +72,11 @@ VOCAL_PITCH_EXPONENT = -0.4       # pitchShift = sizeRatio^-0.4 (fletcher2004_fr
 VOCAL_LEVEL_SLOPE_DB = 5.0        # levelDb += 5 log10(sizeRatio)
 
 
+def de_fr(name: str) -> str:
+    """French 'de' with elision before a vowel or a mute h: « d'Ankylosaure », « de Tyrannosaure »."""
+    return ("d'" if name[:1].lower() in "aeiouyhàâéèêëîïôöûüœ" else "de ") + name
+
+
 def conf_rank(c: str) -> int:
     return CONFIDENCE_ORDER.index(c) if c in CONFIDENCE_ORDER else 0
 
@@ -150,17 +155,25 @@ class Dataset:
     profiles: dict[str, dict] = field(default_factory=dict)
 
     # -- bibliography --------------------------------------------------------------------
+    def canonical(self, sid: str) -> str:
+        """Data/Sources entries marked "alias_of" are duplicates of the same paper: resolve them to one id."""
+        seen = set()
+        while sid in self.sources and self.sources[sid].get("alias_of") and sid not in seen:
+            seen.add(sid)
+            sid = self.sources[sid]["alias_of"]
+        return sid
+
     def has_source(self, sid: str) -> bool:
         return sid in self.sources
 
     def verified(self, sid: str) -> bool:
-        return bool(self.sources.get(sid, {}).get("verified", False))
+        return bool(self.sources.get(self.canonical(sid), {}).get("verified", False))
 
     def check_sources(self, ids) -> list[str]:
         missing = [s for s in ids if s not in self.sources]
         if missing:
             raise KeyError(f"unknown source ids (not in Data/Sources): {missing}")
-        return list(dict.fromkeys(ids))
+        return list(dict.fromkeys(self.canonical(s) for s in ids))
 
     def confidence_cap(self, ids) -> str:
         """Data/SCHEMA.md: an unverified reference cannot support more than 'inferred'.

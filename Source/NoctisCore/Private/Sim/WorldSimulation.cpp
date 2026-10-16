@@ -331,10 +331,14 @@ void WorldSimulation::handleLightning()
         SoundSource thunder;
         thunder.kind = SoundKind::Thunder;
         thunder.emitter = EntityId::make(EntityKind::Environment, 1);
-        thunder.position = e.position + Vec3{0.0f, 0.0f, 500.0f};
+        // Line source standing on the strike point (SoundField::spreadingLossDb): levelDb is the SPL at 1 m from 1 m of
+        // channel. 111 dB is a game assumption (no measured thunder level in Data/Sources: « Information insuffisante —
+        // recherche nécessaire. ») that keeps thunder within 2 km louder than heavy rain (70 dB): ~86 dB at 500 m,
+        // ~78 dB at 2 km, ~72 dB at 5 km. Tools/AudioFactory ambience.py THUNDER_LINE_LEVEL_DB must match.
+        thunder.position = e.position;
         thunder.startTime = s.time;
         thunder.durationS = rng_.range(2.0f, 6.0f);
-        thunder.levelDb = 125.0f; // equivalent SPL at 1 m (game assumption; ~65–70 dB at 1 km)
+        thunder.levelDb = 111.0f;
         thunder.f0Hz = 60.0f;
         thunder.tonal = false;
         thunder.seed = rng_.nextU32();

@@ -78,6 +78,11 @@ public:
     static float foliageDbPerM(float frequencyHz);
     // Received SPL at listener (dB). Includes spreading, absorption, foliage and wind gradient terms.
     static float receivedLevelDb(const SoundSource& s, const Vec3& listener, const PropagationEnv& env, float* outFoliageDb = nullptr);
+    // Geometric spreading loss (dB, positive = loss) at distance r. Point sources: 20 log10 r (levelDb = SPL at 1 m).
+    // Thunder: incoherent vertical LINE source of height kThunderChannelHeightM standing on s.position, levelDb = SPL at
+    // 1 m from 1 m of channel: loss = -10 log10(atan(H / r) / r), i.e. ~3 dB per doubling while r < H, 6 dB beyond.
+    static float spreadingLossDb(const SoundSource& s, float r);
+    static constexpr float kThunderChannelHeightM = 4000.0f;
     // Simplified audiogram: threshold (dB SPL) at frequency f for a species' hearing parameters.
     static float hearingThresholdDb(float f, float minHz, float maxHz, float bestHz, float bestThresholdDb);
 

@@ -3,13 +3,18 @@ assumption): 6x6 hybrid rover (electric drive, auxiliaries, range-extender gener
 drone, camera shutter, autonomous audio recorder handling, radio link to the base camp.
 
 Levels at 1 m mirror the core (Source/NoctisCore/Private/Research/FieldGear.cpp, ResearchSystem.cpp):
-  * rover: electric drive 52 dB + 12 log10(1 + v/3) (noise_electric_db_1m), generator 80 dB (noise_generator_db_1m),
-    power sum when both run — the generator is ~28 dB louder than the electric drive at rest;
+  * rover: electric drive 52 dB + 12 log10(1 + v/3) (noise_electric_db_1m) plus a separate tyre / terrain rolling
+    term L_ref + 35 log10(v / v_ref) (noise_tyre_db_1m_ref = 85 dB at noise_tyre_ref_speed_ms = 14 m/s: order of
+    magnitude of road-vehicle pass-by measurements, ~70 dB at 7.5 m at 50 km/h; game assumption, no source in
+    Data/Sources), generator 80 dB (noise_generator_db_1m); power sums. The generator is ~28 dB louder than the electric
+    drive at rest, but rolling noise dominates above ~5 m/s and exceeds the generator above ~10 m/s;
   * drone: 78 dB at hover (noise_db_1m) + 10 log10(P / P_hover); blade-passing frequency 160 Hz at hover
     (blade_pass_hz). Rotor speed follows P ~ Omega^3, so BPF = 160 (P/P_hover)^(1/3);
     P = P_hover (1 + 0.25 (v/v_max)^2) + m g v_z / 0.6 (DroneSystem);
   * camera shutter: 55 dB, centroid ~3 kHz, 50 ms (ResearchSystem::takePhoto).
 Engine loops are 20 s and exactly periodic (carriers rounded to whole cycles, periodic noise and modulation).
+Machines are rendered MONO (they are point sources, spatialised by UE5): the former 0.7 ms delayed-copy "stereo"
+was a comb filter (L/R correlation 0.98-1.00), not a decorrelation.
 Distance variants of the generator and the drone use the ISO 9613-1 absorption of propagation.py applied
 circularly (the loop stays seamless).
 """
@@ -80,10 +85,21 @@ def circ_distance(x, dist, T, RH, ref_hz):
     return C.circular_filter(x, g)
 
 
-def stereoize(x, r, width=0.15):
-    """Mono machine -> slightly wide stereo by a decorrelated copy of the noise part (fixed source, 2D/3D)."""
-    d = np.roll(x, C.ns(0.0007))
-    return np.stack([x, (1 - width) * x + width * d], axis=1)
+TYRE_REF_DB = 85.0          # equipment.json noise_tyre_db_1m_ref (game assumption)
+TYRE_REF_SPEED = 14.0       # equipment.json noise_tyre_ref_speed_ms
+TYRE_SPEED_EXP = 35.0       # equipment.json noise_tyre_speed_exponent_db (dB per decade of speed)
+
+
+def electric_level_db(v, base=52.0):
+    return base + 12.0 * math.log10(1.0 + v / 3.0)
+
+
+def tyre_level_db(v):
+    return TYRE_REF_DB + TYRE_SPEED_EXP * math.log10(max(v, 1e-3) / TYRE_REF_SPEED) if v > 0.1 else -100.0
+
+
+def db_sum(*levels):
+    return 10.0 * math.log10(sum(10.0 ** (l / 10.0) for l in levels))
 
 
 # ------------------------------------------------------------------------------------------------
@@ -118,14 +134,20 @@ def rover_drive(r, v):
             x = C.impulses(kn.size, r.uniform(0, LOOP_S, nk), r.lognormal(0, 0.5, nk))
             kn = C.modal_bank(x, [45.0, 110.0, 260.0], [0.08, 0.04, 0.02], [1.0, 0.5, 0.25])
         knocks = C.wrap_circular(kn, N)
-        y = (0.35 * C.unit(aux) + load * 0.8 * C.unit(motor) + 0.08 * C.unit(pwm)
-             + min(1.5, v / 6.0) * C.unit(tyre_noise) + 0.3 * min(1.0, v / 8.0) * C.unit(tread) + 0.3 * C.unit(knocks))
-        info.update({"tread_hz": round(f_tread, 2), "pwm_hz": PWM_HZ, "suspension_knocks": nk})
-    return stereoize(y, r), info
+        electric = 0.35 * C.unit(aux) + load * 0.8 * C.unit(motor) + 0.08 * C.unit(pwm)
+        rolling = C.unit(tyre_noise) + 0.3 * min(1.0, v / 8.0) * C.unit(tread) + 0.3 * C.unit(knocks)
+        # Balance of the two terms from their level laws (electric drive vs tyre / terrain rolling noise).
+        rel = tyre_level_db(v) - electric_level_db(v)
+        y = A.unit_rms(electric) + 10.0 ** (rel / 20.0) * A.unit_rms(rolling)
+        info.update({"tread_hz": round(f_tread, 2), "pwm_hz": PWM_HZ, "suspension_knocks": nk,
+                     "electric_db_1m": round(electric_level_db(v), 2), "rolling_db_1m": round(tyre_level_db(v), 2),
+                     "rolling_minus_electric_db": round(rel, 2)})
+    return y, info
 
 
 def rover_level_db(v):
-    return 52.0 + 12.0 * math.log10(1.0 + v / 3.0)
+    """Electric drive + auxiliaries, power-summed with the tyre / terrain rolling noise (FieldGear.cpp updateAuxiliary)."""
+    return electric_level_db(v) if v <= 0.1 else db_sum(electric_level_db(v), tyre_level_db(v))
 
 
 def generator_run(r):
@@ -372,7 +394,7 @@ def jobs(ds: D.Dataset) -> list[tuple]:
 
 
 def _snd(ds, sid, sub, group, label_fr, cap_fr, cap_en, y, params, lvl, ue, qa=None, loop=False, equipment=None, srcs=None,
-         basis=None, normalize=("peak", -1.0), level_extra=None):
+         basis=None, normalize=("peak", -1.0), level_extra=None, transition=False):
     srcs = [s for s in (srcs or []) if ds.has_source(s)]
     q = {"peak_dbfs_max": -0.5}
     if loop:
@@ -389,11 +411,16 @@ def _snd(ds, sid, sub, group, label_fr, cap_fr, cap_en, y, params, lvl, ue, qa=N
                    "(raies tonales des machines tournantes, bruit large bande, modes de structure).",
                    sources=srcs, params=params, ue5=ue, qa=q, loop=loop, equipment=equipment, level=lv, normalize=normalize,
                    fade=not loop, caption={"fr": cap_fr, "en": cap_en}, subject="modern_equipment", loop_xfade=loop,
-                   variant=params.get("variant_info", {}))
+                   variant=params.get("variant_info", {}), transition=transition, model_confidence="speculative",
+                   model_basis_fr="Matériel fictif : constantes mécaniques et lois de niveau = hypothèses de conception (equipment.json).")
 
 
 def job_rover(ds):
+    global TYRE_REF_DB, TYRE_REF_SPEED, TYRE_SPEED_EXP
     veh = ds.equipment["vehicle"]
+    TYRE_REF_DB = float(veh.get("noise_tyre_db_1m_ref", TYRE_REF_DB))
+    TYRE_REF_SPEED = float(veh.get("noise_tyre_ref_speed_ms", TYRE_REF_SPEED))
+    TYRE_SPEED_EXP = float(veh.get("noise_tyre_speed_exponent_db", TYRE_SPEED_EXP))
     out = []
     for v in (0.0, 3.0, 8.0, 15.0):
         sid = f"eq_rover_electric_{'idle' if v == 0 else f'{int(v)}ms'}"
@@ -402,13 +429,14 @@ def job_rover(ds):
         lvl = rover_level_db(v)
         params = {**info, "gear_ratio": GEAR_RATIO, "pole_pairs": POLE_PAIRS_DRIVE, "pinion_teeth": PINION_TEETH,
                   "tread_pitch_m": TREAD_PITCH_M, "wheel_radius_m": veh["wheel_radius_m"], "loop_s": LOOP_S,
-                  "level_law": "52 + 12 log10(1 + v/3) dB à 1 m (VehicleSystem::updateAuxiliary)",
+                  "level_law": ("somme énergétique de 52 + 12 log10(1 + v/3) (traction électrique) et de 85 + 35 log10(v/14) "
+                                "(roulement pneus / terrain) dB à 1 m (VehicleSystem::updateAuxiliary ; hypothèses de conception)"),
                   "drivetrain_note_fr": "Rapport de réduction, paires de pôles, denture et pas de sculpture : hypothèses de conception.",
                   "variant_info": {"speed_ms": v}}
         lbl = "au ralenti (auxiliaires)" if v == 0 else f"{v:g} m/s"
         out.append(_snd(ds, sid, "rover_drive", "equipment/rover", f"Véhicule 6×6 — traction électrique {lbl}",
                         "Véhicule (moteur électrique)", "Rover (electric drive)", y, params, lvl,
-                        M.ue5("SC_Equipment_Vehicle", "ATT_Vehicle", True, "CON_Equipment_Unique", 0.8,
+                        M.ue5("SC_Equipment_Vehicle", "ATT_Vehicle", True, "CON_Vehicle_Drive", 0.8,
                               extra={"crossfade_parameter": "speed_ms", "crossfade_points_ms": [0, 3, 8, 15]}),
                         loop=True, equipment="vehicle", normalize=("rms", -20.0, -1.0)))
     # Generator.
@@ -416,10 +444,11 @@ def job_rover(ds):
     r = C.rng("eq_rover_generator_run")
     g, ginfo = generator_run(r)
     base = {**ginfo, "loop_s": LOOP_S, "level_law": "80 dB à 1 m (noise_generator_db_1m)",
-            "comparison_fr": f"Groupe électrogène ~{80 - 52} dB plus fort que la traction électrique à l'arrêt : perturbation acoustique simulée de la faune."}
+            "comparison_fr": (f"Groupe électrogène ~{80 - 52} dB plus fort que la traction électrique à l'arrêt : perturbation acoustique "
+                              "simulée de la faune. En roulant, le bruit pneus / terrain domine au-delà de ~5 m/s.")}
     out.append(_snd(ds, "eq_rover_generator_run", "rover_generator", "equipment/rover", "Véhicule 6×6 — groupe électrogène en charge (1 m)",
-                    "Groupe électrogène", "Generator running", stereoize(g, r), dict(base, variant_info={"distance_m": 1}),
-                    veh["noise_generator_db_1m"], M.ue5("SC_Equipment_Vehicle", "ATT_Vehicle", True, "CON_Equipment_Unique", 0.9),
+                    "Groupe électrogène", "Generator running", g, dict(base, variant_info={"distance_m": 1}),
+                    veh["noise_generator_db_1m"], M.ue5("SC_Equipment_Vehicle", "ATT_Vehicle", True, "CON_Vehicle_Generator", 0.9),
                     qa={"spectral_peak_hz": [0.9 * ginfo["firing_hz"], 1.1 * ginfo["firing_hz"]], "spectral_peak_search_hz": [15.0, 600.0]},
                     loop=True, equipment="vehicle", normalize=("rms", -18.0, -1.0)))
     for dn, dist in DIST:
@@ -432,14 +461,14 @@ def job_rover(ds):
                               "file_normalisation": "réponse normalisée à 0 dB à la fréquence d'allumage"})
         out.append(_snd(ds, f"eq_rover_generator_run_{dn}", "rover_generator", "equipment/rover",
                         f"Véhicule 6×6 — groupe électrogène entendu à {dist:g} m", "Groupe électrogène au loin", "Distant generator",
-                        stereoize(y, r), p, veh["noise_generator_db_1m"],
-                        M.ue5("SC_Equipment_Vehicle", "ATT_Generator_DistanceBaked", True, "CON_Equipment_Unique", 0.7,
+                        y, p, veh["noise_generator_db_1m"],
+                        M.ue5("SC_Equipment_Vehicle", "ATT_Generator_DistanceBaked", True, "CON_Vehicle_Generator", 0.7,
                               extra={"distance_variant_m": dist}),
                         qa={"transfer": {"base_id": "eq_rover_generator_run", "distance_m": dist, "temperature_c": T, "relative_humidity": RH,
                                          "foliage_m": 0.0, "ref_hz": ginfo["firing_hz"],
                                          "check_hz": [round(ginfo["firing_hz"] * h, 3) for h in (4, 8, 12)]}},
                         loop=True, equipment="vehicle", srcs=[ISO1], normalize=("rms", -18.0, -1.0),
-                        level_extra={"received_spl_db_at_firing_hz": round(rec, 2)}))
+                        level_extra={"received_spl_db_at_firing_hz": round(rec, 2), "received_spl_db": round(rec, 2)}))
     for start in (True, False):
         for k in range(VAR):
             sid = f"eq_rover_generator_{'start' if start else 'stop'}_{k + 1:02d}"
@@ -449,8 +478,8 @@ def job_rover(ds):
                             f"Véhicule 6×6 — {'démarrage' if start else 'arrêt'} du groupe électrogène — variation {k + 1}",
                             "Démarrage du groupe" if start else "Arrêt du groupe", "Generator start" if start else "Generator stop",
                             y, {**info, "variation": k + 1, "variant_info": {"action": "start" if start else "stop", "variation": k + 1}},
-                            veh["noise_generator_db_1m"], M.ue5("SC_Equipment_Vehicle", "ATT_Vehicle", False, "CON_Equipment_Unique", 0.9),
-                            equipment="vehicle"))
+                            veh["noise_generator_db_1m"], M.ue5("SC_Equipment_Vehicle", "ATT_Vehicle", False, "CON_Vehicle_Generator", 0.9),
+                            equipment="vehicle", transition=start))
     for close in (False, True):
         for k in range(VAR):
             sid = f"eq_rover_door_{'close' if close else 'open'}_{k + 1:02d}"
@@ -459,7 +488,7 @@ def job_rover(ds):
             out.append(_snd(ds, sid, "rover_door", "equipment/rover",
                             f"Véhicule 6×6 — {'fermeture' if close else 'ouverture'} de la porte — variation {k + 1}",
                             "Porte du véhicule", "Rover door", y, {**info, "variation": k + 1, "variant_info": {"action": info["action"], "variation": k + 1}},
-                            70.0 if close else 55.0, M.ue5("SC_Equipment_Vehicle", "ATT_Foley_Medium", False, "CON_Equipment_Unique", 0.7),
+                            70.0 if close else 55.0, M.ue5("SC_Equipment_Vehicle", "ATT_Foley_Medium", False, "CON_Vehicle_Foley", 0.7),
                             equipment="vehicle"))
     return out
 
@@ -481,25 +510,25 @@ def job_drone(ds):
         params = {**info, "state": name, "speed_ms": v, "climb_ms": vz, "hover_power_w": round(ph, 1), "loop_s": LOOP_S,
                   "bpf_law": "BPF = blade_pass_hz × (P/P_vol stationnaire)^(1/3)", "level_law": "noise_db_1m + 10 log10(P/P_vol stationnaire) (DroneSystem)",
                   "variant_info": {"state": name}}
-        out.append(_snd(ds, sid, "drone", "equipment/drone", f"Drone quadrirotor — {name}", "Drone", "Drone", stereoize(y, r), params, lvl,
-                        M.ue5("SC_Equipment_Drone", "ATT_Drone", True, "CON_Equipment_Unique", 0.8),
+        out.append(_snd(ds, sid, "drone", "equipment/drone", f"Drone quadrirotor — {name}", "Drone", "Drone", y, params, lvl,
+                        M.ue5("SC_Equipment_Drone", "ATT_Drone", True, "CON_Drone_Rotor", 0.8,
+                              extra={"crossfade_with": [f"eq_drone_{o}" for o, _, _ in states if o != name]}),
                         qa={"spectral_peak_hz": [0.93 * info["bpf_mean_hz"], 1.07 * info["bpf_mean_hz"]], "spectral_peak_search_hz": [40.0, 2000.0]},
                         loop=True, equipment="drone_quad", normalize=("rms", -20.0, -1.0)))
     y0, info0 = hover
     for dn, dist in DIST:
         rec = P.received_level_db(d["noise_db_1m"], info0["bpf_mean_hz"], dist, T, RH)
-        r = C.rng(f"eq_drone_hover_{dn}")
         y = circ_distance(y0, dist, T, RH, info0["bpf_mean_hz"])
         params = {**info0, "state": "hover", "variant_info": {"state": "hover", "distance_m": dist},
                   "propagation": {"distance_m": dist, "temperature_c": T, "relative_humidity": RH, "reference_hz": info0["bpf_mean_hz"],
                                   "received_spl_db_at_bpf": round(rec, 2), "model": "divergence sphérique + ISO 9613-1, filtrage circulaire"}}
         out.append(_snd(ds, f"eq_drone_hover_{dn}", "drone", "equipment/drone", f"Drone en vol stationnaire entendu à {dist:g} m",
-                        "Drone au loin", "Distant drone", stereoize(y, r), params, d["noise_db_1m"],
-                        M.ue5("SC_Equipment_Drone", "ATT_Drone_DistanceBaked", True, "CON_Equipment_Unique", 0.6, extra={"distance_variant_m": dist}),
+                        "Drone au loin", "Distant drone", y, params, d["noise_db_1m"],
+                        M.ue5("SC_Equipment_Drone", "ATT_Drone_DistanceBaked", True, "CON_Drone_Rotor", 0.6, extra={"distance_variant_m": dist}),
                         qa={"transfer": {"base_id": "eq_drone_hover", "distance_m": dist, "temperature_c": T, "relative_humidity": RH, "foliage_m": 0.0,
                                          "ref_hz": info0["bpf_mean_hz"], "check_hz": [round(info0["bpf_mean_hz"] * h, 3) for h in (3, 6, 10)]}},
                         loop=True, equipment="drone_quad", srcs=[ISO1], normalize=("rms", -20.0, -1.0),
-                        level_extra={"received_spl_db_at_bpf": round(rec, 2)}))
+                        level_extra={"received_spl_db_at_bpf": round(rec, 2), "received_spl_db": round(rec, 2)}))
     for takeoff in (True, False):
         for k in range(VAR):
             sid = f"eq_drone_{'takeoff' if takeoff else 'landing'}_{k + 1:02d}"
@@ -508,7 +537,8 @@ def job_drone(ds):
             out.append(_snd(ds, sid, "drone", "equipment/drone", f"Drone — {'décollage' if takeoff else 'atterrissage'} — variation {k + 1}",
                             "Décollage du drone" if takeoff else "Atterrissage du drone", "Drone take-off" if takeoff else "Drone landing",
                             y, {**info, "variation": k + 1, "variant_info": {"action": "takeoff" if takeoff else "landing", "variation": k + 1}},
-                            d["noise_db_1m"], M.ue5("SC_Equipment_Drone", "ATT_Drone", False, "CON_Equipment_Unique", 0.8), equipment="drone_quad"))
+                            d["noise_db_1m"], M.ue5("SC_Equipment_Drone", "ATT_Drone", False, "CON_Drone_Rotor", 0.8), equipment="drone_quad",
+                            transition=takeoff))
     return out
 
 

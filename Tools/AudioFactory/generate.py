@@ -29,6 +29,8 @@ from audiofactory import data as D  # noqa: E402
 from audiofactory import manifest as M  # noqa: E402
 
 MODULES = ["vocal", "footsteps", "foley", "ambience", "equipment"]
+ULTRASONIC_LP_HZ = 20000.0      # finalize(): zero-phase low-pass (18-20 kHz roll-off) of every non-vocal sound
+TAIL_FLOOR_DB = -60.0           # finalize(): one-shot tails are trimmed below this level re the loudest frame
 _DS: D.Dataset | None = None
 _PNG = True
 _REUSE_PNG = False
@@ -51,14 +53,32 @@ def _active_rms_dbfs(x: np.ndarray) -> float:
     return float(C.lin2db(math.sqrt(float(np.mean(e[act] ** 2)))))
 
 
+def _ultrasonic_gain(f):
+    """Zero-phase low-pass: flat to 18 kHz, raised-cosine roll-off to zero at 20 kHz (nothing inaudible above)."""
+    lo, hi = ULTRASONIC_LP_HZ - 2000.0, ULTRASONIC_LP_HZ
+    return np.where(f <= lo, 1.0, np.where(f >= hi, 0.0, 0.5 + 0.5 * np.cos(np.pi * (f - lo) / (hi - lo))))
+
+
 def finalize(s: M.Sound) -> tuple[dict, tuple]:
     x = np.asarray(s.audio, dtype=np.float64)
+    # Band guard: DC / sub-audio high-pass (5 Hz) for everything; low-pass at 20 kHz for every module except the vocal
+    # library (unchanged since 1.1.0, its partials stop at 0.45 SR by construction): no inaudible ultrasonic noise.
+    lp = s.category != "vocal"
     if s.loop:
-        # Circular DC guard: filter one wrapped copy first so the output is in periodic steady state (seamless).
+        # Circular filtering: filter one wrapped copy first so the output is in periodic steady state (seamless).
         k = min(x.shape[0], C.ns(2.0))
         x = C.highpass(np.concatenate([x[-k:], x], axis=0), 5.0, order=2)[k:]
+        if lp:
+            x = C.circular_filter(x, _ultrasonic_gain)      # zero-phase and exactly periodic
     else:
-        x = C.highpass(x, 5.0, order=2)                # DC / sub-audio guard
+        x = C.highpass(x, 5.0, order=2)
+        if lp:
+            x = C.fft_filter(x, _ultrasonic_gain)
+        if lp and not s.transition:
+            # (not the vocal library: its calls end with 0.15-0.2 s of rendered silence and stay bit-identical to 1.1.0)
+            # Buffers are rendered long enough for the exponential / Poisson tails of the events; cut the file once
+            # the envelope stays below -60 dB re its loudest 5 ms frame, so the end fade never cuts a sound still ringing.
+            x = C.trim_tail(x, TAIL_FLOOR_DB)
     if s.fade and not s.loop:
         x = C.fade(x, 0.002, 0.02)
     mode = s.normalize[0]
@@ -93,6 +113,8 @@ def finalize(s: M.Sound) -> tuple[dict, tuple]:
     rec["audio"] = {"sample_rate": C.SR, "bit_depth": 24, "format": "WAV PCM", "channels": ch, "frames": int(x.shape[0]),
                     "duration_s": round(x.shape[0] / C.SR, 6), "loop": s.loop}
     rec["qa"] = dict(s.qa, duration_s=round(x.shape[0] / C.SR, 6), channels=ch, loop=s.loop)
+    if s.transition:
+        rec["qa"]["transition"] = True
     thumb = None
     png = C.PREVIEW_DIR / s.group / f"{s.id}.png"
     if _PNG and _REUSE_PNG and png.exists():
@@ -198,10 +220,17 @@ def prune(records: list[dict], png: bool) -> None:
         print(f"[audiofactory] pruned {n} stale files")
 
 
+def _aliases() -> dict:
+    """Sound ids that are deliberately not rendered because they would duplicate another file (single-layer mixes)."""
+    from audiofactory import ambience
+    return dict(ambience.ALIASES)
+
+
 def write_manifest(ds: D.Dataset, records: list[dict]) -> None:
     used = sorted({s for r in records for s in r["sources"]})
     by_cat = Counter(r["category"] for r in records)
     by_conf = Counter(r["confidence"] for r in records)
+    by_model = Counter(r.get("model_confidence", r["confidence"]) for r in records)
     doc = {
         "schema": "noctis.audio_manifest/1",
         "generator": "Tools/AudioFactory/generate.py",
@@ -211,20 +240,27 @@ def write_manifest(ds: D.Dataset, records: list[dict]) -> None:
         "conventions_fr": {
             "niveaux": "level.source_spl_db_1m : niveau de source en dB SPL (re 20 µPa) à 1 m, même convention que SoundSource::levelDb du cœur. "
                        "Les fichiers sont normalisés (voir level.normalization) ; level.calibration_spl_db_at_0dbfs_rms permet de recalibrer dans UE5.",
-            "confiance": "Chaque son porte le niveau de confiance de l'hypothèse la plus faible qui le fonde (règle Data/SCHEMA.md : une référence non vérifiée ne peut soutenir plus qu'INFÉRÉ ; sans référence : SPÉCULATIF au mieux).",
+            "confiance": "Deux niveaux par son, chacun égal à l'hypothèse la plus faible qui le fonde (règle Data/SCHEMA.md : une référence non vérifiée ne peut soutenir plus qu'INFÉRÉ ; sans référence : SPÉCULATIF au mieux). "
+                         "confidence porte sur l'existence de l'événement et ses grandeurs documentées (masse, cinématique, débit, intensité de pluie...) ; "
+                         "model_confidence porte sur le modèle de synthèse (timbre, loi de niveau), le plus souvent une hypothèse de jeu ; "
+                         "overall_confidence = min des deux, à afficher quand une seule valeur est montrée.",
             "hypotheses": "Toutes les vocalisations de dinosaures non aviens, d'oiseaux, d'amphibiens et d'insectes sont des HYPOTHÈSES (hypothesis = true). Le jeu ne prétend jamais connaître la signification d'un cri.",
-            "distance": "Les variantes de distance appliquent l'absorption ISO 9613-1 et l'atténuation par le feuillage du cœur (SoundField.cpp) ; le niveau reçu est dans parameters.propagation.",
+            "distance": "Les variantes de distance appliquent l'absorption ISO 9613-1 et l'atténuation par le feuillage du cœur (SoundField.cpp) ; le niveau reçu est dans parameters.propagation et dans level.received_spl_db, sur lequel la calibration est faite (préréglages *_DistanceBaked : spatialisation seule).",
+            "fins": "Les one-shots sont rendus dans un tampon assez long pour les queues exponentielles de leurs événements puis coupés à -60 dB du maximum (sauf transitions vers une boucle, qa.transition) ; passe-bas 20 kHz sur tout sauf les vocalisations.",
             "qa": "Le bloc qa contient les valeurs attendues vérifiées par Tools/AudioFactory/qa.py.",
         },
         "ue5": {
             "sound_classes": M.SOUND_CLASSES,
             "attenuation_presets": M.ATTENUATION_PRESETS,
             "concurrency_presets": M.CONCURRENCY_PRESETS,
+            "aliases": _aliases(),
         },
         "summary": {
             "sounds": len(records),
             "by_category": dict(sorted(by_cat.items())),
             "by_confidence": dict(sorted(by_conf.items(), key=lambda kv: D.conf_rank(kv[0]))),
+            "by_model_confidence": dict(sorted(by_model.items(), key=lambda kv: D.conf_rank(kv[0]))),
+            "hypotheses": sum(1 for r in records if r.get("hypothesis")),
             "total_duration_s": round(sum(r["audio"]["duration_s"] for r in records), 2),
         },
         "sources_used": {s: {"authors": ds.sources[s].get("authors"), "year": ds.sources[s].get("year"),

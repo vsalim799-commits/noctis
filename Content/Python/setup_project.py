@@ -15,7 +15,8 @@ Created (paths are the ones hard-coded in Source/Noctis and Config/*.ini):
     /Game/Environment/Vegetation/RT_NoctisTrails                                      (trail / trampling / burn mask)
     /Game/Environment/Water/M_NoctisWater                                             (placeholder river material)
     /Game/UI/WBP_NoctisHUD, WBP_FieldJournal, WBP_FieldMap, WBP_Spectrogram, WBP_Hypotheses, WBP_Reports
-    /Game/Maps/HellCreek (World Partition, from the Open World template) with sky, fog, clouds, moon, wind and a
+    /Game/Maps/HellCreek (empty World Partition map, not the Open World template and its sample landscape) with sky,
+    fog, clouds, moon, wind and a
     PlayerStart at the simulation's base camp.
 Audio assets come from import_audio.py, creature assets from import_creatures.py.
 
@@ -291,10 +292,17 @@ def create_map(overwrite: bool) -> None:
         nc.info(f"{MAP_PATH} existe : ouverture et complément des acteurs manquants.")
     else:
         nc.ensure_directory("/Game/Maps")
-        # Open World template = World Partition + sky atmosphere, sky light, directional light, volumetric clouds, fog.
-        # VERIFY: template path in 5.4/5.5 (Engine/Content/Maps/Templates/OpenWorld).
-        if not level_subsystem.new_level_from_template(MAP_PATH, "/Engine/Maps/Templates/OpenWorld"):
-            nc.warn("Modèle Open World introuvable : niveau vide créé (activer World Partition : Tools > Convert Level).")
+        # Empty partitioned world ("Empty Open World"), NOT the "Open World" template: that template ships a sample
+        # landscape which build_level.py would otherwise find instead of the Noctis terrain. Sun, moon, sky, fog and
+        # clouds are spawned below when missing, so nothing from the template is needed.
+        created = False
+        try:
+            created = level_subsystem.new_level(MAP_PATH, True)  # VERIFY: is_partitioned_world argument of NewLevel (UE 5.1+)
+        except TypeError:
+            created = False
+        if not created:
+            nc.warn("new_level(chemin, is_partitioned_world=True) indisponible : niveau vide non partitionné créé ; activer World Partition "
+                    "(Tools > Convert Level). Ne pas partir du gabarit Open World : son paysage d'exemple n'est pas le terrain Noctis.")
             level_subsystem.new_level(MAP_PATH)
 
     info = None
