@@ -17,6 +17,7 @@
 #include "Sound/SoundAttenuation.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundConcurrency.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 ANoctisAudioDirector::ANoctisAudioDirector()
 {
@@ -105,6 +106,7 @@ void ANoctisAudioDirector::OnFramePublished(const FNoctisFrameOutput& Front)
 
 void ANoctisAudioDirector::Tick(float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_AudioDirector);
 	Super::Tick(DeltaSeconds);
 	UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this);
 	const FNoctisFrameOutput* Front = Sub ? Sub->GetFrontFrame() : nullptr;

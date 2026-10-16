@@ -1,0 +1,7625 @@
+{
+ "schema": "noctis.anatomy/1",
+ "species_id": "tyrannosaurus_rex",
+ "derived_from": {
+  "file": "Tools/Preview/src/creature/trex_anatomy.js",
+  "via": [
+   "Tools/CreatureFactory/export_anatomy.mjs",
+   "Tools/CreatureFactory/species/tyrannosaurus_rex.py"
+  ],
+  "changes": [
+   "skull rebuilt from lofted superellipse sections (snout longer and tapering, keyhole dorsal outline, convex nasal profile)",
+   "eye: separate eyeball flush with puffy lids, brow shelf (lacrimal + postorbital bosses) overhanging it",
+   "legs re-posed to acetabulum 3.1 m with unchanged bone lengths; thigh x1.13, shank x1.08 soft tissue",
+   "body raised 0.10 m with the hips"
+  ]
+ },
+ "axes": "anatomy space: metres, +x forward (snout), +y up, +z animal right, ground y = 0",
+ "targets": {
+  "total_length_m": 12.0,
+  "hip_height_m": 3.1,
+  "adult_mass_kg": 7000,
+  "skull_length_m": 1.47,
+  "femur_m": 1.3,
+  "tibia_m": 1.155,
+  "metatarsus_m": 0.61,
+  "sources": [
+   "hutchinson2011_trex_mass",
+   "persons2019_trex_scotty",
+   "brochu2003_trex_osteology",
+   "carr2020_trex_growth"
+  ],
+  "note": "longueurs osseuses reprises de trex_anatomy.js (proportions d'un adulte de la taille de Sue) ; volumes de tissus mous = reconstruction plausible"
+ },
+ "skin": {
+  "status": "basement scales: strongly_supported (bell2017_tyrannosaur_integument); sizes, folds, scutes, pads: design / phylogenetic bracket",
+  "scale_layers_m": [
+   0.01,
+   0.017,
+   0.027
+  ],
+  "scale_height_ratio": 0.17,
+  "groove_ratio": 0.06,
+  "region_layers": {
+   "head": [
+    0.75,
+    0.25,
+    0.0
+   ],
+   "jaw": [
+    0.85,
+    0.15,
+    0.0
+   ],
+   "neck": [
+    0.25,
+    0.6,
+    0.15
+   ],
+   "torso": [
+    0.0,
+    0.45,
+    0.55
+   ],
+   "belly": [
+    0.45,
+    0.55,
+    0.0
+   ],
+   "tail": [
+    0.1,
+    0.5,
+    0.4
+   ],
+   "thigh": [
+    0.05,
+    0.45,
+    0.5
+   ],
+   "shin": [
+    0.3,
+    0.6,
+    0.1
+   ],
+   "foot": [
+    0.7,
+    0.3,
+    0.0
+   ],
+   "arm": [
+    0.7,
+    0.3,
+    0.0
+   ]
+  },
+  "dorsal_coarsen": 0.35,
+  "ventral_refine": 0.45,
+  "feature_scales": {
+   "cell_m": 0.075,
+   "density": 0.16,
+   "radius_ratio": 0.42,
+   "height_m": 0.0055,
+   "regions": {
+    "head": 0.6,
+    "neck": 1.0,
+    "torso": 0.7,
+    "tail": 0.6,
+    "thigh": 0.5
+   },
+   "status": "design assumption (not documented for T. rex)"
+  },
+  "neck_folds": {
+   "wavelength_m": 0.09,
+   "amplitude_m": 0.013,
+   "status": "design (soft tissue, plausible)"
+  },
+  "throat_folds": {
+   "wavelength_m": 0.07,
+   "amplitude_m": 0.008
+  },
+  "joint_folds": {
+   "wavelength_m": 0.05,
+   "amplitude_m": 0.007
+  },
+  "flank_wrinkles": {
+   "amplitude_m": 0.0025,
+   "scale_m": 0.11
+  },
+  "scutes": {
+   "meta_length_m": 0.055,
+   "toe_length_m": 0.042,
+   "height_m": 0.0075,
+   "status": "inferred by phylogenetic bracket (scutate scales of birds) - not preserved in T. rex"
+  },
+  "pads": {
+   "cell_m": 0.022,
+   "height_m": 0.006
+  },
+  "rugose": {
+   "cell_m": 0.03,
+   "height_m": 0.009,
+   "status": "cornified skin over rugose skull bones (nasal, lacrimal, postorbital, jugal): plausible, design"
+  },
+  "lip_scales_m": 0.008,
+  "lid_scales_m": 0.006
+ },
+ "palette": {
+  "status": "SPÉCULATIF",
+  "note": "Couleur inconnue (science.integument : 'Couleur : inconnue'). Palette terne et contre-ombrée choisie pour la lisibilité ; aucun motif tiré d'une référence.",
+  "dorsal": [
+   0.105,
+   0.095,
+   0.075
+  ],
+  "flank": [
+   0.2,
+   0.175,
+   0.135
+  ],
+  "ventral": [
+   0.42,
+   0.37,
+   0.29
+  ],
+  "head_top": [
+   0.085,
+   0.075,
+   0.06
+  ],
+  "lip": [
+   0.3,
+   0.255,
+   0.2
+  ],
+  "mottle_dark": [
+   0.06,
+   0.055,
+   0.045
+  ],
+  "band_dark": [
+   0.07,
+   0.062,
+   0.05
+  ],
+  "scute": [
+   0.075,
+   0.068,
+   0.058
+  ],
+  "pad": [
+   0.16,
+   0.14,
+   0.115
+  ],
+  "rugose": [
+   0.13,
+   0.11,
+   0.085
+  ],
+  "claw": [
+   0.035,
+   0.03,
+   0.027
+  ],
+  "claw_tip": [
+   0.16,
+   0.14,
+   0.11
+  ],
+  "tooth": [
+   0.62,
+   0.56,
+   0.45
+  ],
+  "iris": [
+   0.42,
+   0.26,
+   0.07
+  ],
+  "gum": [
+   0.32,
+   0.12,
+   0.1
+  ]
+ },
+ "bones": [
+  {
+   "name": "root",
+   "parent": null,
+   "head": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tail": [
+    0.6,
+    0.0,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "root"
+  },
+  {
+   "name": "pelvis",
+   "parent": "root",
+   "head": [
+    0.0,
+    3.1,
+    0.0
+   ],
+   "tail": [
+    0.7,
+    3.49231,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "pelvis"
+  },
+  {
+   "name": "spine_01",
+   "parent": "pelvis",
+   "head": [
+    0.7,
+    3.49231,
+    0.0
+   ],
+   "tail": [
+    1.45,
+    3.42144,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "spine1"
+  },
+  {
+   "name": "spine_02",
+   "parent": "spine_01",
+   "head": [
+    1.45,
+    3.42144,
+    0.0
+   ],
+   "tail": [
+    2.15,
+    3.2894,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "spine2"
+  },
+  {
+   "name": "spine_03",
+   "parent": "spine_02",
+   "head": [
+    2.15,
+    3.2894,
+    0.0
+   ],
+   "tail": [
+    2.62,
+    3.21,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "spine3"
+  },
+  {
+   "name": "neck_01",
+   "parent": "spine_03",
+   "head": [
+    2.62,
+    3.21,
+    0.0
+   ],
+   "tail": [
+    2.96,
+    3.34,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "neck1"
+  },
+  {
+   "name": "neck_02",
+   "parent": "neck_01",
+   "head": [
+    2.96,
+    3.34,
+    0.0
+   ],
+   "tail": [
+    3.26,
+    3.57,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "neck2"
+  },
+  {
+   "name": "neck_03",
+   "parent": "neck_02",
+   "head": [
+    3.26,
+    3.57,
+    0.0
+   ],
+   "tail": [
+    3.54269,
+    3.8738,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "neck3"
+  },
+  {
+   "name": "head",
+   "parent": "neck_03",
+   "head": [
+    3.54269,
+    3.8738,
+    0.0
+   ],
+   "tail": [
+    4.46037,
+    3.89317,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "skull"
+  },
+  {
+   "name": "jaw",
+   "parent": "head",
+   "head": [
+    3.47,
+    3.58,
+    0.0
+   ],
+   "tail": [
+    4.71464,
+    3.46266,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "jaw"
+  },
+  {
+   "name": "tail_01",
+   "parent": "pelvis",
+   "head": [
+    -0.85,
+    3.4683,
+    0.0
+   ],
+   "tail": [
+    -1.47,
+    3.41779,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail1"
+  },
+  {
+   "name": "tail_02",
+   "parent": "tail_01",
+   "head": [
+    -1.47,
+    3.41779,
+    0.0
+   ],
+   "tail": [
+    -2.09,
+    3.36154,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail2"
+  },
+  {
+   "name": "tail_03",
+   "parent": "tail_02",
+   "head": [
+    -2.09,
+    3.36154,
+    0.0
+   ],
+   "tail": [
+    -2.71,
+    3.29984,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail3"
+  },
+  {
+   "name": "tail_04",
+   "parent": "tail_03",
+   "head": [
+    -2.71,
+    3.29984,
+    0.0
+   ],
+   "tail": [
+    -3.33,
+    3.23291,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail4"
+  },
+  {
+   "name": "tail_05",
+   "parent": "tail_04",
+   "head": [
+    -3.33,
+    3.23291,
+    0.0
+   ],
+   "tail": [
+    -3.95,
+    3.16344,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail5"
+  },
+  {
+   "name": "tail_06",
+   "parent": "tail_05",
+   "head": [
+    -3.95,
+    3.16344,
+    0.0
+   ],
+   "tail": [
+    -4.57,
+    3.09495,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail6"
+  },
+  {
+   "name": "tail_07",
+   "parent": "tail_06",
+   "head": [
+    -4.57,
+    3.09495,
+    0.0
+   ],
+   "tail": [
+    -5.19,
+    3.02087,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail7"
+  },
+  {
+   "name": "tail_08",
+   "parent": "tail_07",
+   "head": [
+    -5.19,
+    3.02087,
+    0.0
+   ],
+   "tail": [
+    -5.81,
+    2.94418,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail8"
+  },
+  {
+   "name": "tail_09",
+   "parent": "tail_08",
+   "head": [
+    -5.81,
+    2.94418,
+    0.0
+   ],
+   "tail": [
+    -6.43,
+    2.86604,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail9"
+  },
+  {
+   "name": "tail_10",
+   "parent": "tail_09",
+   "head": [
+    -6.43,
+    2.86604,
+    0.0
+   ],
+   "tail": [
+    -7.05,
+    2.78,
+    0.0
+   ],
+   "deform": true,
+   "js_name": "tail10"
+  },
+  {
+   "name": "thigh_l",
+   "parent": "pelvis",
+   "head": [
+    0.0,
+    3.1,
+    -0.45
+   ],
+   "tail": [
+    0.44463,
+    1.8784,
+    -0.43
+   ],
+   "deform": true,
+   "js_name": "thighL"
+  },
+  {
+   "name": "shin_l",
+   "parent": "thigh_l",
+   "head": [
+    0.44463,
+    1.8784,
+    -0.43
+   ],
+   "tail": [
+    0.14569,
+    0.76276,
+    -0.36
+   ],
+   "deform": true,
+   "js_name": "shinL"
+  },
+  {
+   "name": "metatarsus_l",
+   "parent": "shin_l",
+   "head": [
+    0.14569,
+    0.76276,
+    -0.36
+   ],
+   "tail": [
+    0.35432,
+    0.18954,
+    -0.34
+   ],
+   "deform": true,
+   "js_name": "metaL"
+  },
+  {
+   "name": "toes_l",
+   "parent": "metatarsus_l",
+   "head": [
+    0.35432,
+    0.18954,
+    -0.34
+   ],
+   "tail": [
+    0.77432,
+    0.10954,
+    -0.34
+   ],
+   "deform": true,
+   "js_name": "toesL"
+  },
+  {
+   "name": "thigh_r",
+   "parent": "pelvis",
+   "head": [
+    0.0,
+    3.1,
+    0.45
+   ],
+   "tail": [
+    0.44463,
+    1.8784,
+    0.43
+   ],
+   "deform": true,
+   "js_name": "thighR"
+  },
+  {
+   "name": "shin_r",
+   "parent": "thigh_r",
+   "head": [
+    0.44463,
+    1.8784,
+    0.43
+   ],
+   "tail": [
+    0.14569,
+    0.76276,
+    0.36
+   ],
+   "deform": true,
+   "js_name": "shinR"
+  },
+  {
+   "name": "metatarsus_r",
+   "parent": "shin_r",
+   "head": [
+    0.14569,
+    0.76276,
+    0.36
+   ],
+   "tail": [
+    0.35432,
+    0.18954,
+    0.34
+   ],
+   "deform": true,
+   "js_name": "metaR"
+  },
+  {
+   "name": "toes_r",
+   "parent": "metatarsus_r",
+   "head": [
+    0.35432,
+    0.18954,
+    0.34
+   ],
+   "tail": [
+    0.77432,
+    0.10954,
+    0.34
+   ],
+   "deform": true,
+   "js_name": "toesR"
+  },
+  {
+   "name": "upperarm_l",
+   "parent": "spine_03",
+   "head": [
+    2.28,
+    2.6,
+    -0.4
+   ],
+   "tail": [
+    2.33,
+    2.23,
+    -0.48
+   ],
+   "deform": true,
+   "js_name": "upperArmL"
+  },
+  {
+   "name": "forearm_l",
+   "parent": "upperarm_l",
+   "head": [
+    2.33,
+    2.23,
+    -0.48
+   ],
+   "tail": [
+    2.53,
+    2.15,
+    -0.5
+   ],
+   "deform": true,
+   "js_name": "foreArmL"
+  },
+  {
+   "name": "hand_l",
+   "parent": "forearm_l",
+   "head": [
+    2.53,
+    2.15,
+    -0.5
+   ],
+   "tail": [
+    2.63,
+    2.03,
+    -0.5
+   ],
+   "deform": true,
+   "js_name": "handL"
+  },
+  {
+   "name": "upperarm_r",
+   "parent": "spine_03",
+   "head": [
+    2.28,
+    2.6,
+    0.4
+   ],
+   "tail": [
+    2.33,
+    2.23,
+    0.48
+   ],
+   "deform": true,
+   "js_name": "upperArmR"
+  },
+  {
+   "name": "forearm_r",
+   "parent": "upperarm_r",
+   "head": [
+    2.33,
+    2.23,
+    0.48
+   ],
+   "tail": [
+    2.53,
+    2.15,
+    0.5
+   ],
+   "deform": true,
+   "js_name": "foreArmR"
+  },
+  {
+   "name": "hand_r",
+   "parent": "forearm_r",
+   "head": [
+    2.53,
+    2.15,
+    0.5
+   ],
+   "tail": [
+    2.63,
+    2.03,
+    0.5
+   ],
+   "deform": true,
+   "js_name": "handR"
+  },
+  {
+   "name": "eye_r",
+   "parent": "head",
+   "head": [
+    4.09644,
+    4.11342,
+    0.21651
+   ],
+   "tail": [
+    4.13024,
+    4.11291,
+    0.28901
+   ],
+   "deform": true,
+   "js_name": null
+  },
+  {
+   "name": "eye_l",
+   "parent": "head",
+   "head": [
+    4.09644,
+    4.11342,
+    -0.21651
+   ],
+   "tail": [
+    4.13024,
+    4.11291,
+    -0.28901
+   ],
+   "deform": true,
+   "js_name": null
+  }
+ ],
+ "shapes": [
+  {
+   "bone": "pelvis",
+   "kind": "sweep",
+   "region": "torso",
+   "points": [
+    {
+     "p": [
+      -7.05,
+      2.78,
+      0.0
+     ],
+     "cy": 0.0008,
+     "top": 0.0112,
+     "bot": 0.0168,
+     "hw": 0.012,
+     "nt": 2.0,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      -6.4,
+      2.87,
+      0.0
+     ],
+     "cy": 0.00364,
+     "top": 0.04636,
+     "bot": 0.07564,
+     "hw": 0.046,
+     "nt": 2.0,
+     "nb": 1.9
+    },
+    {
+     "p": [
+      -5.6,
+      2.97,
+      0.0
+     ],
+     "cy": 0.01,
+     "top": 0.09,
+     "bot": 0.16,
+     "hw": 0.092,
+     "nt": 2.0,
+     "nb": 1.9
+    },
+    {
+     "p": [
+      -4.7,
+      3.08,
+      0.0
+     ],
+     "cy": 0.0173,
+     "top": 0.1377,
+     "bot": 0.2673,
+     "hw": 0.148,
+     "nt": 2.05,
+     "nb": 1.9
+    },
+    {
+     "p": [
+      -3.8,
+      3.18,
+      0.0
+     ],
+     "cy": 0.0219,
+     "top": 0.1881,
+     "bot": 0.3819,
+     "hw": 0.21,
+     "nt": 2.1,
+     "nb": 1.9
+    },
+    {
+     "p": [
+      -2.9,
+      3.28,
+      0.0
+     ],
+     "cy": 0.0158,
+     "top": 0.2442,
+     "bot": 0.4958,
+     "hw": 0.275,
+     "nt": 2.1,
+     "nb": 1.9
+    },
+    {
+     "p": [
+      -2.0,
+      3.37,
+      0.0
+     ],
+     "cy": -0.0028,
+     "top": 0.3128,
+     "bot": 0.6072,
+     "hw": 0.345,
+     "nt": 2.15,
+     "nb": 1.95
+    },
+    {
+     "p": [
+      -1.2,
+      3.44,
+      0.0
+     ],
+     "cy": -0.0424,
+     "top": 0.3924,
+     "bot": 0.6976,
+     "hw": 0.41,
+     "nt": 2.2,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      -0.5,
+      3.49,
+      0.0
+     ],
+     "cy": -0.126,
+     "top": 0.496,
+     "bot": 0.744,
+     "hw": 0.46,
+     "nt": 2.3,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      0.2,
+      3.51,
+      0.0
+     ],
+     "cy": -0.2306,
+     "top": 0.6006,
+     "bot": 0.8294,
+     "hw": 0.485,
+     "nt": 2.3,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      0.9,
+      3.48,
+      0.0
+     ],
+     "cy": -0.40025,
+     "top": 0.78525,
+     "bot": 0.95975,
+     "hw": 0.505,
+     "nt": 2.3,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      1.6,
+      3.4,
+      0.0
+     ],
+     "cy": -0.39375,
+     "top": 0.79875,
+     "bot": 0.97625,
+     "hw": 0.515,
+     "nt": 2.3,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      2.2,
+      3.28,
+      0.0
+     ],
+     "cy": -0.273,
+     "top": 0.693,
+     "bot": 0.847,
+     "hw": 0.475,
+     "nt": 2.3,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      2.62,
+      3.21,
+      0.0
+     ],
+     "cy": -0.1685,
+     "top": 0.5985,
+     "bot": 0.7315,
+     "hw": 0.4,
+     "nt": 2.25,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      2.96,
+      3.34,
+      0.0
+     ],
+     "cy": -0.1125,
+     "top": 0.5625,
+     "bot": 0.6875,
+     "hw": 0.37,
+     "nt": 2.2,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      3.26,
+      3.57,
+      0.0
+     ],
+     "cy": -0.0695,
+     "top": 0.4995,
+     "bot": 0.6105,
+     "hw": 0.34,
+     "nt": 2.2,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      3.5,
+      3.82,
+      0.0
+     ],
+     "cy": -0.054,
+     "top": 0.414,
+     "bot": 0.506,
+     "hw": 0.32,
+     "nt": 2.1,
+     "nb": 2.0
+    },
+    {
+     "p": [
+      3.64,
+      3.93,
+      0.0
+     ],
+     "cy": -0.0485,
+     "top": 0.3285,
+     "bot": 0.4015,
+     "hw": 0.29,
+     "nt": 2.0,
+     "nb": 2.0
+    }
+   ],
+   "chain": [
+    {
+     "bone": "tail_10",
+     "head": [
+      -6.43,
+      2.86604,
+      0.0
+     ],
+     "tail": [
+      -7.05,
+      2.78,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_09",
+     "head": [
+      -5.81,
+      2.94418,
+      0.0
+     ],
+     "tail": [
+      -6.43,
+      2.86604,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_08",
+     "head": [
+      -5.19,
+      3.02087,
+      0.0
+     ],
+     "tail": [
+      -5.81,
+      2.94418,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_07",
+     "head": [
+      -4.57,
+      3.09495,
+      0.0
+     ],
+     "tail": [
+      -5.19,
+      3.02087,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_06",
+     "head": [
+      -3.95,
+      3.16344,
+      0.0
+     ],
+     "tail": [
+      -4.57,
+      3.09495,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_05",
+     "head": [
+      -3.33,
+      3.23291,
+      0.0
+     ],
+     "tail": [
+      -3.95,
+      3.16344,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_04",
+     "head": [
+      -2.71,
+      3.29984,
+      0.0
+     ],
+     "tail": [
+      -3.33,
+      3.23291,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_03",
+     "head": [
+      -2.09,
+      3.36154,
+      0.0
+     ],
+     "tail": [
+      -2.71,
+      3.29984,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_02",
+     "head": [
+      -1.47,
+      3.41779,
+      0.0
+     ],
+     "tail": [
+      -2.09,
+      3.36154,
+      0.0
+     ]
+    },
+    {
+     "bone": "tail_01",
+     "head": [
+      -0.85,
+      3.4683,
+      0.0
+     ],
+     "tail": [
+      -1.47,
+      3.41779,
+      0.0
+     ]
+    },
+    {
+     "bone": "spine_01",
+     "head": [
+      0.7,
+      3.49231,
+      0.0
+     ],
+     "tail": [
+      1.45,
+      3.42144,
+      0.0
+     ]
+    },
+    {
+     "bone": "spine_02",
+     "head": [
+      1.45,
+      3.42144,
+      0.0
+     ],
+     "tail": [
+      2.15,
+      3.2894,
+      0.0
+     ]
+    },
+    {
+     "bone": "spine_03",
+     "head": [
+      2.15,
+      3.2894,
+      0.0
+     ],
+     "tail": [
+      2.62,
+      3.21,
+      0.0
+     ]
+    },
+    {
+     "bone": "neck_01",
+     "head": [
+      2.62,
+      3.21,
+      0.0
+     ],
+     "tail": [
+      2.96,
+      3.34,
+      0.0
+     ]
+    },
+    {
+     "bone": "neck_02",
+     "head": [
+      2.96,
+      3.34,
+      0.0
+     ],
+     "tail": [
+      3.26,
+      3.57,
+      0.0
+     ]
+    },
+    {
+     "bone": "neck_03",
+     "head": [
+      3.26,
+      3.57,
+      0.0
+     ],
+     "tail": [
+      3.54269,
+      3.8738,
+      0.0
+     ]
+    },
+    {
+     "bone": "pelvis",
+     "head": [
+      -0.85,
+      3.4683,
+      0.0
+     ],
+     "tail": [
+      0.7,
+      3.49231,
+      0.0
+     ]
+    }
+   ],
+   "blend": 0.05,
+   "tag": "body",
+   "regions": [
+    {
+     "x_max": -0.95,
+     "region": "tail"
+    },
+    {
+     "x_max": 2.45,
+     "region": "torso"
+    },
+    {
+     "x_max": 99,
+     "region": "neck"
+    }
+   ],
+   "id": 0
+  },
+  {
+   "bone": "pelvis",
+   "kind": "roundCone",
+   "a": [
+    0.1,
+    2.85,
+    0.0
+   ],
+   "b": [
+    0.42,
+    2.02,
+    0.0
+   ],
+   "ra": 0.25,
+   "rb": 0.15,
+   "blend": 0.22,
+   "region": "belly",
+   "scale": [
+    1,
+    1,
+    1.25
+   ],
+   "tag": "pubis",
+   "id": 1
+  },
+  {
+   "bone": "pelvis",
+   "kind": "ellipsoid",
+   "center": [
+    0.44,
+    1.98,
+    0.0
+   ],
+   "radii": [
+    0.36,
+    0.105,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    -0.06
+   ],
+   "blend": 0.2,
+   "region": "belly",
+   "tag": "pubic_boot",
+   "id": 2
+  },
+  {
+   "bone": "pelvis",
+   "kind": "ellipsoid",
+   "center": [
+    -0.55,
+    2.82,
+    0.0
+   ],
+   "radii": [
+    0.48,
+    0.3,
+    0.3
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.35
+   ],
+   "blend": 0.2,
+   "region": "torso",
+   "tag": "ischium",
+   "id": 3
+  },
+  {
+   "bone": "spine_02",
+   "kind": "ellipsoid",
+   "center": [
+    1.25,
+    2.2,
+    0.0
+   ],
+   "radii": [
+    0.95,
+    0.24,
+    0.42
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.03
+   ],
+   "blend": 0.25,
+   "region": "belly",
+   "tag": "gastral_belly",
+   "id": 4
+  },
+  {
+   "bone": "spine_03",
+   "kind": "ellipsoid",
+   "center": [
+    2.22,
+    2.3,
+    0.0
+   ],
+   "radii": [
+    0.42,
+    0.22,
+    0.34
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.15
+   ],
+   "blend": 0.2,
+   "region": "belly",
+   "tag": "chest_floor",
+   "id": 5
+  },
+  {
+   "bone": "pelvis",
+   "kind": "ellipsoid",
+   "center": [
+    -0.05,
+    3.42,
+    0.3
+   ],
+   "radii": [
+    0.85,
+    0.3,
+    0.2
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.02
+   ],
+   "blend": 0.16,
+   "region": "torso",
+   "tag": "ilium_muscle",
+   "id": 6
+  },
+  {
+   "bone": "spine_02",
+   "kind": "ellipsoid",
+   "center": [
+    1.35,
+    2.8,
+    0.2
+   ],
+   "radii": [
+    0.95,
+    0.55,
+    0.3
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.03
+   ],
+   "blend": 0.2,
+   "region": "torso",
+   "tag": "ribcage_flank",
+   "id": 7
+  },
+  {
+   "bone": "spine_03",
+   "kind": "ellipsoid",
+   "center": [
+    2.12,
+    3.08,
+    0.33
+   ],
+   "radii": [
+    0.5,
+    0.42,
+    0.15
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    -0.55
+   ],
+   "blend": 0.16,
+   "region": "torso",
+   "tag": "scapular_muscles",
+   "id": 8
+  },
+  {
+   "bone": "spine_03",
+   "kind": "ellipsoid",
+   "center": [
+    2.38,
+    2.48,
+    0.25
+   ],
+   "radii": [
+    0.3,
+    0.34,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.1
+   ],
+   "blend": 0.16,
+   "region": "torso",
+   "tag": "pectoralis",
+   "id": 9
+  },
+  {
+   "bone": "neck_01",
+   "kind": "ellipsoid",
+   "center": [
+    2.72,
+    3.2,
+    0.16
+   ],
+   "radii": [
+    0.4,
+    0.45,
+    0.2
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.75
+   ],
+   "blend": 0.16,
+   "region": "neck",
+   "masks": [
+    "neck_folds"
+   ],
+   "tag": "neck_lateral",
+   "id": 10
+  },
+  {
+   "bone": "neck_02",
+   "kind": "ellipsoid",
+   "center": [
+    3.05,
+    3.45,
+    0.14
+   ],
+   "radii": [
+    0.36,
+    0.42,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.8
+   ],
+   "blend": 0.16,
+   "region": "neck",
+   "masks": [
+    "neck_folds"
+   ],
+   "tag": "neck_lateral",
+   "id": 11
+  },
+  {
+   "bone": "neck_03",
+   "kind": "ellipsoid",
+   "center": [
+    3.32,
+    3.65,
+    0.13
+   ],
+   "radii": [
+    0.3,
+    0.38,
+    0.17
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.7
+   ],
+   "blend": 0.16,
+   "region": "neck",
+   "masks": [
+    "neck_folds"
+   ],
+   "tag": "neck_lateral",
+   "id": 12
+  },
+  {
+   "bone": "thigh_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.19785,
+    2.61136,
+    0.542
+   ],
+   "radii": [
+    0.47,
+    0.8,
+    0.25
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    -0.34907
+   ],
+   "blend": 0.12,
+   "region": "thigh",
+   "tag": "thigh_main",
+   "id": 13
+  },
+  {
+   "bone": "thigh_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.02,
+    3.2,
+    0.52
+   ],
+   "radii": [
+    0.78,
+    0.42,
+    0.24
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.08
+   ],
+   "blend": 0.14,
+   "region": "thigh",
+   "tag": "thigh_iliotibialis",
+   "id": 14
+  },
+  {
+   "bone": "thigh_r",
+   "kind": "roundCone",
+   "a": [
+    0.24454,
+    2.42812,
+    0.499
+   ],
+   "b": [
+    0.44463,
+    1.9184,
+    0.43
+   ],
+   "ra": 0.34,
+   "rb": 0.22,
+   "blend": 0.1,
+   "region": "thigh",
+   "tag": "thigh_lower",
+   "id": 15
+  },
+  {
+   "bone": "pelvis",
+   "kind": "roundCone",
+   "a": [
+    -1.7,
+    3.04,
+    0.17
+   ],
+   "b": [
+    -0.06438,
+    2.67244,
+    0.413
+   ],
+   "ra": 0.24,
+   "rb": 0.27,
+   "blend": 0.3,
+   "region": "thigh",
+   "tag": "caudofemoralis",
+   "id": 16
+  },
+  {
+   "bone": "shin_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.45463,
+    1.8584,
+    0.43
+   ],
+   "radii": [
+    0.19,
+    0.19,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "blend": 0.09,
+   "region": "shin",
+   "masks": [
+    "joint_folds"
+   ],
+   "tag": "knee",
+   "id": 17
+  },
+  {
+   "bone": "shin_r",
+   "kind": "roundCone",
+   "a": [
+    0.44463,
+    1.8184,
+    0.43
+   ],
+   "b": [
+    0.14569,
+    0.79276,
+    0.36
+   ],
+   "ra": 0.235,
+   "rb": 0.145,
+   "blend": 0.08,
+   "region": "shin",
+   "scale": [
+    1,
+    1,
+    0.92
+   ],
+   "tag": "shank",
+   "id": 18
+  },
+  {
+   "bone": "shin_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.25255,
+    1.54723,
+    0.4076
+   ],
+   "radii": [
+    0.235,
+    0.5,
+    0.2
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.2618
+   ],
+   "blend": 0.09,
+   "region": "shin",
+   "tag": "gastrocnemius",
+   "id": 19
+  },
+  {
+   "bone": "shin_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.41183,
+    1.40889,
+    0.402
+   ],
+   "radii": [
+    0.13,
+    0.42,
+    0.13
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.2618
+   ],
+   "blend": 0.07,
+   "region": "shin",
+   "tag": "tibialis",
+   "id": 20
+  },
+  {
+   "bone": "pelvis",
+   "kind": "ellipsoid",
+   "center": [
+    -0.05,
+    3.42,
+    -0.3
+   ],
+   "radii": [
+    0.85,
+    0.3,
+    0.2
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.02
+   ],
+   "blend": 0.16,
+   "region": "torso",
+   "tag": "ilium_muscle",
+   "id": 21
+  },
+  {
+   "bone": "spine_02",
+   "kind": "ellipsoid",
+   "center": [
+    1.35,
+    2.8,
+    -0.2
+   ],
+   "radii": [
+    0.95,
+    0.55,
+    0.3
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.03
+   ],
+   "blend": 0.2,
+   "region": "torso",
+   "tag": "ribcage_flank",
+   "id": 22
+  },
+  {
+   "bone": "spine_03",
+   "kind": "ellipsoid",
+   "center": [
+    2.12,
+    3.08,
+    -0.33
+   ],
+   "radii": [
+    0.5,
+    0.42,
+    0.15
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    -0.55
+   ],
+   "blend": 0.16,
+   "region": "torso",
+   "tag": "scapular_muscles",
+   "id": 23
+  },
+  {
+   "bone": "spine_03",
+   "kind": "ellipsoid",
+   "center": [
+    2.38,
+    2.48,
+    -0.25
+   ],
+   "radii": [
+    0.3,
+    0.34,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.1
+   ],
+   "blend": 0.16,
+   "region": "torso",
+   "tag": "pectoralis",
+   "id": 24
+  },
+  {
+   "bone": "neck_01",
+   "kind": "ellipsoid",
+   "center": [
+    2.72,
+    3.2,
+    -0.16
+   ],
+   "radii": [
+    0.4,
+    0.45,
+    0.2
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.75
+   ],
+   "blend": 0.16,
+   "region": "neck",
+   "masks": [
+    "neck_folds"
+   ],
+   "tag": "neck_lateral",
+   "id": 25
+  },
+  {
+   "bone": "neck_02",
+   "kind": "ellipsoid",
+   "center": [
+    3.05,
+    3.45,
+    -0.14
+   ],
+   "radii": [
+    0.36,
+    0.42,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.8
+   ],
+   "blend": 0.16,
+   "region": "neck",
+   "masks": [
+    "neck_folds"
+   ],
+   "tag": "neck_lateral",
+   "id": 26
+  },
+  {
+   "bone": "neck_03",
+   "kind": "ellipsoid",
+   "center": [
+    3.32,
+    3.65,
+    -0.13
+   ],
+   "radii": [
+    0.3,
+    0.38,
+    0.17
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.7
+   ],
+   "blend": 0.16,
+   "region": "neck",
+   "masks": [
+    "neck_folds"
+   ],
+   "tag": "neck_lateral",
+   "id": 27
+  },
+  {
+   "bone": "thigh_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.19785,
+    2.61136,
+    -0.542
+   ],
+   "radii": [
+    0.47,
+    0.8,
+    0.25
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    -0.34907
+   ],
+   "blend": 0.12,
+   "region": "thigh",
+   "tag": "thigh_main",
+   "id": 28
+  },
+  {
+   "bone": "thigh_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.02,
+    3.2,
+    -0.52
+   ],
+   "radii": [
+    0.78,
+    0.42,
+    0.24
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.08
+   ],
+   "blend": 0.14,
+   "region": "thigh",
+   "tag": "thigh_iliotibialis",
+   "id": 29
+  },
+  {
+   "bone": "thigh_l",
+   "kind": "roundCone",
+   "a": [
+    0.24454,
+    2.42812,
+    -0.499
+   ],
+   "b": [
+    0.44463,
+    1.9184,
+    -0.43
+   ],
+   "ra": 0.34,
+   "rb": 0.22,
+   "blend": 0.1,
+   "region": "thigh",
+   "tag": "thigh_lower",
+   "id": 30
+  },
+  {
+   "bone": "pelvis",
+   "kind": "roundCone",
+   "a": [
+    -1.7,
+    3.04,
+    -0.17
+   ],
+   "b": [
+    -0.06438,
+    2.67244,
+    -0.413
+   ],
+   "ra": 0.24,
+   "rb": 0.27,
+   "blend": 0.3,
+   "region": "thigh",
+   "tag": "caudofemoralis",
+   "id": 31
+  },
+  {
+   "bone": "shin_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.45463,
+    1.8584,
+    -0.43
+   ],
+   "radii": [
+    0.19,
+    0.19,
+    0.19
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "blend": 0.09,
+   "region": "shin",
+   "masks": [
+    "joint_folds"
+   ],
+   "tag": "knee",
+   "id": 32
+  },
+  {
+   "bone": "shin_l",
+   "kind": "roundCone",
+   "a": [
+    0.44463,
+    1.8184,
+    -0.43
+   ],
+   "b": [
+    0.14569,
+    0.79276,
+    -0.36
+   ],
+   "ra": 0.235,
+   "rb": 0.145,
+   "blend": 0.08,
+   "region": "shin",
+   "scale": [
+    1,
+    1,
+    0.92
+   ],
+   "tag": "shank",
+   "id": 33
+  },
+  {
+   "bone": "shin_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.25255,
+    1.54723,
+    -0.4076
+   ],
+   "radii": [
+    0.235,
+    0.5,
+    0.2
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.2618
+   ],
+   "blend": 0.09,
+   "region": "shin",
+   "tag": "gastrocnemius",
+   "id": 34
+  },
+  {
+   "bone": "shin_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.41183,
+    1.40889,
+    -0.402
+   ],
+   "radii": [
+    0.13,
+    0.42,
+    0.13
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.2618
+   ],
+   "blend": 0.07,
+   "region": "shin",
+   "tag": "tibialis",
+   "id": 35
+  },
+  {
+   "bone": "metatarsus_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.15735,
+    0.79215,
+    0.36036
+   ],
+   "radii": [
+    0.147,
+    0.126,
+    0.1575
+   ],
+   "rotation": [
+    0.01491,
+    0.00689,
+    -0.05584
+   ],
+   "blend": 0.1,
+   "region": "foot",
+   "masks": [
+    "joint_folds"
+   ],
+   "id": 36
+  },
+  {
+   "bone": "metatarsus_r",
+   "kind": "roundCone",
+   "a": [
+    0.15512,
+    0.75221,
+    0.35978
+   ],
+   "b": [
+    0.33625,
+    0.23151,
+    0.34077
+   ],
+   "ra": 0.147,
+   "rb": 0.168,
+   "blend": 0.06,
+   "region": "foot",
+   "scale": [
+    1,
+    1,
+    1.2
+   ],
+   "masks": [
+    "scutes_meta"
+   ],
+   "id": 37
+  },
+  {
+   "bone": "metatarsus_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.26097,
+    0.49595,
+    0.35523
+   ],
+   "radii": [
+    0.063,
+    0.2625,
+    0.1365
+   ],
+   "rotation": [
+    0.01491,
+    0.00689,
+    0.34416
+   ],
+   "blend": 0.05,
+   "region": "foot",
+   "masks": [
+    "scutes_meta"
+   ],
+   "id": 38
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.31432,
+    0.11954,
+    0.34
+   ],
+   "radii": [
+    0.21,
+    0.11,
+    0.155
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.12,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 39
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.42688,
+    0.12454,
+    0.2819
+   ],
+   "b": [
+    0.56035,
+    0.10054,
+    0.18661
+   ],
+   "ra": 0.08,
+   "rb": 0.06241,
+   "blend": 0.07,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 40
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.48694,
+    0.07254,
+    0.23902
+   ],
+   "radii": [
+    0.07904,
+    0.036,
+    0.072
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 41
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.56035,
+    0.10054,
+    0.18661
+   ],
+   "b": [
+    0.66713,
+    0.08134,
+    0.11037
+   ],
+   "ra": 0.06784,
+   "rb": 0.05346,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 42
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.56035,
+    0.11411,
+    0.18661
+   ],
+   "radii": [
+    0.05088,
+    0.05427,
+    0.0692
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 43
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.60841,
+    0.05702,
+    0.1523
+   ],
+   "radii": [
+    0.06723,
+    0.03053,
+    0.06106
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 44
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.66713,
+    0.08134,
+    0.11037
+   ],
+   "b": [
+    0.71385,
+    0.07294,
+    0.07702
+   ],
+   "ra": 0.05811,
+   "rb": 0.04955,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 45
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.66713,
+    0.09296,
+    0.11037
+   ],
+   "radii": [
+    0.04358,
+    0.04649,
+    0.05927
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 46
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.68816,
+    0.04809,
+    0.09537
+   ],
+   "radii": [
+    0.04066,
+    0.02615,
+    0.0523
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 47
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.71385,
+    0.08294,
+    0.07702
+   ],
+   "b": [
+    0.75723,
+    0.05294,
+    0.04605
+   ],
+   "ra": 0.04308,
+   "rb": 0.02423,
+   "blend": 0.012,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 48
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.75723,
+    0.05294,
+    0.04605
+   ],
+   "b": [
+    0.79394,
+    0.02154,
+    0.01985
+   ],
+   "ra": 0.02423,
+   "rb": 0.01,
+   "blend": 0.008,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 49
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.43432,
+    0.12454,
+    0.34
+   ],
+   "b": [
+    0.58792,
+    0.10534,
+    0.34
+   ],
+   "ra": 0.09,
+   "rb": 0.07273,
+   "blend": 0.07,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 50
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.50344,
+    0.06994,
+    0.34
+   ],
+   "radii": [
+    0.0753,
+    0.0405,
+    0.081
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 51
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.58792,
+    0.10534,
+    0.34
+   ],
+   "b": [
+    0.71272,
+    0.08974,
+    0.34
+   ],
+   "ra": 0.07906,
+   "rb": 0.06455,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 52
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.58792,
+    0.12115,
+    0.34
+   ],
+   "radii": [
+    0.05929,
+    0.06324,
+    0.08064
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 53
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.64408,
+    0.05801,
+    0.34
+   ],
+   "radii": [
+    0.06493,
+    0.03558,
+    0.07115
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 54
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.71272,
+    0.08974,
+    0.34
+   ],
+   "b": [
+    0.80872,
+    0.07774,
+    0.34
+   ],
+   "ra": 0.07016,
+   "rb": 0.05826,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 55
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.71272,
+    0.10378,
+    0.34
+   ],
+   "radii": [
+    0.05262,
+    0.05613,
+    0.07157
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 56
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.75592,
+    0.04866,
+    0.34
+   ],
+   "radii": [
+    0.05456,
+    0.03157,
+    0.06315
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 57
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.80872,
+    0.07774,
+    0.34
+   ],
+   "b": [
+    0.84712,
+    0.07294,
+    0.34
+   ],
+   "ra": 0.06332,
+   "rb": 0.05574,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 58
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.80872,
+    0.09041,
+    0.34
+   ],
+   "radii": [
+    0.04749,
+    0.05066,
+    0.06459
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 59
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.826,
+    0.04368,
+    0.34
+   ],
+   "radii": [
+    0.03382,
+    0.0285,
+    0.05699
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 60
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.84712,
+    0.08294,
+    0.34
+   ],
+   "b": [
+    0.90952,
+    0.05294,
+    0.34
+   ],
+   "ra": 0.04847,
+   "rb": 0.02727,
+   "blend": 0.012,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 61
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.90952,
+    0.05294,
+    0.34
+   ],
+   "b": [
+    0.96232,
+    0.02154,
+    0.34
+   ],
+   "ra": 0.02727,
+   "rb": 0.01,
+   "blend": 0.008,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 62
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.42688,
+    0.12454,
+    0.3981
+   ],
+   "b": [
+    0.53887,
+    0.10534,
+    0.47805
+   ],
+   "ra": 0.078,
+   "rb": 0.06303,
+   "blend": 0.07,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 63
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.47727,
+    0.07594,
+    0.43408
+   ],
+   "radii": [
+    0.06954,
+    0.0351,
+    0.0702
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 64
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.53887,
+    0.10534,
+    0.47805
+   ],
+   "b": [
+    0.62986,
+    0.08974,
+    0.54301
+   ],
+   "ra": 0.06852,
+   "rb": 0.05594,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 65
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.53887,
+    0.11905,
+    0.47805
+   ],
+   "radii": [
+    0.05139,
+    0.05481,
+    0.06989
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 66
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.57981,
+    0.06328,
+    0.50729
+   ],
+   "radii": [
+    0.06025,
+    0.03083,
+    0.06166
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 67
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.62986,
+    0.08974,
+    0.54301
+   ],
+   "b": [
+    0.69985,
+    0.07774,
+    0.59298
+   ],
+   "ra": 0.06081,
+   "rb": 0.05049,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 68
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.62986,
+    0.1019,
+    0.54301
+   ],
+   "radii": [
+    0.04561,
+    0.04865,
+    0.06202
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 69
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.66136,
+    0.05334,
+    0.5655
+   ],
+   "radii": [
+    0.05096,
+    0.02736,
+    0.05473
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 70
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.69985,
+    0.07774,
+    0.59298
+   ],
+   "b": [
+    0.72785,
+    0.07294,
+    0.61297
+   ],
+   "ra": 0.05488,
+   "rb": 0.04831,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 71
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.69985,
+    0.08872,
+    0.59298
+   ],
+   "radii": [
+    0.04116,
+    0.0439,
+    0.05598
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 72
+  },
+  {
+   "bone": "toes_r",
+   "kind": "ellipsoid",
+   "center": [
+    0.71245,
+    0.0479,
+    0.60198
+   ],
+   "radii": [
+    0.03238,
+    0.0247,
+    0.04939
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 73
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.72785,
+    0.08294,
+    0.61297
+   ],
+   "b": [
+    0.77335,
+    0.05294,
+    0.64545
+   ],
+   "ra": 0.04201,
+   "rb": 0.02363,
+   "blend": 0.012,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 74
+  },
+  {
+   "bone": "toes_r",
+   "kind": "roundCone",
+   "a": [
+    0.77335,
+    0.05294,
+    0.64545
+   ],
+   "b": [
+    0.81184,
+    0.02154,
+    0.67293
+   ],
+   "ra": 0.02363,
+   "rb": 0.01,
+   "blend": 0.008,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 75
+  },
+  {
+   "bone": "metatarsus_r",
+   "kind": "roundCone",
+   "a": [
+    0.2371,
+    0.43835,
+    0.27452
+   ],
+   "b": [
+    0.17903,
+    0.30212,
+    0.22289
+   ],
+   "ra": 0.04725,
+   "rb": 0.0336,
+   "blend": 0.03,
+   "region": "foot",
+   "id": 76
+  },
+  {
+   "bone": "metatarsus_r",
+   "kind": "roundCone",
+   "a": [
+    0.17903,
+    0.30212,
+    0.22289
+   ],
+   "b": [
+    0.20333,
+    0.20076,
+    0.21121
+   ],
+   "ra": 0.027,
+   "rb": 0.008,
+   "blend": 0.01,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 77
+  },
+  {
+   "bone": "metatarsus_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.15735,
+    0.79215,
+    -0.36036
+   ],
+   "radii": [
+    0.147,
+    0.126,
+    0.1575
+   ],
+   "rotation": [
+    -0.01491,
+    -0.00689,
+    -0.05584
+   ],
+   "blend": 0.1,
+   "region": "foot",
+   "masks": [
+    "joint_folds"
+   ],
+   "id": 78
+  },
+  {
+   "bone": "metatarsus_l",
+   "kind": "roundCone",
+   "a": [
+    0.15512,
+    0.75221,
+    -0.35978
+   ],
+   "b": [
+    0.33625,
+    0.23151,
+    -0.34077
+   ],
+   "ra": 0.147,
+   "rb": 0.168,
+   "blend": 0.06,
+   "region": "foot",
+   "scale": [
+    1,
+    1,
+    1.2
+   ],
+   "masks": [
+    "scutes_meta"
+   ],
+   "id": 79
+  },
+  {
+   "bone": "metatarsus_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.26097,
+    0.49595,
+    -0.35523
+   ],
+   "radii": [
+    0.063,
+    0.2625,
+    0.1365
+   ],
+   "rotation": [
+    -0.01491,
+    -0.00689,
+    0.34416
+   ],
+   "blend": 0.05,
+   "region": "foot",
+   "masks": [
+    "scutes_meta"
+   ],
+   "id": 80
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.31432,
+    0.11954,
+    -0.34
+   ],
+   "radii": [
+    0.21,
+    0.11,
+    0.155
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.12,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 81
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.42688,
+    0.12454,
+    -0.2819
+   ],
+   "b": [
+    0.56035,
+    0.10054,
+    -0.18661
+   ],
+   "ra": 0.08,
+   "rb": 0.06241,
+   "blend": 0.07,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 82
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.48694,
+    0.07254,
+    -0.23902
+   ],
+   "radii": [
+    0.07904,
+    0.036,
+    0.072
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 83
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.56035,
+    0.10054,
+    -0.18661
+   ],
+   "b": [
+    0.66713,
+    0.08134,
+    -0.11037
+   ],
+   "ra": 0.06784,
+   "rb": 0.05346,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 84
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.56035,
+    0.11411,
+    -0.18661
+   ],
+   "radii": [
+    0.05088,
+    0.05427,
+    0.0692
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 85
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.60841,
+    0.05702,
+    -0.1523
+   ],
+   "radii": [
+    0.06723,
+    0.03053,
+    0.06106
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 86
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.66713,
+    0.08134,
+    -0.11037
+   ],
+   "b": [
+    0.71385,
+    0.07294,
+    -0.07702
+   ],
+   "ra": 0.05811,
+   "rb": 0.04955,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 87
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.66713,
+    0.09296,
+    -0.11037
+   ],
+   "radii": [
+    0.04358,
+    0.04649,
+    0.05927
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 88
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.68816,
+    0.04809,
+    -0.09537
+   ],
+   "radii": [
+    0.04066,
+    0.02615,
+    0.0523
+   ],
+   "rotation": [
+    -0.0,
+    0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 89
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.71385,
+    0.08294,
+    -0.07702
+   ],
+   "b": [
+    0.75723,
+    0.05294,
+    -0.04605
+   ],
+   "ra": 0.04308,
+   "rb": 0.02423,
+   "blend": 0.012,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 90
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.75723,
+    0.05294,
+    -0.04605
+   ],
+   "b": [
+    0.79394,
+    0.02154,
+    -0.01985
+   ],
+   "ra": 0.02423,
+   "rb": 0.01,
+   "blend": 0.008,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 91
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.43432,
+    0.12454,
+    -0.34
+   ],
+   "b": [
+    0.58792,
+    0.10534,
+    -0.34
+   ],
+   "ra": 0.09,
+   "rb": 0.07273,
+   "blend": 0.07,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 92
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.50344,
+    0.06994,
+    -0.34
+   ],
+   "radii": [
+    0.0753,
+    0.0405,
+    0.081
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 93
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.58792,
+    0.10534,
+    -0.34
+   ],
+   "b": [
+    0.71272,
+    0.08974,
+    -0.34
+   ],
+   "ra": 0.07906,
+   "rb": 0.06455,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 94
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.58792,
+    0.12115,
+    -0.34
+   ],
+   "radii": [
+    0.05929,
+    0.06324,
+    0.08064
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 95
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.64408,
+    0.05801,
+    -0.34
+   ],
+   "radii": [
+    0.06493,
+    0.03558,
+    0.07115
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 96
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.71272,
+    0.08974,
+    -0.34
+   ],
+   "b": [
+    0.80872,
+    0.07774,
+    -0.34
+   ],
+   "ra": 0.07016,
+   "rb": 0.05826,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 97
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.71272,
+    0.10378,
+    -0.34
+   ],
+   "radii": [
+    0.05262,
+    0.05613,
+    0.07157
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 98
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.75592,
+    0.04866,
+    -0.34
+   ],
+   "radii": [
+    0.05456,
+    0.03157,
+    0.06315
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 99
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.80872,
+    0.07774,
+    -0.34
+   ],
+   "b": [
+    0.84712,
+    0.07294,
+    -0.34
+   ],
+   "ra": 0.06332,
+   "rb": 0.05574,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 100
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.80872,
+    0.09041,
+    -0.34
+   ],
+   "radii": [
+    0.04749,
+    0.05066,
+    0.06459
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 101
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.826,
+    0.04368,
+    -0.34
+   ],
+   "radii": [
+    0.03382,
+    0.0285,
+    0.05699
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 102
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.84712,
+    0.08294,
+    -0.34
+   ],
+   "b": [
+    0.90952,
+    0.05294,
+    -0.34
+   ],
+   "ra": 0.04847,
+   "rb": 0.02727,
+   "blend": 0.012,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 103
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.90952,
+    0.05294,
+    -0.34
+   ],
+   "b": [
+    0.96232,
+    0.02154,
+    -0.34
+   ],
+   "ra": 0.02727,
+   "rb": 0.01,
+   "blend": 0.008,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 104
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.42688,
+    0.12454,
+    -0.3981
+   ],
+   "b": [
+    0.53887,
+    0.10534,
+    -0.47805
+   ],
+   "ra": 0.078,
+   "rb": 0.06303,
+   "blend": 0.07,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 105
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.47727,
+    0.07594,
+    -0.43408
+   ],
+   "radii": [
+    0.06954,
+    0.0351,
+    0.0702
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 106
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.53887,
+    0.10534,
+    -0.47805
+   ],
+   "b": [
+    0.62986,
+    0.08974,
+    -0.54301
+   ],
+   "ra": 0.06852,
+   "rb": 0.05594,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 107
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.53887,
+    0.11905,
+    -0.47805
+   ],
+   "radii": [
+    0.05139,
+    0.05481,
+    0.06989
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 108
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.57981,
+    0.06328,
+    -0.50729
+   ],
+   "radii": [
+    0.06025,
+    0.03083,
+    0.06166
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 109
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.62986,
+    0.08974,
+    -0.54301
+   ],
+   "b": [
+    0.69985,
+    0.07774,
+    -0.59298
+   ],
+   "ra": 0.06081,
+   "rb": 0.05049,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 110
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.62986,
+    0.1019,
+    -0.54301
+   ],
+   "radii": [
+    0.04561,
+    0.04865,
+    0.06202
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 111
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.66136,
+    0.05334,
+    -0.5655
+   ],
+   "radii": [
+    0.05096,
+    0.02736,
+    0.05473
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 112
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.69985,
+    0.07774,
+    -0.59298
+   ],
+   "b": [
+    0.72785,
+    0.07294,
+    -0.61297
+   ],
+   "ra": 0.05488,
+   "rb": 0.04831,
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 113
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.69985,
+    0.08872,
+    -0.59298
+   ],
+   "radii": [
+    0.04116,
+    0.0439,
+    0.05598
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "scutes_toe"
+   ],
+   "id": 114
+  },
+  {
+   "bone": "toes_l",
+   "kind": "ellipsoid",
+   "center": [
+    0.71245,
+    0.0479,
+    -0.60198
+   ],
+   "radii": [
+    0.03238,
+    0.0247,
+    0.04939
+   ],
+   "rotation": [
+    -0.0,
+    -0.62,
+    -0.0
+   ],
+   "blend": 0.02,
+   "region": "foot",
+   "masks": [
+    "pads"
+   ],
+   "id": 115
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.72785,
+    0.08294,
+    -0.61297
+   ],
+   "b": [
+    0.77335,
+    0.05294,
+    -0.64545
+   ],
+   "ra": 0.04201,
+   "rb": 0.02363,
+   "blend": 0.012,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 116
+  },
+  {
+   "bone": "toes_l",
+   "kind": "roundCone",
+   "a": [
+    0.77335,
+    0.05294,
+    -0.64545
+   ],
+   "b": [
+    0.81184,
+    0.02154,
+    -0.67293
+   ],
+   "ra": 0.02363,
+   "rb": 0.01,
+   "blend": 0.008,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 117
+  },
+  {
+   "bone": "metatarsus_l",
+   "kind": "roundCone",
+   "a": [
+    0.2371,
+    0.43835,
+    -0.27452
+   ],
+   "b": [
+    0.17903,
+    0.30212,
+    -0.22289
+   ],
+   "ra": 0.04725,
+   "rb": 0.0336,
+   "blend": 0.03,
+   "region": "foot",
+   "id": 118
+  },
+  {
+   "bone": "metatarsus_l",
+   "kind": "roundCone",
+   "a": [
+    0.17903,
+    0.30212,
+    -0.22289
+   ],
+   "b": [
+    0.20333,
+    0.20076,
+    -0.21121
+   ],
+   "ra": 0.027,
+   "rb": 0.008,
+   "blend": 0.01,
+   "region": "foot",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 119
+  },
+  {
+   "bone": "upperarm_r",
+   "kind": "roundCone",
+   "a": [
+    2.28,
+    2.6,
+    0.4
+   ],
+   "b": [
+    2.33,
+    2.23,
+    0.48
+   ],
+   "ra": 0.1,
+   "rb": 0.065,
+   "blend": 0.07,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 120
+  },
+  {
+   "bone": "upperarm_r",
+   "kind": "ellipsoid",
+   "center": [
+    2.3,
+    2.43,
+    0.44
+   ],
+   "radii": [
+    0.08,
+    0.17,
+    0.085
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.15
+   ],
+   "blend": 0.04,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 121
+  },
+  {
+   "bone": "forearm_r",
+   "kind": "roundCone",
+   "a": [
+    2.33,
+    2.23,
+    0.48
+   ],
+   "b": [
+    2.53,
+    2.15,
+    0.5
+   ],
+   "ra": 0.065,
+   "rb": 0.048,
+   "blend": 0.03,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 122
+  },
+  {
+   "bone": "hand_r",
+   "kind": "roundCone",
+   "a": [
+    2.53,
+    2.15,
+    0.5
+   ],
+   "b": [
+    2.61,
+    2.1,
+    0.52
+   ],
+   "ra": 0.045,
+   "rb": 0.034,
+   "blend": 0.02,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 123
+  },
+  {
+   "bone": "hand_r",
+   "kind": "roundCone",
+   "a": [
+    2.61,
+    2.1,
+    0.52
+   ],
+   "b": [
+    2.67,
+    2.04,
+    0.53
+   ],
+   "ra": 0.03,
+   "rb": 0.026,
+   "blend": 0.012,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 124
+  },
+  {
+   "bone": "hand_r",
+   "kind": "roundCone",
+   "a": [
+    2.67,
+    2.04,
+    0.53
+   ],
+   "b": [
+    2.7,
+    1.95,
+    0.535
+   ],
+   "ra": 0.026,
+   "rb": 0.007,
+   "blend": 0.008,
+   "region": "arm",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 125
+  },
+  {
+   "bone": "hand_r",
+   "kind": "roundCone",
+   "a": [
+    2.6,
+    2.12,
+    0.48
+   ],
+   "b": [
+    2.68,
+    2.07,
+    0.47
+   ],
+   "ra": 0.03,
+   "rb": 0.025,
+   "blend": 0.012,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 126
+  },
+  {
+   "bone": "hand_r",
+   "kind": "roundCone",
+   "a": [
+    2.68,
+    2.07,
+    0.47
+   ],
+   "b": [
+    2.72,
+    1.98,
+    0.465
+   ],
+   "ra": 0.024,
+   "rb": 0.006,
+   "blend": 0.008,
+   "region": "arm",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 127
+  },
+  {
+   "bone": "upperarm_l",
+   "kind": "roundCone",
+   "a": [
+    2.28,
+    2.6,
+    -0.4
+   ],
+   "b": [
+    2.33,
+    2.23,
+    -0.48
+   ],
+   "ra": 0.1,
+   "rb": 0.065,
+   "blend": 0.07,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 128
+  },
+  {
+   "bone": "upperarm_l",
+   "kind": "ellipsoid",
+   "center": [
+    2.3,
+    2.43,
+    -0.44
+   ],
+   "radii": [
+    0.08,
+    0.17,
+    0.085
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.15
+   ],
+   "blend": 0.04,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 129
+  },
+  {
+   "bone": "forearm_l",
+   "kind": "roundCone",
+   "a": [
+    2.33,
+    2.23,
+    -0.48
+   ],
+   "b": [
+    2.53,
+    2.15,
+    -0.5
+   ],
+   "ra": 0.065,
+   "rb": 0.048,
+   "blend": 0.03,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 130
+  },
+  {
+   "bone": "hand_l",
+   "kind": "roundCone",
+   "a": [
+    2.53,
+    2.15,
+    -0.5
+   ],
+   "b": [
+    2.61,
+    2.1,
+    -0.52
+   ],
+   "ra": 0.045,
+   "rb": 0.034,
+   "blend": 0.02,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 131
+  },
+  {
+   "bone": "hand_l",
+   "kind": "roundCone",
+   "a": [
+    2.61,
+    2.1,
+    -0.52
+   ],
+   "b": [
+    2.67,
+    2.04,
+    -0.53
+   ],
+   "ra": 0.03,
+   "rb": 0.026,
+   "blend": 0.012,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 132
+  },
+  {
+   "bone": "hand_l",
+   "kind": "roundCone",
+   "a": [
+    2.67,
+    2.04,
+    -0.53
+   ],
+   "b": [
+    2.7,
+    1.95,
+    -0.535
+   ],
+   "ra": 0.026,
+   "rb": 0.007,
+   "blend": 0.008,
+   "region": "arm",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 133
+  },
+  {
+   "bone": "hand_l",
+   "kind": "roundCone",
+   "a": [
+    2.6,
+    2.12,
+    -0.48
+   ],
+   "b": [
+    2.68,
+    2.07,
+    -0.47
+   ],
+   "ra": 0.03,
+   "rb": 0.025,
+   "blend": 0.012,
+   "region": "arm",
+   "masks": [
+    "arm"
+   ],
+   "id": 134
+  },
+  {
+   "bone": "hand_l",
+   "kind": "roundCone",
+   "a": [
+    2.68,
+    2.07,
+    -0.47
+   ],
+   "b": [
+    2.72,
+    1.98,
+    -0.465
+   ],
+   "ra": 0.024,
+   "rb": 0.006,
+   "blend": 0.008,
+   "region": "arm",
+   "feature": "claw",
+   "masks": [
+    "claw"
+   ],
+   "id": 135
+  },
+  {
+   "bone": "head",
+   "kind": "loft",
+   "origin": [
+    3.47,
+    3.58,
+    0.0
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.11
+   ],
+   "sections": [
+    {
+     "u": -0.06,
+     "cy": 0.4674,
+     "top": 0.2726,
+     "bot": 0.1974,
+     "hw": 0.31,
+     "nt": 2.0,
+     "nb": 2.6
+    },
+    {
+     "u": 0.04,
+     "cy": 0.4535,
+     "top": 0.3565,
+     "bot": 0.2185,
+     "hw": 0.38,
+     "nt": 2.1,
+     "nb": 2.8
+    },
+    {
+     "u": 0.16,
+     "cy": 0.4226,
+     "top": 0.4224,
+     "bot": 0.2176,
+     "hw": 0.435,
+     "nt": 2.2,
+     "nb": 3.0
+    },
+    {
+     "u": 0.3,
+     "cy": 0.39115,
+     "top": 0.45885,
+     "bot": 0.20615,
+     "hw": 0.425,
+     "nt": 2.2,
+     "nb": 3.0
+    },
+    {
+     "u": 0.45,
+     "cy": 0.3498,
+     "top": 0.4752,
+     "bot": 0.1848,
+     "hw": 0.375,
+     "nt": 2.15,
+     "nb": 3.0
+    },
+    {
+     "u": 0.6,
+     "cy": 0.3151,
+     "top": 0.4699,
+     "bot": 0.1651,
+     "hw": 0.31,
+     "nt": 2.05,
+     "nb": 3.6
+    },
+    {
+     "u": 0.76,
+     "cy": 0.29,
+     "top": 0.45,
+     "bot": 0.15,
+     "hw": 0.262,
+     "nt": 2.0,
+     "nb": 4.0
+    },
+    {
+     "u": 0.92,
+     "cy": 0.275,
+     "top": 0.42,
+     "bot": 0.14,
+     "hw": 0.232,
+     "nt": 2.0,
+     "nb": 4.0
+    },
+    {
+     "u": 1.08,
+     "cy": 0.2726,
+     "top": 0.3774,
+     "bot": 0.1326,
+     "hw": 0.213,
+     "nt": 2.0,
+     "nb": 4.0
+    },
+    {
+     "u": 1.21,
+     "cy": 0.27285,
+     "top": 0.33215,
+     "bot": 0.12285,
+     "hw": 0.198,
+     "nt": 2.05,
+     "nb": 4.0
+    },
+    {
+     "u": 1.32,
+     "cy": 0.2781,
+     "top": 0.2769,
+     "bot": 0.1131,
+     "hw": 0.182,
+     "nt": 2.1,
+     "nb": 3.8
+    },
+    {
+     "u": 1.4,
+     "cy": 0.2858,
+     "top": 0.2142,
+     "bot": 0.1008,
+     "hw": 0.16,
+     "nt": 2.15,
+     "nb": 3.4
+    }
+   ],
+   "caps": [
+    0.16,
+    0.075
+   ],
+   "blend": 0.12,
+   "region": "head",
+   "tag": "cranium",
+   "id": 136
+  },
+  {
+   "bone": "jaw",
+   "kind": "loft",
+   "origin": [
+    3.47,
+    3.58,
+    0.0
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.11
+   ],
+   "sections": [
+    {
+     "u": -0.16,
+     "cy": 0.09,
+     "top": 0.06,
+     "bot": 0.21,
+     "hw": 0.31,
+     "nt": 2.6,
+     "nb": 2.0
+    },
+    {
+     "u": -0.04,
+     "cy": 0.15,
+     "top": 0.06,
+     "bot": 0.37,
+     "hw": 0.395,
+     "nt": 2.6,
+     "nb": 2.1
+    },
+    {
+     "u": 0.12,
+     "cy": 0.145,
+     "top": 0.06,
+     "bot": 0.42,
+     "hw": 0.405,
+     "nt": 2.6,
+     "nb": 2.2
+    },
+    {
+     "u": 0.3,
+     "cy": 0.13,
+     "top": 0.06,
+     "bot": 0.405,
+     "hw": 0.375,
+     "nt": 2.6,
+     "nb": 2.2
+    },
+    {
+     "u": 0.48,
+     "cy": 0.114,
+     "top": 0.06,
+     "bot": 0.359,
+     "hw": 0.26982,
+     "nt": 2.6,
+     "nb": 2.2
+    },
+    {
+     "u": 0.66,
+     "cy": 0.1,
+     "top": 0.06,
+     "bot": 0.305,
+     "hw": 0.23743,
+     "nt": 2.6,
+     "nb": 2.2
+    },
+    {
+     "u": 0.84,
+     "cy": 0.095,
+     "top": 0.06,
+     "bot": 0.255,
+     "hw": 0.20537,
+     "nt": 2.6,
+     "nb": 2.2
+    },
+    {
+     "u": 1.02,
+     "cy": 0.098,
+     "top": 0.06,
+     "bot": 0.213,
+     "hw": 0.18316,
+     "nt": 2.6,
+     "nb": 2.25
+    },
+    {
+     "u": 1.18,
+     "cy": 0.108,
+     "top": 0.06,
+     "bot": 0.178,
+     "hw": 0.16826,
+     "nt": 2.6,
+     "nb": 2.3
+    },
+    {
+     "u": 1.3,
+     "cy": 0.125,
+     "top": 0.06,
+     "bot": 0.15,
+     "hw": 0.15362,
+     "nt": 2.6,
+     "nb": 2.3
+    },
+    {
+     "u": 1.38,
+     "cy": 0.145,
+     "top": 0.06,
+     "bot": 0.125,
+     "hw": 0.13,
+     "nt": 2.6,
+     "nb": 2.3
+    }
+   ],
+   "caps": [
+    0.12,
+    0.085
+   ],
+   "blend": 0.012,
+   "region": "jaw",
+   "tag": "mandible",
+   "id": 137
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.75893,
+    4.19198,
+    0.21
+   ],
+   "radii": [
+    0.28,
+    0.16,
+    0.15
+   ],
+   "rotation": [
+    0.26457,
+    0.12198,
+    -0.15737
+   ],
+   "blend": 0.14,
+   "region": "head",
+   "tag": "adductor",
+   "id": 138
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.90491,
+    3.87403,
+    0.27
+   ],
+   "radii": [
+    0.3,
+    0.1,
+    0.07
+   ],
+   "rotation": [
+    0.03395,
+    0.29813,
+    -0.0751
+   ],
+   "blend": 0.15,
+   "region": "head",
+   "tag": "jugal",
+   "id": 139
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.60892,
+    3.92685,
+    0.3
+   ],
+   "radii": [
+    0.15,
+    0.14,
+    0.08
+   ],
+   "rotation": [
+    0.02802,
+    0.24846,
+    -0.1135
+   ],
+   "blend": 0.12,
+   "region": "head",
+   "tag": "quadratojugal",
+   "id": 140
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.46122,
+    3.50048,
+    0.22
+   ],
+   "radii": [
+    0.24,
+    0.15,
+    0.1
+   ],
+   "rotation": [
+    0.02225,
+    0.19877,
+    0.03778
+   ],
+   "blend": 0.25,
+   "region": "jaw",
+   "tag": "pterygoideus",
+   "masks": [
+    "jowl"
+   ],
+   "id": 141
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.82782,
+    3.54048,
+    0.32
+   ],
+   "radii": [
+    0.28,
+    0.12,
+    0.075
+   ],
+   "rotation": [
+    0.03758,
+    0.32793,
+    -0.03622
+   ],
+   "blend": 0.09,
+   "region": "jaw",
+   "tag": "surangular",
+   "id": 142
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.75893,
+    4.19198,
+    -0.21
+   ],
+   "radii": [
+    0.28,
+    0.16,
+    0.15
+   ],
+   "rotation": [
+    -0.26457,
+    -0.12198,
+    -0.15737
+   ],
+   "blend": 0.14,
+   "region": "head",
+   "tag": "adductor",
+   "id": 143
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.90491,
+    3.87403,
+    -0.27
+   ],
+   "radii": [
+    0.3,
+    0.1,
+    0.07
+   ],
+   "rotation": [
+    -0.03395,
+    -0.29813,
+    -0.0751
+   ],
+   "blend": 0.15,
+   "region": "head",
+   "tag": "jugal",
+   "id": 144
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.60892,
+    3.92685,
+    -0.3
+   ],
+   "radii": [
+    0.15,
+    0.14,
+    0.08
+   ],
+   "rotation": [
+    -0.02802,
+    -0.24846,
+    -0.1135
+   ],
+   "blend": 0.12,
+   "region": "head",
+   "tag": "quadratojugal",
+   "id": 145
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.46122,
+    3.50048,
+    -0.22
+   ],
+   "radii": [
+    0.24,
+    0.15,
+    0.1
+   ],
+   "rotation": [
+    -0.02225,
+    -0.19877,
+    0.03778
+   ],
+   "blend": 0.25,
+   "region": "jaw",
+   "tag": "pterygoideus",
+   "masks": [
+    "jowl"
+   ],
+   "id": 146
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.82782,
+    3.54048,
+    -0.32
+   ],
+   "radii": [
+    0.28,
+    0.12,
+    0.075
+   ],
+   "rotation": [
+    -0.03758,
+    -0.32793,
+    -0.03622
+   ],
+   "blend": 0.09,
+   "region": "jaw",
+   "tag": "surangular",
+   "id": 147
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.74843,
+    3.36815,
+    0.0
+   ],
+   "radii": [
+    0.48,
+    0.13,
+    0.24
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.05
+   ],
+   "blend": 0.15,
+   "region": "jaw",
+   "tag": "throat",
+   "masks": [
+    "throat"
+   ],
+   "id": 148
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.53641,
+    4.12623,
+    0.0
+   ],
+   "radii": [
+    0.48,
+    0.12,
+    0.13
+   ],
+   "rotation": [
+    -0.0,
+    0.0,
+    -0.38
+   ],
+   "blend": 0.05,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "rugose"
+   ],
+   "tag": "nasal_rugose",
+   "id": 149
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.09644,
+    4.11342,
+    0.21651
+   ],
+   "radii": [
+    0.097,
+    0.088,
+    0.072
+   ],
+   "rotation": [
+    0.00701,
+    0.43618,
+    -0.0114
+   ],
+   "blend": 0.05,
+   "region": "head",
+   "masks": [
+    "lid"
+   ],
+   "tag": "lid_shell",
+   "id": 150
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.10435,
+    4.1433,
+    0.23289
+   ],
+   "radii": [
+    0.08,
+    0.034,
+    0.05
+   ],
+   "rotation": [
+    0.00701,
+    0.43618,
+    -0.0114
+   ],
+   "blend": 0.035,
+   "region": "head",
+   "masks": [
+    "lid"
+   ],
+   "tag": "upper_lid",
+   "id": 151
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.10118,
+    4.08134,
+    0.22731
+   ],
+   "radii": [
+    0.07,
+    0.024,
+    0.045
+   ],
+   "rotation": [
+    0.00701,
+    0.43618,
+    -0.0114
+   ],
+   "blend": 0.035,
+   "region": "head",
+   "masks": [
+    "lid"
+   ],
+   "tag": "lower_lid",
+   "id": 152
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.13555,
+    4.11285,
+    0.29095
+   ],
+   "radii": [
+    0.054,
+    0.022,
+    0.048
+   ],
+   "rotation": [
+    0.00701,
+    0.43618,
+    -0.0114
+   ],
+   "blend": 0.012,
+   "region": "head",
+   "sign": -1,
+   "tag": "palpebral_opening",
+   "id": 153
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.09644,
+    4.11342,
+    0.21651
+   ],
+   "radii": [
+    0.055,
+    0.055,
+    0.055
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "blend": 0.004,
+   "region": "head",
+   "sign": -1,
+   "tag": "eye_pit",
+   "id": 154
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.00513,
+    4.27489,
+    0.19276
+   ],
+   "radii": [
+    0.12,
+    0.06,
+    0.09
+   ],
+   "rotation": [
+    0.04005,
+    0.34779,
+    0.00296
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "rugose",
+    "brow"
+   ],
+   "tag": "postorbital_boss",
+   "id": 155
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.27172,
+    4.17041,
+    0.10159
+   ],
+   "radii": [
+    0.11,
+    0.042,
+    0.06
+   ],
+   "rotation": [
+    0.02802,
+    0.24846,
+    -0.2635
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "rugose",
+    "brow"
+   ],
+   "tag": "lacrimal_boss",
+   "id": 156
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.27172,
+    4.17041,
+    0.13159
+   ],
+   "b": [
+    4.00513,
+    4.27489,
+    0.22776
+   ],
+   "ra": 0.04,
+   "rb": 0.04,
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "brow"
+   ],
+   "tag": "brow_shelf",
+   "id": 157
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.12399,
+    4.18506,
+    0.25051
+   ],
+   "radii": [
+    0.09,
+    0.03,
+    0.045
+   ],
+   "rotation": [
+    0.00701,
+    0.43618,
+    -0.0114
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "brow"
+   ],
+   "tag": "brow_overhang",
+   "id": 158
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.85419,
+    3.84634,
+    0.39227
+   ],
+   "radii": [
+    0.07,
+    0.04,
+    0.045
+   ],
+   "rotation": [
+    0.03395,
+    0.29813,
+    -0.1151
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "rugose"
+   ],
+   "tag": "jugal_horn",
+   "id": 159
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.77984,
+    3.87829,
+    0.14273
+   ],
+   "radii": [
+    0.07,
+    0.035,
+    0.03
+   ],
+   "rotation": [
+    -0.36623,
+    0.22107,
+    -0.41563
+   ],
+   "blend": 0.04,
+   "region": "head",
+   "masks": [
+    "nostril"
+   ],
+   "tag": "narial_swelling",
+   "id": 160
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.7967,
+    3.88269,
+    0.16772
+   ],
+   "radii": [
+    0.036,
+    0.013,
+    0.028
+   ],
+   "rotation": [
+    -0.36623,
+    0.22107,
+    -0.41563
+   ],
+   "blend": 0.01,
+   "region": "head",
+   "sign": -1,
+   "masks": [
+    "nostril"
+   ],
+   "tag": "naris",
+   "id": 161
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.92743,
+    3.621,
+    0.08094
+   ],
+   "b": [
+    4.8639,
+    3.61214,
+    0.12331
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 162
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.9238,
+    3.62568,
+    0.07998
+   ],
+   "b": [
+    4.86252,
+    3.61736,
+    0.12069
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 163
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.8639,
+    3.61214,
+    0.12331
+   ],
+   "b": [
+    4.78155,
+    3.6029,
+    0.1399
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 164
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.86252,
+    3.61736,
+    0.12069
+   ],
+   "b": [
+    4.78102,
+    3.60825,
+    0.13722
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 165
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.78155,
+    3.6029,
+    0.1399
+   ],
+   "b": [
+    4.63932,
+    3.60319,
+    0.14788
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 166
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.78102,
+    3.60825,
+    0.13722
+   ],
+   "b": [
+    4.63946,
+    3.60175,
+    0.14206
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 167
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.63932,
+    3.60319,
+    0.14788
+   ],
+   "b": [
+    4.47947,
+    3.61239,
+    0.16028
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 168
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.63946,
+    3.60175,
+    0.14206
+   ],
+   "b": [
+    4.47911,
+    3.60739,
+    0.15699
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 169
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.47947,
+    3.61239,
+    0.16028
+   ],
+   "b": [
+    4.3203,
+    3.6264,
+    0.17891
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 170
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.47911,
+    3.60739,
+    0.15699
+   ],
+   "b": [
+    4.31963,
+    3.62098,
+    0.17643
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 171
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.3203,
+    3.6264,
+    0.17891
+   ],
+   "b": [
+    4.1623,
+    3.65006,
+    0.19835
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 172
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.31963,
+    3.62098,
+    0.17643
+   ],
+   "b": [
+    4.16126,
+    3.6445,
+    0.19635
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 173
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.1623,
+    3.65006,
+    0.19835
+   ],
+   "b": [
+    4.02671,
+    3.67917,
+    0.24267
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 174
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.16126,
+    3.6445,
+    0.19635
+   ],
+   "b": [
+    4.02375,
+    3.67478,
+    0.23984
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 175
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.02523,
+    3.67698,
+    0.24126
+   ],
+   "b": [
+    3.92727,
+    3.70356,
+    0.30157
+   ],
+   "ra": 0.008,
+   "rb": 0.008,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 176
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.02375,
+    3.67478,
+    0.23984
+   ],
+   "b": [
+    3.92655,
+    3.70564,
+    0.29954
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 177
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    3.92727,
+    3.70356,
+    0.30157
+   ],
+   "b": [
+    3.85981,
+    3.7358,
+    0.34893
+   ],
+   "ra": 0.008,
+   "rb": 0.008,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 178
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    3.92655,
+    3.70564,
+    0.29954
+   ],
+   "b": [
+    3.85972,
+    3.73817,
+    0.34711
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 179
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.81687,
+    3.74646,
+    0.32883
+   ],
+   "radii": [
+    0.07,
+    0.05,
+    0.04
+   ],
+   "rotation": [
+    0.03395,
+    0.29813,
+    0.2849
+   ],
+   "blend": 0.05,
+   "region": "jaw",
+   "tag": "rictal_fold",
+   "id": 180
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.09644,
+    4.11342,
+    -0.21651
+   ],
+   "radii": [
+    0.097,
+    0.088,
+    0.072
+   ],
+   "rotation": [
+    3.13458,
+    0.43618,
+    -3.13019
+   ],
+   "blend": 0.05,
+   "region": "head",
+   "masks": [
+    "lid"
+   ],
+   "tag": "lid_shell",
+   "id": 181
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.10435,
+    4.1433,
+    -0.23289
+   ],
+   "radii": [
+    0.08,
+    0.034,
+    0.05
+   ],
+   "rotation": [
+    3.13458,
+    0.43618,
+    -3.13019
+   ],
+   "blend": 0.035,
+   "region": "head",
+   "masks": [
+    "lid"
+   ],
+   "tag": "upper_lid",
+   "id": 182
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.10118,
+    4.08134,
+    -0.22731
+   ],
+   "radii": [
+    0.07,
+    0.024,
+    0.045
+   ],
+   "rotation": [
+    3.13458,
+    0.43618,
+    -3.13019
+   ],
+   "blend": 0.035,
+   "region": "head",
+   "masks": [
+    "lid"
+   ],
+   "tag": "lower_lid",
+   "id": 183
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.1283,
+    4.11292,
+    -0.29433
+   ],
+   "radii": [
+    0.054,
+    0.022,
+    0.048
+   ],
+   "rotation": [
+    3.13458,
+    0.43618,
+    -3.13019
+   ],
+   "blend": 0.012,
+   "region": "head",
+   "sign": -1,
+   "tag": "palpebral_opening",
+   "id": 184
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.09644,
+    4.11342,
+    -0.21651
+   ],
+   "radii": [
+    0.055,
+    0.055,
+    0.055
+   ],
+   "rotation": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "blend": 0.004,
+   "region": "head",
+   "sign": -1,
+   "tag": "eye_pit",
+   "id": 185
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.00503,
+    4.27504,
+    -0.19261
+   ],
+   "radii": [
+    0.12,
+    0.06,
+    0.09
+   ],
+   "rotation": [
+    -0.04005,
+    -0.34779,
+    0.00296
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "rugose",
+    "brow"
+   ],
+   "tag": "postorbital_boss",
+   "id": 186
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.27147,
+    4.17044,
+    -0.10169
+   ],
+   "radii": [
+    0.11,
+    0.042,
+    0.06
+   ],
+   "rotation": [
+    -0.02802,
+    -0.24846,
+    -0.2635
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "rugose",
+    "brow"
+   ],
+   "tag": "lacrimal_boss",
+   "id": 187
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.27147,
+    4.17044,
+    -0.13169
+   ],
+   "b": [
+    4.00503,
+    4.27504,
+    -0.22761
+   ],
+   "ra": 0.04,
+   "rb": 0.04,
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "brow"
+   ],
+   "tag": "brow_shelf",
+   "id": 188
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.10587,
+    4.18523,
+    -0.25896
+   ],
+   "radii": [
+    0.09,
+    0.03,
+    0.045
+   ],
+   "rotation": [
+    3.13458,
+    0.43618,
+    -3.13019
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "brow"
+   ],
+   "tag": "brow_overhang",
+   "id": 189
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    3.85428,
+    3.84639,
+    -0.39227
+   ],
+   "radii": [
+    0.07,
+    0.04,
+    0.045
+   ],
+   "rotation": [
+    -0.03395,
+    -0.29813,
+    -0.1151
+   ],
+   "blend": 0.06,
+   "region": "head",
+   "masks": [
+    "rugose"
+   ],
+   "tag": "jugal_horn",
+   "id": 190
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.77975,
+    3.87824,
+    -0.14277
+   ],
+   "radii": [
+    0.07,
+    0.035,
+    0.03
+   ],
+   "rotation": [
+    -2.77173,
+    0.22649,
+    0.41509
+   ],
+   "blend": 0.04,
+   "region": "head",
+   "masks": [
+    "nostril"
+   ],
+   "tag": "narial_swelling",
+   "id": 191
+  },
+  {
+   "bone": "head",
+   "kind": "ellipsoid",
+   "center": [
+    4.79674,
+    3.8827,
+    -0.16766
+   ],
+   "radii": [
+    0.036,
+    0.013,
+    0.028
+   ],
+   "rotation": [
+    -2.77173,
+    0.22649,
+    0.41509
+   ],
+   "blend": 0.01,
+   "region": "head",
+   "sign": -1,
+   "masks": [
+    "nostril"
+   ],
+   "tag": "naris",
+   "id": 192
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.92742,
+    3.62096,
+    -0.08075
+   ],
+   "b": [
+    4.86422,
+    3.6121,
+    -0.12301
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 193
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.9238,
+    3.62568,
+    -0.07998
+   ],
+   "b": [
+    4.86252,
+    3.61736,
+    -0.12069
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 194
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.86422,
+    3.6121,
+    -0.12301
+   ],
+   "b": [
+    4.78181,
+    3.60285,
+    -0.13972
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 195
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.86252,
+    3.61736,
+    -0.12069
+   ],
+   "b": [
+    4.78102,
+    3.60825,
+    -0.13722
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 196
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.78181,
+    3.60285,
+    -0.13972
+   ],
+   "b": [
+    4.64045,
+    3.60309,
+    -0.14782
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 197
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.78102,
+    3.60825,
+    -0.13722
+   ],
+   "b": [
+    4.63946,
+    3.60175,
+    -0.14206
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 198
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.64045,
+    3.60309,
+    -0.14782
+   ],
+   "b": [
+    4.48016,
+    3.61209,
+    -0.16056
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 199
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.63946,
+    3.60175,
+    -0.14206
+   ],
+   "b": [
+    4.47911,
+    3.60739,
+    -0.15699
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 200
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.48016,
+    3.61209,
+    -0.16056
+   ],
+   "b": [
+    4.32066,
+    3.62624,
+    -0.17912
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 201
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.47911,
+    3.60739,
+    -0.15699
+   ],
+   "b": [
+    4.31963,
+    3.62098,
+    -0.17643
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 202
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.32066,
+    3.62624,
+    -0.17912
+   ],
+   "b": [
+    4.16256,
+    3.64995,
+    -0.1985
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 203
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.31963,
+    3.62098,
+    -0.17643
+   ],
+   "b": [
+    4.16126,
+    3.6445,
+    -0.19635
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 204
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.16256,
+    3.64995,
+    -0.1985
+   ],
+   "b": [
+    4.02662,
+    3.67862,
+    -0.24345
+   ],
+   "ra": 0.011,
+   "rb": 0.011,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 205
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.16126,
+    3.6445,
+    -0.19635
+   ],
+   "b": [
+    4.02375,
+    3.67478,
+    -0.23984
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 206
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.02519,
+    3.6767,
+    -0.24165
+   ],
+   "b": [
+    3.92701,
+    3.70365,
+    -0.30173
+   ],
+   "ra": 0.008,
+   "rb": 0.008,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 207
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    4.02375,
+    3.67478,
+    -0.23984
+   ],
+   "b": [
+    3.92655,
+    3.70564,
+    -0.29954
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 208
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    3.92701,
+    3.70365,
+    -0.30173
+   ],
+   "b": [
+    3.85973,
+    3.7358,
+    -0.34894
+   ],
+   "ra": 0.008,
+   "rb": 0.008,
+   "blend": 0.008,
+   "region": "head",
+   "sign": -1,
+   "tag": "lip_groove",
+   "id": 209
+  },
+  {
+   "bone": "head",
+   "kind": "roundCone",
+   "a": [
+    3.92655,
+    3.70564,
+    -0.29954
+   ],
+   "b": [
+    3.85972,
+    3.73817,
+    -0.34711
+   ],
+   "ra": 0.045,
+   "rb": 0.045,
+   "blend": 0.02,
+   "region": "head",
+   "mask_only": true,
+   "masks": [
+    "lip"
+   ],
+   "tag": "lip_mask",
+   "id": 210
+  },
+  {
+   "bone": "jaw",
+   "kind": "ellipsoid",
+   "center": [
+    3.81768,
+    3.7464,
+    -0.32873
+   ],
+   "radii": [
+    0.07,
+    0.05,
+    0.04
+   ],
+   "rotation": [
+    -0.03395,
+    -0.29813,
+    0.2849
+   ],
+   "blend": 0.05,
+   "region": "jaw",
+   "tag": "rictal_fold",
+   "id": 211
+  }
+ ],
+ "eyes": [
+  {
+   "side": "r",
+   "center": [
+    4.09644,
+    4.11342,
+    0.21651
+   ],
+   "radius": 0.052,
+   "direction": [
+    0.42248,
+    -0.00636,
+    0.90635
+   ],
+   "bone": "eye_r"
+  },
+  {
+   "side": "l",
+   "center": [
+    4.09644,
+    4.11342,
+    -0.21651
+   ],
+   "radius": 0.052,
+   "direction": [
+    0.42248,
+    -0.00636,
+    -0.90635
+   ],
+   "bone": "eye_l"
+  }
+ ],
+ "claws": [
+  {
+   "bone": "toes_r",
+   "points": [
+    [
+     0.71385,
+     0.08294,
+     0.07702
+    ],
+    [
+     0.75723,
+     0.05294,
+     0.04605
+    ],
+    [
+     0.79394,
+     0.02154,
+     0.01985
+    ]
+   ],
+   "radii": [
+    0.04308,
+    0.02423,
+    0.01
+   ]
+  },
+  {
+   "bone": "toes_r",
+   "points": [
+    [
+     0.84712,
+     0.08294,
+     0.34
+    ],
+    [
+     0.90952,
+     0.05294,
+     0.34
+    ],
+    [
+     0.96232,
+     0.02154,
+     0.34
+    ]
+   ],
+   "radii": [
+    0.04847,
+    0.02727,
+    0.01
+   ]
+  },
+  {
+   "bone": "toes_r",
+   "points": [
+    [
+     0.72785,
+     0.08294,
+     0.61297
+    ],
+    [
+     0.77335,
+     0.05294,
+     0.64545
+    ],
+    [
+     0.81184,
+     0.02154,
+     0.67293
+    ]
+   ],
+   "radii": [
+    0.04201,
+    0.02363,
+    0.01
+   ]
+  },
+  {
+   "bone": "metatarsus_r",
+   "points": [
+    [
+     0.17903,
+     0.30212,
+     0.22289
+    ],
+    [
+     0.20333,
+     0.20076,
+     0.21121
+    ]
+   ],
+   "radii": [
+    0.027,
+    0.008
+   ]
+  },
+  {
+   "bone": "toes_l",
+   "points": [
+    [
+     0.71385,
+     0.08294,
+     -0.07702
+    ],
+    [
+     0.75723,
+     0.05294,
+     -0.04605
+    ],
+    [
+     0.79394,
+     0.02154,
+     -0.01985
+    ]
+   ],
+   "radii": [
+    0.04308,
+    0.02423,
+    0.01
+   ]
+  },
+  {
+   "bone": "toes_l",
+   "points": [
+    [
+     0.84712,
+     0.08294,
+     -0.34
+    ],
+    [
+     0.90952,
+     0.05294,
+     -0.34
+    ],
+    [
+     0.96232,
+     0.02154,
+     -0.34
+    ]
+   ],
+   "radii": [
+    0.04847,
+    0.02727,
+    0.01
+   ]
+  },
+  {
+   "bone": "toes_l",
+   "points": [
+    [
+     0.72785,
+     0.08294,
+     -0.61297
+    ],
+    [
+     0.77335,
+     0.05294,
+     -0.64545
+    ],
+    [
+     0.81184,
+     0.02154,
+     -0.67293
+    ]
+   ],
+   "radii": [
+    0.04201,
+    0.02363,
+    0.01
+   ]
+  },
+  {
+   "bone": "metatarsus_l",
+   "points": [
+    [
+     0.17903,
+     0.30212,
+     -0.22289
+    ],
+    [
+     0.20333,
+     0.20076,
+     -0.21121
+    ]
+   ],
+   "radii": [
+    0.027,
+    0.008
+   ]
+  },
+  {
+   "bone": "hand_r",
+   "points": [
+    [
+     2.67,
+     2.04,
+     0.53
+    ],
+    [
+     2.7,
+     1.95,
+     0.535
+    ]
+   ],
+   "radii": [
+    0.026,
+    0.007
+   ]
+  },
+  {
+   "bone": "hand_r",
+   "points": [
+    [
+     2.68,
+     2.07,
+     0.47
+    ],
+    [
+     2.72,
+     1.98,
+     0.465
+    ]
+   ],
+   "radii": [
+    0.024,
+    0.006
+   ]
+  },
+  {
+   "bone": "hand_l",
+   "points": [
+    [
+     2.67,
+     2.04,
+     -0.53
+    ],
+    [
+     2.7,
+     1.95,
+     -0.535
+    ]
+   ],
+   "radii": [
+    0.026,
+    0.007
+   ]
+  },
+  {
+   "bone": "hand_l",
+   "points": [
+    [
+     2.68,
+     2.07,
+     -0.47
+    ],
+    [
+     2.72,
+     1.98,
+     -0.465
+    ]
+   ],
+   "radii": [
+    0.024,
+    0.006
+   ]
+  }
+ ],
+ "teeth": [
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.8691,
+    3.67699,
+    0.07346
+   ],
+   "tip": [
+    4.85313,
+    3.62343,
+    0.06946
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.7978,
+    3.66902,
+    0.11625
+   ],
+   "tip": [
+    4.78182,
+    3.61545,
+    0.11225
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.72694,
+    3.6651,
+    0.125
+   ],
+   "tip": [
+    4.71096,
+    3.61153,
+    0.121
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.65615,
+    3.66185,
+    0.13375
+   ],
+   "tip": [
+    4.64018,
+    3.60828,
+    0.12975
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.58591,
+    3.6635,
+    0.1425
+   ],
+   "tip": [
+    4.56203,
+    3.53832,
+    0.1385
+   ],
+   "radius": 0.02973
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.51576,
+    3.66597,
+    0.15125
+   ],
+   "tip": [
+    4.49158,
+    3.53813,
+    0.14725
+   ],
+   "radius": 0.02997
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.44582,
+    3.67042,
+    0.16
+   ],
+   "tip": [
+    4.42166,
+    3.54274,
+    0.156
+   ],
+   "radius": 0.02996
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.37606,
+    3.67637,
+    0.16875
+   ],
+   "tip": [
+    4.35222,
+    3.55166,
+    0.16475
+   ],
+   "radius": 0.02968
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.30642,
+    3.68355,
+    0.1775
+   ],
+   "tip": [
+    4.28321,
+    3.5645,
+    0.1735
+   ],
+   "radius": 0.02916
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.23713,
+    3.69385,
+    0.18844
+   ],
+   "tip": [
+    4.21482,
+    3.58291,
+    0.18444
+   ],
+   "radius": 0.0284
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.16785,
+    3.70414,
+    0.2125
+   ],
+   "tip": [
+    4.14666,
+    3.60345,
+    0.2085
+   ],
+   "radius": 0.02745
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.09909,
+    3.71928,
+    0.23656
+   ],
+   "tip": [
+    4.07923,
+    3.63055,
+    0.23256
+   ],
+   "radius": 0.02634
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    4.03034,
+    3.73442,
+    0.26062
+   ],
+   "tip": [
+    4.01193,
+    3.65888,
+    0.25662
+   ],
+   "radius": 0.02512
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    3.9623,
+    3.75602,
+    0.28469
+   ],
+   "tip": [
+    3.94543,
+    3.69436,
+    0.28069
+   ],
+   "radius": 0.02383
+  },
+  {
+   "jaw": "upper",
+   "side": "r",
+   "root": [
+    3.89495,
+    3.78387,
+    0.2975
+   ],
+   "tip": [
+    3.87842,
+    3.72533,
+    0.2935
+   ],
+   "radius": 0.02354
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.81189,
+    3.52335,
+    0.05826
+   ],
+   "tip": [
+    4.83055,
+    3.60116,
+    0.05426
+   ],
+   "radius": 0.02294
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.73322,
+    3.51705,
+    0.07848
+   ],
+   "tip": [
+    4.75273,
+    3.60258,
+    0.07448
+   ],
+   "radius": 0.02372
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.65486,
+    3.51345,
+    0.0987
+   ],
+   "tip": [
+    4.67504,
+    3.60509,
+    0.0947
+   ],
+   "radius": 0.02433
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.57696,
+    3.51414,
+    0.11066
+   ],
+   "tip": [
+    4.59761,
+    3.61001,
+    0.10666
+   ],
+   "radius": 0.02476
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.49929,
+    3.51687,
+    0.12206
+   ],
+   "tip": [
+    4.52018,
+    3.6149,
+    0.11806
+   ],
+   "radius": 0.02497
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.42188,
+    3.52197,
+    0.13346
+   ],
+   "tip": [
+    4.44277,
+    3.61999,
+    0.12946
+   ],
+   "radius": 0.02497
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.34464,
+    3.52855,
+    0.14485
+   ],
+   "tip": [
+    4.36529,
+    3.62441,
+    0.14085
+   ],
+   "radius": 0.02476
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.26769,
+    3.53777,
+    0.16181
+   ],
+   "tip": [
+    4.28787,
+    3.62941,
+    0.15781
+   ],
+   "radius": 0.02433
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.19097,
+    3.54917,
+    0.18333
+   ],
+   "tip": [
+    4.21048,
+    3.6347,
+    0.17933
+   ],
+   "radius": 0.02372
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.11455,
+    3.56316,
+    0.20486
+   ],
+   "tip": [
+    4.1332,
+    3.64097,
+    0.20086
+   ],
+   "radius": 0.02294
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    4.03843,
+    3.57992,
+    0.22639
+   ],
+   "tip": [
+    4.05609,
+    3.64873,
+    0.22239
+   ],
+   "radius": 0.02203
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    3.96284,
+    3.60153,
+    0.24792
+   ],
+   "tip": [
+    3.97941,
+    3.66046,
+    0.24392
+   ],
+   "radius": 0.02104
+  },
+  {
+   "jaw": "lower",
+   "side": "r",
+   "root": [
+    3.88803,
+    3.63013,
+    0.25907
+   ],
+   "tip": [
+    3.90346,
+    3.67873,
+    0.25507
+   ],
+   "radius": 0.02
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.8691,
+    3.67699,
+    -0.07346
+   ],
+   "tip": [
+    4.85313,
+    3.62343,
+    -0.06946
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.7978,
+    3.66902,
+    -0.11625
+   ],
+   "tip": [
+    4.78182,
+    3.61545,
+    -0.11225
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.72694,
+    3.6651,
+    -0.125
+   ],
+   "tip": [
+    4.71096,
+    3.61153,
+    -0.121
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.65615,
+    3.66185,
+    -0.13375
+   ],
+   "tip": [
+    4.64018,
+    3.60828,
+    -0.12975
+   ],
+   "radius": 0.02308
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.58591,
+    3.6635,
+    -0.1425
+   ],
+   "tip": [
+    4.56203,
+    3.53832,
+    -0.1385
+   ],
+   "radius": 0.02973
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.51576,
+    3.66597,
+    -0.15125
+   ],
+   "tip": [
+    4.49158,
+    3.53813,
+    -0.14725
+   ],
+   "radius": 0.02997
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.44582,
+    3.67042,
+    -0.16
+   ],
+   "tip": [
+    4.42166,
+    3.54274,
+    -0.156
+   ],
+   "radius": 0.02996
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.37606,
+    3.67637,
+    -0.16875
+   ],
+   "tip": [
+    4.35222,
+    3.55166,
+    -0.16475
+   ],
+   "radius": 0.02968
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.30642,
+    3.68355,
+    -0.1775
+   ],
+   "tip": [
+    4.28321,
+    3.5645,
+    -0.1735
+   ],
+   "radius": 0.02916
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.23713,
+    3.69385,
+    -0.18844
+   ],
+   "tip": [
+    4.21482,
+    3.58291,
+    -0.18444
+   ],
+   "radius": 0.0284
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.16785,
+    3.70414,
+    -0.2125
+   ],
+   "tip": [
+    4.14666,
+    3.60345,
+    -0.2085
+   ],
+   "radius": 0.02745
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.09909,
+    3.71928,
+    -0.23656
+   ],
+   "tip": [
+    4.07923,
+    3.63055,
+    -0.23256
+   ],
+   "radius": 0.02634
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    4.03034,
+    3.73442,
+    -0.26062
+   ],
+   "tip": [
+    4.01193,
+    3.65888,
+    -0.25662
+   ],
+   "radius": 0.02512
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    3.9623,
+    3.75602,
+    -0.28469
+   ],
+   "tip": [
+    3.94543,
+    3.69436,
+    -0.28069
+   ],
+   "radius": 0.02383
+  },
+  {
+   "jaw": "upper",
+   "side": "l",
+   "root": [
+    3.89495,
+    3.78387,
+    -0.2975
+   ],
+   "tip": [
+    3.87842,
+    3.72533,
+    -0.2935
+   ],
+   "radius": 0.02354
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.81189,
+    3.52335,
+    -0.05826
+   ],
+   "tip": [
+    4.83055,
+    3.60116,
+    -0.05426
+   ],
+   "radius": 0.02294
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.73322,
+    3.51705,
+    -0.07848
+   ],
+   "tip": [
+    4.75273,
+    3.60258,
+    -0.07448
+   ],
+   "radius": 0.02372
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.65486,
+    3.51345,
+    -0.0987
+   ],
+   "tip": [
+    4.67504,
+    3.60509,
+    -0.0947
+   ],
+   "radius": 0.02433
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.57696,
+    3.51414,
+    -0.11066
+   ],
+   "tip": [
+    4.59761,
+    3.61001,
+    -0.10666
+   ],
+   "radius": 0.02476
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.49929,
+    3.51687,
+    -0.12206
+   ],
+   "tip": [
+    4.52018,
+    3.6149,
+    -0.11806
+   ],
+   "radius": 0.02497
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.42188,
+    3.52197,
+    -0.13346
+   ],
+   "tip": [
+    4.44277,
+    3.61999,
+    -0.12946
+   ],
+   "radius": 0.02497
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.34464,
+    3.52855,
+    -0.14485
+   ],
+   "tip": [
+    4.36529,
+    3.62441,
+    -0.14085
+   ],
+   "radius": 0.02476
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.26769,
+    3.53777,
+    -0.16181
+   ],
+   "tip": [
+    4.28787,
+    3.62941,
+    -0.15781
+   ],
+   "radius": 0.02433
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.19097,
+    3.54917,
+    -0.18333
+   ],
+   "tip": [
+    4.21048,
+    3.6347,
+    -0.17933
+   ],
+   "radius": 0.02372
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.11455,
+    3.56316,
+    -0.20486
+   ],
+   "tip": [
+    4.1332,
+    3.64097,
+    -0.20086
+   ],
+   "radius": 0.02294
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    4.03843,
+    3.57992,
+    -0.22639
+   ],
+   "tip": [
+    4.05609,
+    3.64873,
+    -0.22239
+   ],
+   "radius": 0.02203
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    3.96284,
+    3.60153,
+    -0.24792
+   ],
+   "tip": [
+    3.97941,
+    3.66046,
+    -0.24392
+   ],
+   "radius": 0.02104
+  },
+  {
+   "jaw": "lower",
+   "side": "l",
+   "root": [
+    3.88803,
+    3.63013,
+    -0.25907
+   ],
+   "tip": [
+    3.90346,
+    3.67873,
+    -0.25507
+   ],
+   "radius": 0.02
+  }
+ ]
+}

@@ -22,7 +22,13 @@
 		{
 			"Name": "NoctisEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject",
+				"Noctis",
+				"NoctisCore"
+			]
 		}
 	],
 	"Plugins": [

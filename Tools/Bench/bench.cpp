@@ -14,6 +14,11 @@
 //     regimes: real time at 10 Hz, the CLI "run" regime (1 s steps, full detail near the observer),
 //     and accelerated time (x100: no full detail, 10 s steps);
 //   * resident memory after initialisation and peak.
+// The 1-thread and N-thread worlds run the identical step sequence (the simulation is deterministic
+// across thread counts), so both series measure the same workload; "consistency" in the report holds
+// the event count and census at the end of each run as a check. Every timed section also records
+// process CPU time / wall time ("cpu_per_wall": average busy cores) and throughput scenarios record
+// their mean LOD mix, so a serial section can be told apart from a starved (shared) machine.
 // Timings are wall-clock (steady_clock) on whatever machine runs the benchmark: compare runs from
 // the same runner only.
 #include "Noctis/Core/FileSystem.h"
@@ -44,6 +49,9 @@
 #else
 #include <sys/resource.h>
 #include <unistd.h>
+#if defined(__GLIBC__)
+#include <malloc.h> // malloc_trim
+#endif
 #endif
 
 #ifndef NOCTIS_SOURCE_DIR
@@ -116,6 +124,43 @@ double peakRssMb()
 #else
     return static_cast<double>(ru.ru_maxrss) / 1024.0; // kilobytes on Linux
 #endif
+#endif
+}
+
+// User + system CPU time of the whole process (all threads), in seconds. CPU / wall = average number
+// of busy cores: it tells a serial section from a starved machine when wall-clock numbers are noisy.
+double processCpuSeconds()
+{
+#if defined(_WIN32)
+    FILETIME creation, exitTime, kernel, user;
+    if (!GetProcessTimes(GetCurrentProcess(), &creation, &exitTime, &kernel, &user))
+    {
+        return 0.0;
+    }
+    auto toS = [](const FILETIME& ft) {
+        const unsigned long long t = (static_cast<unsigned long long>(ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+        return static_cast<double>(t) * 1e-7; // 100 ns units
+    };
+    return toS(kernel) + toS(user);
+#else
+    rusage ru;
+    std::memset(&ru, 0, sizeof(ru));
+    if (getrusage(RUSAGE_SELF, &ru) != 0)
+    {
+        return 0.0;
+    }
+    return static_cast<double>(ru.ru_utime.tv_sec) + static_cast<double>(ru.ru_stime.tv_sec) +
+           1e-6 * (static_cast<double>(ru.ru_utime.tv_usec) + static_cast<double>(ru.ru_stime.tv_usec));
+#endif
+}
+
+// glibc keeps freed heap pages mapped, so the RSS delta of a world built after other worlds were
+// destroyed would read ~0. Hand the free pages back before measuring (other allocators return large
+// blocks to the system on free).
+void releaseFreedMemory()
+{
+#if defined(__GLIBC__)
+    malloc_trim(0);
 #endif
 }
 
@@ -229,6 +274,7 @@ struct StepStats
     double p95Us = 0.0;
     double maxUs = 0.0;
     double creaturesMean = 0.0;
+    double cpuPerWall = 0.0; // process CPU time / wall time while stepping (1.0 = one core busy)
 };
 
 StepStats measureSteps(WorldSimulation& w, double dt, double simSeconds)
@@ -237,6 +283,8 @@ StepStats measureSteps(WorldSimulation& w, double dt, double simSeconds)
     std::vector<double> us;
     double creatures = 0.0;
     double done = 0.0;
+    const double cpu0 = processCpuSeconds();
+    const auto wall0 = Clock::now();
     while (done < simSeconds - 1e-9)
     {
         const auto t0 = Clock::now();
@@ -245,6 +293,8 @@ StepStats measureSteps(WorldSimulation& w, double dt, double simSeconds)
         creatures += static_cast<double>(w.creatures().aliveCount());
         done += dt;
     }
+    const double wallS = msSince(wall0) / 1000.0;
+    s.cpuPerWall = wallS > 0.0 ? (processCpuSeconds() - cpu0) / wallS : 0.0;
     if (us.empty())
     {
         return s;
@@ -273,7 +323,21 @@ JsonValue stepJson(const StepStats& s)
     j.set("step_us_p95", s.p95Us);
     j.set("step_us_max", s.maxUs);
     j.set("creatures_mean", s.creaturesMean);
+    j.set("cpu_per_wall", s.cpuPerWall);
     return j;
+}
+
+// Stable ASCII key for the JSON report (lodLabel() is the localised UI label).
+const char* lodKey(LodLevel l)
+{
+    switch (l)
+    {
+    case LodLevel::Full: return "full";
+    case LodLevel::Near: return "near";
+    case LodLevel::Far: return "far";
+    case LodLevel::Regional: return "regional";
+    }
+    return "unknown";
 }
 
 void forceLod(WorldSimulation& w, LodLevel l)
@@ -303,7 +367,11 @@ struct Throughput
     float timeScale = 1.0f;
     double simSeconds = 0.0;
     double wallSeconds = 0.0;
+    double cpuSeconds = 0.0; // process CPU time (all threads) over the same interval
     double creaturesMean = 0.0;
+    double lodFullMean = 0.0; // mean number of creatures in each level of detail (sampled per chunk)
+    double lodNearMean = 0.0;
+    double lodFarMean = 0.0;
 };
 
 Throughput measureThroughput(WorldSimulation& w, const char* scenario, int threads, double dt, float timeScale, double simSeconds)
@@ -320,7 +388,9 @@ Throughput measureThroughput(WorldSimulation& w, const char* scenario, int threa
     lod.nearRadiusM = 1500.0f;
     w.step(dt); // apply the LOD regime
     double creatures = 0.0;
+    double lodCount[3] = {0.0, 0.0, 0.0};
     int samples = 0;
+    const double cpu0 = processCpuSeconds();
     const auto t0 = Clock::now();
     double done = 0.0;
     while (done < simSeconds - 1e-9)
@@ -329,10 +399,18 @@ Throughput measureThroughput(WorldSimulation& w, const char* scenario, int threa
         w.advance(chunk, dt);
         done += chunk;
         creatures += static_cast<double>(w.creatures().aliveCount());
+        lodCount[0] += countLod(w, LodLevel::Full);
+        lodCount[1] += countLod(w, LodLevel::Near);
+        lodCount[2] += countLod(w, LodLevel::Far);
         ++samples;
     }
     t.wallSeconds = msSince(t0) / 1000.0;
-    t.creaturesMean = samples > 0 ? creatures / samples : 0.0;
+    t.cpuSeconds = processCpuSeconds() - cpu0;
+    const double inv = samples > 0 ? 1.0 / samples : 0.0;
+    t.creaturesMean = creatures * inv;
+    t.lodFullMean = lodCount[0] * inv;
+    t.lodNearMean = lodCount[1] * inv;
+    t.lodFarMean = lodCount[2] * inv;
     return t;
 }
 
@@ -346,7 +424,14 @@ JsonValue throughputJson(const Throughput& t)
     j.set("sim_seconds", t.simSeconds);
     j.set("wall_seconds", t.wallSeconds);
     j.set("sim_s_per_wall_s", t.wallSeconds > 0.0 ? t.simSeconds / t.wallSeconds : 0.0);
+    j.set("cpu_seconds", t.cpuSeconds);
+    j.set("cpu_per_wall", t.wallSeconds > 0.0 ? t.cpuSeconds / t.wallSeconds : 0.0);
     j.set("creatures_mean", t.creaturesMean);
+    JsonValue mix = JsonValue::makeObject();
+    mix.set("full", t.lodFullMean);
+    mix.set("near", t.lodNearMean);
+    mix.set("far", t.lodFarMean);
+    j.set("lod_mix_mean", mix);
     return j;
 }
 
@@ -517,32 +602,43 @@ int main(int argc, char** argv)
     }
     init.set("world_without_population_ms", initNoPopMs);
 
-    // --- Full world, 1 thread: init, memory, per-LOD step cost, throughput.
+    // --- Full world at 1 thread, then at N threads. Both worlds go through exactly the same sequence of
+    // steps and the simulation is deterministic across thread counts, so the two series measure the same
+    // workload; "consistency" records the event count and census at the end of each run to prove it.
     JsonValue memory = JsonValue::makeObject();
     JsonValue lodArr = JsonValue::makeArray();
     JsonValue thrArr = JsonValue::makeArray();
     JsonValue timings = JsonValue::makeObject();
+    JsonValue consistency = JsonValue::makeArray();
+    std::vector<int> threadCounts{1};
+    if (opt.threads > 1)
     {
+        threadCounts.push_back(opt.threads);
+    }
+    for (const int threads : threadCounts)
+    {
+        releaseFreedMemory();
         std::unique_ptr<WorldSimulation> w = std::make_unique<WorldSimulation>();
         const double rssBefore = currentRssMb();
         const auto t0 = Clock::now();
-        if (!w->initialize(makeConfig(opt, 1, true)))
+        if (!w->initialize(makeConfig(opt, threads, true)))
         {
             return 1;
         }
         const double initMs = msSince(t0);
-        init.set("total_ms", initMs);
-        init.set("population_spawn_ms_estimate", initMs - initNoPopMs);
-        init.set("creatures", static_cast<double>(w->creatures().aliveCount()));
-        init.set("groups", static_cast<double>(w->creatures().groups().size()));
-        const double rssAfter = currentRssMb();
-        memory.set("rss_before_world_mb", rssBefore);
-        memory.set("rss_after_init_mb", rssAfter);
-        memory.set("world_rss_delta_mb", rssAfter - rssBefore);
-        std::printf("init: %.0f ms (%zu creatures), RSS +%.1f MB\n", initMs, w->creatures().aliveCount(), rssAfter - rssBefore);
-
-        // Snapshot cost (what the renderer pays per frame).
+        if (threads == 1)
         {
+            init.set("total_ms", initMs);
+            init.set("population_spawn_ms_estimate", initMs - initNoPopMs);
+            init.set("creatures", static_cast<double>(w->creatures().aliveCount()));
+            init.set("groups", static_cast<double>(w->creatures().groups().size()));
+            const double rssAfter = currentRssMb();
+            memory.set("rss_before_world_mb", rssBefore);
+            memory.set("rss_after_init_mb", rssAfter);
+            memory.set("world_rss_delta_mb", rssAfter - rssBefore);
+            std::printf("init: %.0f ms (%zu creatures), RSS +%.1f MB\n", initMs, w->creatures().aliveCount(), rssAfter - rssBefore);
+
+            // Snapshot cost (what the renderer pays per frame).
             RenderSnapshot snap;
             w->buildSnapshot(snap);
             const auto s0 = Clock::now();
@@ -552,6 +648,10 @@ int main(int argc, char** argv)
             }
             memory.set("snapshot_creatures", static_cast<double>(snap.creatures.size()));
             report.set("snapshot_us", msSince(s0) * 1000.0 / 20.0);
+        }
+        else
+        {
+            init.set("total_ms_n_threads", initMs);
         }
 
         const LodLevel levels[] = {LodLevel::Full, LodLevel::Near, LodLevel::Far};
@@ -564,63 +664,46 @@ int main(int argc, char** argv)
             const double net = std::max(0.0, s.meanUs - baseline.meanUs);
             const double perCreature = s.creaturesMean > 0.0 ? net / s.creaturesMean : 0.0;
             JsonValue j = stepJson(s);
-            j.set("lod", lodLabel(l));
+            j.set("lod", lodKey(l));
+            j.set("threads", threads);
             j.set("creatures_in_lod", inLod);
             j.set("dt_s", 0.1);
             j.set("baseline_step_us", baseline.meanUs);
             j.set("per_creature_step_us", perCreature);
             j.set("per_creature_per_sim_second_us", perCreature / 0.1);
             lodArr.push(j);
-            std::printf("LOD %-4s: %d/%0.f creatures, step %.0f us (p95 %.0f), net %.2f us/creature/step (baseline %.0f us)\n", lodLabel(l), inLod,
-                        s.creaturesMean, s.meanUs, s.p95Us, perCreature, baseline.meanUs);
+            std::printf("LOD %-4s %d thread(s): %d/%0.f creatures, step %.0f us (p95 %.0f, CPU/wall %.2f), net %.2f us/creature/step (baseline %.0f us)\n",
+                        lodKey(l), threads, inLod, s.creaturesMean, s.meanUs, s.p95Us, s.cpuPerWall, perCreature, baseline.meanUs);
         }
-        const Throughput a = measureThroughput(*w, "realtime_10hz", 1, 0.1, 1.0f, realtimeSimS);
-        const Throughput b = measureThroughput(*w, "cli_run_1s", 1, 1.0, 1.0f, cliSimS);
-        const Throughput c = measureThroughput(*w, "accelerated_x100_10s", 1, 10.0, 100.0f, accelSimS);
+        const Throughput a = measureThroughput(*w, "realtime_10hz", threads, 0.1, 1.0f, realtimeSimS);
+        const Throughput b = measureThroughput(*w, "cli_run_1s", threads, 1.0, 1.0f, cliSimS);
+        const Throughput c = measureThroughput(*w, "accelerated_x100_10s", threads, 10.0, 100.0f, accelSimS);
         for (const Throughput* t : {&a, &b, &c})
         {
             thrArr.push(throughputJson(*t));
-            std::printf("%-22s 1 thread : x%.0f real time (%.0f s simulated in %.2f s)\n", t->scenario.c_str(), t->simSeconds / std::max(1e-9, t->wallSeconds),
-                        t->simSeconds, t->wallSeconds);
+            std::printf("%-22s %d thread(s): x%.0f real time (%.0f s simulated in %.2f s, CPU/wall %.2f; LOD mix full %.1f / near %.1f / far %.1f)\n",
+                        t->scenario.c_str(), threads, t->simSeconds / std::max(1e-9, t->wallSeconds), t->simSeconds, t->wallSeconds,
+                        t->wallSeconds > 0.0 ? t->cpuSeconds / t->wallSeconds : 0.0, t->lodFullMean, t->lodNearMean, t->lodFarMean);
         }
-        const WorldSimulation::Timings& tm = w->timings();
-        timings.set("environment_ms", tm.environment);
-        timings.set("creatures_ms", tm.creatures);
-        timings.set("research_ms", tm.research);
-        timings.set("hourly_ms", tm.hourly);
-        timings.set("daily_ms", tm.daily);
-    }
-
-    // --- Full world, N threads.
-    if (opt.threads > 1)
-    {
-        std::unique_ptr<WorldSimulation> w = std::make_unique<WorldSimulation>();
-        const auto t0 = Clock::now();
-        if (!w->initialize(makeConfig(opt, opt.threads, true)))
+        if (threads == 1)
         {
-            return 1;
+            const WorldSimulation::Timings& tm = w->timings();
+            timings.set("environment_ms", tm.environment);
+            timings.set("creatures_ms", tm.creatures);
+            timings.set("research_ms", tm.research);
+            timings.set("hourly_ms", tm.hourly);
+            timings.set("daily_ms", tm.daily);
         }
-        init.set("total_ms_n_threads", msSince(t0));
-        // Same LOD experiment for Full only (the parallel phase that matters most).
-        forceLod(*w, LodLevel::Full);
-        w->advance(2.0, 0.1);
-        const StepStats s = measureSteps(*w, 0.1, lodSimS);
-        JsonValue j = stepJson(s);
-        j.set("lod", "full");
-        j.set("threads", opt.threads);
-        j.set("dt_s", 0.1);
-        report.set("full_lod_n_threads", j);
-        std::printf("LOD full, %d threads: step %.0f us (p95 %.0f)\n", opt.threads, s.meanUs, s.p95Us);
-        const Throughput a = measureThroughput(*w, "realtime_10hz", opt.threads, 0.1, 1.0f, realtimeSimS);
-        const Throughput b = measureThroughput(*w, "cli_run_1s", opt.threads, 1.0, 1.0f, cliSimS);
-        const Throughput c = measureThroughput(*w, "accelerated_x100_10s", opt.threads, 10.0, 100.0f, accelSimS);
-        for (const Throughput* t : {&a, &b, &c})
-        {
-            thrArr.push(throughputJson(*t));
-            std::printf("%-22s %d threads: x%.0f real time (%.0f s simulated in %.2f s)\n", t->scenario.c_str(), opt.threads,
-                        t->simSeconds / std::max(1e-9, t->wallSeconds), t->simSeconds, t->wallSeconds);
-        }
+        JsonValue cj = JsonValue::makeObject();
+        cj.set("threads", threads);
+        cj.set("sim_time_s", w->clock().seconds());
+        cj.set("events_emitted", static_cast<double>(w->events().totalEmitted()));
+        cj.set("alive", static_cast<double>(w->creatures().aliveCount()));
+        consistency.push(cj);
+        std::printf("end of %d-thread run: %.0f events emitted, %zu alive\n", threads, static_cast<double>(w->events().totalEmitted()),
+                    w->creatures().aliveCount());
     }
+    report.set("consistency", consistency);
     memory.set("rss_start_mb", rssStart);
     memory.set("rss_end_mb", currentRssMb());
     memory.set("peak_rss_mb", peakRssMb());

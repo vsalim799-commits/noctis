@@ -392,6 +392,20 @@
       "type": "article",
       "verified": false,
       "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+    },
+    {
+      "id": "dewinter2020_rudist_daily",
+      "authors": "de Winter, N.J.; Goderis, S.; Van Malderen, S.J.M.; Sinnesael, M.; Vansteenberge, S.; Snoeck, C.; Belza, J.; Vanhaecke, F.; Claeys, P.",
+      "year": 2020,
+      "title": "Subdaily-scale chemical variability in a Torreites sanchezi rudist shell: implications for rudist paleobiology and the Cretaceous day-night cycle",
+      "container": "Paleoceanography and Paleoclimatology",
+      "volume": null,
+      "pages": null,
+      "doi": null,
+      "url": null,
+      "type": "article",
+      "verified": false,
+      "verification": "NON VÉRIFIÉ — cité de mémoire par l'agent de conception de niveau (2026-10-15) ; volume, pages et DOI laissés à null. Contenu rapporté de mémoire : environ 372 jours par an au Campanien (rudiste d'Oman), donc un jour d'environ 23,5 h. Piste pour la durée du jour (calendrier de Data/Science/sim_constants.json), à vérifier avant tout usage ; ne concerne pas directement la Hell Creek (Maastrichtien, Amérique du Nord)."
     }
   ]
 }

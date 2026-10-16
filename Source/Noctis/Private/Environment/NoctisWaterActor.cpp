@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "ProceduralMeshComponent.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 namespace NoctisWaterImpl
 {
@@ -91,6 +92,7 @@ void ANoctisWaterActor::BeginPlay()
 
 void ANoctisWaterActor::Tick(float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_Water);
 	Super::Tick(DeltaSeconds);
 	UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this);
 	const FNoctisFrameOutput* Front = Sub ? Sub->GetFrontFrame() : nullptr;

@@ -31,12 +31,14 @@ from audiofactory import manifest as M  # noqa: E402
 MODULES = ["vocal", "footsteps", "foley", "ambience", "equipment"]
 _DS: D.Dataset | None = None
 _PNG = True
+_REUSE_PNG = False
 
 
-def _init(png: bool):
-    global _DS, _PNG
+def _init(png: bool, reuse_png: bool = False):
+    global _DS, _PNG, _REUSE_PNG
     _DS = D.load()
     _PNG = png
+    _REUSE_PNG = reuse_png
 
 
 def _active_rms_dbfs(x: np.ndarray) -> float:
@@ -51,7 +53,12 @@ def _active_rms_dbfs(x: np.ndarray) -> float:
 
 def finalize(s: M.Sound) -> tuple[dict, tuple]:
     x = np.asarray(s.audio, dtype=np.float64)
-    x = C.highpass(x, 5.0, order=2)                    # DC / sub-audio guard
+    if s.loop:
+        # Circular DC guard: filter one wrapped copy first so the output is in periodic steady state (seamless).
+        k = min(x.shape[0], C.ns(2.0))
+        x = C.highpass(np.concatenate([x[-k:], x], axis=0), 5.0, order=2)[k:]
+    else:
+        x = C.highpass(x, 5.0, order=2)                # DC / sub-audio guard
     if s.fade and not s.loop:
         x = C.fade(x, 0.002, 0.02)
     mode = s.normalize[0]
@@ -69,7 +76,15 @@ def finalize(s: M.Sound) -> tuple[dict, tuple]:
     level["normalization"] = {"mode": mode, "target_dbfs": s.normalize[1] if len(s.normalize) > 1 else None,
                               "gain_db": round(g, 3)}
     level["active_rms_dbfs"] = round(act, 3)
-    if "source_spl_db_1m" in level:
+    if level.get("received_spl_db") is not None:
+        # Distance baked into the file (thunder): calibrate on the received level.
+        level["calibration_spl_db_at_0dbfs_rms"] = round(level["received_spl_db"] - act, 2)
+    elif level.get("ambient_spl_db") is not None:
+        # Diffuse beds / loops: the whole file represents the ambient level at the listener.
+        full = float(C.lin2db(C.rms(x)))
+        level["rms_dbfs"] = round(full, 3)
+        level["calibration_spl_db_at_0dbfs_rms"] = round(level["ambient_spl_db"] - full, 2)
+    elif "source_spl_db_1m" in level:
         # SPL (dB re 20 µPa at 1 m) that a full-scale RMS signal (0 dBFS RMS) of this file represents.
         level["calibration_spl_db_at_0dbfs_rms"] = round(level["source_spl_db_1m"] - act, 2)
     rec["level"] = level
@@ -79,8 +94,10 @@ def finalize(s: M.Sound) -> tuple[dict, tuple]:
                     "duration_s": round(x.shape[0] / C.SR, 6), "loop": s.loop}
     rec["qa"] = dict(s.qa, duration_s=round(x.shape[0] / C.SR, 6), channels=ch, loop=s.loop)
     thumb = None
-    if _PNG:
-        png = C.PREVIEW_DIR / s.group / f"{s.id}.png"
+    png = C.PREVIEW_DIR / s.group / f"{s.id}.png"
+    if _PNG and _REUSE_PNG and png.exists():
+        rec["preview_png"] = C.rel(png)          # audio unchanged: keep the existing spectrogram
+    elif _PNG:
         low = s.params.get("f0_effective_median_hz", 1000.0) < 150.0 or s.category in ("footstep",) or "thunder" in s.id
         from audiofactory import spectro
         thumb = spectro.render(png, x, s.id, f"{s.label_fr}  [{D.CONFIDENCE_LABEL_FR[s.confidence]}]", low_content=low)
@@ -105,8 +122,15 @@ def main(argv=None) -> int:
     ap.add_argument("--only", nargs="*", choices=MODULES, help="generate only these categories (manifest is merged)")
     ap.add_argument("--jobs", type=int, default=max(1, mp.cpu_count()))
     ap.add_argument("--no-png", action="store_true", help="skip spectrogram previews")
+    ap.add_argument("--prune-only", action="store_true", help="only delete WAV / PNG files that are not in the manifest")
+    ap.add_argument("--reuse-png", action="store_true",
+                    help="keep existing spectrograms (metadata-only changes); contact sheets are rebuilt only for new previews")
     args = ap.parse_args(argv)
     t0 = time.time()
+    if args.prune_only:
+        prev = json.loads(C.MANIFEST_PATH.read_text(encoding="utf-8"))
+        prune(prev["sounds"], png=True)
+        return 0
     ds = D.load()
     mods = args.only or MODULES
     joblist = []
@@ -115,13 +139,13 @@ def main(argv=None) -> int:
     print(f"[audiofactory] {len(joblist)} jobs ({', '.join(mods)}) on {args.jobs} processes")
     results = []
     if args.jobs > 1:
-        with mp.get_context("fork").Pool(args.jobs, initializer=_init, initargs=(not args.no_png,)) as pool:
+        with mp.get_context("fork").Pool(args.jobs, initializer=_init, initargs=(not args.no_png, args.reuse_png)) as pool:
             for k, res in enumerate(pool.imap(run_job, joblist, chunksize=1)):
                 results.extend(res)
                 if (k + 1) % 25 == 0:
                     print(f"  {k + 1}/{len(joblist)} jobs, {len(results)} sounds, {time.time() - t0:.0f} s", flush=True)
     else:
-        _init(not args.no_png)
+        _init(not args.no_png, args.reuse_png)
         for job in joblist:
             results.extend(run_job(job))
     records = [r for r, _ in results]
@@ -137,14 +161,16 @@ def main(argv=None) -> int:
         old = [r for r in prev.get("sounds", []) if r.get("module") not in set(mods)]
     all_records = sorted(old + records, key=lambda r: (r["category"], r["id"]))
     write_manifest(ds, all_records)
+    prune(all_records, png=not args.no_png)
 
     if not args.no_png:
         from audiofactory import spectro
         groups = defaultdict(list)
         for _, (g, sid, th, conf) in results:
-            if th is not None:
-                groups[g].append((sid, th, conf))
+            groups[g].append((sid, th, conf))
         for g, items in sorted(groups.items()):
+            if any(th is None for _, th, _ in items):
+                continue                          # some previews were reused (--reuse-png): keep the existing sheet
             for part in range(0, len(items), 48):
                 chunk = items[part:part + 48]
                 suffix = "" if len(items) <= 48 else f"_{part // 48 + 1}"
@@ -152,6 +178,24 @@ def main(argv=None) -> int:
     by_cat = Counter(r["category"] for r in all_records)
     print(f"[audiofactory] {len(all_records)} sounds in manifest {dict(by_cat)}; {time.time() - t0:.0f} s")
     return 0
+
+
+def prune(records: list[dict], png: bool) -> None:
+    """Delete generated files that are no longer described by the manifest (renamed or removed sounds)."""
+    listed = {r["file"] for r in records}
+    n = 0
+    for p in C.BUILD_DIR.rglob("*.wav"):
+        if C.rel(p) not in listed:
+            p.unlink()
+            n += 1
+    if png:
+        pngs = {r.get("preview_png") for r in records}
+        for p in C.PREVIEW_DIR.rglob("*.png"):
+            if "sheets" not in p.relative_to(C.PREVIEW_DIR).parts and C.rel(p) not in pngs:
+                p.unlink()
+                n += 1
+    if n:
+        print(f"[audiofactory] pruned {n} stale files")
 
 
 def write_manifest(ds: D.Dataset, records: list[dict]) -> None:

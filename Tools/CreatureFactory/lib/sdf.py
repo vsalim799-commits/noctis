@@ -317,8 +317,9 @@ class Compiled:
             pts -= g * step[:, None]
         return pts
 
-    def attributes(self, pts, sig_scale=0.3, sig_add=0.02):
-        """Per-point region scores, bone weights, feature, masks (see sdf_mesher.js weights)."""
+    def attributes(self, pts, sig_scale=0.3, sig_add=0.02, return_best=False):
+        """Per-point region scores, bone weights (max over each bone's volumes, normalised), feature,
+        masks; optionally the index of the shape whose surface is nearest (surface 'owner')."""
         pts = np.ascontiguousarray(pts, dtype=np.float64)
         n = len(pts)
         nreg = len(REGIONS)
@@ -328,7 +329,10 @@ class Compiled:
         bw = np.zeros((n, nb), np.float32)
         feat = np.zeros((n, len(FEATURES)), np.float32)
         masks = np.zeros((n, nm), np.float32)
-        attr_points(pts, reg, bw, feat, masks, self.bone, self.region, self.feature, self.mask, sig_scale, sig_add, *self.args())
+        best = -np.ones(n, np.int32)
+        attr_points(pts, reg, bw, feat, masks, best, self.bone, self.region, self.feature, self.mask, sig_scale, sig_add, *self.args())
+        if return_best:
+            return reg, bw, feat, masks[:, :len(self.mask_names)], best
         return reg, bw, feat, masks[:, :len(self.mask_names)]
 
 
@@ -725,7 +729,7 @@ def eval_blocks(origins, B, h, out, kind, sign, k, P, LT, SW, g0, cell, dims, cs
 
 
 @njit(parallel=True, cache=True, fastmath=True)
-def attr_points(pts, reg, bw, feat, masks, bone, region, feature, mask, sig_scale, sig_add,
+def attr_points(pts, reg, bw, feat, masks, best_out, bone, region, feature, mask, sig_scale, sig_add,
                 kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems):
     for j in prange(pts.shape[0]):
         x = pts[j, 0]
@@ -762,12 +766,12 @@ def attr_points(pts, reg, bw, feat, masks, bone, region, feature, mask, sig_scal
                 b0 = int(SW[r, 18])
                 b1 = int(SW[r, 19])
                 bf = SW[r, 20]
-                bw[j, b0] += w * (1 - bf)
-                bw[j, b1] += w * bf
+                bw[j, b0] = max(bw[j, b0], w * (1 - bf))
+                bw[j, b1] = max(bw[j, b1], w * bf)
                 rg = int(SW[r, 21])
                 reg[j, rg] = max(reg[j, rg], sc)
             else:
-                bw[j, bone[i]] += w
+                bw[j, bone[i]] = max(bw[j, bone[i]], w)
                 reg[j, region[i]] = max(reg[j, region[i]], sc)
             tot += w
             feat[j, feature[i]] = max(feat[j, feature[i]], sc)
@@ -778,6 +782,10 @@ def attr_points(pts, reg, bw, feat, masks, bone, region, feature, mask, sig_scal
             if sc > best:
                 best = sc
                 bi = i
+        best_out[j] = bi
+        tot = 0.0
+        for q in range(bw.shape[1]):
+            tot += bw[j, q]
         if tot > 0:
             for q in range(bw.shape[1]):
                 bw[j, q] /= tot

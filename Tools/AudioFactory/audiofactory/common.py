@@ -21,7 +21,7 @@ TOOL_DIR = REPO / "Tools" / "AudioFactory"
 BUILD_DIR = REPO / "Build" / "Audio"
 MANIFEST_PATH = REPO / "Data" / "Audio" / "manifest.json"
 PREVIEW_DIR = REPO / "Output" / "audio"
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 MASTER_SEED = 20261015          # changing it changes every random variation of the library
 
 C_AIR_REF = 343.0               # m/s, only used where temperature does not matter

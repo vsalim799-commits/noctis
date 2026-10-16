@@ -26,6 +26,7 @@
 
 // ASkyAtmosphere and AVolumetricCloud are declared next to their components.
 #include "Components/VolumetricCloudComponent.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 namespace NoctisEnvironmentImpl
 {
@@ -133,6 +134,7 @@ void ANoctisEnvironmentController::FindSceneActors()
 
 void ANoctisEnvironmentController::Tick(float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_Environment);
 	Super::Tick(DeltaSeconds);
 	UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this);
 	const FNoctisFrameOutput* Front = Sub ? Sub->GetFrontFrame() : nullptr;

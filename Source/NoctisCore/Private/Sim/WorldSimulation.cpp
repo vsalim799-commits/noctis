@@ -183,8 +183,14 @@ bool WorldSimulation::initialize(const SimConfig& config, std::unique_ptr<FileSy
                 continue;
             }
             const Vec2 p = findHabitatPoint(si, rng_);
-            const EntityId id = carcasses_.create(static_cast<i16>(si), kNoEntity, p, rng_.range(-kPi, kPi), s.adultMassKg * rng_.range(0.4f, 1.0f),
-                                                  -rng_.range(5.0f, 120.0f) * 86400.0, DeathCause::Unknown, s.growth.maturityAgeYears);
+            // Draws are sequenced explicitly: the evaluation order of function arguments is
+            // unspecified (GCC goes right to left, Clang left to right), which made worlds differ
+            // between compilers. This order reproduces the historical GCC results.
+            const double deathAgo = rng_.range(5.0f, 120.0f) * 86400.0;
+            const float massFraction = rng_.range(0.4f, 1.0f);
+            const float heading = rng_.range(-kPi, kPi);
+            const EntityId id = carcasses_.create(static_cast<i16>(si), kNoEntity, p, heading, s.adultMassKg * massFraction, -deathAgo, DeathCause::Unknown,
+                                                  s.growth.maturityAgeYears);
             if (Carcass* c = carcasses_.findMutable(id))
             {
                 const float days = static_cast<float>(-c->timeOfDeath / 86400.0);
@@ -211,7 +217,10 @@ Vec2 WorldSimulation::findHabitatPoint(int speciesIndex, Rng& rng, const Vec2* n
         Vec2 p;
         if (nearPoint)
         {
-            p = *nearPoint + Vec2::fromHeading(rng.range(0.0f, kTwoPi)) * radius * std::sqrt(rng.uniform());
+            // Explicit order (operands of '*' are unsequenced; this is the historical GCC order).
+            const float radial = std::sqrt(rng.uniform());
+            const float angle = rng.range(0.0f, kTwoPi);
+            p = *nearPoint + Vec2::fromHeading(angle) * radius * radial;
         }
         else
         {
@@ -266,7 +275,11 @@ void WorldSimulation::spawnInitialPopulations()
                 {
                     const float spread = std::max(5.0f, s.adultLengthM * 3.0f * std::sqrt(static_cast<float>(n)));
                     const Vec2 p = findHabitatPoint(si, rng_, &centre, spread);
-                    creatures_.spawn(si, rng_.chance(0.5f) ? Sex::Female : Sex::Male, drawAge(), p, ctx_, g);
+                    // Age before sex: explicit order of the draws (argument evaluation order is unspecified;
+                    // this is the historical GCC order).
+                    const float age = drawAge();
+                    const Sex sex = rng_.chance(0.5f) ? Sex::Female : Sex::Male;
+                    creatures_.spawn(si, sex, age, p, ctx_, g);
                 }
                 remaining -= n;
             }
@@ -291,7 +304,9 @@ void WorldSimulation::spawnInitialPopulations()
                     }
                     territoryCentres.push_back(p);
                 }
-                creatures_.spawn(si, rng_.chance(0.5f) ? Sex::Female : Sex::Male, drawAge(), p, ctx_, 0);
+                const float age = drawAge();
+                const Sex sex = rng_.chance(0.5f) ? Sex::Female : Sex::Male;
+                creatures_.spawn(si, sex, age, p, ctx_, 0);
                 --remaining;
             }
         }

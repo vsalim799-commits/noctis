@@ -51,6 +51,13 @@ endif()
 if(NOCTIS_SANITIZE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(noctis_strict INTERFACE -fsanitize=${NOCTIS_SANITIZE} -fno-omit-frame-pointer -fno-sanitize-recover=all)
   target_link_options(noctis_strict INTERFACE -fsanitize=${NOCTIS_SANITIZE})
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # GCC's flow-sensitive warnings misfire on sanitizer-instrumented code at -O2 (e.g. -Warray-bounds on
+    # std::vector of a one-element initializer list in TerrainGenerator.cpp with GCC 13): keep them as
+    # warnings in sanitizer builds only; the regular strict build still treats them as errors.
+    target_compile_options(noctis_strict INTERFACE -Wno-error=array-bounds -Wno-error=stringop-overflow -Wno-error=stringop-overread
+      -Wno-error=maybe-uninitialized)
+  endif()
 endif()
 
 # ----------------------------------------------------------------------------- core library

@@ -27,6 +27,16 @@
       "confidence": "speculative",
       "sources": [],
       "description_fr": "Variation individuelle des motifs tégumentaires permettant la photo-identification. La variation individuelle est attendue par analogie avec les animaux actuels ; les motifs eux-mêmes sont inconnus."
+    },
+    {
+      "id": "nesting_grounds",
+      "enabled": true,
+      "confidence": "speculative",
+      "sources": [
+        "horner1979_maiasaura_nest",
+        "wosik2017_edmontosaurus_nestling"
+      ],
+      "description_fr": "Affichage des aires de nidification probables du niveau (zones prédites par un modèle d'habitat : sol hors crue, substrat, pente, distance à l'eau). SPÉCULATIF : aucun site de nidification n'est connu pour ces espèces dans la Hell Creek ; des restes de jeunes Edmontosaurus de taille de nidification y sont signalés et des nids d'hadrosaures sont connus ailleurs (Maiasaura). Ce réglage n'affecte que l'affichage des zones prédites ; les pontes simulées restent émergentes."
     }
   ],
   "excluded_species": []

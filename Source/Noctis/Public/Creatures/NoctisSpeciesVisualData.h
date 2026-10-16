@@ -100,7 +100,8 @@ public:
 
 	// ------------------------------------------------------------------ Sound
 
-	/** MetaSound source with a "Footfall" trigger and Mass/Force/Substrate/Wetness inputs (see import_audio.py). */
+	/** MetaSound source with inputs Footfall (trigger), Mass (float, kg), LevelDb (float, dB SPL at 1 m), Substrate (int32,
+	 *  noctis::Substrate) and InWater (bool), set by ANoctisCreatureActor::PlayFootfall (see import_audio.py). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 	TSoftObjectPtr<USoundBase> FootstepSound;
 

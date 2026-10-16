@@ -245,7 +245,7 @@ void Hash(const TArray<FString>& Args, UWorld* World)
 		if (const FNoctisFrameOutput* Front = Sub->GetFrontFrame())
 		{
 			Report(FString::Printf(TEXT("noctis.Hash : tick %llu, t = %.2f s, hash %016llx"), static_cast<unsigned long long>(Front->Tick), Front->Snapshot.time,
-								   static_cast<unsigned long long>(NoctisChecks::HashSnapshot(Front->Snapshot))));
+								   static_cast<unsigned long long>(NoctisChecks::HashSnapshot(Front->Snapshot, /*bIncludeSounds*/ false))));
 		}
 	}
 }

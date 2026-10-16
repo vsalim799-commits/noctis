@@ -1,6 +1,7 @@
 #include "Creatures/NoctisCreatureAnimInstance.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 void UNoctisCreatureAnimInstance::SetSimulationInputs(const FNoctisCreatureAnimInputs& InInputs)
 {
@@ -10,6 +11,7 @@ void UNoctisCreatureAnimInstance::SetSimulationInputs(const FNoctisCreatureAnimI
 
 void UNoctisCreatureAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_AnimUpdate);
 	Super::NativeUpdateAnimation(DeltaSeconds);
 	if (!bHasPending)
 	{

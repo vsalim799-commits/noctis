@@ -137,3 +137,26 @@ class Caster:
     def cast_at(self, target, d, back=0.6):
         d = np.asarray(d, float) / np.linalg.norm(d)
         return self.cast(np.asarray(target, float) - d * back, d)
+
+
+# ----------------------------------------------------------------------------------------------
+# stage 'anatomy': (re)build Data/Anatomy/<species>.json
+def run(ctx):
+    """Refresh the JS dump (when the species has a three.js source) and rebuild the anatomy spec with
+    the species derivation module Tools/CreatureFactory/species/<species>.py."""
+    import importlib
+    import shutil
+    import subprocess
+    mod = importlib.import_module(f"species.{ctx.species}")
+    js = ctx.path("anatomy_base_from_js.json")
+    if getattr(mod, "JS_SOURCE", None):
+        node = shutil.which("node") or "/opt/node22/bin/node"
+        exp = os.path.join(REPO, "Tools", "CreatureFactory", "export_anatomy.mjs")
+        try:
+            r = subprocess.run([node, exp, js], capture_output=True, text=True, timeout=120)
+            ctx.log(r.stdout.strip() or r.stderr.strip()[-300:])
+        except Exception as e:  # keep the cached dump
+            ctx.log(f"  node export failed ({e}); using cached {js}")
+    doc = mod.make_doc(js)
+    p = save(ctx.species, doc)
+    ctx.log(f"  wrote {p}: {len(doc['bones'])} bones, {len(doc['shapes'])} shapes")

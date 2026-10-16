@@ -325,13 +325,17 @@ def job(ds: D.Dataset, species: str, substrate: str) -> list[M.Sound]:
             }
             qa = {"peak_dbfs_max": -0.5}
             if substrate in ("silt", "sand", "leaf_litter") and info["thump_hz"] <= 500.0:
+                # The contact is a heavily damped oscillator (zeta 0.35-0.55): its spectrum is a plateau that rolls
+                # off above f_t, without a sharp peak. Check the energy centroid of the band below 1.5 f_t instead
+                # (expected ~0.65-0.9 f_t for zeta 0.35-0.55; a thump at f_t/2 or 2 f_t falls outside).
                 ft = info["thump_hz"]
-                qa["spectral_peak_hz"] = [round(0.7 * ft, 2), round(1.4 * ft, 2)]
-                qa["spectral_peak_search_hz"] = [round(0.4 * ft, 2), round(min(2.2 * ft, 1200.0), 2)]
+                qa["low_band_centroid_hz"] = {"band_hz": [20.0, round(1.5 * ft, 2)], "range_hz": [round(0.55 * ft, 2), round(1.0 * ft, 2)]}
             if substrate in ("sand", "leaf_litter", "fern_cover"):
                 qa["band_energy_ratio"] = {"lo_hz": 1000.0, "hi_hz": 20000.0, "min": 0.01}
             if substrate == "mud":
-                qa["band_energy_ratio"] = {"lo_hz": 20.0, "hi_hz": 1500.0, "min": 0.3}
+                # Suction release rings at the Minnaert frequency of the foot cavity (high for tiny feet).
+                hi = round(max(1500.0, 2.5 * info["texture"]["suction_hz"]), 1)
+                qa["band_energy_ratio"] = {"lo_hz": 20.0, "hi_hz": hi, "min": 0.3}
             att = "ATT_Footstep_Small" if mass < 5 else ("ATT_Footstep_Medium" if mass < 500 else "ATT_Footstep_Large")
             label = f"{name_fr} — pas, {GAIT_FR[gait]}, {s['fr']} — variation {k + 1}"
             snd = M.Sound(

@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw
 from .sdf import field_at
 
 
-@njit(cache=False, fastmath=True)
+@njit(cache=True, fastmath=True)
 def _trace_one(ox, oy, oz, dx, dy, dz, maxt, kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems):
     t = 0.0
     for it in range(400):
@@ -24,7 +24,7 @@ def _trace_one(ox, oy, oz, dx, dy, dz, maxt, kind, sign, k, P, LT, SW, g0, cell,
     return -1.0
 
 
-@njit(parallel=True, cache=False, fastmath=True)
+@njit(parallel=True, cache=True, fastmath=True)
 def _trace(ro, rd, out_depth, out_n, out_ao, maxt, kind, sign, k, P, LT, SW, g0, cell, dims, cstart, citems):
     n = ro.shape[0]
     for j in prange(n):

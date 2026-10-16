@@ -1,0 +1,4938 @@
+{
+  "schema": "noctis.level/1",
+  "id": "hell_creek_valley",
+  "name": {
+    "fr": "Vallée de Hell Creek — tranche verticale",
+    "en": "Hell Creek valley — vertical slice"
+  },
+  "environment": "hell_creek",
+  "reconstruction_version": "2026.10-a",
+  "generated_by": "noctis_sim export-level (Tools/Cli/LevelExport.cpp)",
+  "note_fr": "Fichier généré : ne pas éditer à la main. Chaque POI est choisi par un algorithme sur le monde de 'run' (même graine et même configuration). 'confidence' qualifie l'existence ou la nature de l'élément au Maastrichtien (confidence_subject_fr) ; 'placement' dit d'où vient sa position. La carte du joueur reste vide au départ : seuls les POI visible_at_start sont connus.",
+  "generation": {
+    "seed": 7,
+    "profile": "standard",
+    "population_scale": 1,
+    "warmup_hours": 6,
+    "terrain_generator": "meandering_floodplain",
+    "export_time": "An 0, jour 141, 11:00",
+    "warmup_event_counts": {
+      "Drink": 4,
+      "Flee": 70,
+      "GroupFormationChange": 592,
+      "HuntAbandon": 3,
+      "HuntSearch": 124,
+      "HuntTargetSelected": 9,
+      "Slip": 2,
+      "VigilanceRaised": 63,
+      "Vocalization": 85
+    },
+    "command": "noctis_sim export-level --env hell_creek --seed 7 --profile standard"
+  },
+  "frame": {
+    "units": "m",
+    "origin": "coin sud-ouest de la carte",
+    "axes": "x = est, y = nord, z = altitude absolue (m) — repère du cœur NoctisCore",
+    "size_m": 8192,
+    "height_samples": 2017,
+    "spacing_m": 4.06349,
+    "min_height_m": 16.05,
+    "max_height_m": 46.696,
+    "analysis_cell_m": 32,
+    "unreal": {
+      "mapping": "X_cm = x*100 + offset.X ; Y_cm = -y*100 + offset.Y ; Z_cm = z*100 + offset.Z (FNoctisSpace::ToUE, UNoctisSettings::WorldOffsetCm = 0 par défaut)",
+      "landscape_location_cm": [0, -819200, 3137],
+      "landscape_scale": [406.3492, 406.3492, 5.98552],
+      "landscape_note": "Heightmap 16 bits de export-terrain : ligne 0 = bord nord = Y Unreal le plus négatif. Z_monde = Location.Z + Scale.Z * (v - 32768) / 128 (cm) ; avec Scale.Z = (max-min)*100/512 la plage 0..65535 couvre exactement [min, max] m. Quads = samples - 1 = 2016 = 16 composants x 126 quads (2x2 sections de 63).",
+      "yaw_note": "yaw_UE (deg) = -heading_cœur (deg) ; heading 0 = est, sens trigonométrique"
+    }
+  },
+  "playable_area": {
+    "bounds_m": [
+      [0, 0],
+      [8192, 8192]
+    ],
+    "note_fr": "Zone jouable = tout le terrain généré par 'run' ; les bords sont des limites naturelles (terrasses boisées, amont et aval de la rivière) signalées dans le carnet, sans mur invisible arbitraire."
+  },
+  "time": {
+    "sim_day_length_h": 24,
+    "sim_days_per_year": 365,
+    "calendar_basis_fr": "Hypothèse de jeu (Data/Science/sim_constants.json, calendrier) : 24 h et 365 jours. Le jour était un peu plus court au Crétacé supérieur ; la valeur pour la Hell Creek n'est pas établie dans le projet (Information insuffisante — recherche nécessaire ; piste : dewinter2020_rudist_daily, non vérifiée).",
+    "play_time_scale": 1,
+    "timelapse_max_scale": 8,
+    "rest_skip_scale": 360,
+    "time_scale_justification_fr": "Le temps de jeu reste 1:1 pendant l'observation : vitesses, taux d'appels par minute, distances de fuite et budgets d'activité sont mesurés par le joueur et testés statistiquement ; les comprimer fausserait ses données. L'accéléré « time-lapse » est plafonné à x8 (FullDetailMaxTimeScale : simulation complète des animaux), signalé à l'écran et exclu des mesures de comportement. Les longues attentes (nuit, pluie) se font au camp ou dans le véhicule avec un saut à x360 en simulation grossière.",
+    "start_day_of_year": 140,
+    "start_hour": 5,
+    "start_justification_fr": "Jour 140 : dans la saison humide supposée (jours 100–200) et dans la fenêtre de reproduction simulée de plusieurs espèces ; 05:00 : aube, pic d'activité attendu des animaux diurnes et crépusculaires et des chœurs d'aube (hypothèses). Ce biais de départ rend la première heure riche sans scénario.",
+    "expedition": {
+      "default_days": 3,
+      "min_days": 1,
+      "max_days": 7,
+      "vertical_slice_days": 1,
+      "justification_fr": "3 jours par défaut : au moins deux aubes et deux crépuscules pour répliquer les sessions (le système d'hypothèses signale la pseudo-réplication), une nuit d'écoute complète, et une logistique crédible (batterie du véhicule 200 kWh + générateur, batteries de drone et de capteurs à recharger au camp). 7 jours maximum : au-delà, la météo et les crues dominent et la session de jeu devient trop longue sans sauvegarde de mi-parcours."
+    }
+  },
+  "river_crossing": {
+    "main_river_fords": ["FD01", "FD02", "FD03", "FD04"],
+    "fordable_on_foot_now": false,
+    "stage_now_m": 2.36,
+    "bankfull_depth_m": 4,
+    "foot_components": 2,
+    "design_fr": "La rivière principale traverse toute la carte et sépare la rive du camp (camp_bank) de la rive opposée (far_bank). En saison humide elle n'est franchissable ni à pied (<= 0,7 m) ni en véhicule (gué 1,0 m) : voir stage_max_on_foot_m et discharge_fraction_* de chaque gué. Proposition : un packraft dans l'équipement du joueur (absent de Data/Equipment/equipment.json — décision ouverte) pour traverser aux gués, là où le courant est le plus faible ; le véhicule reste sur la rive du camp, donc la rive opposée est plus exposée (pas de refuge proche). En basses eaux, les gués deviennent praticables à pied puis en véhicule, ce qui change la géographie du jeu au fil de la saison.",
+    "equipment_proposal": "packraft"
+  },
+  "rules": {
+    "player_role_fr": "Chercheuse ou chercheur de terrain, physiquement présent au Maastrichtien, seul sur le terrain, en liaison radio avec le camp de base. Jamais chasseur : aucune arme, aucune capture, aucun appât.",
+    "permadeath": false,
+    "injury": {
+      "model_fr": "ResearcherSystem::applyAttack : blessure graduée (santé 0..1). En dessous de 0,35 : déplacement ralenti, instruments inutilisables, appel radio d'évacuation. À 0 : évacuation automatique vers le camp, fin de l'expédition en cours (« Aborted »), données déjà sauvegardées conservées, temps de convalescence au camp.",
+      "evacuation_fr": "Évacuation par le véhicule (conduite autonome jusqu'au point praticable le plus proche, voir rover_access de chaque POI). Hors couverture radio, le joueur doit d'abord rejoindre une zone couverte (masque radio_coverage) ou activer la balise du véhicule."
+    },
+    "vehicle": {
+      "refuge": true,
+      "fording_depth_m": 1,
+      "noise_electric_db_1m": 52,
+      "noise_generator_db_1m": 80,
+      "practicability_fr": "Praticable si : eau <= profondeur de gué, pente <= min(25°, atan(mu_traction - résistance au roulement)), enfoncement Bekker < 70 % du seuil d'enlisement de VehicleSystem, canopée <= 0,55 (troncs), hors berges abruptes. Masque mask_rover_practicable.png (255 = praticable et relié au camp, 128 = praticable isolé, 0 = impraticable).",
+      "disturbance_fr": "Le véhicule est une source sonore simulée : moteur électrique ~52 dB à 1 m, générateur ~80 dB à 1 m ; le générateur porte donc beaucoup plus loin et perturbe la faune (événement VehicleNoticed)."
+    },
+    "on_foot": {
+      "walk_speed_ms": 1.25,
+      "max_wading_depth_m": 0.699999988079071,
+      "note_fr": "Le joueur ne nage pas : la rivière principale n'est franchissable qu'aux gués en basses eaux (metrics.stage_max_on_foot_m). Coûts de marche : pente, eau, couvert, enfoncement (mask_foot_passable.png)."
+    },
+    "storm": {
+      "rule_fr": "Orage : les points de vue dégagés deviennent dangereux ; se réfugier dans le véhicule (carrosserie métallique) ou redescendre en contrebas. Règle de sécurité moderne, sans objet paléontologique."
+    },
+    "drone": {
+      "radio_range_m": 6000,
+      "note_fr": "Le drone décolle du véhicule ou du camp ; sa portée radio limite les survols (bruit des pales simulé, perturbation mesurable par le joueur)."
+    }
+  },
+  "masks": {
+    "directory": "Output/level",
+    "resolution_px": 256,
+    "cell_m": 32,
+    "orientation": "ligne 0 = bord nord (comme export-terrain)",
+    "files": ["mask_rover_practicable.png", "mask_flood_risk.png", "mask_radio_coverage.png", "mask_activity.png", "mask_nesting_suitability_speculative.png", "mask_corridor_use.png", "mask_foot_passable.png", "overview.png", "constraints.png"]
+  },
+  "pois": [
+    {
+      "id": "BC01",
+      "type": "basecamp",
+      "name": {
+        "fr": "Camp de base",
+        "en": "Base camp"
+      },
+      "position_m": [3624, 4224.3, 22.06],
+      "ue_location_cm": [362397, -422428, 2206],
+      "radius_m": 40,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "élément de jeu (installation des chercheurs) — sans objet paléontologique",
+      "placement": "simulation_state",
+      "rationale_fr": "Choisi par WorldSimulation : sol sec et peu pentu (0.1°) en Forêt riveraine, à 242 m de l'eau la plus proche (cible 250 m : assez près pour la logistique, assez loin pour ne pas occuper un point d'abreuvement), près du centre de la vallée. Antenne radio de 10 m, recharge du véhicule, laboratoire de terrain.",
+      "sources": [],
+      "visible_at_start": true,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX05", "FD01", "OV01", "BL01", "BL04"],
+      "metrics": {
+        "distance_to_water_m": 242,
+        "habitat": "riparian_forest",
+        "flood_risk": 0.98,
+        "radio_mast_m": 10,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3632, 4240]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 0,
+          "drive_time_min": 0
+        },
+        "radio_coverage": true,
+        "flood_class": "frequent",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 0
+      }
+    },
+    {
+      "id": "FR01",
+      "type": "flood_refuge",
+      "name": {
+        "fr": "Repli hors crue",
+        "en": "Flood refuge"
+      },
+      "position_m": [3888, 1936, 24.33],
+      "ue_location_cm": [388800, -193600, 2433],
+      "radius_m": 40,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "règle de sécurité du jeu — sans objet paléontologique",
+      "placement": "game_design",
+      "rationale_fr": "Le camp de base est sur la plaine d'inondation (0.2 m au-dessus du niveau de plein bord, crue « frequent ») : point de repli le plus proche en véhicule (4025 m de trajet effectif, ~17 min) sur un sol que le niveau maximal de la rivière simulée (1,6 x la profondeur de plein bord) n'atteint jamais : 2.7 m au-dessus du plein bord, pente 1°, Plaine d'inondation ouverte. Le camp y replie le véhicule, les échantillons et la radio lors des alertes de crue.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["BC01", "BS01", "CT03", "AR02", "MA01"],
+      "metrics": {
+        "height_above_bankfull_m": 2.65,
+        "drive_cost_from_basecamp_m": 4025,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3888, 1936]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 4025,
+          "drive_time_min": 16.8
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 55
+      }
+    },
+    {
+      "id": "EX01",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement A",
+        "en": "Exposure A"
+      },
+      "position_m": [395.2, 3750.5, 27.9],
+      "ue_location_cm": [39515, -375051, 2790],
+      "radius_m": 45,
+      "heading_deg": 102.2,
+      "ue_yaw_deg": -102.2,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.4 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX03", "WA03", "OV05"],
+      "metrics": {
+        "section_height_m": 6.4,
+        "specimens_hidden": 11,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 1,
+        "face_heading_deg": 102,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [464, 3728]
+          ],
+          "walk_cost_m": 78,
+          "walk_time_min": 1,
+          "drive_cost_m": 6139,
+          "drive_time_min": 25.6
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.07,
+        "flood_class": "extreme_only",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 77
+      }
+    },
+    {
+      "id": "EX02",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement B",
+        "en": "Exposure B"
+      },
+      "position_m": [1291, 4570, 27.42],
+      "ue_location_cm": [129102, -456995, 2742],
+      "radius_m": 45,
+      "heading_deg": -72.5,
+      "ue_yaw_deg": 72.5,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.3 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["OV02", "NA04", "CA01"],
+      "metrics": {
+        "section_height_m": 6.3,
+        "specimens_hidden": 12,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 2,
+        "face_heading_deg": -73,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.4,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "EX03",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement C",
+        "en": "Exposure C"
+      },
+      "position_m": [2320.5, 4246.5, 27.12],
+      "ue_location_cm": [232049, -424647, 2712],
+      "radius_m": 45,
+      "heading_deg": 100.8,
+      "ue_yaw_deg": -100.8,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.4 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX01", "FD01", "WA03", "OV05", "BL04"],
+      "metrics": {
+        "section_height_m": 6.4,
+        "specimens_hidden": 13,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 3,
+        "face_heading_deg": 101,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [2416, 4240]
+          ],
+          "walk_cost_m": 174,
+          "walk_time_min": 2.3,
+          "drive_cost_m": 2467,
+          "drive_time_min": 10.3
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 30.7
+      }
+    },
+    {
+      "id": "EX04",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement D",
+        "en": "Exposure D"
+      },
+      "position_m": [3086.5, 4990.4, 26.61],
+      "ue_location_cm": [308653, -499040, 2661],
+      "radius_m": 45,
+      "heading_deg": -77.8,
+      "ue_yaw_deg": 77.8,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.2 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["OV04", "NA04", "CA01", "CT02"],
+      "metrics": {
+        "section_height_m": 6.2,
+        "specimens_hidden": 13,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 4,
+        "face_heading_deg": -78,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "EX05",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement E",
+        "en": "Exposure E"
+      },
+      "position_m": [4002, 4420.6, 26.32],
+      "ue_location_cm": [400197, -442064, 2632],
+      "radius_m": 45,
+      "heading_deg": 85.3,
+      "ue_yaw_deg": -85.3,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.3 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["BC01", "OV01", "BL01", "NA05"],
+      "metrics": {
+        "section_height_m": 6.3,
+        "specimens_hidden": 6,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 5,
+        "face_heading_deg": 85,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3920, 4400]
+          ],
+          "walk_cost_m": 104,
+          "walk_time_min": 1.4,
+          "drive_cost_m": 705,
+          "drive_time_min": 2.9
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.47,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 9.5
+      }
+    },
+    {
+      "id": "EX06",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement F",
+        "en": "Exposure F"
+      },
+      "position_m": [5019.1, 4884.7, 25.93],
+      "ue_location_cm": [501912, -488472, 2593],
+      "radius_m": 45,
+      "heading_deg": -101.2,
+      "ue_yaw_deg": 101.2,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.3 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["WA01", "WA02", "BL03", "NA07"],
+      "metrics": {
+        "section_height_m": 6.3,
+        "specimens_hidden": 9,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 6,
+        "face_heading_deg": -101,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "EX07",
+      "type": "exposure_site",
+      "name": {
+        "fr": "Affleurement G",
+        "en": "Exposure G"
+      },
+      "position_m": [5796.7, 4094.4, 25.62],
+      "ue_location_cm": [579668, -409436, 2562],
+      "radius_m": 45,
+      "heading_deg": 68.4,
+      "ue_yaw_deg": -68.4,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "berge concave érodée exposant des dépôts fluviatiles plus anciens (géomorphologie des rivières à méandres)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Berge concave d'un méandre (bluff) : l'érosion latérale du chenal entaille la plaine et expose une coupe d'environ 6.3 m au-dessus de l'eau. Dans la vallée maastrichtienne, ces couches sont des alluvions plus anciennes de la même séquence fluviatile (sables de chenal, argiles de plaine d'inondation) : leur âge relatif est sûr (plus anciennes que la surface), leur âge absolu n'est pas contraint (Information insuffisante — recherche nécessaire). Le contenu fossile du site est généré (SPÉCULATIF) et tiré de la faune simulée. Face tournée vers le chenal ; accès par le haut de berge (corde) ou depuis la barre de méandre opposée en basses eaux.",
+      "sources": ["fastovsky2016_hellcreek_primer", "langbein1966_meanders", "behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD02", "OV03", "BL02", "NA05"],
+      "metrics": {
+        "section_height_m": 6.3,
+        "specimens_hidden": 11,
+        "fossil_content_confidence": "speculative",
+        "relative_age": "plus ancien que la surface actuelle (âge absolu : information insuffisante)",
+        "paleontology_site_id": 7,
+        "face_heading_deg": 68,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [5712, 4080]
+          ],
+          "walk_cost_m": 130,
+          "walk_time_min": 1.7,
+          "drive_cost_m": 3947,
+          "drive_time_min": 16.4
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 50.1
+      }
+    },
+    {
+      "id": "BS01",
+      "type": "backswamp",
+      "name": {
+        "fr": "Marais arrière 1",
+        "en": "Backswamp 1"
+      },
+      "position_m": [2352, 2384, 21.41],
+      "ue_location_cm": [235200, -238400, 2141],
+      "radius_m": 400,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "marais et étangs de plaine d'inondation (dépôts d'étangs, lignites et argiles organiques documentés)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Plus grande zone de marais arrière de la rive du camp (1.99 km²) : plaine distale basse (point le plus humide à -1.2 m sous/au-dessus du niveau de plein bord), sols Argile, inondée en premier lors des débordements. Eaux calmes, conifères de milieux humides et plantes aquatiques dans la reconstitution ; habitat des taxons semi-aquatiques. Aucun bras mort n'a été généré pour cette graine : ce marais tient lieu de milieu d'eau calme de la tranche verticale.",
+      "sources": ["fastovsky2016_hellcreek_primer", "johnson2002_hellcreek_megaflora"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FR01", "WA03", "MA01"],
+      "metrics": {
+        "area_km2": 1.988,
+        "height_above_bankfull_m": -1.17,
+        "water_noise_db": 22.1,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [2480, 2512]
+          ],
+          "walk_cost_m": 287,
+          "walk_time_min": 3.8,
+          "drive_cost_m": 4434,
+          "drive_time_min": 18.5
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 50.9
+      }
+    },
+    {
+      "id": "BS02",
+      "type": "backswamp",
+      "name": {
+        "fr": "Marais arrière 2",
+        "en": "Backswamp 2"
+      },
+      "position_m": [8144, 5712, 18.99],
+      "ue_location_cm": [814400, -571200, 1899],
+      "radius_m": 400,
+      "confidence": "strongly_supported",
+      "confidence_label_fr": "FORTEMENT ÉTAYÉ",
+      "confidence_subject_fr": "marais et étangs de plaine d'inondation (dépôts d'étangs, lignites et argiles organiques documentés)",
+      "placement": "generated_terrain",
+      "rationale_fr": "Plus grande zone de marais arrière de la rive opposée (1.16 km²) : plaine distale basse (point le plus humide à -1.2 m sous/au-dessus du niveau de plein bord), sols Argile, inondée en premier lors des débordements. Eaux calmes, conifères de milieux humides et plantes aquatiques dans la reconstitution ; habitat des taxons semi-aquatiques. Aucun bras mort n'a été généré pour cette graine : ce marais tient lieu de milieu d'eau calme de la tranche verticale.",
+      "sources": ["fastovsky2016_hellcreek_primer", "johnson2002_hellcreek_megaflora"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD03", "NA01", "NA08"],
+      "metrics": {
+        "area_km2": 1.155,
+        "height_above_bankfull_m": -1.21,
+        "water_noise_db": 22.4,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "FD01",
+      "type": "ford",
+      "name": {
+        "fr": "Gué de la rivière 1",
+        "en": "River ford 1"
+      },
+      "position_m": [3275.7, 4700.1, 20.32],
+      "ue_location_cm": [327566, -470013, 2032],
+      "radius_m": 30,
+      "heading_deg": -0.1,
+      "ue_yaw_deg": 0.1,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré",
+      "placement": "model_prediction",
+      "rationale_fr": "Section transversale la mieux notée sur la rivière principale : profondeur max 2.31 m pour 42 m de largeur mouillée au niveau actuel (2.36 m), berges à 25° max, fond Sable, usure de piste 1.00, 0 corridor(s) prédit(s) à moins de 80 m, courbure 0.0001 /m (zone d'inflexion entre deux boucles). À pied (≤ 0.7 m d'eau) : seulement en basses eaux. Véhicule (gué 1.0 m) : seulement en basses eaux. Lieu attendu de traversée des troupeaux et de concentration des empreintes.",
+      "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["BC01", "EX03", "BL01", "BL04"],
+      "metrics": {
+        "river": "main",
+        "river_point": 3825,
+        "max_depth_m": 2.31,
+        "wet_width_m": 42,
+        "stage_now_m": 2.36,
+        "bankfull_depth_m": 4,
+        "bank_slope_max_deg": 25.1,
+        "bed_substrate": "sand",
+        "trail_wear": 0.998,
+        "corridor_hits": 0,
+        "curvature_per_m": 0.00013,
+        "fordable_on_foot_now": false,
+        "fordable_rover_now": false,
+        "stage_max_on_foot_m": 0.75,
+        "stage_max_rover_m": 1.05,
+        "discharge_fraction_on_foot": 0.055,
+        "discharge_fraction_rover": 0.127,
+        "bank_a": [
+          [3249.7, 4700.2]
+        ],
+        "bank_b": [
+          [3291.7, 4700.1]
+        ],
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3248, 4720]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 1404,
+          "drive_time_min": 5.9
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 17.7
+      }
+    },
+    {
+      "id": "FD02",
+      "type": "ford",
+      "name": {
+        "fr": "Gué de la rivière 2",
+        "en": "River ford 2"
+      },
+      "position_m": [7082.5, 3992.5, 18.8],
+      "ue_location_cm": [708252, -399250, 1880],
+      "radius_m": 30,
+      "heading_deg": -8.2,
+      "ue_yaw_deg": 8.2,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré",
+      "placement": "model_prediction",
+      "rationale_fr": "Section transversale la mieux notée sur la rivière principale : profondeur max 2.27 m pour 40 m de largeur mouillée au niveau actuel (2.36 m), berges à 23° max, fond Sable, usure de piste 0.00, 1 corridor(s) prédit(s) à moins de 80 m, courbure 0.0000 /m (zone d'inflexion entre deux boucles). À pied (≤ 0.7 m d'eau) : seulement en basses eaux. Véhicule (gué 1.0 m) : seulement en basses eaux. Lieu attendu de traversée des troupeaux et de concentration des empreintes.",
+      "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX07", "OV03", "BL02", "CT04"],
+      "metrics": {
+        "river": "main",
+        "river_point": 7875,
+        "max_depth_m": 2.27,
+        "wet_width_m": 40,
+        "stage_now_m": 2.36,
+        "bankfull_depth_m": 4,
+        "bank_slope_max_deg": 23.3,
+        "bed_substrate": "sand",
+        "trail_wear": 0,
+        "corridor_hits": 1,
+        "curvature_per_m": 2e-05,
+        "fordable_on_foot_now": false,
+        "fordable_rover_now": false,
+        "stage_max_on_foot_m": 0.79,
+        "stage_max_rover_m": 1.09,
+        "discharge_fraction_on_foot": 0.062,
+        "discharge_fraction_rover": 0.138,
+        "bank_a": [
+          [7058.8, 3995.9]
+        ],
+        "bank_b": [
+          [7098.4, 3990.2]
+        ],
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [7024, 4016]
+          ],
+          "walk_cost_m": 57,
+          "walk_time_min": 0.8,
+          "drive_cost_m": 6691,
+          "drive_time_min": 27.9
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 81.6
+      }
+    },
+    {
+      "id": "FD03",
+      "type": "ford",
+      "name": {
+        "fr": "Gué de la rivière 3",
+        "en": "River ford 3"
+      },
+      "position_m": [7807.4, 3763.7, 18.51],
+      "ue_location_cm": [780743, -376366, 1851],
+      "radius_m": 30,
+      "heading_deg": -7,
+      "ue_yaw_deg": 7,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré",
+      "placement": "model_prediction",
+      "rationale_fr": "Section transversale la mieux notée sur la rivière principale : profondeur max 2.31 m pour 42 m de largeur mouillée au niveau actuel (2.36 m), berges à 26° max, fond Sable, usure de piste 0.00, 1 corridor(s) prédit(s) à moins de 80 m, courbure 0.0002 /m (zone d'inflexion entre deux boucles). À pied (≤ 0.7 m d'eau) : seulement en basses eaux. Véhicule (gué 1.0 m) : seulement en basses eaux. Lieu attendu de traversée des troupeaux et de concentration des empreintes.",
+      "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["BS02", "WA02", "NA07"],
+      "metrics": {
+        "river": "main",
+        "river_point": 8545,
+        "max_depth_m": 2.31,
+        "wet_width_m": 42,
+        "stage_now_m": 2.36,
+        "bankfull_depth_m": 4,
+        "bank_slope_max_deg": 25.7,
+        "bed_substrate": "sand",
+        "trail_wear": 0,
+        "corridor_hits": 1,
+        "curvature_per_m": 0.00016,
+        "fordable_on_foot_now": false,
+        "fordable_rover_now": false,
+        "stage_max_on_foot_m": 0.75,
+        "stage_max_rover_m": 1.05,
+        "discharge_fraction_on_foot": 0.055,
+        "discharge_fraction_rover": 0.127,
+        "bank_a": [
+          [7781.6, 3766.8]
+        ],
+        "bank_b": [
+          [7823.3, 3761.7]
+        ],
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "FD04",
+      "type": "ford",
+      "name": {
+        "fr": "Gué de la rivière 4",
+        "en": "River ford 4"
+      },
+      "position_m": [4045.2, 4464.5, 20.02],
+      "ue_location_cm": [404516, -446454, 2002],
+      "radius_m": 30,
+      "heading_deg": 102,
+      "ue_yaw_deg": -102,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré",
+      "placement": "model_prediction",
+      "rationale_fr": "Section transversale la mieux notée sur la rivière principale : profondeur max 2.31 m pour 28 m de largeur mouillée au niveau actuel (2.36 m), berges à 35° max, fond Sable, usure de piste 0.15, 1 corridor(s) prédit(s) à moins de 80 m, courbure 0.0072 /m (dans une boucle). À pied (≤ 0.7 m d'eau) : seulement en basses eaux. Véhicule (gué 1.0 m) : seulement en basses eaux. Lieu attendu de traversée des troupeaux et de concentration des empreintes.",
+      "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["WA01", "BL03", "CT02"],
+      "metrics": {
+        "river": "main",
+        "river_point": 4710,
+        "max_depth_m": 2.31,
+        "wet_width_m": 28,
+        "stage_now_m": 2.36,
+        "bankfull_depth_m": 4,
+        "bank_slope_max_deg": 34.6,
+        "bed_substrate": "sand",
+        "trail_wear": 0.153,
+        "corridor_hits": 1,
+        "curvature_per_m": 0.00721,
+        "fordable_on_foot_now": false,
+        "fordable_rover_now": false,
+        "stage_max_on_foot_m": 0.75,
+        "stage_max_rover_m": 1.05,
+        "discharge_fraction_on_foot": 0.054,
+        "discharge_fraction_rover": 0.126,
+        "bank_a": [
+          [4050.6, 4439.1]
+        ],
+        "bank_b": [
+          [4044.7, 4466.5]
+        ],
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "FD05",
+      "type": "ford",
+      "name": {
+        "fr": "Gué du ruisseau 5",
+        "en": "Creek ford 5"
+      },
+      "position_m": [5804.2, 6158.4, 19.87],
+      "ue_location_cm": [580421, -615839, 1987],
+      "radius_m": 30,
+      "heading_deg": -23.9,
+      "ue_yaw_deg": 23.9,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré",
+      "placement": "model_prediction",
+      "rationale_fr": "Section transversale la mieux notée sur le ruisseau affluent : profondeur max 0.00 m pour 0 m de largeur mouillée au niveau actuel (0.50 m), berges à 10° max, fond Sable, usure de piste 0.08, 2 corridor(s) prédit(s) à moins de 80 m, courbure -0.0145 /m (dans une boucle). À pied (≤ 0.7 m d'eau) : praticable maintenant. Véhicule (gué 1.0 m) : praticable maintenant. Lieu attendu de traversée des troupeaux et de concentration des empreintes.",
+      "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["WA02", "NA01", "NA02"],
+      "metrics": {
+        "river": "creek",
+        "river_point": 1215,
+        "max_depth_m": 0,
+        "wet_width_m": 0,
+        "stage_now_m": 0.5,
+        "bankfull_depth_m": 1.4,
+        "bank_slope_max_deg": 9.8,
+        "bed_substrate": "sand",
+        "trail_wear": 0.077,
+        "corridor_hits": 2,
+        "curvature_per_m": -0.01446,
+        "fordable_on_foot_now": true,
+        "fordable_rover_now": true,
+        "stage_max_on_foot_m": 1.2,
+        "stage_max_rover_m": 1.5,
+        "discharge_fraction_on_foot": 2.463,
+        "discharge_fraction_rover": 4.295,
+        "bank_a": [
+          [5804.2, 6158.4]
+        ],
+        "bank_b": [
+          [5804.2, 6158.4]
+        ],
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "FD06",
+      "type": "ford",
+      "name": {
+        "fr": "Gué du ruisseau 6",
+        "en": "Creek ford 6"
+      },
+      "position_m": [5726.9, 7125.1, 22.77],
+      "ue_location_cm": [572692, -712512, 2277],
+      "radius_m": 30,
+      "heading_deg": -14.3,
+      "ue_yaw_deg": 14.3,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (profondeur, berges, pistes) ; le principe des seuils peu profonds aux inflexions des méandres est général, le gué précis est un produit du terrain généré",
+      "placement": "model_prediction",
+      "rationale_fr": "Section transversale la mieux notée sur le ruisseau affluent : profondeur max 0.40 m pour 8 m de largeur mouillée au niveau actuel (0.50 m), berges à 9° max, fond Sable, usure de piste 0.08, 3 corridor(s) prédit(s) à moins de 80 m, courbure 0.0158 /m (dans une boucle). À pied (≤ 0.7 m d'eau) : praticable maintenant. Véhicule (gué 1.0 m) : praticable maintenant. Lieu attendu de traversée des troupeaux et de concentration des empreintes.",
+      "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["NA01", "NA02", "NA03", "NA08", "CT01"],
+      "metrics": {
+        "river": "creek",
+        "river_point": 635,
+        "max_depth_m": 0.4,
+        "wet_width_m": 8,
+        "stage_now_m": 0.5,
+        "bankfull_depth_m": 1.4,
+        "bank_slope_max_deg": 8.6,
+        "bed_substrate": "sand",
+        "trail_wear": 0.08,
+        "corridor_hits": 3,
+        "curvature_per_m": 0.01581,
+        "fordable_on_foot_now": true,
+        "fordable_rover_now": true,
+        "stage_max_on_foot_m": 0.8,
+        "stage_max_rover_m": 1.1,
+        "discharge_fraction_on_foot": 0.889,
+        "discharge_fraction_rover": 1.969,
+        "bank_a": [
+          [5723, 7126.1]
+        ],
+        "bank_b": [
+          [5730.8, 7124.1]
+        ],
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.6,
+        "flood_class": "extreme_only",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "WA01",
+      "type": "water_access",
+      "name": {
+        "fr": "Abreuvoir 1",
+        "en": "Watering point 1"
+      },
+      "position_m": [4353.2, 4993.2, 22.88],
+      "ue_location_cm": [435317, -499317, 2288],
+      "radius_m": 35,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
+      "placement": "simulation_state",
+      "rationale_fr": "Site d'abreuvement de la simulation (pente 0°) classé par les événements « boire » observés pendant le préchauffage, la présence d'herbivores et l'habitat favorable (score 0.96). Les animaux y convergent : cible prioritaire pour les affûts, pièges photographiques et relevés d'empreintes.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX06", "FD04", "BL03"],
+      "metrics": {
+        "drink_body": "main_river",
+        "drink_events_warmup": 0,
+        "score": 0.96,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.53,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "WA02",
+      "type": "water_access",
+      "name": {
+        "fr": "Abreuvoir 2",
+        "en": "Watering point 2"
+      },
+      "position_m": [5790.8, 5614.8, 20.76],
+      "ue_location_cm": [579083, -561483, 2076],
+      "radius_m": 35,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
+      "placement": "simulation_state",
+      "rationale_fr": "Site d'abreuvement de la simulation (pente 4°) classé par les événements « boire » observés pendant le préchauffage, la présence d'herbivores et l'habitat favorable (score 0.77). Les animaux y convergent : cible prioritaire pour les affûts, pièges photographiques et relevés d'empreintes.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX06", "FD03", "FD05", "NA01", "NA07"],
+      "metrics": {
+        "drink_body": "creek",
+        "drink_events_warmup": 0,
+        "score": 0.766,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "WA03",
+      "type": "water_access",
+      "name": {
+        "fr": "Abreuvoir 3",
+        "en": "Watering point 3"
+      },
+      "position_m": [1769.2, 4126.8, 23.69],
+      "ue_location_cm": [176917, -412683, 2369],
+      "radius_m": 35,
+      "confidence": "inferred",
+      "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
+      "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
+      "placement": "simulation_state",
+      "rationale_fr": "Site d'abreuvement de la simulation (pente 1°) classé par les événements « boire » observés pendant le préchauffage, la présence d'herbivores et l'habitat favorable (score 0.73). Les animaux y convergent : cible prioritaire pour les affûts, pièges photographiques et relevés d'empreintes.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX01", "EX03", "BS01", "OV05"],
+      "metrics": {
+        "drink_body": "main_river",
+        "drink_events_warmup": 0,
+        "score": 0.726,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [1808, 4112]
+          ],
+          "walk_cost_m": 58,
+          "walk_time_min": 0.8,
+          "drive_cost_m": 3553,
+          "drive_time_min": 14.8
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.67,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 43
+      }
+    },
+    {
+      "id": "OV01",
+      "type": "overlook",
+      "name": {
+        "fr": "Point de vue 1",
+        "en": "Overlook 1"
+      },
+      "position_m": [4026, 4410, 26.25],
+      "ue_location_cm": [402600, -441000, 2625],
+      "radius_m": 20,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 49.2). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.46 km² visibles. Proéminence 4.1 m, Falaise de rive concave.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["BC01", "EX05", "BL01"],
+      "sightlines": ["EX04", "EX05", "EX06", "FD04", "OV04", "BL01", "BL03", "BL04"],
+      "metrics": {
+        "eye_height_m": 1.7,
+        "viewshed_radius_m": 1500,
+        "visible_area_km2": 0.461,
+        "activity_value": 49.21,
+        "marginal_gain": 49.21,
+        "prominence_m": 4.11,
+        "height_above_river_m": 4.51,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3920, 4400]
+          ],
+          "walk_cost_m": 104,
+          "walk_time_min": 1.4,
+          "drive_cost_m": 705,
+          "drive_time_min": 2.9
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 9.5,
+        "trails_in_view": []
+      }
+    },
+    {
+      "id": "OV02",
+      "type": "overlook",
+      "name": {
+        "fr": "Point de vue 2",
+        "en": "Overlook 2"
+      },
+      "position_m": [1350, 4592, 27.31],
+      "ue_location_cm": [135000, -459200, 2731],
+      "radius_m": 20,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 40.7). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.44 km² visibles. Proéminence 4.1 m, Boisement de levée.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX02", "NA04", "CA01"],
+      "sightlines": ["EX01", "EX02", "EX03", "OV05"],
+      "metrics": {
+        "eye_height_m": 1.7,
+        "viewshed_radius_m": 1500,
+        "visible_area_km2": 0.439,
+        "activity_value": 41.45,
+        "marginal_gain": 40.74,
+        "prominence_m": 4.05,
+        "height_above_river_m": 4.52,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "far_bank",
+        "trails_in_view": []
+      }
+    },
+    {
+      "id": "OV03",
+      "type": "overlook",
+      "name": {
+        "fr": "Point de vue 3",
+        "en": "Overlook 3"
+      },
+      "position_m": [5808, 4090, 25.6],
+      "ue_location_cm": [580800, -409000, 2560],
+      "radius_m": 20,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 36.3). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.43 km² visibles. Proéminence 4.1 m, Falaise de rive concave.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX07", "FD02", "NA05"],
+      "sightlines": ["EX06", "EX07"],
+      "metrics": {
+        "eye_height_m": 1.7,
+        "viewshed_radius_m": 1500,
+        "visible_area_km2": 0.427,
+        "activity_value": 40.53,
+        "marginal_gain": 36.34,
+        "prominence_m": 4.07,
+        "height_above_river_m": 4.6,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [5712, 4080]
+          ],
+          "walk_cost_m": 130,
+          "walk_time_min": 1.7,
+          "drive_cost_m": 3947,
+          "drive_time_min": 16.4
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 50.1,
+        "trails_in_view": []
+      }
+    },
+    {
+      "id": "OV04",
+      "type": "overlook",
+      "name": {
+        "fr": "Point de vue 4",
+        "en": "Overlook 4"
+      },
+      "position_m": [3110, 4998, 26.53],
+      "ue_location_cm": [311000, -499800, 2653],
+      "radius_m": 20,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 17.3). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.46 km² visibles. Proéminence 4.0 m, Falaise de rive concave.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX04", "NA04", "CA01", "CT02"],
+      "sightlines": ["EX03", "EX04", "EX05", "FD01", "FD04", "OV01", "BL01"],
+      "metrics": {
+        "eye_height_m": 1.7,
+        "viewshed_radius_m": 1500,
+        "visible_area_km2": 0.456,
+        "activity_value": 47.02,
+        "marginal_gain": 17.27,
+        "prominence_m": 4.02,
+        "height_above_river_m": 4.43,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "far_bank",
+        "trails_in_view": []
+      }
+    },
+    {
+      "id": "OV05",
+      "type": "overlook",
+      "name": {
+        "fr": "Point de vue 5",
+        "en": "Overlook 5"
+      },
+      "position_m": [358, 3738, 27.88],
+      "ue_location_cm": [35800, -373800, 2788],
+      "radius_m": 20,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 10.0). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.26 km² visibles. Proéminence 4.0 m, Falaise de rive concave.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX01", "EX03", "WA03"],
+      "sightlines": ["EX01", "EX02", "OV02"],
+      "metrics": {
+        "eye_height_m": 1.7,
+        "viewshed_radius_m": 1500,
+        "visible_area_km2": 0.258,
+        "activity_value": 24.06,
+        "marginal_gain": 10,
+        "prominence_m": 4.04,
+        "height_above_river_m": 4.67,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [464, 3728]
+          ],
+          "walk_cost_m": 110,
+          "walk_time_min": 1.5,
+          "drive_cost_m": 6139,
+          "drive_time_min": 25.6
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 77.4,
+        "trails_in_view": []
+      }
+    },
+    {
+      "id": "BL01",
+      "type": "blind",
+      "name": {
+        "fr": "Affût 1",
+        "en": "Blind 1"
+      },
+      "position_m": [3995.7, 4415, 26.27],
+      "ue_location_cm": [399566, -441505, 2627],
+      "radius_m": 6,
+      "heading_deg": 45,
+      "ue_yaw_deg": -45,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Affût au sol pour FD04 (Gué de la rivière 4), à 70 m : tente-affût portable (couvert naturel insuffisant) (couvert végétal 0.03), ligne de visée dégagée par le relief à 1,2 m d'œil (assis), transmission du feuillage 1.00, sous le vent dominant (alignement 0.15) pour limiter la détection olfactive par les animaux observés. Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD04", "BC01", "EX05", "FD01", "OV01", "BL04"],
+      "metrics": {
+        "target": "FD04",
+        "distance_to_target_m": 70,
+        "cover": 0.03,
+        "hide_type": "portable_hide",
+        "foliage_transmittance": 1,
+        "downwind_alignment": 0.15,
+        "eye_height_m": 1.2,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3920, 4400]
+          ],
+          "walk_cost_m": 71,
+          "walk_time_min": 0.9,
+          "drive_cost_m": 705,
+          "drive_time_min": 2.9
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 9
+      }
+    },
+    {
+      "id": "BL02",
+      "type": "blind",
+      "name": {
+        "fr": "Affût 2",
+        "en": "Blind 2"
+      },
+      "position_m": [7768.5, 3705.5, 21.47],
+      "ue_location_cm": [776854, -370545, 2147],
+      "radius_m": 6,
+      "heading_deg": 56.2,
+      "ue_yaw_deg": -56.2,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Affût au sol pour FD03 (Gué de la rivière 3), à 70 m : dissimulé dans la végétation (couvert végétal 0.97), ligne de visée dégagée par le relief à 1,2 m d'œil (assis), transmission du feuillage 1.00, sous le vent dominant (alignement 0.22) pour limiter la détection olfactive par les animaux observés. Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD03", "EX07", "FD02", "CT04", "AR03"],
+      "metrics": {
+        "target": "FD03",
+        "distance_to_target_m": 70,
+        "cover": 0.97,
+        "hide_type": "natural_cover",
+        "foliage_transmittance": 1,
+        "downwind_alignment": 0.22,
+        "eye_height_m": 1.2,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [7728, 3696]
+          ],
+          "walk_cost_m": 58,
+          "walk_time_min": 0.8,
+          "drive_cost_m": 8089,
+          "drive_time_min": 33.7
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.5,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 98.6
+      }
+    },
+    {
+      "id": "BL03",
+      "type": "blind",
+      "name": {
+        "fr": "Affût 3",
+        "en": "Blind 3"
+      },
+      "position_m": [4205.4, 4931.9, 22.9],
+      "ue_location_cm": [420535, -493194, 2290],
+      "radius_m": 6,
+      "heading_deg": 22.5,
+      "ue_yaw_deg": -22.5,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Affût au sol pour WA01 (Abreuvoir 1), à 160 m : dissimulé dans la végétation (couvert végétal 0.97), ligne de visée dégagée par le relief à 1,2 m d'œil (assis), transmission du feuillage 1.00, sous le vent dominant (alignement 0.04) pour limiter la détection olfactive par les animaux observés. Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["WA01", "EX06", "FD04", "CT02"],
+      "metrics": {
+        "target": "WA01",
+        "distance_to_target_m": 160,
+        "cover": 0.97,
+        "hide_type": "natural_cover",
+        "foliage_transmittance": 1,
+        "downwind_alignment": 0.04,
+        "eye_height_m": 1.2,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.49,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "BL04",
+      "type": "blind",
+      "name": {
+        "fr": "Affût 4",
+        "en": "Blind 4"
+      },
+      "position_m": [3250.3, 4572.6, 23.25],
+      "ue_location_cm": [325030, -457263, 2325],
+      "radius_m": 6,
+      "heading_deg": 78.7,
+      "ue_yaw_deg": -78.7,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Affût au sol pour FD01 (Gué de la rivière 1), à 130 m : tente-affût portable (couvert naturel insuffisant) (couvert végétal 0.03), ligne de visée dégagée par le relief à 1,2 m d'œil (assis), transmission du feuillage 1.00, sous le vent dominant (alignement 0.40) pour limiter la détection olfactive par les animaux observés. Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD01", "BC01", "EX03", "BL01"],
+      "metrics": {
+        "target": "FD01",
+        "distance_to_target_m": 130,
+        "cover": 0.03,
+        "hide_type": "portable_hide",
+        "foliage_transmittance": 1,
+        "downwind_alignment": 0.4,
+        "eye_height_m": 1.2,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [3216, 4560]
+          ],
+          "walk_cost_m": 103,
+          "walk_time_min": 1.4,
+          "drive_cost_m": 1065,
+          "drive_time_min": 4.4
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.51,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 13.5
+      }
+    },
+    {
+      "id": "NA01",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Edmontosaure",
+        "en": "Probable nesting area — Edmontosaurus"
+      },
+      "position_m": [6352, 6896, 22.62],
+      "ue_location_cm": [635200, -689600, 2262],
+      "radius_m": 220,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Edmontosaurus annectens (type de nid de la simulation : nid-monticule (végétation/sol) ; preuve de ce type : INFÉRÉ / PLAUSIBLE) : habitat préféré (Forêt riveraine, poids 0.90), sol hors d'atteinte des crues de plein bord (1.6 m au-dessus), substrat Sol forestier, pente 1°, 584 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["horner1979_maiasaura_nest", "erickson2017_incubation"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["BS02", "FD05", "FD06", "WA02", "NA02", "NA08"],
+      "metrics": {
+        "species": "edmontosaurus_annectens",
+        "nest_type": "mound",
+        "nest_type_evidence": "inferred",
+        "suitability": 0.9,
+        "breeding_doy": [90, 150],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.29,
+        "flood_class": "extreme_only",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "NA02",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Champsosaure",
+        "en": "Probable nesting area — Champsosaurus"
+      },
+      "position_m": [5712, 7088, 22.79],
+      "ue_location_cm": [571200, -708800, 2279],
+      "radius_m": 120,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Champsosaurus sp. (cf. C. laramiensis) (type de nid de la simulation : œufs enfouis ; preuve de ce type : SPÉCULATIF) : habitat préféré (Berge, poids 0.50), sol hors d'atteinte des crues de plein bord (1.5 m au-dessus), substrat Limon, pente 8°, 123 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["katsura2004_champsosaurus"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["FD05", "FD06", "NA01", "NA03", "NA08", "CT01"],
+      "metrics": {
+        "species": "champsosaurus",
+        "nest_type": "buried",
+        "nest_type_evidence": "speculative",
+        "suitability": 0.175,
+        "breeding_doy": [140, 190],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.6,
+        "flood_class": "extreme_only",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "NA03",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Tricératops",
+        "en": "Probable nesting area — Triceratops"
+      },
+      "position_m": [5328, 7216, 22.93],
+      "ue_location_cm": [532800, -721600, 2293],
+      "radius_m": 120,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Triceratops horridus (type de nid de la simulation : œufs enfouis ; preuve de ce type : INFÉRÉ / PLAUSIBLE) : habitat préféré (Plaine d'inondation ouverte, poids 0.90), sol hors d'atteinte des crues de plein bord (1.6 m au-dessus), substrat Limon, pente 1°, 461 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["erickson2017_incubation", "norell2020_soft_eggs"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["FD06", "NA02", "NA06", "CT01", "AR01"],
+      "metrics": {
+        "species": "triceratops_horridus",
+        "nest_type": "buried",
+        "nest_type_evidence": "inferred",
+        "suitability": 0.72,
+        "breeding_doy": [100, 170],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.27,
+        "flood_class": "extreme_only",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "NA04",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Borealosuchus de Sternberg",
+        "en": "Probable nesting area — Sternberg's Borealosuchus"
+      },
+      "position_m": [2384, 4816, 23.57],
+      "ue_location_cm": [238400, -481600, 2357],
+      "radius_m": 120,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Borealosuchus sternbergii (type de nid de la simulation : nid-monticule (végétation/sol) ; preuve de ce type : INFÉRÉ / PLAUSIBLE) : habitat préféré (Berge, poids 1.00), sol hors d'atteinte des crues de plein bord (1.3 m au-dessus), substrat Limon, pente 2°, 32 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["witmer1995_epb"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["EX02", "EX04", "OV02", "OV04", "CA01"],
+      "metrics": {
+        "species": "borealosuchus_sternbergii",
+        "nest_type": "mound",
+        "nest_type_evidence": "inferred",
+        "suitability": 0.718,
+        "breeding_doy": [150, 200],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.49,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "NA05",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Thescélosaure",
+        "en": "Probable nesting area — Thescelosaurus"
+      },
+      "position_m": [5040, 4304, 22.27],
+      "ue_location_cm": [504000, -430400, 2227],
+      "radius_m": 120,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Thescelosaurus neglectus (type de nid de la simulation : œufs enfouis ; preuve de ce type : INFÉRÉ / PLAUSIBLE) : habitat préféré (Boisement de levée, poids 0.90), sol hors d'atteinte des crues de plein bord (1.1 m au-dessus), substrat Sable, pente 0°, 109 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["varricchio2007_oryctodromeus"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["EX05", "EX07", "OV03"],
+      "metrics": {
+        "species": "thescelosaurus_neglectus",
+        "nest_type": "buried",
+        "nest_type_evidence": "inferred",
+        "suitability": 0.588,
+        "breeding_doy": [100, 160],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [5040, 4304]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 2944,
+          "drive_time_min": 12.3
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.62,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 34.3
+      }
+    },
+    {
+      "id": "NA06",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Struthiomimus",
+        "en": "Probable nesting area — Struthiomimus"
+      },
+      "position_m": [4912, 7280, 23.44],
+      "ue_location_cm": [491200, -728000, 2344],
+      "radius_m": 220,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Struthiomimus sedens (type de nid de la simulation : cuvette ouverte ; preuve de ce type : SPÉCULATIF) : habitat préféré (Plaine d'inondation ouverte, poids 0.90), sol hors d'atteinte des crues de plein bord (1.9 m au-dessus), substrat Limon, pente 1°, 904 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["zelenitsky2012_ornithomimus_feathers"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["NA03", "CT01", "AR01"],
+      "metrics": {
+        "species": "struthiomimus_sedens",
+        "nest_type": "open_scrape",
+        "nest_type_evidence": "speculative",
+        "suitability": 0.72,
+        "breeding_doy": [90, 150],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.14,
+        "flood_class": "extreme_only",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "NA07",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Pachycéphalosaure",
+        "en": "Probable nesting area — Pachycephalosaurus"
+      },
+      "position_m": [6608, 4176, 21.6],
+      "ue_location_cm": [660800, -417600, 2160],
+      "radius_m": 120,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Pachycephalosaurus wyomingensis (type de nid de la simulation : œufs enfouis ; preuve de ce type : INFÉRÉ / PLAUSIBLE) : habitat préféré (Boisement de levée, poids 0.70), sol hors d'atteinte des crues de plein bord (1.0 m au-dessus), substrat Sable, pente 0°, 109 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["EX06", "FD03", "WA02"],
+      "metrics": {
+        "species": "pachycephalosaurus_wyomingensis",
+        "nest_type": "buried",
+        "nest_type_evidence": "inferred",
+        "suitability": 0.425,
+        "breeding_doy": [100, 160],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.64,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "NA08",
+      "type": "nesting_area",
+      "name": {
+        "fr": "Aire de nidification probable — Acheroraptor",
+        "en": "Probable nesting area — Acheroraptor"
+      },
+      "position_m": [6768, 6928, 25.43],
+      "ue_location_cm": [676800, -692800, 2543],
+      "radius_m": 120,
+      "confidence": "speculative",
+      "confidence_label_fr": "SPÉCULATIF",
+      "confidence_subject_fr": "localisation prédite par un modèle d'habitat ; aucun site de nidification n'est connu dans la Hell Creek",
+      "placement": "model_prediction",
+      "rationale_fr": "HYPOTHÈSE (SPÉCULATIF). Zone la plus favorable du modèle pour Acheroraptor temertyorum (type de nid de la simulation : nid couvé ; preuve de ce type : INFÉRÉ / PLAUSIBLE) : habitat préféré (Forêt riveraine, poids 0.90), sol hors d'atteinte des crues de plein bord (4.7 m au-dessus), substrat Sol forestier, pente 2°, 987 m de l'eau, faible activité de prédateurs. 0 ponte(s) simulée(s) à moins de 300 m pendant le préchauffage. Affichée seulement si le profil active « nesting_grounds » ; elle oriente la recherche, elle ne prouve rien.",
+      "sources": ["varricchio2008_paternal_care", "norell1995_nesting_dinosaur"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "profile_toggle": "nesting_grounds",
+      "links": ["BS02", "FD06", "NA01", "NA02"],
+      "metrics": {
+        "species": "acheroraptor_temertyorum",
+        "nest_type": "brooded",
+        "nest_type_evidence": "inferred",
+        "suitability": 0.784,
+        "breeding_doy": [90, 150],
+        "nests_simulated_within_300m": 0,
+        "enabled_in_profiles": ["speculative", "standard"],
+        "disabled_in_profiles": ["conservative"],
+        "enabled_in_current_profile": true,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "CA01",
+      "type": "carcass_site",
+      "name": {
+        "fr": "Carcasse 1",
+        "en": "Carcass 1"
+      },
+      "position_m": [2232.3, 5606.3, 22.2],
+      "ue_location_cm": [223227, -560628, 2220],
+      "radius_m": 15,
+      "confidence": "established",
+      "confidence_label_fr": "ÉTABLI",
+      "confidence_subject_fr": "les carcasses attirent les charognards et se décomposent par stades (taphonomie actualiste)",
+      "placement": "simulation_state",
+      "rationale_fr": "État de la simulation à l'export (graine 7) : carcasse au stade « Squelettisation », morte depuis 120 jours environ. Point chaud dynamique : charognards, insectes nécrophages, traces de morsures. Elle évoluera (décomposition, dispersion, enfouissement par les crues) : le niveau ne doit pas la figer.",
+      "sources": ["behrensmeyer1978_bone_weathering"],
+      "visible_at_start": false,
+      "dynamic_state": true,
+      "designer_only": false,
+      "links": ["EX02", "EX04", "OV02", "OV04", "NA04"],
+      "metrics": {
+        "truth_species_designer_only": "triceratops_horridus",
+        "days_since_death": 120,
+        "mass_at_death_kg": 6318,
+        "scatter": 0.51,
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 1,
+        "flood_class": "frequent",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "CT01",
+      "type": "camera_trap",
+      "name": {
+        "fr": "Emplacement de piège photo 1",
+        "en": "Camera trap spot 1"
+      },
+      "position_m": [5620.7, 7283.7, 25.9],
+      "ue_location_cm": [562069, -728375, 2590],
+      "radius_m": 20,
+      "heading_deg": -141.3,
+      "ue_yaw_deg": 141.3,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sur un corridor prédit (3 tracé(s) superposé(s), usure observée 0.09), près d'un gué ou d'un abreuvoir. Piège à détection infrarouge passive (portée ~20 m, champ 50°) posé à 6 m du passage et orienté perpendiculairement à la piste.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD06", "NA02", "NA03", "NA06", "AR01"],
+      "metrics": {
+        "corridor_overlap": 3,
+        "trail_wear": 0.086,
+        "equipment": "camera_trap",
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "CT02",
+      "type": "camera_trap",
+      "name": {
+        "fr": "Emplacement de piège photo 2",
+        "en": "Camera trap spot 2"
+      },
+      "position_m": [3315.3, 4693, 23.25],
+      "ue_location_cm": [331533, -469299, 2325],
+      "radius_m": 20,
+      "heading_deg": -123.7,
+      "ue_yaw_deg": 123.7,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sur un corridor prédit (0 tracé(s) superposé(s), usure observée 1.00), près d'un gué ou d'un abreuvoir. Piège à détection infrarouge passive (portée ~20 m, champ 50°) posé à 6 m du passage et orienté perpendiculairement à la piste.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX04", "FD04", "OV04", "BL03"],
+      "metrics": {
+        "corridor_overlap": 0,
+        "trail_wear": 0.998,
+        "equipment": "camera_trap",
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.46,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "CT03",
+      "type": "camera_trap",
+      "name": {
+        "fr": "Emplacement de piège photo 3",
+        "en": "Camera trap spot 3"
+      },
+      "position_m": [4426, 1840, 24.89],
+      "ue_location_cm": [442600, -184000, 2489],
+      "radius_m": 20,
+      "heading_deg": -0,
+      "ue_yaw_deg": 0,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sur un corridor prédit (2 tracé(s) superposé(s), usure observée 0.16), près d'un gué ou d'un abreuvoir. Piège à détection infrarouge passive (portée ~20 m, champ 50°) posé à 6 m du passage et orienté perpendiculairement à la piste.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FR01", "AR02", "AR03", "MA01"],
+      "metrics": {
+        "corridor_overlap": 2,
+        "trail_wear": 0.161,
+        "equipment": "camera_trap",
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [4432, 1840]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 4624,
+          "drive_time_min": 19.3
+        },
+        "radio_coverage": true,
+        "flood_risk": 0,
+        "flood_class": "never",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 60.9
+      }
+    },
+    {
+      "id": "CT04",
+      "type": "camera_trap",
+      "name": {
+        "fr": "Emplacement de piège photo 4",
+        "en": "Camera trap spot 4"
+      },
+      "position_m": [7530.1, 1680.8, 20.22],
+      "ue_location_cm": [753005, -168078, 2022],
+      "radius_m": 20,
+      "heading_deg": -7.4,
+      "ue_yaw_deg": 7.4,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument (choix méthodologique) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sur un corridor prédit (0 tracé(s) superposé(s), usure observée 1.00), près d'un gué ou d'un abreuvoir. Piège à détection infrarouge passive (portée ~20 m, champ 50°) posé à 6 m du passage et orienté perpendiculairement à la piste.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FD02", "BL02", "AR03"],
+      "metrics": {
+        "corridor_overlap": 0,
+        "trail_wear": 0.998,
+        "equipment": "camera_trap",
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [7536, 1680]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 8434,
+          "drive_time_min": 35.1
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.99,
+        "flood_class": "frequent",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 111.5
+      }
+    },
+    {
+      "id": "AR01",
+      "type": "audio_recorder",
+      "name": {
+        "fr": "Station d'écoute 1",
+        "en": "Listening station 1"
+      },
+      "position_m": [4560, 7248, 22.37],
+      "ue_location_cm": [456000, -724800, 2237],
+      "radius_m": 10,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument — les propriétés des cris enregistrés restent des HYPOTHÈSES",
+      "placement": "model_prediction",
+      "rationale_fr": "Enregistreur autonome (60 s toutes les 10 min) : maximise l'activité animale et les vocalisations simulées dans un rayon de 700 m, pénalisé par le bruit d'eau courante qui masque les sons faibles (21 dB ici) ; légère prime à la hauteur. Espacement ≥ 1,6 km pour un échantillonnage indépendant. Les cris captés sont des hypothèses de reconstitution.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["NA03", "NA06", "CT01"],
+      "metrics": {
+        "water_noise_db": 21.2,
+        "score": 50.16,
+        "equipment": "audio_recorder",
+        "foot_component": 1,
+        "reachable_on_foot_from_basecamp": false,
+        "rover_access": {
+          "reachable": false
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.74,
+        "flood_class": "occasional",
+        "bank": "far_bank"
+      }
+    },
+    {
+      "id": "AR02",
+      "type": "audio_recorder",
+      "name": {
+        "fr": "Station d'écoute 2",
+        "en": "Listening station 2"
+      },
+      "position_m": [4432, 2000, 22.7],
+      "ue_location_cm": [443200, -200000, 2270],
+      "radius_m": 10,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument — les propriétés des cris enregistrés restent des HYPOTHÈSES",
+      "placement": "model_prediction",
+      "rationale_fr": "Enregistreur autonome (60 s toutes les 10 min) : maximise l'activité animale et les vocalisations simulées dans un rayon de 700 m, pénalisé par le bruit d'eau courante qui masque les sons faibles (21 dB ici) ; légère prime à la hauteur. Espacement ≥ 1,6 km pour un échantillonnage indépendant. Les cris captés sont des hypothèses de reconstitution.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FR01", "CT03", "MA01"],
+      "metrics": {
+        "water_noise_db": 20.9,
+        "score": 49.89,
+        "equipment": "audio_recorder",
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [4432, 2000]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 4371,
+          "drive_time_min": 18.2
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.49,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 57.4
+      }
+    },
+    {
+      "id": "AR03",
+      "type": "audio_recorder",
+      "name": {
+        "fr": "Station d'écoute 3",
+        "en": "Listening station 3"
+      },
+      "position_m": [7120, 1360, 21.22],
+      "ue_location_cm": [712000, -136000, 2122],
+      "radius_m": 10,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument — les propriétés des cris enregistrés restent des HYPOTHÈSES",
+      "placement": "model_prediction",
+      "rationale_fr": "Enregistreur autonome (60 s toutes les 10 min) : maximise l'activité animale et les vocalisations simulées dans un rayon de 700 m, pénalisé par le bruit d'eau courante qui masque les sons faibles (21 dB ici) ; légère prime à la hauteur. Espacement ≥ 1,6 km pour un échantillonnage indépendant. Les cris captés sont des hypothèses de reconstitution.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["BL02", "CT03", "CT04"],
+      "metrics": {
+        "water_noise_db": 21.2,
+        "score": 48.64,
+        "equipment": "audio_recorder",
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [7120, 1360]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 7881,
+          "drive_time_min": 32.8
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.58,
+        "flood_class": "occasional",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 107.6
+      }
+    },
+    {
+      "id": "MA01",
+      "type": "mic_array",
+      "name": {
+        "fr": "Site de réseau de microphones",
+        "en": "Microphone array site"
+      },
+      "position_m": [4112, 2000, 23.34],
+      "ue_location_cm": [411200, -200000, 2334],
+      "radius_m": 60,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'instrument (localisation acoustique par différences de temps d'arrivée)",
+      "placement": "model_prediction",
+      "rationale_fr": "Terrain plat (< 6°) et ouvert (canopée < 0,3) sur 160 m, calme (bruit d'eau 21 dB), hors zone inondable, au centre de la plus forte activité dans un rayon d'environ 1 km : conditions pour déployer 4 micros synchronisés sur un cercle de 60 m et localiser les sources par triangulation.",
+      "sources": ["iso1993_9613_1"],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["FR01", "BS01", "CT03", "AR02"],
+      "metrics": {
+        "array_radius_m": 60,
+        "microphones": 4,
+        "water_noise_db": 20.9,
+        "equipment": "omni_mic",
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [4112, 2000]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 4077,
+          "drive_time_min": 17
+        },
+        "radio_coverage": true,
+        "flood_risk": 0.26,
+        "flood_class": "extreme_only",
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 54.9
+      }
+    }
+  ],
+  "trails": [
+    {
+      "id": "TR01",
+      "kind": "drinking_route",
+      "from": "hotspot_1",
+      "to": "eau",
+      "length_m": 2651,
+      "observed_wear_mean": 0.035,
+      "observed_wear_max": 0.596,
+      "herbivore_presence": 0.041,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.027,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [4432, 1840, 24.89],
+        [4432, 2000, 22.7],
+        [4420, 2092, 21.85],
+        [4380, 2162, 21.63],
+        [4372, 2198, 21.63],
+        [4360, 2352, 21.46],
+        [4344, 2400, 21.45],
+        [4320, 2444, 21.47],
+        [4288, 2484, 21.44],
+        [4262, 2562, 21.52],
+        [4242, 2678, 21.6],
+        [4228, 2832, 21.53],
+        [4204, 3270, 21.52],
+        [4196, 3324, 21.57],
+        [4188, 3332, 21.6],
+        [4182, 3362, 21.58],
+        [4178, 3414, 21.64],
+        [4170, 3710, 21.51],
+        [4164, 3740, 21.57],
+        [4150, 3764, 21.63],
+        [4142, 3892, 21.61],
+        [4114, 3974, 21.65],
+        [4106, 4078, 21.7],
+        [4092, 4100, 21.68],
+        [4086, 4126, 21.71],
+        [4080, 4432, 22.82]
+      ]
+    },
+    {
+      "id": "TR02",
+      "kind": "drinking_route",
+      "from": "hotspot_2",
+      "to": "eau",
+      "length_m": 579,
+      "observed_wear_mean": 0.142,
+      "observed_wear_max": 0.998,
+      "herbivore_presence": 0.26,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 1.768,
+      "evidence": "observed_wear",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [7344, 4720, 20.43],
+        [7292, 4638, 20.52],
+        [7270, 4562, 20.5],
+        [7180, 4460, 20.48],
+        [7150, 4418, 20.63],
+        [7130, 4374, 20.8],
+        [7120, 4328, 21.01],
+        [7120, 4208, 21.46]
+      ]
+    },
+    {
+      "id": "TR03",
+      "kind": "drinking_route",
+      "from": "hotspot_3",
+      "to": "eau",
+      "length_m": 205,
+      "observed_wear_mean": 0.044,
+      "observed_wear_max": 0.118,
+      "herbivore_presence": 0.468,
+      "max_water_depth_m": 0.44,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.242,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [5616, 7280, 25.83],
+        [5744, 7120, 23.5]
+      ]
+    },
+    {
+      "id": "TR04",
+      "kind": "drinking_route",
+      "from": "hotspot_4",
+      "to": "eau",
+      "length_m": 2763,
+      "observed_wear_mean": 0.001,
+      "observed_wear_max": 0.084,
+      "herbivore_presence": 0.005,
+      "max_water_depth_m": 2.31,
+      "crosses_main_river": true,
+      "model_cost_per_m": 2.182,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [6736, 1552, 20.61],
+        [6764, 1684, 20.37],
+        [6794, 1746, 20.08],
+        [6806, 1854, 19.85],
+        [6818, 1882, 19.96],
+        [6860, 1932, 20.39],
+        [6890, 1986, 20.52],
+        [6902, 2084, 20.51],
+        [6914, 2124, 20.46],
+        [6974, 2264, 20.54],
+        [6992, 2360, 20.58],
+        [6998, 2474, 20.62],
+        [7018, 2526, 20.52],
+        [7024, 2632, 20.41],
+        [7022, 2774, 20.46],
+        [7018, 2818, 20.54],
+        [7012, 2844, 20.53],
+        [7004, 2852, 20.53],
+        [6994, 3084, 20.48],
+        [6992, 3604, 20.84],
+        [7004, 3986, 21.33],
+        [7016, 4072, 20.26],
+        [7052, 4120, 19.17],
+        [7060, 4166, 20.18],
+        [7080, 4188, 16.57],
+        [7120, 4208, 21.46]
+      ]
+    },
+    {
+      "id": "TR05",
+      "kind": "drinking_route",
+      "from": "hotspot_5",
+      "to": "eau",
+      "length_m": 1449,
+      "observed_wear_mean": 0.048,
+      "observed_wear_max": 0.378,
+      "herbivore_presence": 0.233,
+      "max_water_depth_m": 0.44,
+      "crosses_main_river": false,
+      "model_cost_per_m": 1.967,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [4368, 7216, 21.83],
+        [4402, 7242, 22.04],
+        [4506, 7250, 22.35],
+        [4526, 7254, 22.42],
+        [4548, 7268, 22.61],
+        [4590, 7274, 22.67],
+        [5030, 7282, 23.51],
+        [5148, 7292, 23.78],
+        [5156, 7300, 23.95],
+        [5214, 7310, 24.37],
+        [5328, 7312, 25.05],
+        [5420, 7300, 25.18],
+        [5514, 7246, 24.65],
+        [5624, 7216, 24.73],
+        [5684, 7180, 24.2],
+        [5744, 7120, 23.5]
+      ]
+    },
+    {
+      "id": "TR06",
+      "kind": "drinking_route",
+      "from": "hotspot_6",
+      "to": "eau",
+      "length_m": 1428,
+      "observed_wear_mean": 0.111,
+      "observed_wear_max": 0.998,
+      "herbivore_presence": 0.024,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 1.742,
+      "evidence": "observed_wear",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [3408, 6288, 21.87],
+        [3388, 6268, 21.91],
+        [3380, 6248, 21.94],
+        [3356, 6116, 21.9],
+        [3328, 6028, 21.84],
+        [3266, 5948, 21.94],
+        [3254, 5924, 22],
+        [3238, 5846, 21.99],
+        [3218, 5810, 21.96],
+        [3148, 5720, 21.94],
+        [3120, 5646, 22],
+        [3104, 5546, 22.1],
+        [3100, 5420, 22.19],
+        [3108, 5268, 22.11],
+        [3120, 5150, 22.36],
+        [3136, 5066, 24.95],
+        [3156, 5016, 26.28],
+        [3216, 4976, 22.92]
+      ]
+    },
+    {
+      "id": "TR07",
+      "kind": "drinking_route",
+      "from": "hotspot_7",
+      "to": "eau",
+      "length_m": 1313,
+      "observed_wear_mean": 0.001,
+      "observed_wear_max": 0.061,
+      "herbivore_presence": 0.03,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.033,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [4560, 6448, 21.46],
+        [4600, 6428, 21.43],
+        [4664, 6422, 21.43],
+        [5302, 6414, 21.08],
+        [5468, 6404, 21.07],
+        [5490, 6390, 21.04],
+        [5568, 6384, 20.98],
+        [5602, 6374, 21.07],
+        [5676, 6324, 21.16],
+        [5772, 6234, 20.94],
+        [5788, 6224, 20.71],
+        [5808, 6224, 20.88]
+      ]
+    },
+    {
+      "id": "TR08",
+      "kind": "drinking_route",
+      "from": "hotspot_8",
+      "to": "eau",
+      "length_m": 565,
+      "observed_wear_mean": 0,
+      "observed_wear_max": 0,
+      "herbivore_presence": 0.032,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.045,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [2224, 5232, 22.37],
+        [2204, 5072, 22.52],
+        [2184, 5010, 22.53],
+        [2152, 4950, 22.51],
+        [2108, 4892, 22.63],
+        [1968, 4752, 23.68]
+      ]
+    },
+    {
+      "id": "TR09",
+      "kind": "drinking_route",
+      "from": "hotspot_9",
+      "to": "eau",
+      "length_m": 789,
+      "observed_wear_mean": 0.002,
+      "observed_wear_max": 0.049,
+      "herbivore_presence": 0.024,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.023,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [6544, 6352, 20.71],
+        [6256, 6354, 20.73],
+        [6180, 6364, 20.74],
+        [6164, 6376, 20.74],
+        [6122, 6358, 20.74],
+        [6008, 6352, 20.83],
+        [5964, 6344, 20.87],
+        [5924, 6328, 20.99],
+        [5888, 6304, 21.01],
+        [5808, 6224, 20.88]
+      ]
+    },
+    {
+      "id": "TR10",
+      "kind": "drinking_route",
+      "from": "hotspot_10",
+      "to": "eau",
+      "length_m": 2597,
+      "observed_wear_mean": 0.023,
+      "observed_wear_max": 0.367,
+      "herbivore_presence": 0.031,
+      "max_water_depth_m": 2.31,
+      "crosses_main_river": true,
+      "model_cost_per_m": 2.078,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [7440, 1520, 20.3],
+        [7476, 1796, 19.98],
+        [7502, 1850, 19.83],
+        [7508, 1896, 19.79],
+        [7544, 1944, 20.15],
+        [7556, 1972, 20.25],
+        [7564, 2012, 20.34],
+        [7572, 2186, 20.28],
+        [7580, 2238, 20.25],
+        [7628, 2398, 20.25],
+        [7636, 2494, 20.28],
+        [7644, 2522, 20.23],
+        [7684, 2602, 20.3],
+        [7692, 2638, 20.33],
+        [7698, 2766, 20.24],
+        [7702, 2794, 20.19],
+        [7716, 2820, 20.17],
+        [7722, 2886, 20.16],
+        [7728, 3432, 20.57],
+        [7740, 3750, 21.2],
+        [7752, 3828, 19.58],
+        [7784, 3872, 18.65],
+        [7852, 3930, 21.34],
+        [7854, 3974, 21.22],
+        [7844, 3996, 21.22],
+        [7824, 4016, 21.24]
+      ]
+    },
+    {
+      "id": "TR11",
+      "kind": "forage_link",
+      "from": "hotspot_1",
+      "to": "hotspot_4",
+      "length_m": 2493,
+      "observed_wear_mean": 0.004,
+      "observed_wear_max": 0.131,
+      "herbivore_presence": 0.046,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 1.787,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [4432, 1840, 24.89],
+        [4592, 1700, 27.72],
+        [4652, 1658, 28.45],
+        [4708, 1630, 28.96],
+        [4760, 1616, 29.06],
+        [4808, 1616, 28.83],
+        [4852, 1608, 28.61],
+        [4892, 1592, 28.76],
+        [4928, 1568, 29.14],
+        [4960, 1536, 29.77],
+        [5030, 1512, 30.1],
+        [5138, 1496, 29.82],
+        [5614, 1482, 27.47],
+        [5722, 1470, 26.98],
+        [5792, 1452, 26.94],
+        [5824, 1428, 27.4],
+        [5906, 1398, 27.59],
+        [6062, 1388, 26.66],
+        [6106, 1380, 26.46],
+        [6214, 1342, 26.47],
+        [6308, 1340, 25.88],
+        [6364, 1348, 25.37],
+        [6420, 1366, 24.58],
+        [6476, 1394, 23.57],
+        [6532, 1432, 22.63],
+        [6670, 1540, 20.99],
+        [6696, 1552, 20.79],
+        [6736, 1552, 20.61]
+      ]
+    },
+    {
+      "id": "TR12",
+      "kind": "forage_link",
+      "from": "hotspot_4",
+      "to": "hotspot_10",
+      "length_m": 713,
+      "observed_wear_mean": 0,
+      "observed_wear_max": 0.006,
+      "herbivore_presence": 0.087,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.189,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [6736, 1552, 20.61],
+        [6756, 1532, 20.63],
+        [6804, 1526, 20.5],
+        [7440, 1520, 20.3]
+      ]
+    },
+    {
+      "id": "TR13",
+      "kind": "forage_link",
+      "from": "hotspot_10",
+      "to": "hotspot_2",
+      "length_m": 3305,
+      "observed_wear_mean": 0.017,
+      "observed_wear_max": 0.367,
+      "herbivore_presence": 0.053,
+      "max_water_depth_m": 2.31,
+      "crosses_main_river": true,
+      "model_cost_per_m": 2.086,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [7440, 1520, 20.3],
+        [7476, 1796, 19.98],
+        [7502, 1850, 19.83],
+        [7508, 1896, 19.79],
+        [7544, 1944, 20.15],
+        [7564, 2012, 20.34],
+        [7574, 2214, 20.24],
+        [7596, 2266, 20.24],
+        [7628, 2466, 20.27],
+        [7658, 2562, 20.23],
+        [7664, 2784, 20.26],
+        [7656, 2866, 20.16],
+        [7640, 2934, 20.21],
+        [7616, 2988, 20.2],
+        [7584, 3028, 20.22],
+        [7544, 3096, 20.29],
+        [7530, 3174, 20.35],
+        [7518, 3202, 20.37],
+        [7476, 3264, 20.41],
+        [7458, 3308, 20.39],
+        [7446, 3364, 20.4],
+        [7434, 3578, 20.66],
+        [7422, 3630, 20.82],
+        [7404, 3668, 21.07],
+        [7380, 3692, 21.34],
+        [7362, 3772, 20.06],
+        [7350, 3908, 21.03],
+        [7344, 4100, 20.63],
+        [7344, 4720, 20.43]
+      ]
+    },
+    {
+      "id": "TR14",
+      "kind": "forage_link",
+      "from": "hotspot_2",
+      "to": "hotspot_9",
+      "length_m": 1881,
+      "observed_wear_mean": 0,
+      "observed_wear_max": 0.003,
+      "herbivore_presence": 0.036,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.009,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [7344, 4720, 20.43],
+        [7324, 4860, 20.22],
+        [7304, 4916, 20.24],
+        [7272, 4972, 20.32],
+        [7228, 5028, 20.35],
+        [7078, 5190, 20.51],
+        [7008, 5288, 20.43],
+        [6984, 5346, 20.42],
+        [6968, 5414, 20.34],
+        [6952, 5654, 20.52],
+        [6936, 5714, 20.55],
+        [6912, 5760, 20.54],
+        [6880, 5792, 20.5],
+        [6856, 5828, 20.47],
+        [6840, 5868, 20.54],
+        [6832, 5912, 20.54],
+        [6832, 5960, 20.52],
+        [6814, 6016, 20.53],
+        [6778, 6080, 20.51],
+        [6724, 6152, 20.52],
+        [6544, 6352, 20.71]
+      ]
+    },
+    {
+      "id": "TR15",
+      "kind": "forage_link",
+      "from": "hotspot_9",
+      "to": "hotspot_3",
+      "length_m": 1320,
+      "observed_wear_mean": 0.002,
+      "observed_wear_max": 0.089,
+      "herbivore_presence": 0.075,
+      "max_water_depth_m": 0.51,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.056,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [6544, 6352, 20.71],
+        [6258, 6640, 20.27],
+        [6214, 6688, 20.31],
+        [6158, 6764, 20.71],
+        [5988, 6940, 21.67],
+        [5676, 7246, 25.43],
+        [5636, 7280, 25.88],
+        [5616, 7280, 25.83]
+      ]
+    },
+    {
+      "id": "TR16",
+      "kind": "forage_link",
+      "from": "hotspot_3",
+      "to": "hotspot_5",
+      "length_m": 1276,
+      "observed_wear_mean": 0.047,
+      "observed_wear_max": 0.378,
+      "herbivore_presence": 0.201,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 1.902,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [5616, 7280, 25.83],
+        [5596, 7300, 26.14],
+        [5564, 7306, 26.04],
+        [5428, 7312, 25.43],
+        [5244, 7310, 24.53],
+        [5188, 7306, 24.17],
+        [5156, 7300, 23.95],
+        [5148, 7292, 23.78],
+        [5106, 7286, 23.63],
+        [4590, 7274, 22.67],
+        [4548, 7268, 22.61],
+        [4540, 7260, 22.51],
+        [4506, 7250, 22.35],
+        [4402, 7242, 22.04],
+        [4368, 7216, 21.83]
+      ]
+    },
+    {
+      "id": "TR17",
+      "kind": "forage_link",
+      "from": "hotspot_5",
+      "to": "hotspot_7",
+      "length_m": 815,
+      "observed_wear_mean": 0.001,
+      "observed_wear_max": 0.061,
+      "herbivore_presence": 0.102,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.19,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [4368, 7216, 21.83],
+        [4368, 7016, 21.46],
+        [4378, 6946, 21.51],
+        [4398, 6886, 21.57],
+        [4428, 6836, 21.6],
+        [4468, 6796, 21.66],
+        [4500, 6748, 21.57],
+        [4524, 6692, 21.53],
+        [4540, 6628, 21.47],
+        [4560, 6448, 21.46]
+      ]
+    },
+    {
+      "id": "TR18",
+      "kind": "forage_link",
+      "from": "hotspot_7",
+      "to": "hotspot_6",
+      "length_m": 1186,
+      "observed_wear_mean": 0,
+      "observed_wear_max": 0.061,
+      "herbivore_presence": 0.054,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.074,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [4560, 6448, 21.46],
+        [4380, 6448, 21.42],
+        [4316, 6440, 21.43],
+        [4260, 6424, 21.59],
+        [4212, 6400, 21.63],
+        [4172, 6368, 21.63],
+        [4100, 6344, 21.65],
+        [3996, 6328, 21.38],
+        [3860, 6320, 21.59],
+        [3476, 6314, 21.83],
+        [3428, 6308, 21.83],
+        [3408, 6288, 21.87]
+      ]
+    },
+    {
+      "id": "TR19",
+      "kind": "forage_link",
+      "from": "hotspot_6",
+      "to": "hotspot_8",
+      "length_m": 1597,
+      "observed_wear_mean": 0.001,
+      "observed_wear_max": 0.072,
+      "herbivore_presence": 0.047,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
+      "model_cost_per_m": 2.116,
+      "evidence": "predicted_only",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les grands herbivores actuels réutilisent des pistes vers l'eau et entre zones d'alimentation ; le tracé est un chemin de moindre coût du modèle (pente, eau, couvert, enfoncement, usure)",
+      "placement": "model_prediction",
+      "points": [
+        [3408, 6288, 21.87],
+        [3368, 6268, 21.94],
+        [3298, 6204, 22.04],
+        [2462, 5386, 22.38],
+        [2392, 5328, 22.4],
+        [2376, 5328, 22.43],
+        [2332, 5310, 22.41],
+        [2224, 5232, 22.37]
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "BC01",
+      "to": "EX05",
+      "mode": "foot",
+      "length_m": 493,
+      "time_min": 9.5,
+      "max_slope_deg": 6,
+      "max_water_depth_m": 0,
+      "path": [
+        [3624, 4224.3],
+        [3696, 4272],
+        [3792, 4272],
+        [3920, 4400],
+        [4016, 4400],
+        [4002, 4420.6]
+      ]
+    },
+    {
+      "from": "BC01",
+      "to": "FD01",
+      "mode": "foot",
+      "length_m": 792,
+      "time_min": 17.7,
+      "max_slope_deg": 12.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [3624, 4224.3],
+        [3600, 4272],
+        [3472, 4272],
+        [3216, 4528],
+        [3216, 4688],
+        [3248, 4720],
+        [3275.7, 4700.1]
+      ]
+    },
+    {
+      "from": "BC01",
+      "to": "OV01",
+      "mode": "foot",
+      "length_m": 482,
+      "time_min": 9.5,
+      "max_slope_deg": 6,
+      "max_water_depth_m": 0,
+      "path": [
+        [3624, 4224.3],
+        [3696, 4272],
+        [3792, 4272],
+        [3920, 4400],
+        [4026, 4410]
+      ]
+    },
+    {
+      "from": "BC01",
+      "to": "BL01",
+      "mode": "foot",
+      "length_m": 455,
+      "time_min": 9,
+      "max_slope_deg": 6,
+      "max_water_depth_m": 0,
+      "path": [
+        [3624, 4224.3],
+        [3696, 4272],
+        [3792, 4272],
+        [3920, 4400],
+        [3995.7, 4415]
+      ]
+    },
+    {
+      "from": "BC01",
+      "to": "BL04",
+      "mode": "foot",
+      "length_m": 585,
+      "time_min": 13.5,
+      "max_slope_deg": 26.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [3624, 4224.3],
+        [3600, 4272],
+        [3472, 4272],
+        [3248, 4496],
+        [3250.3, 4572.6]
+      ]
+    },
+    {
+      "from": "FR01",
+      "to": "BS01",
+      "mode": "foot",
+      "length_m": 1722,
+      "time_min": 37.4,
+      "max_slope_deg": 1.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [3888, 1936],
+        [3792, 1936],
+        [3664, 2064],
+        [3504, 2064],
+        [3376, 2192],
+        [3312, 2192],
+        [3280, 2224],
+        [2704, 2224],
+        [2672, 2256],
+        [2576, 2256],
+        [2448, 2384],
+        [2352, 2384]
+      ]
+    },
+    {
+      "from": "FR01",
+      "to": "CT03",
+      "mode": "foot",
+      "length_m": 590,
+      "time_min": 14.6,
+      "max_slope_deg": 1.5,
+      "max_water_depth_m": 0,
+      "path": [
+        [3888, 1936],
+        [4080, 1936],
+        [4176, 1840],
+        [4426, 1840]
+      ]
+    },
+    {
+      "from": "FR01",
+      "to": "AR02",
+      "mode": "foot",
+      "length_m": 571,
+      "time_min": 14.5,
+      "max_slope_deg": 1.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [3888, 1936],
+        [4336, 1936],
+        [4432, 2000]
+      ]
+    },
+    {
+      "from": "FR01",
+      "to": "MA01",
+      "mode": "foot",
+      "length_m": 251,
+      "time_min": 6.5,
+      "max_slope_deg": 1.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [3888, 1936],
+        [3952, 2000],
+        [4112, 2000]
+      ]
+    },
+    {
+      "from": "EX01",
+      "to": "EX03",
+      "mode": "foot",
+      "length_m": 2162,
+      "time_min": 47.6,
+      "max_slope_deg": 22.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [395.2, 3750.5],
+        [400, 3728],
+        [1232, 3728],
+        [1296, 3792],
+        [1584, 3792],
+        [1712, 3888],
+        [1776, 3888],
+        [1840, 3952],
+        [1904, 3952],
+        [2032, 4080],
+        [2064, 4080],
+        [2128, 4144],
+        [2192, 4144],
+        [2320.5, 4246.5]
+      ]
+    },
+    {
+      "from": "EX01",
+      "to": "WA03",
+      "mode": "foot",
+      "length_m": 1574,
+      "time_min": 34.5,
+      "max_slope_deg": 6.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [395.2, 3750.5],
+        [400, 3728],
+        [1232, 3728],
+        [1296, 3792],
+        [1360, 3792],
+        [1488, 3920],
+        [1584, 3920],
+        [1769.2, 4126.8]
+      ]
+    },
+    {
+      "from": "EX01",
+      "to": "OV05",
+      "mode": "foot",
+      "length_m": 69,
+      "time_min": 0.4,
+      "max_slope_deg": 0.5,
+      "max_water_depth_m": 0,
+      "path": [
+        [395.2, 3750.5],
+        [400, 3728],
+        [358, 3738]
+      ]
+    },
+    {
+      "from": "EX02",
+      "to": "OV02",
+      "mode": "foot",
+      "length_m": 97,
+      "time_min": 1.9,
+      "max_slope_deg": 20.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [1291, 4570],
+        [1296, 4592],
+        [1350, 4592]
+      ]
+    },
+    {
+      "from": "EX02",
+      "to": "NA04",
+      "mode": "foot",
+      "length_m": 1203,
+      "time_min": 27,
+      "max_slope_deg": 6.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [1291, 4570],
+        [1328, 4624],
+        [1552, 4624],
+        [1648, 4688],
+        [1776, 4688],
+        [1840, 4752],
+        [2096, 4752],
+        [2128, 4784],
+        [2288, 4784],
+        [2320, 4816],
+        [2384, 4816]
+      ]
+    },
+    {
+      "from": "EX02",
+      "to": "CA01",
+      "mode": "foot",
+      "length_m": 1444,
+      "time_min": 32.1,
+      "max_slope_deg": 8.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [1291, 4570],
+        [1360, 4656],
+        [1360, 4688],
+        [1584, 4912],
+        [1584, 4944],
+        [2232.3, 5606.3]
+      ]
+    },
+    {
+      "from": "EX03",
+      "to": "FD01",
+      "mode": "foot",
+      "length_m": 1224,
+      "time_min": 27.9,
+      "max_slope_deg": 22.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [2320.5, 4246.5],
+        [2800, 4240],
+        [2928, 4336],
+        [2960, 4336],
+        [3088, 4464],
+        [3088, 4560],
+        [3248, 4720],
+        [3275.7, 4700.1]
+      ]
+    },
+    {
+      "from": "EX03",
+      "to": "WA03",
+      "mode": "foot",
+      "length_m": 620,
+      "time_min": 13.6,
+      "max_slope_deg": 22.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [2320.5, 4246.5],
+        [2192, 4144],
+        [2128, 4144],
+        [2096, 4112],
+        [1769.2, 4126.8]
+      ]
+    },
+    {
+      "from": "EX03",
+      "to": "OV05",
+      "mode": "foot",
+      "length_m": 2185,
+      "time_min": 48,
+      "max_slope_deg": 22.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [2320.5, 4246.5],
+        [2192, 4144],
+        [2128, 4144],
+        [2064, 4080],
+        [2032, 4080],
+        [1904, 3952],
+        [1840, 3952],
+        [1776, 3888],
+        [1712, 3888],
+        [1584, 3792],
+        [1296, 3792],
+        [1232, 3728],
+        [358, 3738]
+      ]
+    },
+    {
+      "from": "EX03",
+      "to": "BL04",
+      "mode": "foot",
+      "length_m": 1080,
+      "time_min": 25.5,
+      "max_slope_deg": 26.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [2320.5, 4246.5],
+        [2800, 4240],
+        [2928, 4336],
+        [2992, 4336],
+        [3250.3, 4572.6]
+      ]
+    },
+    {
+      "from": "EX04",
+      "to": "OV04",
+      "mode": "foot",
+      "length_m": 64,
+      "time_min": 0.6,
+      "max_slope_deg": 10.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [3086.5, 4990.4],
+        [3088, 5008],
+        [3110, 4998]
+      ]
+    },
+    {
+      "from": "EX04",
+      "to": "NA04",
+      "mode": "foot",
+      "length_m": 820,
+      "time_min": 17.8,
+      "max_slope_deg": 6,
+      "max_water_depth_m": 0,
+      "path": [
+        [3086.5, 4990.4],
+        [3088, 5008],
+        [2800, 5008],
+        [2768, 4976],
+        [2512, 4976],
+        [2384, 4848],
+        [2384, 4816]
+      ]
+    },
+    {
+      "from": "EX04",
+      "to": "CA01",
+      "mode": "foot",
+      "length_m": 1146,
+      "time_min": 24.7,
+      "max_slope_deg": 9.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [3086.5, 4990.4],
+        [2480, 5584],
+        [2384, 5584],
+        [2352, 5616],
+        [2232.3, 5606.3]
+      ]
+    },
+    {
+      "from": "EX04",
+      "to": "CT02",
+      "mode": "foot",
+      "length_m": 564,
+      "time_min": 12.5,
+      "max_slope_deg": 13.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [3086.5, 4990.4],
+        [3120, 5040],
+        [3184, 5040],
+        [3344, 4880],
+        [3344, 4720],
+        [3315.3, 4693]
+      ]
+    },
+    {
+      "from": "EX05",
+      "to": "OV01",
+      "mode": "foot",
+      "length_m": 39,
+      "time_min": 0,
+      "max_slope_deg": 0.5,
+      "max_water_depth_m": 0,
+      "path": [
+        [4002, 4420.6],
+        [4026, 4410]
+      ]
+    },
+    {
+      "from": "EX05",
+      "to": "BL01",
+      "mode": "foot",
+      "length_m": 76,
+      "time_min": 0.4,
+      "max_slope_deg": 0.5,
+      "max_water_depth_m": 0,
+      "path": [
+        [4002, 4420.6],
+        [4016, 4400],
+        [3984, 4400],
+        [3995.7, 4415]
+      ]
+    },
+    {
+      "from": "EX05",
+      "to": "NA05",
+      "mode": "foot",
+      "length_m": 1142,
+      "time_min": 26.7,
+      "max_slope_deg": 6.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [4002, 4420.6],
+        [4080, 4368],
+        [4144, 4368],
+        [4240, 4272],
+        [4592, 4272],
+        [4624, 4240],
+        [4880, 4240],
+        [4944, 4304],
+        [5040, 4304]
+      ]
+    },
+    {
+      "from": "EX06",
+      "to": "WA01",
+      "mode": "foot",
+      "length_m": 786,
+      "time_min": 17.2,
+      "max_slope_deg": 29.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5019.1, 4884.7],
+        [5040, 4880],
+        [5040, 4912],
+        [4976, 4912],
+        [4944, 4944],
+        [4720, 4944],
+        [4656, 5008],
+        [4353.2, 4993.2]
+      ]
+    },
+    {
+      "from": "EX06",
+      "to": "WA02",
+      "mode": "foot",
+      "length_m": 1115,
+      "time_min": 25.3,
+      "max_slope_deg": 29.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5019.1, 4884.7],
+        [5040, 4880],
+        [5040, 4944],
+        [5552, 5456],
+        [5584, 5456],
+        [5744, 5616],
+        [5790.8, 5614.8]
+      ]
+    },
+    {
+      "from": "EX06",
+      "to": "BL03",
+      "mode": "foot",
+      "length_m": 1015,
+      "time_min": 22.3,
+      "max_slope_deg": 29.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5019.1, 4884.7],
+        [5040, 4880],
+        [5040, 4912],
+        [4976, 4912],
+        [4944, 4944],
+        [4720, 4944],
+        [4656, 5008],
+        [4240, 5008],
+        [4176, 4944],
+        [4205.4, 4931.9]
+      ]
+    },
+    {
+      "from": "EX06",
+      "to": "NA07",
+      "mode": "foot",
+      "length_m": 2001,
+      "time_min": 47.2,
+      "max_slope_deg": 29.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5019.1, 4884.7],
+        [5040, 4880],
+        [5040, 4912],
+        [5648, 4912],
+        [5712, 4848],
+        [5840, 4848],
+        [5968, 4752],
+        [6096, 4752],
+        [6192, 4656],
+        [6256, 4656],
+        [6448, 4464],
+        [6448, 4336],
+        [6608, 4176]
+      ]
+    },
+    {
+      "from": "EX07",
+      "to": "FD02",
+      "mode": "foot",
+      "length_m": 1461,
+      "time_min": 32.4,
+      "max_slope_deg": 18,
+      "max_water_depth_m": 0,
+      "path": [
+        [5796.7, 4094.4],
+        [5872, 4016],
+        [5968, 4016],
+        [6160, 3856],
+        [6736, 3856],
+        [6864, 3952],
+        [6992, 3952],
+        [7056, 4016],
+        [7082.5, 3992.5]
+      ]
+    },
+    {
+      "from": "EX07",
+      "to": "OV03",
+      "mode": "foot",
+      "length_m": 28,
+      "time_min": 0,
+      "max_slope_deg": 18,
+      "max_water_depth_m": 0,
+      "path": [
+        [5796.7, 4094.4],
+        [5808, 4090]
+      ]
+    },
+    {
+      "from": "EX07",
+      "to": "BL02",
+      "mode": "foot",
+      "length_m": 2195,
+      "time_min": 49.4,
+      "max_slope_deg": 18,
+      "max_water_depth_m": 0,
+      "path": [
+        [5796.7, 4094.4],
+        [5872, 4016],
+        [5968, 4016],
+        [6320, 3664],
+        [6384, 3664],
+        [6416, 3632],
+        [7536, 3632],
+        [7568, 3664],
+        [7696, 3664],
+        [7768.5, 3705.5]
+      ]
+    },
+    {
+      "from": "EX07",
+      "to": "NA05",
+      "mode": "foot",
+      "length_m": 879,
+      "time_min": 22.4,
+      "max_slope_deg": 18,
+      "max_water_depth_m": 0,
+      "path": [
+        [5796.7, 4094.4],
+        [5808, 4080],
+        [5264, 4080],
+        [5040, 4304]
+      ]
+    },
+    {
+      "from": "BS01",
+      "to": "WA03",
+      "mode": "foot",
+      "length_m": 1983,
+      "time_min": 42.3,
+      "max_slope_deg": 0.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [2352, 2384],
+        [2320, 2416],
+        [2320, 2608],
+        [2256, 2672],
+        [2256, 2800],
+        [2224, 2832],
+        [2224, 3152],
+        [2192, 3184],
+        [2160, 3344],
+        [2064, 3440],
+        [2064, 3664],
+        [1968, 3824],
+        [1968, 3888],
+        [1776, 4080],
+        [1769.2, 4126.8]
+      ]
+    },
+    {
+      "from": "BS01",
+      "to": "MA01",
+      "mode": "foot",
+      "length_m": 1919,
+      "time_min": 42.9,
+      "max_slope_deg": 0.9,
+      "max_water_depth_m": 0,
+      "path": [
+        [2352, 2384],
+        [2448, 2384],
+        [2576, 2256],
+        [2672, 2256],
+        [2704, 2224],
+        [3280, 2224],
+        [3312, 2192],
+        [3376, 2192],
+        [3504, 2064],
+        [3664, 2064],
+        [3728, 2000],
+        [4112, 2000]
+      ]
+    },
+    {
+      "from": "BS02",
+      "to": "FD03",
+      "mode": "foot",
+      "length_m": 2156,
+      "time_min": 47.8,
+      "max_slope_deg": 17.4,
+      "max_water_depth_m": 0.38,
+      "path": [
+        [8144, 5712],
+        [8112, 5680],
+        [8112, 5584],
+        [8016, 5456],
+        [8016, 5072],
+        [7984, 5040],
+        [7984, 4784],
+        [7920, 4688],
+        [7920, 4336],
+        [7888, 4304],
+        [7888, 3792],
+        [7824, 3728],
+        [7807.4, 3763.7]
+      ]
+    },
+    {
+      "from": "BS02",
+      "to": "NA01",
+      "mode": "foot",
+      "length_m": 2282,
+      "time_min": 48.9,
+      "max_slope_deg": 1.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [8144, 5712],
+        [8016, 5776],
+        [7664, 6064],
+        [7376, 6096],
+        [7184, 6288],
+        [7088, 6288],
+        [7024, 6320],
+        [6704, 6608],
+        [6576, 6672],
+        [6352, 6896]
+      ]
+    },
+    {
+      "from": "BS02",
+      "to": "NA08",
+      "mode": "foot",
+      "length_m": 1973,
+      "time_min": 42,
+      "max_slope_deg": 1.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [8144, 5712],
+        [8016, 5776],
+        [7664, 6064],
+        [7536, 6064],
+        [7504, 6096],
+        [7440, 6096],
+        [7184, 6384],
+        [7184, 6448],
+        [6768, 6864],
+        [6768, 6928]
+      ]
+    },
+    {
+      "from": "FD01",
+      "to": "BL01",
+      "mode": "foot",
+      "length_m": 1079,
+      "time_min": 24.3,
+      "max_slope_deg": 12.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [3275.7, 4700.1],
+        [3248, 4720],
+        [3216, 4688],
+        [3216, 4528],
+        [3344, 4400],
+        [3995.7, 4415]
+      ]
+    },
+    {
+      "from": "FD01",
+      "to": "BL04",
+      "mode": "foot",
+      "length_m": 233,
+      "time_min": 5.7,
+      "max_slope_deg": 26.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [3275.7, 4700.1],
+        [3248, 4720],
+        [3216, 4688],
+        [3216, 4592],
+        [3250.3, 4572.6]
+      ]
+    },
+    {
+      "from": "FD02",
+      "to": "OV03",
+      "mode": "foot",
+      "length_m": 1452,
+      "time_min": 32.4,
+      "max_slope_deg": 18,
+      "max_water_depth_m": 0,
+      "path": [
+        [7082.5, 3992.5],
+        [7056, 4016],
+        [6992, 3952],
+        [6864, 3952],
+        [6736, 3856],
+        [6160, 3856],
+        [5968, 4016],
+        [5872, 4016],
+        [5808, 4090]
+      ]
+    },
+    {
+      "from": "FD02",
+      "to": "BL02",
+      "mode": "foot",
+      "length_m": 1133,
+      "time_min": 25.9,
+      "max_slope_deg": 11.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [7082.5, 3992.5],
+        [7056, 4016],
+        [7024, 3984],
+        [7024, 3760],
+        [7152, 3632],
+        [7536, 3632],
+        [7568, 3664],
+        [7696, 3664],
+        [7768.5, 3705.5]
+      ]
+    },
+    {
+      "from": "FD02",
+      "to": "CT04",
+      "mode": "foot",
+      "length_m": 2603,
+      "time_min": 59.8,
+      "max_slope_deg": 11.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [7082.5, 3992.5],
+        [7056, 4016],
+        [7024, 3984],
+        [7024, 3504],
+        [7056, 3472],
+        [7056, 3216],
+        [7184, 2960],
+        [7248, 2896],
+        [7248, 2736],
+        [7280, 2704],
+        [7280, 2512],
+        [7312, 2480],
+        [7312, 2352],
+        [7440, 2224],
+        [7440, 1840],
+        [7472, 1808],
+        [7472, 1744],
+        [7530.1, 1680.8]
+      ]
+    },
+    {
+      "from": "FD03",
+      "to": "WA02",
+      "mode": "foot",
+      "length_m": 3079,
+      "time_min": 68.6,
+      "max_slope_deg": 17.4,
+      "max_water_depth_m": 0.38,
+      "path": [
+        [7807.4, 3763.7],
+        [7824, 3728],
+        [7856, 3760],
+        [7856, 3984],
+        [7536, 4304],
+        [7504, 4304],
+        [7184, 4624],
+        [7152, 4624],
+        [6768, 5008],
+        [6672, 5008],
+        [6352, 5296],
+        [6192, 5328],
+        [6064, 5456],
+        [5936, 5520],
+        [5840, 5616],
+        [5790.8, 5614.8]
+      ]
+    },
+    {
+      "from": "FD03",
+      "to": "NA07",
+      "mode": "foot",
+      "length_m": 1769,
+      "time_min": 43.6,
+      "max_slope_deg": 17.4,
+      "max_water_depth_m": 0.38,
+      "path": [
+        [7807.4, 3763.7],
+        [7824, 3728],
+        [7856, 3760],
+        [7856, 3984],
+        [7536, 4304],
+        [7472, 4336],
+        [6800, 4336],
+        [6640, 4176],
+        [6608, 4176]
+      ]
+    },
+    {
+      "from": "FD04",
+      "to": "WA01",
+      "mode": "foot",
+      "length_m": 772,
+      "time_min": 17.1,
+      "max_slope_deg": 9.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [4045.2, 4464.5],
+        [4048, 4816],
+        [4240, 5008],
+        [4368, 5008],
+        [4353.2, 4993.2]
+      ]
+    },
+    {
+      "from": "FD04",
+      "to": "BL03",
+      "mode": "foot",
+      "length_m": 564,
+      "time_min": 12,
+      "max_slope_deg": 9.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [4045.2, 4464.5],
+        [4048, 4816],
+        [4176, 4944],
+        [4205.4, 4931.9]
+      ]
+    },
+    {
+      "from": "FD04",
+      "to": "CT02",
+      "mode": "foot",
+      "length_m": 1351,
+      "time_min": 31.1,
+      "max_slope_deg": 13.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [4045.2, 4464.5],
+        [4048, 4656],
+        [4016, 4688],
+        [4016, 4752],
+        [3920, 4848],
+        [3920, 4944],
+        [3824, 5040],
+        [3632, 5040],
+        [3376, 4784],
+        [3376, 4752],
+        [3315.3, 4693]
+      ]
+    },
+    {
+      "from": "FD05",
+      "to": "WA02",
+      "mode": "foot",
+      "length_m": 603,
+      "time_min": 14,
+      "max_slope_deg": 10.4,
+      "max_water_depth_m": 0,
+      "path": [
+        [5804.2, 6158.4],
+        [5840, 6128],
+        [5840, 5872],
+        [5808, 5840],
+        [5808, 5712],
+        [5776, 5680],
+        [5790.8, 5614.8]
+      ]
+    },
+    {
+      "from": "FD05",
+      "to": "NA01",
+      "mode": "foot",
+      "length_m": 965,
+      "time_min": 21.2,
+      "max_slope_deg": 8.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [5804.2, 6158.4],
+        [5840, 6192],
+        [5840, 6352],
+        [6352, 6896]
+      ]
+    },
+    {
+      "from": "FD05",
+      "to": "NA02",
+      "mode": "foot",
+      "length_m": 998,
+      "time_min": 22.2,
+      "max_slope_deg": 8.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [5804.2, 6158.4],
+        [5712, 6288],
+        [5712, 6384],
+        [5680, 6416],
+        [5680, 6864],
+        [5712, 6896],
+        [5712, 7088]
+      ]
+    },
+    {
+      "from": "FD06",
+      "to": "NA01",
+      "mode": "foot",
+      "length_m": 749,
+      "time_min": 17.9,
+      "max_slope_deg": 8.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5726.9, 7125.1],
+        [6000, 7120],
+        [6096, 7024],
+        [6224, 6992],
+        [6320, 6896],
+        [6352, 6896]
+      ]
+    },
+    {
+      "from": "FD06",
+      "to": "NA02",
+      "mode": "foot",
+      "length_m": 48,
+      "time_min": 0.8,
+      "max_slope_deg": 8.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5726.9, 7125.1],
+        [5712, 7088]
+      ]
+    },
+    {
+      "from": "FD06",
+      "to": "NA03",
+      "mode": "foot",
+      "length_m": 440,
+      "time_min": 10.2,
+      "max_slope_deg": 8.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5726.9, 7125.1],
+        [5552, 7120],
+        [5456, 7216],
+        [5328, 7216]
+      ]
+    },
+    {
+      "from": "FD06",
+      "to": "NA08",
+      "mode": "foot",
+      "length_m": 1231,
+      "time_min": 24.9,
+      "max_slope_deg": 8.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5726.9, 7125.1],
+        [5776, 7120],
+        [5872, 7216],
+        [6352, 7216],
+        [6416, 7184],
+        [6544, 7056],
+        [6640, 7056],
+        [6768, 6928]
+      ]
+    },
+    {
+      "from": "FD06",
+      "to": "CT01",
+      "mode": "foot",
+      "length_m": 222,
+      "time_min": 5.2,
+      "max_slope_deg": 8.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [5726.9, 7125.1],
+        [5712, 7184],
+        [5620.7, 7283.7]
+      ]
+    },
+    {
+      "from": "WA01",
+      "to": "BL03",
+      "mode": "foot",
+      "length_m": 271,
+      "time_min": 5.2,
+      "max_slope_deg": 0.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [4353.2, 4993.2],
+        [4368, 5008],
+        [4240, 5008],
+        [4176, 4944],
+        [4205.4, 4931.9]
+      ]
+    },
+    {
+      "from": "WA02",
+      "to": "NA01",
+      "mode": "foot",
+      "length_m": 1533,
+      "time_min": 32.2,
+      "max_slope_deg": 11.1,
+      "max_water_depth_m": 0,
+      "path": [
+        [5790.8, 5614.8],
+        [5776, 5648],
+        [6032, 5904],
+        [6032, 5936],
+        [6192, 6128],
+        [6192, 6256],
+        [6224, 6288],
+        [6224, 6576],
+        [6288, 6640],
+        [6288, 6832],
+        [6352, 6896]
+      ]
+    },
+    {
+      "from": "WA02",
+      "to": "NA07",
+      "mode": "foot",
+      "length_m": 1800,
+      "time_min": 41.2,
+      "max_slope_deg": 10.4,
+      "max_water_depth_m": 0,
+      "path": [
+        [5790.8, 5614.8],
+        [5776, 5520],
+        [6256, 5040],
+        [6288, 4944],
+        [6384, 4848],
+        [6384, 4784],
+        [6448, 4720],
+        [6448, 4336],
+        [6608, 4176]
+      ]
+    },
+    {
+      "from": "WA03",
+      "to": "OV05",
+      "mode": "foot",
+      "length_m": 1598,
+      "time_min": 34.9,
+      "max_slope_deg": 6.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [1769.2, 4126.8],
+        [1584, 3920],
+        [1488, 3920],
+        [1360, 3792],
+        [1296, 3792],
+        [1232, 3728],
+        [358, 3738]
+      ]
+    },
+    {
+      "from": "OV01",
+      "to": "BL01",
+      "mode": "foot",
+      "length_m": 65,
+      "time_min": 0.4,
+      "max_slope_deg": 0.5,
+      "max_water_depth_m": 0,
+      "path": [
+        [4026, 4410],
+        [3984, 4400],
+        [3995.7, 4415]
+      ]
+    },
+    {
+      "from": "OV02",
+      "to": "NA04",
+      "mode": "foot",
+      "length_m": 1127,
+      "time_min": 26.4,
+      "max_slope_deg": 20.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [1350, 4592],
+        [1392, 4624],
+        [1552, 4624],
+        [1648, 4688],
+        [1776, 4688],
+        [1840, 4752],
+        [2096, 4752],
+        [2128, 4784],
+        [2288, 4784],
+        [2320, 4816],
+        [2384, 4816]
+      ]
+    },
+    {
+      "from": "OV02",
+      "to": "CA01",
+      "mode": "foot",
+      "length_m": 1405,
+      "time_min": 32.3,
+      "max_slope_deg": 20.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [1350, 4592],
+        [1392, 4656],
+        [1392, 4720],
+        [1584, 4912],
+        [1584, 4944],
+        [2232.3, 5606.3]
+      ]
+    },
+    {
+      "from": "OV03",
+      "to": "NA05",
+      "mode": "foot",
+      "length_m": 871,
+      "time_min": 22.4,
+      "max_slope_deg": 18,
+      "max_water_depth_m": 0,
+      "path": [
+        [5808, 4090],
+        [5264, 4080],
+        [5040, 4304]
+      ]
+    },
+    {
+      "from": "OV04",
+      "to": "NA04",
+      "mode": "foot",
+      "length_m": 848,
+      "time_min": 18.4,
+      "max_slope_deg": 10.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [3110, 4998],
+        [2800, 5008],
+        [2768, 4976],
+        [2512, 4976],
+        [2384, 4848],
+        [2384, 4816]
+      ]
+    },
+    {
+      "from": "OV04",
+      "to": "CA01",
+      "mode": "foot",
+      "length_m": 1175,
+      "time_min": 25.3,
+      "max_slope_deg": 10.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [3110, 4998],
+        [3056, 5008],
+        [2480, 5584],
+        [2384, 5584],
+        [2352, 5616],
+        [2232.3, 5606.3]
+      ]
+    },
+    {
+      "from": "OV04",
+      "to": "CT02",
+      "mode": "foot",
+      "length_m": 529,
+      "time_min": 12.3,
+      "max_slope_deg": 13.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [3110, 4998],
+        [3184, 5040],
+        [3344, 4880],
+        [3344, 4720],
+        [3315.3, 4693]
+      ]
+    },
+    {
+      "from": "BL01",
+      "to": "BL04",
+      "mode": "foot",
+      "length_m": 872,
+      "time_min": 20.1,
+      "max_slope_deg": 26.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [3995.7, 4415],
+        [3344, 4400],
+        [3248, 4496],
+        [3250.3, 4572.6]
+      ]
+    },
+    {
+      "from": "BL02",
+      "to": "CT04",
+      "mode": "foot",
+      "length_m": 2128,
+      "time_min": 47.8,
+      "max_slope_deg": 4.9,
+      "max_water_depth_m": 0,
+      "path": [
+        [7768.5, 3705.5],
+        [7728, 3664],
+        [7728, 2832],
+        [7696, 2800],
+        [7696, 2608],
+        [7664, 2576],
+        [7664, 2416],
+        [7632, 2384],
+        [7632, 1904],
+        [7536, 1808],
+        [7530.1, 1680.8]
+      ]
+    },
+    {
+      "from": "BL02",
+      "to": "AR03",
+      "mode": "foot",
+      "length_m": 2614,
+      "time_min": 58.2,
+      "max_slope_deg": 4.9,
+      "max_water_depth_m": 0,
+      "path": [
+        [7768.5, 3705.5],
+        [7728, 3664],
+        [7728, 2832],
+        [7696, 2800],
+        [7696, 2608],
+        [7664, 2576],
+        [7664, 2416],
+        [7632, 2384],
+        [7632, 2096],
+        [7312, 1776],
+        [7312, 1552],
+        [7120, 1360]
+      ]
+    },
+    {
+      "from": "BL03",
+      "to": "CT02",
+      "mode": "foot",
+      "length_m": 1106,
+      "time_min": 25.1,
+      "max_slope_deg": 13.8,
+      "max_water_depth_m": 0,
+      "path": [
+        [4205.4, 4931.9],
+        [3920, 4944],
+        [3824, 5040],
+        [3632, 5040],
+        [3376, 4784],
+        [3376, 4752],
+        [3315.3, 4693]
+      ]
+    },
+    {
+      "from": "NA01",
+      "to": "NA02",
+      "mode": "foot",
+      "length_m": 746,
+      "time_min": 18.1,
+      "max_slope_deg": 8.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [6352, 6896],
+        [6320, 6896],
+        [6224, 6992],
+        [6096, 7024],
+        [6000, 7120],
+        [5744, 7120],
+        [5712, 7088]
+      ]
+    },
+    {
+      "from": "NA01",
+      "to": "NA08",
+      "mode": "foot",
+      "length_m": 509,
+      "time_min": 10.5,
+      "max_slope_deg": 1.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [6352, 6896],
+        [6384, 6896],
+        [6544, 7024],
+        [6672, 7024],
+        [6768, 6928]
+      ]
+    },
+    {
+      "from": "NA02",
+      "to": "NA03",
+      "mode": "foot",
+      "length_m": 437,
+      "time_min": 10.2,
+      "max_slope_deg": 8.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [5712, 7088],
+        [5616, 7088],
+        [5456, 7216],
+        [5328, 7216]
+      ]
+    },
+    {
+      "from": "NA02",
+      "to": "NA08",
+      "mode": "foot",
+      "length_m": 1228,
+      "time_min": 25.1,
+      "max_slope_deg": 8.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [5712, 7088],
+        [5872, 7216],
+        [6352, 7216],
+        [6416, 7184],
+        [6544, 7056],
+        [6640, 7056],
+        [6768, 6928]
+      ]
+    },
+    {
+      "from": "NA02",
+      "to": "CT01",
+      "mode": "foot",
+      "length_m": 238,
+      "time_min": 5.8,
+      "max_slope_deg": 8.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [5712, 7088],
+        [5648, 7152],
+        [5648, 7248],
+        [5620.7, 7283.7]
+      ]
+    },
+    {
+      "from": "NA03",
+      "to": "NA06",
+      "mode": "foot",
+      "length_m": 443,
+      "time_min": 10.7,
+      "max_slope_deg": 1.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [5328, 7216],
+        [5136, 7216],
+        [5072, 7280],
+        [4912, 7280]
+      ]
+    },
+    {
+      "from": "NA03",
+      "to": "CT01",
+      "mode": "foot",
+      "length_m": 321,
+      "time_min": 7.2,
+      "max_slope_deg": 1.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [5328, 7216],
+        [5392, 7248],
+        [5520, 7248],
+        [5552, 7280],
+        [5620.7, 7283.7]
+      ]
+    },
+    {
+      "from": "NA03",
+      "to": "AR01",
+      "mode": "foot",
+      "length_m": 781,
+      "time_min": 18.9,
+      "max_slope_deg": 1.2,
+      "max_water_depth_m": 0,
+      "path": [
+        [5328, 7216],
+        [5136, 7216],
+        [5104, 7248],
+        [4560, 7248]
+      ]
+    },
+    {
+      "from": "NA04",
+      "to": "CA01",
+      "mode": "foot",
+      "length_m": 879,
+      "time_min": 20.8,
+      "max_slope_deg": 1.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [2384, 4816],
+        [2256, 4976],
+        [2256, 5136],
+        [2224, 5168],
+        [2232.3, 5606.3]
+      ]
+    },
+    {
+      "from": "NA06",
+      "to": "CT01",
+      "mode": "foot",
+      "length_m": 790,
+      "time_min": 16.7,
+      "max_slope_deg": 1.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [4912, 7280],
+        [5008, 7280],
+        [5104, 7376],
+        [5520, 7376],
+        [5620.7, 7283.7]
+      ]
+    },
+    {
+      "from": "NA06",
+      "to": "AR01",
+      "mode": "foot",
+      "length_m": 365,
+      "time_min": 8.3,
+      "max_slope_deg": 1,
+      "max_water_depth_m": 0,
+      "path": [
+        [4912, 7280],
+        [4624, 7280],
+        [4560, 7248]
+      ]
+    },
+    {
+      "from": "CT01",
+      "to": "AR01",
+      "mode": "foot",
+      "length_m": 1155,
+      "time_min": 24.6,
+      "max_slope_deg": 1.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [5620.7, 7283.7],
+        [5520, 7376],
+        [5104, 7376],
+        [5072, 7344],
+        [4880, 7344],
+        [4752, 7280],
+        [4624, 7280],
+        [4560, 7248]
+      ]
+    },
+    {
+      "from": "CT03",
+      "to": "AR02",
+      "mode": "foot",
+      "length_m": 166,
+      "time_min": 3.6,
+      "max_slope_deg": 1.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [4426, 1840],
+        [4432, 2000]
+      ]
+    },
+    {
+      "from": "CT03",
+      "to": "AR03",
+      "mode": "foot",
+      "length_m": 3078,
+      "time_min": 60.4,
+      "max_slope_deg": 2.4,
+      "max_water_depth_m": 0,
+      "path": [
+        [4426, 1840],
+        [4560, 1712],
+        [4624, 1712],
+        [4720, 1616],
+        [4880, 1616],
+        [5008, 1488],
+        [5296, 1488],
+        [5392, 1392],
+        [5584, 1392],
+        [5744, 1264],
+        [5808, 1264],
+        [5840, 1232],
+        [6128, 1232],
+        [6160, 1200],
+        [6352, 1200],
+        [6416, 1136],
+        [6896, 1136],
+        [7120, 1360]
+      ]
+    },
+    {
+      "from": "CT03",
+      "to": "MA01",
+      "mode": "foot",
+      "length_m": 392,
+      "time_min": 9.5,
+      "max_slope_deg": 1.3,
+      "max_water_depth_m": 0,
+      "path": [
+        [4426, 1840],
+        [4240, 2000],
+        [4112, 2000]
+      ]
+    },
+    {
+      "from": "CT04",
+      "to": "AR03",
+      "mode": "foot",
+      "length_m": 555,
+      "time_min": 12.6,
+      "max_slope_deg": 0.6,
+      "max_water_depth_m": 0,
+      "path": [
+        [7530.1, 1680.8],
+        [7504, 1680],
+        [7344, 1520],
+        [7248, 1488],
+        [7120, 1360]
+      ]
+    },
+    {
+      "from": "AR02",
+      "to": "MA01",
+      "mode": "foot",
+      "length_m": 320,
+      "time_min": 8,
+      "max_slope_deg": 0.9,
+      "max_water_depth_m": 0,
+      "path": [
+        [4432, 2000],
+        [4112, 2000]
+      ]
+    }
+  ],
+  "designer": {
+    "note_fr": "Données de conception, jamais montrées au joueur.",
+    "forage_hotspots": [
+      {
+        "position_m": [4432, 1840, 24.89],
+        "score": 1
+      },
+      {
+        "position_m": [7344, 4720, 20.43],
+        "score": 0.934
+      },
+      {
+        "position_m": [5616, 7280, 25.83],
+        "score": 0.866
+      },
+      {
+        "position_m": [6736, 1552, 20.61],
+        "score": 0.765
+      },
+      {
+        "position_m": [4368, 7216, 21.83],
+        "score": 0.739
+      },
+      {
+        "position_m": [3408, 6288, 21.87],
+        "score": 0.731
+      },
+      {
+        "position_m": [4560, 6448, 21.46],
+        "score": 0.722
+      },
+      {
+        "position_m": [2224, 5232, 22.37],
+        "score": 0.685
+      },
+      {
+        "position_m": [6544, 6352, 20.71],
+        "score": 0.65
+      },
+      {
+        "position_m": [7440, 1520, 20.3],
+        "score": 0.648
+      }
+    ],
+    "predator_activity_warmup": [
+      {
+        "position_m": [2864, 3984, 22.21],
+        "relative_activity": 1
+      },
+      {
+        "position_m": [4080, 3984, 21.7],
+        "relative_activity": 0.72
+      },
+      {
+        "position_m": [3536, 2160, 21.87],
+        "relative_activity": 0.68
+      },
+      {
+        "position_m": [2128, 5616, 22.52],
+        "relative_activity": 0.51
+      }
+    ]
+  },
+  "events": [
+    {
+      "id": "herd_crossing",
+      "name": {
+        "fr": "Traversée de troupeau",
+        "en": "Herd crossing"
+      },
+      "drivers": "CreatureSystem (groupes, Drink, GroupFormationChange) + WaterSystem (profondeur aux gués)",
+      "likely_poi_ids": ["FD01", "FD02", "FD03", "FD04", "FD05", "FD06", "WA01", "WA02", "WA03"],
+      "cues_fr": "Bruits de pas et d'eau, vocalisations de contact (hypothèses), nuage de poussière ou éclaboussures, nouvelles empreintes sur les berges.",
+      "accessibility_fr": "Indicateur de direction des sons à l'écran, sous-titres « [éclaboussures — groupe d'herbivores, nord-est] », spectrogramme en direct étiqueté « hypothèse » pour les cris.",
+      "player_response_fr": "Observer depuis un affût ou un point de vue, filmer la traversée, mesurer ensuite la piste d'empreintes laissée au gué.",
+      "confidence": "inferred",
+      "confidence_subject_fr": "comportement de groupe et besoins en eau inférés ; la traversée elle-même est émergente",
+      "sources": ["horner2011_hellcreek_census"],
+      "scripted": false
+    },
+    {
+      "id": "predator_approach",
+      "name": {
+        "fr": "Approche d'un prédateur",
+        "en": "Predator approach"
+      },
+      "drivers": "CreatureSystem (HuntSearch/HuntStalk/HuntChase, ResearcherNoticed), profils (alarm_calls)",
+      "likely_poi_ids": ["FD01", "FD02", "FD03", "FD04", "FD05", "FD06", "WA01", "WA02", "WA03", "CA01"],
+      "cues_fr": "Herbivores qui lèvent la tête et se regroupent (VigilanceRaised), cris d'alarme si le profil les active (SPÉCULATIF), silence relatif, pas lourds.",
+      "accessibility_fr": "Vibration manette optionnelle, pictogramme de vigilance sur les animaux observés, sous-titres « [cri d'alarme — hypothèse] ».",
+      "player_response_fr": "Se mettre à couvert, rejoindre le véhicule ; le jeu ne déclenche jamais d'attaque scriptée.",
+      "confidence": "speculative",
+      "confidence_subject_fr": "les cris d'alarme et la réaction des proies aux prédateurs sont des hypothèses par analogie",
+      "sources": [],
+      "scripted": false
+    },
+    {
+      "id": "storm",
+      "name": {
+        "fr": "Orage",
+        "en": "Storm"
+      },
+      "drivers": "WeatherSystem (probabilité d'orage par jour de l'environnement), handleLightning (Lightning, tonnerre)",
+      "likely_poi_ids": ["OV01", "OV02", "OV03", "OV04", "OV05"],
+      "cues_fr": "Assombrissement, vent, tonnerre (délai éclair-tonnerre = distance), pluie qui masque les sons faibles.",
+      "accessibility_fr": "Icône météo et compteur éclair-tonnerre, sous-titres « [tonnerre à ~3 km] », alerte visuelle de foudre.",
+      "player_response_fr": "Quitter les hauteurs, mettre les instruments à l'abri, se réfugier dans le véhicule.",
+      "confidence": "inferred",
+      "confidence_subject_fr": "climat humide et orages saisonniers inférés ; fréquence = hypothèse de jeu",
+      "sources": ["arens2014_hellcreek_basal_florule"],
+      "scripted": false
+    },
+    {
+      "id": "flood",
+      "name": {
+        "fr": "Crue",
+        "en": "Flood"
+      },
+      "drivers": "WaterSystem (débit, niveau > plein bord => flooding), précipitations cumulées",
+      "likely_poi_ids": ["FR01", "BS01", "BS02", "FD01", "FD02", "FD03", "FD04", "FD05", "FD06"],
+      "cues_fr": "Montée et accélération de l'eau, bruit du courant, débris, gués devenus profonds, plaine qui se couvre d'eau en commençant par les marais arrière.",
+      "accessibility_fr": "Jauge de niveau de la rivière sur la carte du joueur, sous-titres « [courant fort] », surbrillance des zones déjà inondées.",
+      "player_response_fr": "Rejoindre les terrasses, ne pas traverser ; après la crue : nouvelles carcasses enfouies, empreintes effacées, dépôts de crevasse.",
+      "confidence": "strongly_supported",
+      "confidence_subject_fr": "les dépôts de crevasse et de débordement enregistrent des crues répétées ; fréquence non quantifiée",
+      "sources": ["fastovsky2016_hellcreek_primer"],
+      "scripted": false
+    },
+    {
+      "id": "fire",
+      "name": {
+        "fr": "Incendie (rare)",
+        "en": "Wildfire (rare)"
+      },
+      "drivers": "VegetationSystem::updateFire (allumage par la foudre si sécheresse), vent",
+      "likely_poi_ids": [],
+      "cues_fr": "Odeur et fumée, lueur, crépitement ; fuite des animaux.",
+      "accessibility_fr": "Panache visible sur la carte, sous-titres « [crépitements — feu] ».",
+      "player_response_fr": "S'éloigner contre le vent, rejoindre l'eau ou le véhicule ; plus tard, étudier la recolonisation.",
+      "confidence": "inferred",
+      "confidence_subject_fr": "les feux faisaient probablement partie des perturbations ; aucune fréquence vérifiée pour la Hell Creek",
+      "sources": ["bamforth2014_frenchman_fire"],
+      "scripted": false
+    },
+    {
+      "id": "morning_fog",
+      "name": {
+        "fr": "Brouillard matinal",
+        "en": "Morning fog"
+      },
+      "drivers": "WeatherSystem (probabilité de brouillard matinal)",
+      "likely_poi_ids": ["BS01", "BS02", "AR01", "AR02", "AR03"],
+      "cues_fr": "Visibilité réduite au fond de vallée, sons portant loin, rosée.",
+      "accessibility_fr": "Indicateur de visibilité ; les sons restent visualisés.",
+      "player_response_fr": "Privilégier l'écoute et l'enregistrement ; les photos d'identification attendent la levée du brouillard.",
+      "confidence": "speculative",
+      "confidence_subject_fr": "brouillards par analogie avec les plaines alluviales actuelles",
+      "sources": [],
+      "scripted": false
+    },
+    {
+      "id": "carcass",
+      "name": {
+        "fr": "Nouvelle carcasse",
+        "en": "New carcass"
+      },
+      "drivers": "CarcassSystem (CarcassCreated, décomposition, charognards)",
+      "likely_poi_ids": ["CA01"],
+      "cues_fr": "Rassemblement de charognards, insectes, odeur.",
+      "accessibility_fr": "Marqueur de découverte uniquement après observation directe par le joueur.",
+      "player_response_fr": "Examiner la carcasse (stade, morsures, temps depuis la mort) à distance de sécurité.",
+      "confidence": "established",
+      "confidence_subject_fr": "décomposition et charognage (taphonomie actualiste)",
+      "sources": ["behrensmeyer1978_bone_weathering"],
+      "scripted": false
+    },
+    {
+      "id": "nesting_activity",
+      "name": {
+        "fr": "Activité de nidification",
+        "en": "Nesting activity"
+      },
+      "drivers": "NestSystem (EggsLaid, NestBuilt, Hatch) — selon profil",
+      "likely_poi_ids": ["NA01", "NA02", "NA03", "NA04", "NA05", "NA06", "NA07", "NA08"],
+      "cues_fr": "Allées et venues répétées d'adultes au même endroit, remaniement du sol ou de la végétation.",
+      "accessibility_fr": "Marqueur « hypothèse » sur la carte si le profil l'autorise.",
+      "player_response_fr": "Observer de loin sans déranger ; ne jamais manipuler les œufs.",
+      "confidence": "speculative",
+      "confidence_subject_fr": "sites et comportements de nidification inconnus pour ces espèces dans la Hell Creek",
+      "sources": ["horner1979_maiasaura_nest", "wosik2017_edmontosaurus_nestling"],
+      "scripted": false
+    }
+  ],
+  "missions": [
+    {
+      "id": "M01_premier_releve",
+      "title": {
+        "fr": "Premier relevé de la vallée",
+        "en": "First valley survey"
+      },
+      "question_fr": "Quelles espèces fréquentent les abords du camp, où boivent-elles et à quelle heure ?",
+      "recommended_pois": ["BC01", "OV01", "WA03", "FD01"],
+      "planned_days": 1,
+      "loadout": ["binoculars_10x42", "camera_body_ff", "lens_100_400", "gps_unit", "omni_mic"],
+      "data_targets": [
+        {
+          "kind": "observations",
+          "species": "",
+          "required": 10
+        },
+        {
+          "kind": "photos",
+          "species": "",
+          "required": 5
+        },
+        {
+          "kind": "recordings",
+          "species": "",
+          "required": 1
+        }
+      ],
+      "hypothesis_templates": [],
+      "notes_fr": "Expédition d'accueil (2 premières heures) : aucune hypothèse imposée ; le carnet propose des pistes à partir des propres données du joueur."
+    },
+    {
+      "id": "M02_distance_de_vigilance",
+      "title": {
+        "fr": "Distance de vigilance des hadrosaures",
+        "en": "Hadrosaur vigilance distance"
+      },
+      "question_fr": "La part d'Edmontosaurus vigilants augmente-t-elle quand l'observateur est à moins de 150 m ?",
+      "recommended_pois": ["BL01", "BL02", "BL03", "BL04"],
+      "planned_days": 2,
+      "loadout": ["binoculars_10x42", "video_camera", "lens_600"],
+      "data_targets": [
+        {
+          "kind": "session_hours",
+          "species": "edmontosaurus_annectens",
+          "required": 3
+        },
+        {
+          "kind": "observations",
+          "species": "edmontosaurus_annectens",
+          "required": 20
+        }
+      ],
+      "hypothesis_templates": [
+        {
+          "kind": "comparison",
+          "species": "edmontosaurus_annectens",
+          "response": "vigilant_fraction",
+          "condition": "observer_within",
+          "value": 150,
+          "predicted": "increase",
+          "statement_fr": "Les Edmontosaurus sont plus souvent vigilants quand je suis à moins de 150 m."
+        }
+      ],
+      "notes_fr": "Comparer des sessions depuis les affûts (loin) et en approche (près) ; biais signalés : distance d'observation, heure, pseudo-réplication."
+    },
+    {
+      "id": "M03_effet_du_drone",
+      "title": {
+        "fr": "Le drone dérange-t-il ?",
+        "en": "Does the drone disturb?"
+      },
+      "question_fr": "La vigilance des groupes change-t-elle quand le drone est en vol ?",
+      "recommended_pois": ["OV01", "WA03"],
+      "planned_days": 2,
+      "loadout": ["drone_quad", "drone_battery", "binoculars_10x42"],
+      "data_targets": [
+        {
+          "kind": "session_hours",
+          "species": "",
+          "required": 2
+        }
+      ],
+      "hypothesis_templates": [
+        {
+          "kind": "comparison",
+          "species": "triceratops_horridus",
+          "response": "vigilant_fraction",
+          "condition": "drone_airborne",
+          "value": 0,
+          "predicted": "increase",
+          "statement_fr": "Les Triceratops sont plus vigilants quand le drone vole (bruit des pales ~160 Hz)."
+        }
+      ],
+      "notes_fr": "Question méthodologique : le joueur mesure l'effet de ses propres instruments."
+    },
+    {
+      "id": "M04_appels_et_regroupement",
+      "title": {
+        "fr": "Appels et regroupement",
+        "en": "Calls and grouping"
+      },
+      "question_fr": "Après un type d'appel donné, l'espacement entre individus diminue-t-il dans la minute ?",
+      "recommended_pois": ["AR01", "AR02", "AR03"],
+      "planned_days": 3,
+      "loadout": ["audio_recorder", "parabolic_mic", "omni_mic", "video_camera"],
+      "data_targets": [
+        {
+          "kind": "recordings",
+          "species": "",
+          "required": 6
+        },
+        {
+          "kind": "acoustic_detections",
+          "species": "",
+          "required": 30
+        }
+      ],
+      "hypothesis_templates": [
+        {
+          "kind": "event_response",
+          "species": "edmontosaurus_annectens",
+          "response": "group_spacing",
+          "condition": "call_cluster",
+          "value": 60,
+          "predicted": "decrease",
+          "statement_fr": "Après le type d'appel n° k (mon classement), le groupe se resserre dans les 60 s."
+        }
+      ],
+      "notes_fr": "Les cris sont des HYPOTHÈSES de reconstitution (lecture « bouche fermée » par défaut) : le jeu ne dit jamais ce qu'un appel « signifie »."
+    },
+    {
+      "id": "M05_nuit",
+      "title": {
+        "fr": "Activité nocturne",
+        "en": "Night activity"
+      },
+      "question_fr": "Le taux d'appels change-t-il la nuit ?",
+      "recommended_pois": ["MA01", "BS01"],
+      "planned_days": 2,
+      "loadout": ["audio_recorder", "omni_mic"],
+      "data_targets": [
+        {
+          "kind": "recordings",
+          "species": "",
+          "required": 8
+        }
+      ],
+      "hypothesis_templates": [
+        {
+          "kind": "comparison",
+          "species": "",
+          "response": "call_rate",
+          "condition": "night",
+          "value": 0,
+          "predicted": "different",
+          "statement_fr": "Le taux d'appels diffère entre le jour et la nuit."
+        }
+      ],
+      "notes_fr": "Écoute depuis le véhicule (moteur coupé) ou le camp ; vision nocturne limitée."
+    },
+    {
+      "id": "M06_pistes_et_vitesses",
+      "title": {
+        "fr": "Pistes et vitesses",
+        "en": "Trackways and speeds"
+      },
+      "question_fr": "La formule d'Alexander estime-t-elle correctement la vitesse d'animaux que j'ai filmés ?",
+      "recommended_pois": ["FD01", "FD02", "FD03", "FD04", "FD05", "FD06"],
+      "planned_days": 2,
+      "loadout": ["video_camera", "gps_unit", "camera_body_ff"],
+      "data_targets": [
+        {
+          "kind": "trackways",
+          "species": "",
+          "required": 3
+        },
+        {
+          "kind": "observations",
+          "species": "",
+          "required": 6
+        }
+      ],
+      "hypothesis_templates": [],
+      "notes_fr": "Calibration : vitesse filmée contre vitesse estimée par la longueur de foulée (méthode des paléontologues)."
+    },
+    {
+      "id": "M07_affleurements",
+      "title": {
+        "fr": "Affleurements",
+        "en": "Exposures"
+      },
+      "question_fr": "Que contiennent les couches plus anciennes exposées dans les berges ?",
+      "recommended_pois": ["EX01", "EX02", "EX03", "EX04", "EX05", "EX06", "EX07"],
+      "planned_days": 3,
+      "loadout": ["excavation_kit", "camera_body_ff", "gps_unit"],
+      "data_targets": [
+        {
+          "kind": "specimens",
+          "species": "",
+          "required": 3
+        }
+      ],
+      "hypothesis_templates": [],
+      "notes_fr": "Fouille, identification au laboratoire mobile, météorisation ; le contenu est SPÉCULATIF et l'âge absolu non contraint."
+    },
+    {
+      "id": "M08_carcasse",
+      "title": {
+        "fr": "Lire une carcasse",
+        "en": "Reading a carcass"
+      },
+      "question_fr": "Depuis quand cet animal est-il mort et qui l'a consommé ?",
+      "recommended_pois": ["CA01"],
+      "planned_days": 1,
+      "loadout": ["camera_body_ff", "excavation_kit"],
+      "data_targets": [
+        {
+          "kind": "observations",
+          "species": "",
+          "required": 3
+        }
+      ],
+      "hypothesis_templates": [],
+      "notes_fr": "Examen : stade de décomposition, degrés-jours, morsures ; prudence, prédateurs et charognards attirés."
+    },
+    {
+      "id": "M09_nidification",
+      "title": {
+        "fr": "Indices de nidification (spéculatif)",
+        "en": "Nesting clues (speculative)"
+      },
+      "question_fr": "Les adultes reviennent-ils régulièrement au même endroit pendant la saison de reproduction ?",
+      "recommended_pois": ["NA01", "NA02", "NA03", "NA04", "NA05", "NA06", "NA07", "NA08"],
+      "planned_days": 3,
+      "loadout": ["camera_trap", "binoculars_10x42", "lens_600"],
+      "data_targets": [
+        {
+          "kind": "observations",
+          "species": "",
+          "required": 10
+        },
+        {
+          "kind": "photos",
+          "species": "",
+          "required": 6
+        }
+      ],
+      "hypothesis_templates": [],
+      "notes_fr": "Disponible seulement si le profil active « nesting_grounds » ; le jeu présente les zones comme des hypothèses à tester."
+    }
+  ],
+  "world_partition": {
+    "engine": "Unreal Engine 5.4+ (World Partition, PCG activé)",
+    "map": "/Game/Maps/HellCreek",
+    "landscape": {
+      "quads_per_section": 63,
+      "sections_per_component": "2x2",
+      "components": "16x16",
+      "component_size_m": 512,
+      "streaming_proxy_components": 1
+    },
+    "runtime_grid": {
+      "name": "MainGrid",
+      "cell_size_cm": 25600,
+      "loading_range_cm": 102400,
+      "note_fr": "Cellules de 256 m chargées jusqu'à ~1 km : couvre le rayon d'acteurs créatures (450 m) et les affûts ; au-delà, HLOD du paysage et de la végétation pour les vues des points de vue (1,5 km)."
+    },
+    "hlod_layers": ["HLOD_Landscape (toujours visible, terrain lointain)", "HLOD_Foliage_Instanced (forêts et levées, 1–4 km)"],
+    "data_layers": ["DL_POI_Markers (éditeur uniquement)", "DL_Nesting_Speculative (runtime, activée par le profil nesting_grounds)", "DL_Basecamp (toujours chargée)"],
+    "pcg": {
+      "partition_grid_cm": 25600,
+      "volume_tile_m": 2048,
+      "graphs": ["PCG_Noctis_Foliage (masques foliage_*.png d'export-terrain)", "PCG_Noctis_Trails (corridors du JSON)", "PCG_Noctis_Exposures (affleurements, pente > 30°)", "PCG_Noctis_RiverDebris (barres sableuses, laisses de crue)"]
+    }
+  },
+  "accessibility": {
+    "acoustic_cues_fr": "Tout indice sonore a un équivalent visuel : spectrogramme en direct (fenêtre de l'enregistreur), indicateur de direction, sous-titres décrivant le son. Les vocalisations sont toujours étiquetées « hypothèse ».",
+    "caption_label_fr": "hypothèse",
+    "caption_label_en": "hypothesis",
+    "colour_fr": "Icônes de carte distinguées par la forme et pas seulement la couleur (triangle, losange, carré, anneau, croix).",
+    "onboarding_fr": "Indices diégétiques dans le carnet de terrain uniquement ; pas de marqueur de quête ; la carte se construit à partir des propres données du joueur (FieldMap).",
+    "ui_languages": ["fr", "en"]
+  },
+  "summary": {
+    "poi_counts": {
+      "audio_recorder": 3,
+      "backswamp": 2,
+      "basecamp": 1,
+      "blind": 4,
+      "camera_trap": 4,
+      "carcass_site": 1,
+      "exposure_site": 7,
+      "flood_refuge": 1,
+      "ford": 6,
+      "mic_array": 1,
+      "nesting_area": 8,
+      "overlook": 5,
+      "water_access": 3
+    },
+    "trails": 19,
+    "connections": 89,
+    "foot_components": 2,
+    "rover_reachable_pois": 22,
+    "rover_practicable_connected_fraction": 0.468,
+    "radio_coverage_fraction": 0.959
+  }
+}

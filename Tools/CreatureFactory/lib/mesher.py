@@ -17,8 +17,12 @@ from scipy.sparse.csgraph import connected_components
 from .sdf import eval_blocks
 
 
-def mesh_sdf(comp, h, B=16, batch=1500, log=print, min_component_faces=200, bbox=None):
+def mesh_sdf(comp, h, B=None, batch=1500, log=print, min_component_faces=200, bbox=None):
     t0 = time.time()
+    if B is None:
+        # the culled field is clamped at 0.1 m (lib/sdf.field_at): blocks must be small enough for
+        # the centre test |d| < 1.6 half-diagonal + 2h to stay below the clamp, or nothing is culled
+        B = int(max(4, min(16, (0.095 - 2 * h) / (1.6 * 0.866 * h))))
     lo = comp.box[:, :3].min(0) - 3 * h
     hi = comp.box[:, 3:].max(0) + 3 * h
     if bbox is not None:
@@ -82,8 +86,12 @@ def mesh_sdf(comp, h, B=16, batch=1500, log=print, min_component_faces=200, bbox
     remap[used] = np.arange(used.sum())
     Vw = Vw[used]
     F = remap[F]
+    # outward orientation (positive signed volume)
+    vol, _ = mesh_volume_area(Vw, F)
+    if vol < 0:
+        F = F[:, ::-1]
     log(f"  mesh: {len(Vw)} verts, {len(F)} tris, {int(keep_c.sum())} components kept of {ncomp}, {time.time() - t0:.1f}s")
-    return Vw, F.astype(np.int32)
+    return Vw, np.ascontiguousarray(F, dtype=np.int32)
 
 
 def vertex_normals(V, F):

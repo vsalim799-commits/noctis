@@ -29,6 +29,59 @@ from lib.anatomy import Caster, basis_to_euler, rot_between, transform_shape, sc
 
 SPECIES = "tyrannosaurus_rex"
 
+JS_SOURCE = "Tools/Preview/src/creature/trex_anatomy.js"
+
+# ---------------------------------------------------------------------------------------------
+# Skin detail parameters (read by lib/detail.py). Sizes are DESIGN values chosen for readability at
+# game resolution: Bell et al. 2017 only establish small, non-imbricate (pebbly) scales on the neck,
+# pelvis and tail of T. rex; exact diameters / patterns used here are not taken from the paper.
+SKIN = {
+    "status": "basement scales: strongly_supported (bell2017_tyrannosaur_integument); sizes, folds, scutes, pads: design / phylogenetic bracket",
+    "scale_layers_m": [0.010, 0.017, 0.027],          # Worley cell size of the fine / medium / large basement-scale layers
+    "scale_height_ratio": 0.17,                       # dome height / cell size
+    "groove_ratio": 0.06,                             # groove half-width / cell size
+    "region_layers": {                                # weights of the three layers per region
+        "head": [0.75, 0.25, 0.0], "jaw": [0.85, 0.15, 0.0], "neck": [0.25, 0.6, 0.15], "torso": [0.0, 0.45, 0.55],
+        "belly": [0.45, 0.55, 0.0], "tail": [0.1, 0.5, 0.4], "thigh": [0.05, 0.45, 0.5], "shin": [0.3, 0.6, 0.1],
+        "foot": [0.7, 0.3, 0.0], "arm": [0.7, 0.3, 0.0]},
+    "dorsal_coarsen": 0.35,                           # dorsal surfaces shift weight towards the large layer
+    "ventral_refine": 0.45,                           # ventral surfaces shift weight towards the fine layer
+    "feature_scales": {"cell_m": 0.075, "density": 0.16, "radius_ratio": 0.42, "height_m": 0.0055,
+                       "regions": {"head": 0.6, "neck": 1.0, "torso": 0.7, "tail": 0.6, "thigh": 0.5},
+                       "status": "design assumption (not documented for T. rex)"},
+    "neck_folds": {"wavelength_m": 0.09, "amplitude_m": 0.013, "status": "design (soft tissue, plausible)"},
+    "throat_folds": {"wavelength_m": 0.07, "amplitude_m": 0.008},
+    "joint_folds": {"wavelength_m": 0.05, "amplitude_m": 0.007},
+    "flank_wrinkles": {"amplitude_m": 0.0025, "scale_m": 0.11},
+    "scutes": {"meta_length_m": 0.055, "toe_length_m": 0.042, "height_m": 0.0075,
+               "status": "inferred by phylogenetic bracket (scutate scales of birds) - not preserved in T. rex"},
+    "pads": {"cell_m": 0.022, "height_m": 0.006},
+    "rugose": {"cell_m": 0.03, "height_m": 0.009, "status": "cornified skin over rugose skull bones (nasal, lacrimal, postorbital, jugal): plausible, design"},
+    "lip_scales_m": 0.008,
+    "lid_scales_m": 0.006,
+}
+
+# Colour is unknown for every non-avian dinosaur: muted, countershaded palette, SPÉCULATIF.
+PALETTE = {
+    "status": "SPÉCULATIF",
+    "note": "Couleur inconnue (science.integument : 'Couleur : inconnue'). Palette terne et contre-ombrée choisie pour la lisibilité ; aucun motif tiré d'une référence.",
+    "dorsal": [0.105, 0.095, 0.075],       # linear RGB
+    "flank": [0.20, 0.175, 0.135],
+    "ventral": [0.42, 0.37, 0.29],
+    "head_top": [0.085, 0.075, 0.06],
+    "lip": [0.30, 0.255, 0.20],
+    "mottle_dark": [0.06, 0.055, 0.045],
+    "band_dark": [0.07, 0.062, 0.05],
+    "scute": [0.075, 0.068, 0.058],
+    "pad": [0.16, 0.14, 0.115],
+    "rugose": [0.13, 0.11, 0.085],
+    "claw": [0.035, 0.03, 0.027],
+    "claw_tip": [0.16, 0.14, 0.11],
+    "tooth": [0.62, 0.56, 0.45],
+    "iris": [0.42, 0.26, 0.07],
+    "gum": [0.32, 0.12, 0.10],
+}
+
 JS_TO_NEW = {
     "root": "root", "pelvis": "pelvis", "spine1": "spine_01", "spine2": "spine_02", "spine3": "spine_03",
     "neck1": "neck_01", "neck2": "neck_02", "neck3": "neck_03", "skull": "head", "jaw": "jaw",
@@ -49,9 +102,9 @@ ANG_FEMUR, ANG_TIBIA, ANG_META = math.radians(20), math.radians(15), math.radian
 
 def leg_chain(z_hip=0.45):
     hip = np.array([0.0, HIP_Y, z_hip])
-    knee = hip + FEMUR * np.array([math.sin(ANG_FEMUR), -math.cos(ANG_FEMUR), 0]) + [0, 0, 0.03]
-    ankle = knee + TIBIA * np.array([-math.sin(ANG_TIBIA), -math.cos(ANG_TIBIA), 0]) + [0, 0, -0.04]
-    mtp = ankle + META * np.array([math.sin(ANG_META), -math.cos(ANG_META), 0]) + [0, 0, -0.01]
+    knee = hip + FEMUR * np.array([math.sin(ANG_FEMUR), -math.cos(ANG_FEMUR), 0]) + [0, 0, -0.02]
+    ankle = knee + TIBIA * np.array([-math.sin(ANG_TIBIA), -math.cos(ANG_TIBIA), 0]) + [0, 0, -0.07]
+    mtp = ankle + META * np.array([math.sin(ANG_META), -math.cos(ANG_META), 0]) + [0, 0, -0.02]
     return hip, knee, ankle, mtp
 
 
@@ -141,7 +194,7 @@ def head_shapes():
     for u, vt, vl, hw, fr, nt, nb in up:
         cy = vl + fr * (vt - vl)
         secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vl, hw=hw, nt=nt, nb=nb))
-    S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.16, 0.1], blend=0.05,
+    S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.16, 0.075], blend=0.12,
                   region="head", tag="cranium"))
     # lower jaw: dentary + surangular/angular + intermandibular soft tissue
     lo = [
@@ -187,10 +240,10 @@ def head_shapes():
         # jaw-closing muscles bulging over the temporal region (M. adductor mandibulae externus)
         S.append(E("head", "head", w((0.22, 0.64, 0.21)), [0.28, 0.16, 0.15], mr(HR((0.25, 0.15, -0.05))), 0.14, tag="adductor"))
         # cheek: jugal + quadratojugal (broad back of the head in dorsal view)
-        S.append(E("head", "head", w((0.4, 0.34, 0.29)), [0.3, 0.11, 0.08], mr(HR((0, 0.3, 0.04))), 0.15, tag="jugal"))
-        S.append(E("head", "head", w((0.1, 0.36, 0.33)), [0.15, 0.15, 0.09], mr(HR((0, 0.25, 0))), 0.12, tag="quadratojugal"))
+        S.append(E("head", "head", w((0.4, 0.34, 0.27)), [0.3, 0.1, 0.07], mr(HR((0, 0.3, 0.04))), 0.15, tag="jugal"))
+        S.append(E("head", "head", w((0.1, 0.36, 0.3)), [0.15, 0.14, 0.08], mr(HR((0, 0.25, 0))), 0.12, tag="quadratojugal"))
         # jowls: M. pterygoideus ventralis wrapping under the back of the lower jaw
-        S.append(E("jaw", "jaw", w((0.02, -0.1, 0.25)), [0.22, 0.16, 0.12], mr(HR((0, 0.2, 0.15))), 0.2, tag="pterygoideus",
+        S.append(E("jaw", "jaw", w((0.0, -0.08, 0.22)), [0.24, 0.15, 0.1], mr(HR((0, 0.2, 0.15))), 0.25, tag="pterygoideus",
                    masks=["jowl"]))
         # surangular shelf above the jaw angle
         S.append(E("jaw", "jaw", w((0.36, 0.0, 0.32)), [0.28, 0.12, 0.075], mr(HR((0, 0.33, 0.08))), 0.09, tag="surangular"))
@@ -240,13 +293,12 @@ def head_details(cast, base_shapes):
         S.append(E("head", "head", la - nla * 0.03, [0.11, 0.042, 0.06], mr(HR((0, 0.25, -0.15))), 0.06, masks=["rugose", "brow"], tag="lacrimal_boss"))
         b0 = la - nla * 0.03 + np.array([0, 0, 0.03 * sg])
         b1 = po - npo * 0.035 + np.array([0, 0, 0.035 * sg])
-        S.append(CAP("head", "head", b0, b1, 0.05, 0.05, masks=["brow"], tag="brow_shelf"))
-        S.append(E("head", "head", ec + by * 0.072 + bz * 0.042 + bx * 0.01, [0.105, 0.036, 0.05], lid_rot, 0.045, masks=["brow"], tag="brow_overhang"))
+        S.append(CAP("head", "head", b0, b1, 0.04, 0.06, masks=["brow"], tag="brow_shelf"))
+        S.append(E("head", "head", ec + by * 0.072 + bz * 0.042 + bx * 0.01, [0.09, 0.03, 0.045], lid_rot, 0.06, masks=["brow"], tag="brow_overhang"))
         # jugal 'horn' (cornual process) below-behind the orbit, and the cheekbone ridge
         jh = cast.cast_at(H(0.36, 0.3, 0.3 * sg), np.array([0, 0, -sg]))
-        S.append(E("head", "head", jh - cast.normal(jh) * 0.03, [0.09, 0.05, 0.06], mr(HR((0, 0.3, 0))), 0.05, masks=["rugose"], tag="jugal_horn"))
+        S.append(E("head", "head", jh - cast.normal(jh) * 0.03, [0.07, 0.04, 0.045], mr(HR((0, 0.3, 0))), 0.06, masks=["rugose"], tag="jugal_horn"))
         j0 = cast.cast_at(H(0.7, 0.36, 0.25 * sg), np.array([0, 0, -sg]))
-        S.append(CAP("head", "head", j0 - cast.normal(j0) * 0.035, jh - cast.normal(jh) * 0.04, 0.04, 0.06, tag="cheek_ridge"))
         # ---------------- nostril: external naris high at the front of the snout -----------------
         na = cast.cast_at(H(1.28, 0.45, 0.13 * sg), HD(np.array([0.25, 0.1, -0.96 * sg])))
         nn = cast.normal(na)
@@ -256,7 +308,7 @@ def head_details(cast, base_shapes):
         ny = np.cross(nn, nf)
         nx = nf
         nrot = basis_to_euler(nx, ny, nn)
-        S.append(E("head", "head", na - nn * 0.018, [0.08, 0.042, 0.035], nrot, 0.035, masks=["nostril"], tag="narial_swelling"))
+        S.append(E("head", "head", na - nn * 0.018, [0.07, 0.035, 0.03], nrot, 0.04, masks=["nostril"], tag="narial_swelling"))
         S.append(E("head", "head", na + nn * 0.01 + nx * 0.012, [0.036, 0.013, 0.028], nrot, 0.01, sign=-1, masks=["nostril"], tag="naris"))
         # ---------------- lip line: shallow continuous groove at the upper-lip margin -------------
         lip = [(1.44, 0.205), (1.38, 0.19), (1.3, 0.172), (1.16, 0.15), (1.0, 0.138), (0.84, 0.134), (0.68, 0.14), (0.54, 0.155), (0.44, 0.175), (0.37, 0.2)]
@@ -344,11 +396,11 @@ BODY_KEYS = [
     (0.90, 3.48, 0.385, 1.360, 0.505, 0.45, 2.3, 2.0),
     (1.60, 3.40, 0.405, 1.370, 0.515, 0.45, 2.3, 2.0),
     (2.20, 3.28, 0.420, 1.120, 0.475, 0.45, 2.3, 2.0),
-    (2.62, 3.21, 0.430, 0.900, 0.430, 0.45, 2.25, 2.0),
-    (2.96, 3.34, 0.450, 0.800, 0.405, 0.45, 2.2, 2.0),
-    (3.26, 3.57, 0.430, 0.680, 0.375, 0.45, 2.2, 2.0),
-    (3.50, 3.82, 0.360, 0.560, 0.345, 0.45, 2.1, 2.0),
-    (3.64, 3.93, 0.280, 0.450, 0.310, 0.45, 2.0, 2.0),
+    (2.62, 3.21, 0.430, 0.900, 0.400, 0.45, 2.25, 2.0),
+    (2.96, 3.34, 0.450, 0.800, 0.370, 0.45, 2.2, 2.0),
+    (3.26, 3.57, 0.430, 0.680, 0.340, 0.45, 2.2, 2.0),
+    (3.50, 3.82, 0.360, 0.560, 0.320, 0.45, 2.1, 2.0),
+    (3.64, 3.93, 0.280, 0.450, 0.290, 0.45, 2.0, 2.0),
 ]
 TAIL_X0, TAIL_TIP = -0.85, -7.05
 
@@ -443,26 +495,26 @@ def body_shapes(bones, legs):
         S.append(E("spine_03", "torso", m([2.12, 3.08, 0.33]), [0.5, 0.42, 0.15], mr([0, 0, -0.55]), 0.16, tag="scapular_muscles"))
         S.append(E("spine_03", "torso", m([2.38, 2.48, 0.25]), [0.3, 0.34, 0.19], mr([0, 0, 0.1]), 0.16, tag="pectoralis"))
         # neck: lateral muscles (folds), nape
-        S.append(E("neck_01", "neck", m([2.72, 3.2, 0.18]), [0.4, 0.45, 0.24], mr([0, 0, 0.75]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
-        S.append(E("neck_02", "neck", m([3.05, 3.45, 0.16]), [0.36, 0.42, 0.22], mr([0, 0, 0.8]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
-        S.append(E("neck_03", "neck", m([3.32, 3.65, 0.15]), [0.3, 0.38, 0.2], mr([0, 0, 0.7]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
+        S.append(E("neck_01", "neck", m([2.72, 3.2, 0.16]), [0.4, 0.45, 0.2], mr([0, 0, 0.75]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
+        S.append(E("neck_02", "neck", m([3.05, 3.45, 0.14]), [0.36, 0.42, 0.19], mr([0, 0, 0.8]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
+        S.append(E("neck_03", "neck", m([3.32, 3.65, 0.13]), [0.3, 0.38, 0.17], mr([0, 0, 0.7]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
         # ---------------- hind limb ----------------------------------------------------------------
         fd = (knee - hip) / np.linalg.norm(knee - hip)
         ang = math.atan2(-fd[0], -fd[1])          # rotation about z bringing local +y onto (hip - knee)
         # thigh: long teardrop along the femur, broadest proximally
         S.append(E(f"thigh_{s}", "thigh", hip + 0.4 * (knee - hip) + [0.02, 0, 0.1 * sg], [0.47, 0.8, 0.25], mr([0, 0, ang]), 0.12, tag="thigh_main"))
         S.append(E(f"thigh_{s}", "thigh", hip + [0.02, 0.1, 0.07 * sg], [0.78, 0.42, 0.24], mr([0, 0, 0.08]), 0.14, tag="thigh_iliotibialis"))
-        S.append(RC(f"thigh_{s}", "thigh", hip + 0.55 * (knee - hip) + [0, 0, 0.06 * sg], knee + [0.0, 0.04, 0.0], 0.31, 0.19, 0.1, tag="thigh_lower"))
+        S.append(RC(f"thigh_{s}", "thigh", hip + 0.55 * (knee - hip) + [0, 0, 0.06 * sg], knee + [0.0, 0.04, 0.0], 0.34, 0.22, 0.1, tag="thigh_lower"))
         # M. caudofemoralis longus: tail base -> 4th trochanter, bulging under the tail
-        S.append(RC(f"thigh_{s}", "thigh", m([-1.9, 3.0, 0.2]), hip + 0.35 * (knee - hip) + [-0.22, 0, -0.03 * sg], 0.27, 0.27, 0.22, tag="caudofemoralis"))
-        S.append(E(f"shin_{s}", "shin", knee + [0.04, -0.02, 0], [0.2, 0.2, 0.19], (0, 0, 0), 0.09, masks=["joint_folds"], tag="knee"))
+        S.append(RC("pelvis", "thigh", m([-1.7, 3.04, 0.17]), hip + 0.35 * (knee - hip) + [-0.22, 0, -0.03 * sg], 0.24, 0.27, 0.3, tag="caudofemoralis"))
+        S.append(E(f"shin_{s}", "shin", knee + [0.01, -0.02, 0], [0.19, 0.19, 0.19], (0, 0, 0), 0.09, masks=["joint_folds"], tag="knee"))
         sd = (ankle - knee) / np.linalg.norm(ankle - knee)
         post = np.array([sd[1], -sd[0], 0.0]) * (-1 if sd[1] < 0 else 1)
         post = post if post[0] < 0 else -post
         sang = math.atan2(-sd[0], -sd[1])
-        S.append(RC(f"shin_{s}", "shin", knee + [0.0, -0.06, 0], ankle + [0, 0.03, 0], 0.205, 0.118, 0.08, scale=[1, 1, 0.92], tag="shank"))
-        S.append(E(f"shin_{s}", "shin", knee + 0.32 * (ankle - knee) + post * 0.1, [0.21, 0.44, 0.18], mr([0, 0, sang]), 0.09, tag="gastrocnemius"))
-        S.append(E(f"shin_{s}", "shin", knee + 0.4 * (ankle - knee) - post * 0.09, [0.11, 0.4, 0.12], mr([0, 0, sang]), 0.07, tag="tibialis"))
+        S.append(RC(f"shin_{s}", "shin", knee + [0.0, -0.06, 0], ankle + [0, 0.03, 0], 0.235, 0.145, 0.08, scale=[1, 1, 0.92], tag="shank"))
+        S.append(E(f"shin_{s}", "shin", knee + 0.32 * (ankle - knee) + post * 0.1, [0.235, 0.5, 0.2], mr([0, 0, sang]), 0.09, tag="gastrocnemius"))
+        S.append(E(f"shin_{s}", "shin", knee + 0.4 * (ankle - knee) - post * 0.09, [0.13, 0.42, 0.13], mr([0, 0, sang]), 0.07, tag="tibialis"))
     return S
 
 
@@ -550,6 +602,8 @@ def make_doc(js_path):
             "sources": ["hutchinson2011_trex_mass", "persons2019_trex_scotty", "brochu2003_trex_osteology", "carr2020_trex_growth"],
             "note": "longueurs osseuses reprises de trex_anatomy.js (proportions d'un adulte de la taille de Sue) ; volumes de tissus mous = reconstruction plausible",
         },
+        "skin": SKIN,
+        "palette": PALETTE,
         "bones": bones,
         "shapes": shapes,
         "eyes": eyes,

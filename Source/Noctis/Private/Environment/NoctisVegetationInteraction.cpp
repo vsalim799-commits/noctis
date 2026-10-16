@@ -16,6 +16,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "PCGComponent.h"
 #include "RHI.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 static TAutoConsoleVariable<int32> CVarNoctisVegetationInteractors(TEXT("noctis.Vegetation.Interactors"), 16,
 	TEXT("Nombre d'animaux (les plus proches de la caméra) transmis aux matériaux de végétation pour la courbure (max 32)."), ECVF_Scalability);
@@ -38,6 +39,7 @@ void ANoctisVegetationInteraction::BeginPlay()
 
 void ANoctisVegetationInteraction::Tick(float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_Vegetation);
 	Super::Tick(DeltaSeconds);
 	UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this);
 	const FNoctisFrameOutput* Front = Sub ? Sub->GetFrontFrame() : nullptr;

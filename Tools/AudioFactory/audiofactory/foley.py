@@ -18,6 +18,7 @@ clouds, band-limited noise) with size scaling documented per sound. Levels are g
 from __future__ import annotations
 
 import math
+import re
 
 import numpy as np
 
@@ -524,7 +525,8 @@ def synth_gar_gulp(r):
 def jobs(ds: D.Dataset) -> list[tuple]:
     out = []
     for sp in ds.species.values():
-        if sp.body_plan not in NO_BODY:
+        # Fish are skipped except the gar, whose air-breathing gulp is an audible surface behaviour.
+        if sp.body_plan not in NO_BODY or sp.id == "lepisosteus_occidentalis":
             out.append(("foley", "job_species", {"species": sp.id}))
     out.append(("foley", "job_generic", {}))
     return out
@@ -547,7 +549,8 @@ def _sound(ds, sp, sid, kind, y, label, cap_fr, cap_en, conf, srcs, basis, param
         species=species if species is not None else (sp.id if sp else None), hypothesis=hypothesis,
         level={"source_spl_db_1m": round(lvl, 2), "reference": "dB SPL re 20 µPa à 1 m (hypothèse de jeu sauf mention)"},
         ue5=M.ue5("SC_Creature_Foley", att or _att(sp.mass if sp else 100.0), False, concurrency,
-                  priority=round(float(np.clip(0.15 + lvl / 200.0, 0.1, 0.8)), 3)),
+                  priority=round(float(np.clip(0.15 + lvl / 200.0, 0.1, 0.8)), 3),
+                  extra={"random_group": re.sub(r"_\d{2}$", "", sid)} if re.search(r"_\d{2}$", sid) else None),
         normalize=("peak", -1.0), caption={"fr": cap_fr, "en": cap_en}, subject=subject,
         variant=params.get("variant_info", {}))
 

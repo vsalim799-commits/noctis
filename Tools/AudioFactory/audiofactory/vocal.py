@@ -162,6 +162,11 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
     srcs.append(FLETCHER)
     srcs = [s for s in dict.fromkeys(srcs) if ds.has_source(s)]
     conf = ds.capped(call.get("confidence", "speculative"), srcs)
+    if style == "closed":
+        # Project rule: the closed-mouth production model is itself a hypothesis (Riede et al. 2016 reconstruct the
+        # behaviour's evolution, no non-avian call is known), so the synthesised sound stays SPECULATIVE even when
+        # the existence of the call type is INFERRED (e.g. juvenile crocodyliform distress calls by phylogenetic bracket).
+        conf = D.conf_min(conf, "speculative")
     toggle = {"contact": "contact_calls", "alarm": "alarm_calls"}.get(ctx)
     basis = (f"Paramètres sim.vocal ({sp.basis('vocal.call_types')}). "
              f"Communication [{D.CONFIDENCE_LABEL_FR[comm['confidence']]}] : {comm['summary']} "

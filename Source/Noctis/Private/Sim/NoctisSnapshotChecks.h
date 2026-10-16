@@ -34,8 +34,11 @@ inline noctis::u64 HashVec3(noctis::u64 H, const noctis::Vec3& V)
 	return noctis::hashCombine(H, FloatBits(V.z));
 }
 
-/** Bitwise hash of everything a renderer consumes. Two runs are deterministic iff their hashes match step by step. */
-inline noctis::u64 HashSnapshot(const noctis::RenderSnapshot& S)
+/** Bitwise hash of everything a renderer consumes. Two runs are deterministic iff their hashes match step by step.
+ *  bIncludeSounds = false leaves out newSounds, the only snapshot field that depends on how often snapshots were
+ *  built (sounds are reported once, in the first snapshot after they start): use it to compare runs that stepped
+ *  identically but published frames at a different cadence (asynchronous runner vs one blocking job). */
+inline noctis::u64 HashSnapshot(const noctis::RenderSnapshot& S, bool bIncludeSounds = true)
 {
 	noctis::u64 H = 0x4E4F43544953ull; // "NOCTIS"
 	H = noctis::hashCombine(H, DoubleBits(S.time));
@@ -73,12 +76,15 @@ inline noctis::u64 HashSnapshot(const noctis::RenderSnapshot& S)
 		H = noctis::hashCombine(H, K.id);
 		H = noctis::hashCombine(H, FloatBits(K.softTissueFraction));
 	}
-	H = noctis::hashCombine(H, static_cast<noctis::u64>(S.newSounds.size()));
-	for (const noctis::SoundSource& Snd : S.newSounds)
+	if (bIncludeSounds)
 	{
-		H = noctis::hashCombine(H, Snd.id);
-		H = noctis::hashCombine(H, static_cast<noctis::u64>(Snd.kind));
-		H = HashVec3(H, Snd.position);
+		H = noctis::hashCombine(H, static_cast<noctis::u64>(S.newSounds.size()));
+		for (const noctis::SoundSource& Snd : S.newSounds)
+		{
+			H = noctis::hashCombine(H, Snd.id);
+			H = noctis::hashCombine(H, static_cast<noctis::u64>(Snd.kind));
+			H = HashVec3(H, Snd.position);
+		}
 	}
 	return H;
 }

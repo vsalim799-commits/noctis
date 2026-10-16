@@ -14,6 +14,7 @@
 #include "EngineUtils.h"
 
 #include "Noctis/Creatures/SpeciesRuntime.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 UNoctisWorldSubsystem* UNoctisWorldSubsystem::Get(const UObject* WorldContextObject)
 {
@@ -223,6 +224,7 @@ void UNoctisWorldSubsystem::SpawnPresentationActors()
 
 void UNoctisWorldSubsystem::OnPreActorTick(UWorld* InWorld, ELevelTick TickType, float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_SubsystemPreActorTick);
 	if (InWorld != GetWorld())
 	{
 		return;

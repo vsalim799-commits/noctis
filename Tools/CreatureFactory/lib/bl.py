@@ -277,3 +277,36 @@ def render(sc, cam, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     bpy.ops.render.render(write_still=True)
     return path
+
+
+# ----------------------------------------------------------------------------------------------
+# quick previews (stage checks): clay material, studio, a few cameras given in anatomy space
+PREVIEW_VIEWS = {
+    # name: (eye, target, lens) in anatomy space (metres)
+    "side": ((0.0, 2.6, 26.0), (-1.1, 2.0, 0.0), 50.0),
+    "front34": ((11.5, 4.2, 10.5), (0.3, 2.2, 0.0), 45.0),
+    "head": ((6.4, 4.3, 2.6), (3.95, 3.8, 0.12), 50.0),
+    "rear34": ((-9.0, 4.5, 9.0), (0.0, 2.0, 0.0), 40.0),
+    "foot": ((2.0, 0.8, 2.6), (0.45, 0.35, 0.4), 50.0),
+}
+
+
+def quick_clay(objs, out_dir, prefix, views=("side", "front34", "head"), samples=16, res=(1280, 720), color=(0.32, 0.29, 0.25)):
+    sc = bpy.context.scene
+    cycles(sc, samples=samples, res=res)
+    emission_world(sc, strength=1.0)
+    mat = clay_material("clay_preview", color)
+    for ob in objs:
+        if ob.type == "MESH" and not ob.data.materials:
+            ob.data.materials.append(mat)
+    c = to_bl((0.0, 2.2, 0.0))
+    cam_d = to_bl(np.array((0.6, 0.35, 1.0)))
+    studio(sc, c, 12.0, cam_d / np.linalg.norm(cam_d))
+    paths = []
+    for v in views:
+        eye, tgt, lens = PREVIEW_VIEWS[v]
+        cam = camera(f"cam_{v}", to_bl(eye), to_bl(tgt), lens=lens)
+        p = os.path.join(out_dir, f"{prefix}_{v}.png")
+        render(sc, cam, p)
+        paths.append(p)
+    return paths

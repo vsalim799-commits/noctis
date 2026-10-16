@@ -5,7 +5,9 @@
 //   noctis_sim demo  [--out DIR]             vertical-slice field expedition (observation, acoustics, drone,
 //                                            hypotheses, report) driven by the live simulation
 //   noctis_sim export-terrain [--out DIR]    heightmap and weightmaps for Unreal Landscape import
+//   noctis_sim export-level [--warmup-hours H] [--json FILE] [--out DIR]   level POIs, routes, masks (LevelExport.cpp)
 // Common options: --data DIR --env ID --profile ID --seed N --threads N --scale F
+#include "LevelExport.h"
 #include "Render.h"
 
 #include "Noctis/Core/Log.h"
@@ -1017,6 +1019,10 @@ int main(int argc, char** argv)
     {
         return cmdExportTerrain(a);
     }
-    std::printf("Usage: noctis_sim validate|run|demo|export-terrain [--data DIR] [--env ID] [--profile ID] [--seed N] [--days N] [--hours N] [--out DIR]\n");
+    if (a.mode == "export-level")
+    {
+        return noctistools::cmdExportLevel(argc, argv);
+    }
+    std::printf("Usage: noctis_sim validate|run|demo|export-terrain|export-level [--data DIR] [--env ID] [--profile ID] [--seed N] [--days N] [--hours N] [--out DIR]\n");
     return 1;
 }

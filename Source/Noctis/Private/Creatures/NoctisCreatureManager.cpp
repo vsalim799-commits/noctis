@@ -14,6 +14,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "HAL/IConsoleManager.h"
+#include "ProfilingDebugging/CpuProfilerTrace.h"
 
 static TAutoConsoleVariable<int32> CVarNoctisMaxActors(TEXT("noctis.Creatures.MaxActors"), 96,
 	TEXT("Nombre maximal d'acteurs squelettiques de créatures (pool)."), ECVF_Scalability);
@@ -268,6 +269,7 @@ void ANoctisCreatureManager::ReleaseAll()
 
 void ANoctisCreatureManager::Tick(float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Noctis_CreatureManager);
 	Super::Tick(DeltaSeconds);
 	UNoctisWorldSubsystem* Sub = UNoctisWorldSubsystem::Get(this);
 	const FNoctisFrameOutput* Front = Sub ? Sub->GetFrontFrame() : nullptr;

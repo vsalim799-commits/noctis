@@ -100,20 +100,24 @@ jobs:
           -DNOCTIS_UE_STRICT=ON
 
       - name: Build
+        id: build
         run: cmake --build build --parallel
 
       - name: Test (short label)
+        id: tests
         working-directory: build
         run: ctest -L short --timeout 900 --output-junit ctest-short.xml
 
       - name: Test (long label)
-        if: matrix.name == 'linux-gcc' && (github.event_name == 'schedule' || inputs.long_tests)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.name == 'linux-gcc' && (github.event_name == 'schedule' || inputs.long_tests) }}
         working-directory: build
         env:
           NOCTIS_LONG_TESTS: "1"
         run: ctest -L long --timeout 7200 --output-junit ctest-long.xml
 
+      # Runs even when a test failed: a red test must not hide the performance numbers.
       - name: Benchmark (quick)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: ./build/noctis_bench --quick --out "bench-${{ matrix.name }}.json"
 
       - name: Upload benchmark and test logs
