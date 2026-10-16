@@ -361,8 +361,27 @@ void perceive(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world
             const float energy = saturate(o.massKg / std::max(1.0f, c.massKg * 0.4f));
             const float vulnerability = (1.0f - o.injuries.healthIndex) + (o.massKg < os.adultMassKg * 0.3f ? 0.4f : 0.0f) + o.phys.fatigue * 0.3f;
             const float risk = os.defense.defenseStrength * std::sqrt(o.massKg / std::max(0.1f, c.massKg)) * o.injuries.defenseFactor;
-            a.opportunity = saturate(energy * (0.5f + vulnerability) / (0.4f + risk));
-            a.threat = saturate(risk * 0.3f * (d < c.lengthM * 2.0f ? 1.0f : 0.3f));
+            // Armour (osteoderms, frill) makes a kill slower and less likely, and the risk of injury grows faster
+            // than linearly for well-defended prey of the predator's own size: an adult Ankylosaurus (armour 0.95,
+            // tail club) was as attractive to an adult T. rex as a 500 kg juvenile hadrosaur (0.37 vs 0.38). With these
+            // terms it falls to ~0.07, an adult Triceratops to ~0.15-0.2, while juveniles and adult hadrosaurs keep
+            // most of their value. Game assumptions (form and coefficients).
+            const float armour = 1.0f - 0.75f * saturate(os.defense.armor);
+            a.opportunity = saturate(energy * (0.5f + vulnerability) * armour / (0.4f + risk + risk * risk));
+            // Dangerous prey threatens the predator only when it turns on it at close range (defends, displays,
+            // fights); a resting or feeding animal does not. A non-hunting T. rex used to "defend" itself against
+            // an adult Triceratops resting next to it, strike first and start a fight that killed both. A prey animal
+            // that has struck the predator within the last minute is appraised by the danger it has shown (risk):
+            // otherwise a T. rex gored every 2 s kept appraising the Triceratops at 0.29, stood in Vigilance and died.
+            // Game assumptions (1 min memory, additive form).
+            const BehaviorId ob = o.behavior.current;
+            const bool turnsOnIt = ob == BehaviorId::Defend || ob == BehaviorId::DefendYoung || ob == BehaviorId::Display || ob == BehaviorId::Fight;
+            bool struckMe = false;
+            for (const Injury& inj : c.injuries.active)
+            {
+                struckMe = struckMe || (inj.cause == o.id && now - inj.time < 60.0);
+            }
+            a.threat = saturate(risk * 0.3f * (d < c.lengthM * 2.0f && turnsOnIt ? 1.0f : 0.3f) + (struckMe ? risk : 0.0f));
         }
         else if (a.relation == Relation::Conspecific && sp.sim().social.territorial && o.massKg > c.massKg * 0.6f &&
                  o.ageYears(now) > sp.sim().growth.maturityAgeYears * 0.8f)

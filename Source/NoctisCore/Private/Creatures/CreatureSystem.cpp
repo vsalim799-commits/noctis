@@ -108,6 +108,44 @@ InjuryType weaponInjury(const SpeciesSim& s, BodyRegion targetRegion, float seve
     }
     return InjuryType::Contusion;
 }
+
+// Body-size resilience of the victim of a strike. One bite or blow destroys a smaller share of a large
+// animal's function than of a small one at the same attacker/victim mass ratio (thicker skin and muscle over
+// the vital organs, larger blood volume): without it, two 6-7 t animals killed each other in about 5 s
+// (5 strikes). Inverse of body length (cube root of mass), 1 up to 100 kg, 0.25 at 6.5 t. Game assumption
+// (form, reference mass, floor). Adult hadrosaurs and ceratopsians are known to have survived T. rex attacks
+// (healed bite injuries: depalma2013_trex_predation, happ2008_trex_triceratops).
+float strikeBulkFactor(float victimMassKg) { return clampf(std::cbrt(100.0f / std::max(1.0f, victimMassKg)), 0.2f, 1.0f); }
+
+// A predator credited with killing its prey: hunt history, HuntKill event, and, if it is still in the struggle,
+// it starts feeding. delayed: the prey died after the blow (bled out, or was killed by the predator's
+// counter-blow while it was itself striking), not by the strike being resolved.
+void creditHuntKill(Creature& killer, const Creature& victim, EntityId carcass, bool engaged, bool delayed, WorldContext& ctx)
+{
+    ++killer.history.huntsSucceeded;
+    if (engaged)
+    {
+        ++killer.history.huntsAttempted; // a pursuit given up earlier was already counted when it was abandoned
+        killer.behavior.seekActive = false;
+        killer.behavior.current = BehaviorId::FeedCarcass;
+        killer.behavior.target = carcass;
+        killer.behavior.targetPos = victim.pos2();
+        killer.behavior.hasTargetPos = true;
+        killer.behavior.hunt = HuntPhase::None;
+        killer.behavior.startedAt = ctx.now;
+        killer.behavior.commitUntil = ctx.now + 120.0;
+    }
+    SimEvent k;
+    k.type = EventType::HuntKill;
+    k.time = ctx.now;
+    k.subject = killer.id;
+    k.other = victim.id;
+    k.position = victim.loco.position;
+    k.magnitude = victim.massKg;
+    k.param = delayed ? 1u : 0u;
+    ctx.events->emit(k);
+    rememberPlace(killer, MemoryKind::Food, victim.pos2(), 0.8f, ctx.now);
+}
 } // namespace creaturesysimpl
 
 const char* formationLabelFr(Formation f)
@@ -413,7 +451,7 @@ void CreatureSystem::step(WorldContext& ctx)
     const size_t n = creatures_.size();
     JobScheduler& jobs = *ctx.jobs;
 
-    // 1) Body + 2) perception (parallel, writes only to self).
+    // 1) Body (parallel, writes only to self).
     jobs.parallelFor(n, [&](size_t i) {
         Creature& c = creatures_[i];
         if (!c.alive)
@@ -430,6 +468,17 @@ void CreatureSystem::step(WorldContext& ctx)
             updateMemory(c, sp, ctx, elapsed);
             c.lastUpdate = now;
         }
+    }, 8);
+
+    // 2) Perception (parallel, writes only to self). Separate pass: perceive() reads other animals' body
+    // state (health, fatigue, defence), which must not change while it is read.
+    jobs.parallelFor(n, [&](size_t i) {
+        Creature& c = creatures_[i];
+        if (!c.alive)
+        {
+            return;
+        }
+        const SpeciesRuntime& sp = (*species_)[static_cast<size_t>(c.speciesIndex)];
         const float perceptionInterval = lodInterval(c.lod, lod_.perceptionFullS, lod_.perceptionNearS, lod_.perceptionFarS);
         if (now - c.lastPerception >= perceptionInterval)
         {
@@ -623,11 +672,11 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
     const BodyRegion region = pickRegion(a.rng, rel, a.massKg < b.massKg * 0.15f);
     const bool predatory = sa.predation.style != HuntStyle::None && a.behavior.current == BehaviorId::Hunt;
     const float strength = predatory ? sa.predation.attackStrength : std::max(sa.defense.defenseStrength, sa.predation.attackStrength);
-    // Death-cause attribution (labels only; no effect on behaviour or random draws). A wound is
-    // predatory when the attacker is a predator hunting this very individual, or still in the struggle of
-    // a hunting bout it started (after the prey's first blow the predator re-appraises it as a threat and
-    // switches to Defend). Defence of self or young, counter-attacks and intraspecific fights are not
-    // predation. Game assumption: one predatory bout lasts up to 120 s after the last hunting blow.
+    // Death-cause attribution (no effect on random draws; a predation death is credited to the predator, which
+    // then feeds). A wound is predatory when the attacker is a predator hunting this very individual, or still
+    // in the struggle of a hunting bout it started (after the prey's first blow the predator re-appraises it as
+    // a threat and switches to Defend). Defence of self or young, counter-attacks and intraspecific fights are
+    // not predation. Game assumption: one predatory bout lasts up to 120 s after the last hunting blow.
     constexpr double kHuntBoutS = 120.0;
     auto engaged = [&](const Creature& x, const SpeciesSim& sx, const Creature& y) {
         return sx.predation.style != HuntStyle::None && ((x.behavior.current == BehaviorId::Hunt && x.behavior.target == y.id) ||
@@ -655,7 +704,8 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
             ritual = it.amount;
         }
     }
-    const float severity = saturate((0.12f + 0.45f * strength * sizeTerm * a.rng.range(0.6f, 1.4f)) * (1.0f - armor) * ritual * a.injuries.defenseFactor);
+    const float severity = saturate((0.12f + 0.45f * strength * sizeTerm * a.rng.range(0.6f, 1.4f)) * (1.0f - armor) * ritual * a.injuries.defenseFactor *
+                                    strikeBulkFactor(b.massKg));
     Injury inj;
     inj.region = region;
     inj.type = weaponInjury(sa, region, severity, a.rng);
@@ -730,12 +780,14 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
     {
         canStrike = true;
     }
-    if (canStrike && b.alive && b.rng.chance(sb.defense.defenseStrength * b.injuries.defenseFactor * 0.55f))
+    // A victim that has just received a lethal blow does not strike back.
+    const bool mortallyWounded = b.injuries.healthIndex <= 0.0f || b.phys.bloodLoss > 0.45f;
+    if (canStrike && b.alive && !mortallyWounded && b.rng.chance(sb.defense.defenseStrength * b.injuries.defenseFactor * 0.55f))
     {
         const BodyRegion r = pickRegion(b.rng, 0.0f, b.massKg < a.massKg * 0.15f);
         const float sev = saturate((0.1f + 0.5f * sb.defense.defenseStrength * clampf(std::sqrt(b.massKg / std::max(0.1f, a.massKg)), 0.15f, 2.5f) *
                                                b.rng.range(0.6f, 1.4f)) *
-                                   (1.0f - spA.regions[static_cast<size_t>(r)].armor));
+                                   (1.0f - spA.regions[static_cast<size_t>(r)].armor) * strikeBulkFactor(a.massKg));
         Injury back;
         back.region = r;
         back.type = weaponInjury(sb, r, sev, b.rng);
@@ -759,7 +811,7 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
         rememberPlace(a, MemoryKind::Danger, a.pos2(), -0.6f, ctx.now, b.id);
     }
     // Death of the victim.
-    if (b.injuries.healthIndex <= 0.0f || b.phys.bloodLoss > 0.45f)
+    if (mortallyWounded)
     {
         kill(b, predation ? DeathCause::Predation : DeathCause::Injury, ctx);
         const EntityId carcass = EntityId::make(EntityKind::Carcass, ctx.carcasses->nextSerial() - 1);
@@ -775,25 +827,11 @@ void CreatureSystem::resolveAttack(Creature& a, Creature& b, WorldContext& ctx)
             m.time = ctx.now;
             ctx.carcasses->addBiteMark(carcass, m);
         }
-        if (predatory)
+        if (predation)
         {
-            a.behavior.seekActive = false;
-            ++a.history.huntsAttempted;
-            ++a.history.huntsSucceeded;
-            a.behavior.current = BehaviorId::FeedCarcass;
-            a.behavior.target = carcass;
-            a.behavior.hunt = HuntPhase::None;
-            a.behavior.startedAt = ctx.now;
-            a.behavior.commitUntil = ctx.now + 120.0;
-            SimEvent k;
-            k.type = EventType::HuntKill;
-            k.time = ctx.now;
-            k.subject = a.id;
-            k.other = b.id;
-            k.position = b.loco.position;
-            k.magnitude = b.massKg;
-            ctx.events->emit(k);
-            rememberPlace(a, MemoryKind::Food, b.pos2(), 0.8f, ctx.now);
+            // Every predation death is credited to its predator (also when the killing blow came during the
+            // struggle after the predator switched to Defend), so Predation deaths and HuntKill events agree.
+            creditHuntKill(a, b, carcass, true, false, ctx);
         }
     }
     else if (a.speciesIndex != b.speciesIndex)
@@ -1185,6 +1223,7 @@ void CreatureSystem::drainFootprints(WorldContext& ctx)
 
 void CreatureSystem::handleDeaths(WorldContext& ctx)
 {
+    using namespace creaturesysimpl;
     for (Creature& c : creatures_)
     {
         if (!c.alive)
@@ -1235,6 +1274,39 @@ void CreatureSystem::handleDeaths(WorldContext& ctx)
             cause = DeathCause::Predation;
         }
         kill(c, cause, ctx);
+        if (cause == DeathCause::Predation)
+        {
+            // Died of hunting wounds outside resolveAttack's own death check: killed by the predator's counter-blow
+            // while striking it (resolveAttack only checks the animal struck first), or bled out later. Credit the
+            // predator whose hunting wounds weigh most, as for a kill at the blow.
+            EntityId killerId;
+            float bestW = 0.0f;
+            for (const Injury& i : c.injuries.active)
+            {
+                if (!i.predatory || ctx.now - i.time >= 6.0 * 3600.0 || i.cause.kind() != EntityKind::Creature)
+                {
+                    continue;
+                }
+                float w = 0.0f;
+                for (const Injury& j : c.injuries.active)
+                {
+                    w += j.predatory && j.cause == i.cause && ctx.now - j.time < 6.0 * 3600.0 ? j.initialSeverity : 0.0f;
+                }
+                if (w > bestW)
+                {
+                    bestW = w;
+                    killerId = i.cause;
+                }
+            }
+            Creature* killer = killerId.valid() ? find(killerId) : nullptr;
+            if (killer && killer->alive && killer->id != c.id)
+            {
+                const bool engaged = (killer->behavior.current == BehaviorId::Hunt && killer->behavior.target == c.id) ||
+                                     (killer->behavior.engagedPrey == c.id && ctx.now < killer->behavior.engagedPreyUntil);
+                const EntityId carcass = EntityId::make(EntityKind::Carcass, ctx.carcasses->nextSerial() - 1);
+                creditHuntKill(*killer, c, carcass, engaged, true, ctx);
+            }
+        }
     }
     // Compact dead individuals into the archive once in a while.
     size_t deadCount = 0;

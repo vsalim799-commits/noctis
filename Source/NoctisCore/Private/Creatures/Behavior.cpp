@@ -29,10 +29,30 @@ float sizeScale(const Creature& c, const SpeciesRuntime& sp)
 }
 
 float walkSpeed(const Creature& c, const SpeciesRuntime& sp) { return sp.sim().locomotion.walkSpeedMs * sizeScale(c, sp); }
+// Speed capacity used to plan movement (flight, pursuit). While swimming it is the swim speed, as in
+// locomotion: planning with the running speed commanded a fleeing Champsosaurus its land speed (1.0 m/s)
+// instead of its swim speed (1.5 m/s), so a theropod swimming at 0.6 m/s caught it in deep water.
 float maxSpeed(const Creature& c, const SpeciesRuntime& sp)
 {
-    return sp.sim().locomotion.maxSpeedMs * sizeScale(c, sp) * c.injuries.speedFactor * (1.0f - 0.45f * c.phys.fatigue) *
-           (0.6f + 0.4f * saturate(c.phys.condition * 2.0f));
+    const SpeciesSim::Locomotion& lo = sp.sim().locomotion;
+    const float base = c.loco.swimming && lo.swim && lo.swimSpeedMs > 0.0f ? lo.swimSpeedMs : lo.maxSpeedMs;
+    return base * sizeScale(c, sp) * c.injuries.speedFactor * (1.0f - 0.45f * c.phys.fatigue) * (0.6f + 0.4f * saturate(c.phys.condition * 2.0f));
+}
+
+// Aquatic species: a swimmer living in open channel water (here Borealosuchus and Champsosaurus). It hunts
+// in water and escapes into it; other predators (theropods, mammals) swim only to cross water and do not
+// pursue or strike prey there.
+bool aquaticSpecies(const SpeciesRuntime& sp)
+{
+    const SpeciesSim& s = sp.sim();
+    return s.locomotion.swim && s.locomotion.swimSpeedMs > 0.0f && s.habitat[static_cast<int>(Habitat::Channel)] >= 0.5f;
+}
+
+// Water at p deeper than c can wade with footing: 0.9 x hip, the depth at which locomotion switches a
+// swimmer to swimming (and stops a non-swimmer).
+bool beyondWadingDepth(const Creature& c, const WorldContext& ctx, const Vec2& p)
+{
+    return ctx.water && ctx.water->depthAt(p, *ctx.terrain) > c.hipHeightM * 0.9f;
 }
 
 float reach(const Creature& c, const SpeciesRuntime& sp) { return c.lengthM * sp.headReach; }
@@ -249,16 +269,17 @@ void requestCall(Creature& c, CallContext context, double now, float minInterval
 // The bout clock is kept across behaviour switches (Display <-> Defend <-> Vigilance), which otherwise
 // restarted the fast initial rate at every flip. Game assumptions reflecting habituation of call rates in
 // extant animals; no dinosaur data.
-float boutInterval(Creature& c, double now, float base, float cap)
+float boutInterval(double& boutStart, double& boutSeen, double now, float base, float cap)
 {
-    BehaviorState& b = c.behavior;
-    if (now - b.callBoutSeen > 600.0)
+    if (now - boutSeen > 600.0)
     {
-        b.callBoutStart = now;
+        boutStart = now;
     }
-    b.callBoutSeen = now;
-    return std::min(cap, base * (1.0f + static_cast<float>(std::max(0.0, now - b.callBoutStart)) / 60.0f));
+    boutSeen = now;
+    return std::min(cap, base * (1.0f + static_cast<float>(std::max(0.0, now - boutStart)) / 60.0f));
 }
+
+float boutInterval(Creature& c, double now, float base, float cap) { return boutInterval(c.behavior.callBoutStart, c.behavior.callBoutSeen, now, base, cap); }
 
 bool findWater(Context& k, Vec2& out)
 {
@@ -395,14 +416,46 @@ void emitEvent(const WorldContext& ctx, EventType t, const Creature& c, EntityId
 // Memory of a failed pursuit, so the predator does not re-target the same, now alerted, individual on
 // the very next decision (which turned one pursuit into dozens of chases). Game assumptions: 10 min
 // without re-targeting, or 1 min if a strike landed during the pursuit (a wounded animal is worth
-// following up soon).
+// following up soon). The last kGiveUpSlots individuals are remembered: with a single slot, giving up on
+// any other animal (even an abandoned stalk) released the previous one, and one Acheroraptor re-chased
+// the same Champsosaurus 4 times in 13 min.
 void noteFailedPursuit(Creature& c, EntityId target, double now)
 {
     BehaviorState& b = c.behavior;
     const bool struck = b.chaseStartedAt > -1e8 && b.lastAttack >= b.chaseStartedAt;
-    b.giveUpTarget = target;
-    b.giveUpUntil = now + (struck ? 60.0 : 600.0);
     b.chaseStartedAt = -1e9;
+    if (!target.valid())
+    {
+        return;
+    }
+    // Same individual again: refresh its entry; otherwise replace the entry that expires first.
+    int slot = 0;
+    for (int i = 0; i < BehaviorState::kGiveUpSlots; ++i)
+    {
+        if (b.giveUpTargets[static_cast<size_t>(i)] == target)
+        {
+            slot = i;
+            break;
+        }
+        if (b.giveUpUntil[static_cast<size_t>(i)] < b.giveUpUntil[static_cast<size_t>(slot)])
+        {
+            slot = i;
+        }
+    }
+    b.giveUpTargets[static_cast<size_t>(slot)] = target;
+    b.giveUpUntil[static_cast<size_t>(slot)] = now + (struck ? 60.0 : 600.0);
+}
+
+bool recentlyGivenUp(const BehaviorState& b, EntityId target, double now)
+{
+    for (int i = 0; i < BehaviorState::kGiveUpSlots; ++i)
+    {
+        if (b.giveUpTargets[static_cast<size_t>(i)] == target && now < b.giveUpUntil[static_cast<size_t>(i)])
+        {
+            return true;
+        }
+    }
+    return false;
 }
 } // namespace behaviorimpl
 
@@ -450,6 +503,17 @@ void decide(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world, 
         if (cryptic && fear < 0.6f && !close)
         {
             sc[static_cast<size_t>(BehaviorId::Freeze)] = fear * (0.6f + pers.get(PersonalityAxis::Caution));
+        }
+        // Withdrawal when losing: an animal that is being hurt breaks off a fight and moves away instead of fighting
+        // to the death (an adult T. rex and an adult Triceratops, both in Defend, traded ~25 blows until both died).
+        // Game assumption: the will to keep fighting fades between health 0.75 and 0.4 and between pain 0.3 and 0.6;
+        // defence of young is not affected.
+        const float hurt = std::max(1.0f - smoothstep(0.4f, 0.75f, c.injuries.healthIndex), smoothstep(0.3f, 0.6f, ph.pain));
+        if (hurt > 0.0f)
+        {
+            sc[static_cast<size_t>(BehaviorId::Defend)] *= 1.0f - hurt;
+            sc[static_cast<size_t>(BehaviorId::Display)] *= 1.0f - hurt;
+            sc[static_cast<size_t>(BehaviorId::Flee)] = std::max(sc[static_cast<size_t>(BehaviorId::Flee)], fear * (0.4f + 0.8f * hurt));
         }
     }
     if (group && group->formation == Formation::Fleeing)
@@ -696,6 +760,7 @@ void executeHunt(Context& k, float dt)
     const Vec2 p = c.pos2();
     const float vmax = maxSpeed(c, k.sp);
     const float walk = walkSpeed(c, k.sp);
+    const bool aquatic = aquaticSpecies(k.sp);
 
     // Target (re)selection among perceived prey — the predator never "knows" where prey is unless perceived.
     const Awareness* target = b.target.valid() ? c.perception.find(b.target) : nullptr;
@@ -718,9 +783,13 @@ void executeHunt(Context& k, float dt)
             {
                 continue;
             }
-            if (a.entity == b.giveUpTarget && now < b.giveUpUntil)
+            if (recentlyGivenUp(b, a.entity, now))
             {
                 continue; // recently escaped and now alerted: not pursued again straight away
+            }
+            if (!aquatic && beyondWadingDepth(c, k.ctx, a.estimatedPos))
+            {
+                continue; // in water too deep to wade: out of reach for a terrestrial predator (see below)
             }
             if (a.entity.kind() == EntityKind::Creature)
             {
@@ -849,6 +918,18 @@ void executeHunt(Context& k, float dt)
         setMove(c, c.behavior.desiredDir, 0.0f, Posture::Normal);
     };
 
+    // A terrestrial predator does not follow prey into water deeper than it can wade, and does not strike
+    // while it is swimming itself: it swims slowly (Acheroraptor 0.6 m/s, Champsosaurus 1.5 m/s) and has no
+    // footing. An Acheroraptor used to swim into a 2.2 m deep channel and kill a Champsosaurus there with
+    // 11 bites in 11 s. Aquatic hunters (crocodylians, choristoderes) are unaffected. Game assumptions: the
+    // depth threshold (0.9 x hip, where locomotion switches to swimming) and giving up at once.
+    if (!aquatic && beyondWadingDepth(c, k.ctx, tp))
+    {
+        giveUp(2);
+        return;
+    }
+    const bool footing = aquatic || !c.loco.swimming;
+
     // Phase changes take effect in the same decision (up to 3 transitions), so a predator never spends a
     // whole decision interval executing the previous phase's movement command.
     for (int pass = 0; pass < 3; ++pass)
@@ -919,7 +1000,7 @@ void executeHunt(Context& k, float dt)
             const float v = trackable ? arrivalSpeed() : std::min(arrivalSpeed(), walk * 1.4f);
             setMove(c, steer(c, k.sp, k.ctx, aim - p, v), v, Posture::Normal);
             armSeek(trackable ? vmax : walk * 1.4f);
-            if (d < strike + 0.5f && located)
+            if (d < strike + 0.5f && located && footing)
             {
                 pushIntent(c, ActionKind::Attack, b.target, tp, 1.0f); // opportunistic strike as the prey comes within reach
             }
@@ -952,7 +1033,7 @@ void executeHunt(Context& k, float dt)
             const Vec2 aim = tp + preyVel * std::min(1.0f, horizon);
             setMove(c, aim - p, arrivalSpeed(), Posture::Normal);
             armSeek(vmax);
-            if (d < strike + 0.5f && located)
+            if (d < strike + 0.5f && located && footing)
             {
                 // The serial phase rate-limits strikes (attack cooldown), so asking every tick is safe.
                 pushIntent(c, ActionKind::Attack, b.target, tp, 1.0f);
@@ -1220,6 +1301,39 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         {
             away = away.normalized() + group->velocity.normalized() * (0.5f + s.social.cohesion);
         }
+        // An aquatic animal caught on land by a terrestrial predator escapes into nearby water deeper than the
+        // predator can wade, as extant crocodylians and freshwater turtles retreat into water, rather than running
+        // on land where it is slow (Champsosaurus 1.0 m/s on land, 1.5 m/s swimming). Game assumptions: 35 m
+        // search radius, directions not towards the threat.
+        if (aquaticSpecies(sp) && away.lengthSq() > 1e-6f)
+        {
+            const Awareness* t = strongestThreat(c);
+            const bool landThreat = t && t->speciesIndex >= 0 && static_cast<size_t>(t->speciesIndex) < world.species().size() &&
+                                    !aquaticSpecies(world.species()[static_cast<size_t>(t->speciesIndex)]);
+            const Creature* threatAnimal = landThreat && t->entity.kind() == EntityKind::Creature ? world.find(t->entity) : nullptr;
+            const Creature& wader = threatAnimal && threatAnimal->hipHeightM > c.hipHeightM ? *threatAnimal : c;
+            if (landThreat && !beyondWadingDepth(wader, ctx, p))
+            {
+                const Vec2 awayDir = away.normalized();
+                bool found = false;
+                for (const float r : {4.0f, 8.0f, 15.0f, 25.0f, 35.0f})
+                {
+                    for (int i = 0; i < 12 && !found; ++i)
+                    {
+                        const Vec2 dirW = Vec2::fromHeading(static_cast<float>(i) * (kTwoPi / 12.0f));
+                        if (dot(dirW, awayDir) > -0.2f && beyondWadingDepth(wader, ctx, p + dirW * r))
+                        {
+                            away = dirW * 2.0f + awayDir * 0.5f;
+                            found = true;
+                        }
+                    }
+                    if (found)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
         const Vec2 dir = steer(c, sp, ctx, away + separation(c, sp, world) * 1.5f, vmax);
         setMove(c, dir, vmax * (0.65f + 0.35f * saturate(b.urgency)), Posture::Normal);
         // Alarm at flight onset only when the animal itself perceives the danger (not when it flees because
@@ -1437,7 +1551,10 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
             setMove(c, steer(c, sp, ctx, mate->estimatedPos - p, walk), walk * 0.8f, best < 20.0f ? Posture::Display : Posture::Normal);
             if (best < 30.0f)
             {
-                requestCall(c, CallContext::Courtship, now, 30.0f);
+                // Waning bout while the partner stays out of reach (one Ankylosaurus called ~40 times an hour for 5 h
+                // before mating): 30 s at first, up to 5 min, on a clock of its own so that it does not interact with
+                // anti-predator calling. Game assumption; there are no data on dinosaur courtship call rates.
+                requestCall(c, CallContext::Courtship, now, boutInterval(b.courtBoutStart, b.courtBoutSeen, now, 30.0f, 300.0f));
             }
         }
         else

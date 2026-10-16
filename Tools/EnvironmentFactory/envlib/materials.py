@@ -182,3 +182,41 @@ def flat_material(name, color, roughness=0.6):
     p.inputs["Base Color"].default_value = (*color, 1.0)
     p.inputs["Roughness"].default_value = roughness
     return mat
+
+
+def decal_material(name="M_Decal_Trackways", ground_dir=None):
+    """Trackway decal (render counterpart of the UE deferred mesh decal): wet mud colour, roughness and print relief
+    laid over the terrain with the soft opacity of the atlas (no alpha test)."""
+    mat = bpy.data.materials.get(name)
+    if mat:
+        return mat
+    from . import ground
+    gd = ground_dir or common.GROUND_DIR
+    P = lambda m: os.path.join(gd, "T_%s_%s.png" % (ground.DECAL_PREFIX, m))  # noqa: E731
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    mat.blend_method = "HASHED"
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    out.location = (900, 0)
+    col = _tex(nt, P("BaseColor"), "sRGB", -800, 300)
+    opa = _tex(nt, P("Opacity"), "Non-Color", -800, 0)
+    nrm = _tex(nt, P("Normal"), "Non-Color", -800, -300)
+    rgh = _tex(nt, P("Roughness"), "Non-Color", -800, -600)
+    p = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    p.location = (200, 100)
+    nt.links.new(col.outputs["Color"], p.inputs["Base Color"])
+    nt.links.new(rgh.outputs["Color"], p.inputs["Roughness"])
+    p.inputs["Specular IOR Level"].default_value = 0.45
+    nm = dx_normal(nt, nrm, -500, -300, 1.0)
+    nt.links.new(nm.outputs["Normal"], p.inputs["Normal"])
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    tr.location = (400, 250)
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    mix.location = (650, 0)
+    nt.links.new(opa.outputs["Color"], mix.inputs[0])
+    nt.links.new(tr.outputs[0], mix.inputs[1])
+    nt.links.new(p.outputs[0], mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs["Surface"])
+    return mat

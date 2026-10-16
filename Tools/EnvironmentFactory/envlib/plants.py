@@ -63,64 +63,139 @@ def _frond(m, base, d0, L, width, rect, mat, rng, segs, arch, fold=0.25, twist=0
 
 
 # ----------------------------------------------------------------------------------------------- palm
+# Atlas 'palm_segments' cells (foliage._p_palm_seg)
+SEG_GREEN, SEG_OLD, SEG_DEAD, SEG_PAIR, SEG_GROUP, SEG_GROUP_DEAD = (0, 1, 2), 3, 4, 5, 6, 7
+
+
+def _palm_blade(m, H, f, s, n, spec, rng, lod, rects, age, dead, hn, phase):
+    """One costapalmate blade as real 3D geometry (Sabal-type leaf).
+
+    Polar layout around the hastula H: segments fan over 'spread_deg'; each segment springs from the costa (the
+    rachis extension running into the blade over costa x R), so central segments start far along the costa and
+    lateral ones near the hastula. Both halves of the blade rise from the costa (V fold), the costa arches down,
+    segments are fused over the inner part and free over the outer 'split' fraction, where they narrow and their
+    tips droop independently. LOD0: every segment is folded along its middle (induplicate V section);
+    LOD1: segment pairs, flat; LOD2: groups of four, flat."""
+    R = spec["blade_r"] * rng.uniform(0.85, 1.08) * (0.85 if dead else 1.0)
+    K0 = spec["segments"]
+    group = (1, 2, 4)[lod]
+    K = max(4, int(round(K0 / group)))
+    spread = math.radians(spec.get("spread_deg", 230.0) * (0.62 if dead else rng.uniform(0.9, 1.05)))
+    costa = spec.get("costa", 0.5)
+    ts = 1.0 - spec.get("split", 0.42)
+    fold = spec.get("fold", 0.45) * (1.15 - 0.5 * age) * (0.35 if dead else 1.0)
+    arch = spec.get("arch", 0.35) * (0.7 + 0.8 * age)
+    droop = spec.get("tip_droop", 0.35) * (0.8 + 0.7 * age) * (1.6 if dead else 1.0)
+    rows = (5, 3, 2)[lod]
+    tsamp = np.unique(np.concatenate([np.linspace(0, ts, max(2, rows // 2) + 1), np.linspace(ts, 1, rows - rows // 2 + 1)]))
+    dth = spread / K
+    plic = spec.get("plication", 0.30) if lod == 0 else 0.0
+
+    def inplane(theta, t):
+        ra = costa * (1.0 - np.minimum(np.abs(theta) / (spread * 0.5), 1.0))
+        rm = R * (0.80 + 0.20 * np.cos(theta * 0.85))
+        ax, ay = 0.0, ra * R
+        mx, my = rm * np.sin(theta), rm * np.cos(theta)
+        return ax + (mx - ax) * t, ay + (my - ay) * t
+
+    def lift(x, y, t, drp):
+        z = fold * np.abs(x) - arch * (y / R) ** 2 * R - arch * 0.25 * (np.abs(x) / R) ** 2 * R
+        z = z - drp * R * np.clip((t - ts) / max(1 - ts, 1e-6), 0, 1) ** 2
+        return z
+
+    for k in range(K):
+        th = -spread * 0.5 + (k + 0.5) * dth
+        drp = droop * rng.uniform(0.7, 1.35)
+        if dead:
+            cell = SEG_GROUP_DEAD if lod == 2 else SEG_DEAD
+        elif lod == 0:
+            cell = SEG_OLD if (age > 0.85 and rng.random() < 0.5) else int(rng.choice(SEG_GREEN, p=[0.45, 0.3, 0.25]))
+        else:
+            cell = SEG_PAIR if lod == 1 else SEG_GROUP
+        u0, v0, u1, v1 = rects[cell]
+        cols = 3 if plic > 0 else 2
+        P = np.zeros((len(tsamp), cols, 3))
+        UV = np.zeros((len(tsamp), cols, 2))
+        for r_i, t in enumerate(tsamp):
+            free = max(0.0, (t - ts) / max(1 - ts, 1e-6))
+            half = dth * 0.5 * (1.0 - 0.45 * free)   # free part narrows (the texture tapers it further)
+            ths = [th - half, th, th + half] if cols == 3 else [th - half, th + half]
+            us = [u0, 0.5 * (u0 + u1), u1] if cols == 3 else [u0, u1]
+            for c_i, (tt, uu) in enumerate(zip(ths, us)):
+                x, y = inplane(np.array(tt), t)
+                z = lift(x, y, t, drp)
+                if cols == 3 and c_i == 1:
+                    # crease of the induplicate fold: below the segment edges by plic x half-width
+                    rr = math.hypot(float(x), float(y))
+                    z = z - plic * rr * half
+                P[r_i, c_i] = H + float(x) * s + float(y) * f + float(z) * n
+                UV[r_i, c_i] = (uu, v0 + (v1 - v0) * t)
+        flex = np.broadcast_to((0.55 + 0.45 * tsamp)[:, None], (len(tsamp), cols))
+        m.surface(P, UV, 1, flex=flex, phase=phase, height_norm=hn)
+
+
 def palm(spec, seed, lod, rects, layout, bark_tile):
+    """Sabal-type fan palm: stipe with persistent leaf bases, spherical crown of costapalmate leaves (young ones
+    erect and folded, old ones drooping), optional skirt of dead hanging leaves; acaulescent variant (trunk_h ~ 0):
+    leaves rise from the ground on long erect petioles, blades held more upright and less costapalmate."""
     rng = np.random.default_rng(seed)
     m = Mesh()
     H = spec["trunk_h"]
-    hn = H + spec["petiole"] + spec["blade"]
+    hn = H + spec["petiole"] + spec["blade_r"]
     sides = (12, 8, 5)[lod]
     n = max(4, int(H / 0.25)) if lod == 0 else max(3, int(H / 0.6))
-    lean = np.array([rng.normal(0, 0.06), rng.normal(0, 0.06), 1.0])
+    lean = np.array([rng.normal(0, 0.05), rng.normal(0, 0.05), 1.0])
     pts = np.array([[lean[0] * z * z / max(H, 0.1) * 0.4, lean[1] * z * z / max(H, 0.1) * 0.4, z] for z in np.linspace(-0.25, H, n + 1)])
-    rad = spec["trunk_r"] * (1.0 + 0.25 * np.exp(-(pts[:, 2] + 0.25) / 0.4) + 0.15 * np.clip((pts[:, 2] - H + 1.0), 0, 1))
-    m.tube(pts, rad, sides, 0, uv_scale=bark_tile, wind=(0.0, 0.25, rng.random()), cap=True, height_norm=hn)
+    rad = spec["trunk_r"] * (1.0 + 0.25 * np.exp(-(pts[:, 2] + 0.25) / 0.4) + 0.18 * np.clip((pts[:, 2] - H + 1.0), 0, 1))
+    m.tube(pts, rad, sides, 0, uv_scale=bark_tile, wind=(0.0, 0.2, rng.random()), cap=True, height_norm=hn)
     top = pts[-1]
-    nl = spec["leaves"] if lod < 2 else max(6, int(spec["leaves"] * 0.6))
-    cs = layout["cell_size_m"]
+    acaul = H < 1.0
+    nl = spec["leaves"] if lod == 0 else max(6, int(spec["leaves"] * (0.75 if lod == 1 else 0.5)))
+    nd = spec.get("dead_leaves", 0) if lod == 0 else int(spec.get("dead_leaves", 0) * (0.6 if lod == 1 else 0.4))
     golden = math.radians(137.5)
-    for i in range(nl):
-        age = i / max(nl - 1, 1)  # 0 = youngest (upright) .. 1 = oldest (drooping)
-        az = i * golden + rng.normal(0, 0.1)
-        elev = math.radians(70 - 95 * age + rng.normal(0, 6))
+    leaves = [(i / max(nl - 1, 1), False) for i in range(nl)] + [(1.0, True)] * nd
+    for i, (age, dead) in enumerate(leaves):
+        az = i * golden + rng.normal(0, 0.12)
+        if dead:  # skirt: petiole snapped down along the stipe, blade hanging
+            elev = math.radians(rng.uniform(-82, -68))
+        elif acaul:
+            elev = math.radians(78 - 38 * age + rng.normal(0, 5))
+        else:  # spherical crown: from erect spear leaves to old leaves below the horizontal
+            elev = math.radians(74 - 96 * age + rng.normal(0, 6))
         d = np.array([math.cos(az) * math.cos(elev), math.sin(az) * math.cos(elev), math.sin(elev)])
-        pl = spec["petiole"] * rng.uniform(0.85, 1.1)
+        pl = spec["petiole"] * rng.uniform(0.85, 1.1) * (0.75 if dead else 1.0)
         segs = (5, 3, 2)[lod]
-        ppts = [top + d * 0.05]
-        p = ppts[0].copy()
+        r0 = spec["trunk_r"] * 0.8
+        base = top + np.array([math.cos(az) * r0, math.sin(az) * r0, -0.15 - (0.35 * age if not acaul else 0.0) - (0.4 if dead else 0.0)])
+        if acaul:
+            base = np.array([math.cos(az) * r0 * 0.6, math.sin(az) * r0 * 0.6, -0.05])
+        ppts = [base]
+        p = base.copy()
         dd = d.copy()
         for k in range(segs):
-            dd = normalize(dd - UP * spec["droop"] * 0.25 * (1 + age))
+            dd = normalize(dd - UP * spec.get("petiole_sag", 0.06) * (1 + age))
             p = p + dd * pl / segs
             ppts.append(p.copy())
         ppts = np.array(ppts)
-        m.tube(ppts, np.linspace(0.035, 0.015, len(ppts)), (5, 4, 3)[lod], 2, uv_scale=(0.1, 0.5),
-               wind=(0.3, 0.7, rng.random()), cap=False, height_norm=hn)
-        # Blade: costapalmate fan, plicate, sagging; old leaves use the dry cell.
-        cell = 3 if age > 0.9 and rng.random() < 0.7 else int(rng.choice([0, 1, 2], p=[0.45, 0.35, 0.2]))
-        fwd = normalize(dd + UP * 0.25)
-        side = normalize(np.cross(fwd, UP)) if abs(fwd[2]) < 0.98 else any_perp(fwd)
+        wdt = spec.get("petiole_w", 0.03)
+        m.tube(ppts, np.linspace(wdt * 1.6, wdt * 0.7, len(ppts)), (5, 4, 3)[lod], 2 if not dead else 0, uv_scale=(0.1, 0.5),
+               wind=(0.25, 0.6, rng.random()), cap=False, height_norm=hn)
+        # blade frame: forward axis tilted below the petiole (blades are held flatter than their petioles)
+        tilt = math.radians(spec.get("blade_tilt_deg", 25.0) * (0.5 + 0.6 * age))
+        if dead:
+            fwd = normalize(dd * 0.3 - UP)
+        else:
+            fwd = normalize(dd - UP * math.tan(tilt))
+        side = normalize(np.cross(fwd, UP)) if abs(fwd[2]) < 0.97 else any_perp(fwd)
         nrm = normalize(np.cross(side, fwd))
-        R = 0.47 * cs[1] * (spec["blade"] / 1.6) * rng.uniform(0.9, 1.05)
-        scale = spec["blade"] / 1.6
-        na, nr = [(24, 5), (12, 3), (6, 2)][lod]
-        spread = math.radians(210) / 2
-        phis = np.linspace(-spread, spread, na + 1)
-        rs = np.linspace(0.02, 1.0, nr + 1) * R
-        PH, RR = np.meshgrid(phis, rs, indexing="ij")
-        x = RR * np.sin(PH)
-        y = RR * np.cos(PH)
-        rr = RR / R
-        pleat = 0.0 if lod == 2 else 0.04 * rr * np.where((np.arange(na + 1) % 2 == 0)[:, None], 1.0, -1.0)
-        # costapalmate fold: both halves of the blade rise from the costa (V section), segment tips droop
-        fold = 0.42 * np.abs(x) * (0.6 + 0.4 * (1 - age))
-        sag = spec["droop"] * rr ** 2 * (0.4 + 0.6 * age) * R + 0.3 * R * rr ** 2 * (np.abs(PH) / spread) ** 2
-        roll = rng.normal(0, 0.12)
-        P = ppts[-1] + x[..., None] * side + y[..., None] * fwd + (pleat + fold - sag)[..., None] * nrm
-        P = P + (x * roll)[..., None] * nrm
-        UV = _cell_xy_to_uv(rects[cell], (cs[0] * scale, cs[1] * scale), x, y, anchor=(0.5, 0.03))
-        flex = 0.6 + 0.4 * rr
-        m.surface(P, UV, 1, flex=flex, phase=rng.random(), height_norm=hn)
-    return m, dict(leaves=nl)
+        if nrm[2] < 0 and not dead:
+            nrm = -nrm
+            side = -side
+        # small roll of the blade around its axis
+        roll = rng.normal(0, 0.15)
+        side, nrm = side * math.cos(roll) + nrm * math.sin(roll), nrm * math.cos(roll) - side * math.sin(roll)
+        _palm_blade(m, ppts[-1], fwd, side, nrm, spec, rng, lod, rects, age, dead, hn, rng.random())
+    return m, dict(leaves=nl, dead_leaves=nd, segments_per_leaf=spec["segments"])
 
 
 # ----------------------------------------------------------------------------------------------- fern
@@ -137,12 +212,13 @@ def fern(spec, seed, lod, rects, layout, bark_tile):
         d0 = np.array([math.cos(az) * math.cos(rise), math.sin(az) * math.cos(rise), math.sin(rise)])
         L = rng.uniform(*spec["length"]) * (1.0 if lod == 0 else 1.05)
         cell = int(rng.choice(spec["cells"]))
-        if cell == 3:
+        dry = cell in spec.get("dry_cells", (6, 7))
+        if dry:
             L *= 0.85
         scale = L / cs[1]
         r0 = spec["rosette_r"] + spread * math.sqrt(rng.random())
         base = np.array([math.cos(az) * r0 * rng.uniform(0.3, 1.0), math.sin(az) * r0 * rng.uniform(0.3, 1.0), -0.03])
-        arch = spec["arch"] * rng.uniform(0.8, 1.2) * (1.6 if cell == 3 else 1.0)
+        arch = spec["arch"] * rng.uniform(0.8, 1.2) * (1.6 if dry else 1.0)
         _frond(m, base, d0, L, cs[0] * scale * (1.6 if lod == 2 else 1.0), rects[cell], 1, rng, segs, arch,
                fold=0.35, twist=rng.normal(0, 0.3), height_norm=max(spec["length"]))
     if lod == 0 and spec.get("crosiers", True):
@@ -159,56 +235,94 @@ def fern(spec, seed, lod, rects, layout, bark_tile):
 
 
 # ----------------------------------------------------------------------------------------------- horsetails
+def _lathe(m, axis_pts, radii, sides, rect, mat, flex, phase, height_norm):
+    """Surface of revolution along a polyline with UVs mapped into an atlas rectangle (u around, v along)."""
+    axis_pts = np.asarray(axis_pts, float)
+    T = normalize(np.gradient(axis_pts, axis=0))
+    N0 = any_perp(T[0])
+    B0 = np.cross(T[0], N0)
+    th = np.linspace(0, 2 * math.pi, sides + 1)
+    P = axis_pts[:, None, :] + np.asarray(radii)[:, None, None] * (np.cos(th)[None, :, None] * N0 + np.sin(th)[None, :, None] * B0)
+    u0, v0, u1, v1 = rect
+    t = np.linspace(0, 1, len(axis_pts))
+    UV = np.stack([np.broadcast_to(u0 + (u1 - u0) * th / (2 * math.pi), P.shape[:2]),
+                   np.broadcast_to((v0 + (v1 - v0) * t)[:, None], P.shape[:2])], -1)
+    m.surface(P, UV, mat, flex=np.full(P.shape[:2], flex), phase=phase, height_norm=height_norm)
+
+
 def horsetail(spec, seed, lod, rects, layout, bark_tile):
+    """Equisetum-type stand: erect, nearly parallel jointed stems rising from a creeping rhizome (bases scattered
+    over the clump area, not splayed from one point), closed stem tips; elongate, apiculate strobili (cones) on a
+    few fertile stems; optional whorls of branches from ~0.3 m up (branched form)."""
+    from .foliage import STROBILUS_PATCH
     rng = np.random.default_rng(seed)
     m = Mesh()
-    ns = spec["stems"] if lod == 0 else int(spec["stems"] * (0.6 if lod == 1 else 0.3))
+    ns = spec["stems"] if lod == 0 else int(spec["stems"] * (0.6 if lod == 1 else 0.35))
+    rscale = (1.0, 1.25, 1.7)[lod]  # thinner LODs keep their coverage with thicker stems
     hmax = spec["height"][1]
     cs = layout["cell_size_m"] if layout else (0.26, 0.26)
-    for i in range(ns):
-        rr = spec["radius"] * math.sqrt(rng.random()) * (0.5 + 0.5 * rng.random())
+    R = spec["radius"]
+    lv = spec.get("lean", 0.035)
+    # rhizome: a few runners; stems emerge along them (gives elongated, open clumps instead of a bouquet)
+    runners = []
+    for k in range(spec.get("runners", 3)):
         a = rng.uniform(0, 2 * math.pi)
-        base = np.array([rr * math.cos(a), rr * math.sin(a), -0.05])
-        h = rng.uniform(*spec["height"]) * (1 - 0.3 * rr / spec["radius"])
-        lv = spec.get("lean", 0.08)
-        lean = np.array([rng.normal(0, lv), rng.normal(0, lv), 1.0]) + np.array([base[0], base[1], 0]) * 0.25
+        c0 = rng.normal(0, R * 0.25, 2)
+        runners.append((c0, np.array([math.cos(a), math.sin(a)])))
+    srect = None
+    if rects:
+        u0, v0, u1, v1 = rects[3]
+        srect = (u0, v1 - STROBILUS_PATCH * (v1 - v0), u0 + STROBILUS_PATCH * (u1 - u0), v1)
+    for i in range(ns):
+        c0, rd = runners[i % len(runners)]
+        along = rng.uniform(-R, R)
+        off = rng.normal(0, R * 0.18)
+        bxy = c0 + rd * along + np.array([-rd[1], rd[0]]) * off
+        base = np.array([bxy[0], bxy[1], -0.05])
+        dist = min(1.0, float(np.linalg.norm(bxy)) / max(R, 1e-6))
+        h = rng.uniform(*spec["height"]) * (1 - 0.15 * dist)
+        d = normalize(np.array([rng.normal(0, lv), rng.normal(0, lv), 1.0]))
         inter = rng.uniform(*spec["internode"])
         nseg = max(2, int(h / (inter * (2.0 if lod == 0 else 4.0))))
         z = np.linspace(0, 1, nseg + 1)
-        d = normalize(lean)
-        pts = base + (z * h)[:, None] * d + (z ** 2 * h * 0.08)[:, None] * normalize(np.array([d[0], d[1], 0]) + 1e-6)
-        r = rng.uniform(*spec["stem_r"])
-        rad = r * (1 - 0.5 * z)
-        m.tube(pts, rad, (5, 4, 3)[lod], 0, uv_scale=(2 * math.pi * r, inter), wind=(0.1, 1.0, rng.random()),
-               cap=not spec["strobili"], height_norm=hmax)
-        if spec.get("strobili") and rng.random() < spec["strobili"] and lod < 2:
-            top = pts[-1]
-            sz = np.linspace(0, 1, 6)
-            sp = top + (sz * 0.035)[:, None] * d
-            srad = r * (0.8 + 1.4 * np.sin(np.pi * np.clip(sz * 0.9 + 0.05, 0, 1)))
-            srad[-1] = r * 0.2
-            # strobilus: UV pinned on the dark sheath band of the stem texture
-            m.tube(sp, srad, (6, 4, 3)[lod], 0, uv_scale=(1e3, 1e3), v_offset=0.0, wind=(1.0, 1.0, rng.random()), height_norm=hmax)
+        bow = normalize(np.array([d[0], d[1], 0]) + 1e-6)
+        pts = base + (z * h)[:, None] * d + (z ** 2 * h * 0.03)[:, None] * bow
+        r = rng.uniform(*spec["stem_r"]) * rscale
+        rad = r * (1 - 0.35 * z)
+        fertile = spec.get("strobili", 0.0) > 0 and rng.random() < spec["strobili"] and lod < 2 and srect is not None
+        m.tube(pts, rad, (6, 4, 3)[lod], 0, uv_scale=(2 * math.pi * r, inter), wind=(0.1, 1.0, rng.random()),
+               cap=not fertile, height_norm=hmax)
+        if fertile:
+            # cone: ellipsoidal-cylindrical, max radius ~1.3 x the stem tip, length ~2.8 x its diameter, apiculate tip
+            rt = rad[-1]
+            rmax = 1.3 * rt
+            L = 2.8 * 2 * rmax
+            sz = np.linspace(0, 1, 9)
+            prof = np.where(sz < 0.35, 1.0 + 0.3 * np.sin(0.5 * math.pi * sz / 0.35), 1.3 * np.clip((1 - sz) / 0.65, 0, 1) ** 0.55)
+            prof[-1] = 0.0
+            sp = pts[-1] + (sz * L)[:, None] * d
+            _lathe(m, sp, rt * prof, 6 if lod == 0 else 4, srect, 1, 1.0, rng.random(), hmax)
         if spec.get("branched") and rects and lod < 2:
-            # whorls of branches: shallow umbrella (cone) cards at nodes above 30 % of the height
             nn = int(h / inter)
             for k in range(2, nn):
                 if lod == 1 and k % 2:
                     continue
                 f = k * inter / h
-                if f < 0.3 or f > 0.97:
-                    continue
+                zc = base[2] + d[2] * k * inter
+                if f < 0.35 or f > 0.97 or zc < 0.30:
+                    continue  # no whorls on the lowest nodes: nothing lies on the ground
                 c = base + d * k * inter
-                # whorl_scale > 1: long, spreading branches (bottlebrush silhouette, never read as a grass tuft)
-                R = cs[0] * 0.5 * (1.15 - 0.6 * f) * rng.uniform(0.85, 1.1) * spec.get("whorl_scale", 1.0)
+                Rw = cs[0] * 0.5 * (1.15 - 0.6 * f) * rng.uniform(0.85, 1.1) * spec.get("whorl_scale", 1.0)
                 kk = 8 if lod == 0 else 5
                 th = np.linspace(0, 2 * math.pi, kk, endpoint=False) + rng.uniform(0, 1)
-                ring = c + np.stack([np.cos(th) * R, np.sin(th) * R, np.full(kk, -R * spec.get("whorl_droop", 0.35) + R * 0.6 * (1 - f))], 1)
+                dz = -Rw * spec.get("whorl_droop", 0.35) + Rw * 0.6 * (1 - f)
+                dz = max(dz, 0.12 - zc)
+                ring = c + np.stack([np.cos(th) * Rw, np.sin(th) * Rw, np.full(kk, dz)], 1)
                 cell = int(rng.integers(0, len(rects)))
                 u0, v0, u1, v1 = rects[cell]
                 uc = ((u0 + u1) / 2, (v0 + v1) / 2)
-                Rf = R / cs[0]
-                uvr = np.stack([uc[0] + np.cos(th) * Rf * (u1 - u0), uc[1] + np.sin(th) * Rf * (v1 - v0)], 1)
+                # the painted whorl fills ~0.47 of the cell around its centre, whatever the branch length
+                uvr = np.stack([uc[0] + np.cos(th) * 0.47 * (u1 - u0), uc[1] + np.sin(th) * 0.47 * (v1 - v0)], 1)
                 m.fan(c, ring, uc, uvr, 1, flex=0.8, phase=rng.random(), height_norm=hmax)
     return m, dict(stems=ns)
 
@@ -218,6 +332,24 @@ def emergent(spec, seed, lod, rects, layout, bark_tile):
     rng = np.random.default_rng(seed)
     m = Mesh()
     cs = layout["cell_size_m"]
+    if spec["kind"] == "rosette":
+        # semi-emergent rosette (Stratiotes-like habit, SPECULATIVE): thick toothed strap leaves radiating from a
+        # sunken centre, arching outwards; neither a grass tuft nor an iris fan
+        n = spec["leaves"] if lod == 0 else max(6, int(spec["leaves"] * (0.65 if lod == 1 else 0.45)))
+        hmax = spec["length"][1]
+        golden = math.radians(137.5)
+        for i in range(n):
+            age = i / max(n - 1, 1)
+            az = i * golden + rng.normal(0, 0.15)
+            rise = math.radians(76 - 40 * age + rng.normal(0, 5))
+            d0 = np.array([math.cos(az) * math.cos(rise), math.sin(az) * math.cos(rise), math.sin(rise)])
+            L = rng.uniform(*spec["length"]) * (0.75 + 0.35 * age)
+            cell = int(rng.choice([0, 1, 2, 3], p=[0.32, 0.32, 0.26, 0.10]))
+            w = cs[0] * (L / cs[1]) * (1.4 if lod == 2 else 1.0)
+            base = np.array([math.cos(az) * 0.03, math.sin(az) * 0.03, -0.08])
+            _frond(m, base, d0, L, w, rects[cell], 1, rng, (6, 4, 2)[lod], arch=0.22 + 0.3 * age, fold=0.45,
+                   twist=rng.normal(0, 0.15), height_norm=hmax, droop_tip=0.15 * age)
+        return m, dict(leaves=n)
     if spec["kind"] == "strap" and spec.get("fans"):
         # Equitant fans (iris / bur-reed-like habit): each shoot is a flat fan of overlapping strap leaves in one
         # plane, so the clump reads as a few broad fans rather than a grass tuft.
@@ -349,22 +481,45 @@ def cycad(spec, seed, lod, rects, layout, bark_tile):
 
 
 def herb(spec, seed, lod, rects, layout, bark_tile):
+    """Low dicot herb, no showy flowers: basal rosette of petiolate leaves plus a few leafy stems reaching
+    spec['height'] (angio_herb height in the project data: 0.5 m)."""
     rng = np.random.default_rng(seed)
     m = Mesh()
     cs = layout["cell_size_m"]
+    hmax = spec.get("height", 0.45)
     n = spec["leaves"] if lod == 0 else int(spec["leaves"] * (0.6 if lod == 1 else 0.35))
     for i in range(n):
         az = rng.uniform(0, 2 * math.pi)
-        r0 = spec["radius"] * math.sqrt(rng.random()) * 0.5
+        r0 = spec["radius"] * math.sqrt(rng.random()) * 0.4
         base = np.array([math.cos(az) * r0, math.sin(az) * r0, -0.02])
-        tilt = math.radians(rng.uniform(25, 70))
+        tilt = math.radians(rng.uniform(25, 60))
         fwd = normalize(np.array([math.cos(az) * math.cos(tilt), math.sin(az) * math.cos(tilt), math.sin(tilt)]))
         side = normalize(np.cross(fwd, UP))
-        s = rng.uniform(0.75, 1.15) * (1.3 if lod == 2 else 1.0)
+        sc_ = rng.uniform(0.75, 1.1) * (1.3 if lod == 2 else 1.0)
         cell = int(rng.integers(0, 4))
-        m.card(base, fwd, side, cs[0] * s, cs[1] * s, rects[cell], 1, bend=0.08 * s, segments=(2, 1, 1)[lod],
-               flex=(0.5, 1.0), wind_phase=rng.random(), height_norm=0.5)
-    return m, dict(leaves=n)
+        m.card(base, fwd, side, cs[0] * sc_, cs[1] * sc_, rects[cell], 1, bend=0.08 * sc_, segments=(2, 1, 1)[lod],
+               flex=(0.5, 1.0), wind_phase=rng.random(), height_norm=hmax)
+    ns = spec.get("stems", 3) if lod < 2 else 1
+    for k in range(ns):
+        az = rng.uniform(0, 2 * math.pi)
+        h = hmax * rng.uniform(0.75, 1.0)
+        top = np.array([math.cos(az) * 0.06, math.sin(az) * 0.06, h])
+        pts = np.array([[0, 0, -0.02], top * 0.5 + np.array([0, 0, 0.0]), top])
+        if lod < 2:
+            m.tube(pts, np.array([0.004, 0.0035, 0.002]), (4, 3, 3)[lod], 2, uv_scale=(0.05, 0.3), wind=(0.2, 0.9, rng.random()),
+                   height_norm=hmax)
+        nl = (5, 3, 2)[lod]
+        for j in range(nl):
+            t = 0.3 + 0.7 * (j + 0.5) / nl
+            p = pts[0] + (top - pts[0]) * t
+            a = az + j * math.radians(137.5)
+            tilt = math.radians(rng.uniform(15, 40))
+            fwd = normalize(np.array([math.cos(a) * math.cos(tilt), math.sin(a) * math.cos(tilt), math.sin(tilt)]))
+            side = normalize(np.cross(fwd, UP))
+            sc_ = rng.uniform(0.45, 0.65) * (1 - 0.3 * t) * (1.3 if lod == 2 else 1.0)
+            m.card(p, fwd, side, cs[0] * sc_, cs[1] * sc_, rects[int(rng.integers(0, 4))], 1, bend=0.05 * sc_,
+                   segments=1, flex=(0.6, 1.0), wind_phase=rng.random(), height_norm=hmax)
+    return m, dict(leaves=n, stems=ns)
 
 
 BUILDERS = dict(palm=palm, fern=fern, horsetail=horsetail, emergent=emergent, floating=floating, cycad=cycad, herb=herb)

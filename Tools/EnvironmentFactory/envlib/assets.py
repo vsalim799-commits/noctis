@@ -19,7 +19,7 @@ from . import bark as barkmod
 from . import catalog, common, deadwood, foliage, paint, plants, treegen
 from .meshkit import Mesh, convex_hull_mesh, prism_points
 
-GENERATOR_VERSION = "2026.10-env1"
+GENERATOR_VERSION = "2026.10-env2"
 LEAF_MAPS = ("BaseColor", "Normal", "Opacity", "Translucency", "Roughness")
 BARK_MAPS = ("BaseColor", "Normal", "Roughness", "Height")
 
@@ -128,11 +128,17 @@ def compact_slots(m, slots):
     return [slots[s] for s in order]
 
 
-def blender_materials(prefixes):
+def slot_material_name(prefix, a):
+    """Material slot name in the FBX. Deadwood gets its own '_Static' slots (same textures): in Unreal they map to
+    material instances with the wind (World Position Offset) switched off, so dead logs never evaluate WPO."""
+    return material_name(prefix) + ("_Static" if a.get("category") == "deadwood" else "")
+
+
+def blender_materials(prefixes, a=None):
     from . import materials
     mats = []
     for p in prefixes:
-        name = material_name(p)
+        name = slot_material_name(p, a or {})
         if p.startswith("Leaf_"):
             mats.append(materials.leaf_material(name, p))
         else:
@@ -165,6 +171,8 @@ def run(ctx_assets=None, force_textures=False, export=True):
     ids = list(catalog.ASSETS)
     selected = set(ctx_assets or ids)
     report = {}
+    from . import impostor
+    impostor_src = {}
     for aid in ids:
         a = catalog.ASSETS[aid]
         t0 = time.time()
@@ -175,7 +183,7 @@ def run(ctx_assets=None, force_textures=False, export=True):
         for lod in range(3):
             m, info, hulls = build_lod(aid, a, lod)
             prefixes = compact_slots(m, slots)
-            mats = blender_materials(prefixes)
+            mats = blender_materials(prefixes, a)
             c = bpy.data.collections.new("%s_LOD%d" % (aid, lod))
             root.children.link(c)
             obname = name if lod == 0 else "%s_LOD%d" % (name, lod)
@@ -185,7 +193,7 @@ def run(ctx_assets=None, force_textures=False, export=True):
             lo, hi = m.bounds()
             lod_objs.append(ob)
             lod_info.append(dict(lod=lod, triangles=m.tri_count(), vertices=int(sum(len(v) for v in m.V)),
-                                 materials=[material_name(p) for p in prefixes], **{k: v for k, v in info.items()}))
+                                 materials=[slot_material_name(p, a) for p in prefixes], **{k: v for k, v in info.items()}))
             if lod == 0:
                 bounds = (lo, hi)
                 for k, (V, F) in enumerate(hulls):
@@ -194,6 +202,8 @@ def run(ctx_assets=None, force_textures=False, export=True):
         fbx_ok = {}
         if aid not in selected:
             continue
+        if export and impostor.eligible(aid):
+            impostor_src[aid] = lod_objs[1]
         if export:
             d = os.path.join(common.FBX_DIR, aid)
             for lod, ob in enumerate(lod_objs):
@@ -205,6 +215,23 @@ def run(ctx_assets=None, force_textures=False, export=True):
         common.write_json(os.path.join(common.META_DIR, aid + ".json"), meta)
         report[aid] = dict(triangles=[li["triangles"] for li in lod_info], seconds=round(time.time() - t0, 1))
         common.log("%-24s tris LOD0/1/2 = %s  (%.1f s)" % (aid, report[aid]["triangles"], time.time() - t0))
+    if export:
+        report["_decals"] = export_decal_meshes()
+        if impostor_src:
+            imp = impostor.run(impostor_src)
+            for aid, info in imp.items():
+                mp = os.path.join(common.META_DIR, aid + ".json")
+                meta = common.read_json(mp)
+                meta["files"]["LOD3"] = info["file"]
+                meta["lods"].append(dict(lod=3, triangles=info["triangles"], materials=[info["material"]], kind="crossed_billboards",
+                                         size_m=info["size_m"]))
+                meta["lod_screen_size"] = list(meta["lod_screen_size"][:3]) + [impostor.LOD3_SCREEN_SIZE]
+                meta["materials"][info["material"]] = info["textures"]
+                meta["impostor"] = {"lod3": "3 cartes croisées à 60° (texture rendue depuis le LOD1 : albédo, opacité, normale)",
+                                    "screen_size": impostor.LOD3_SCREEN_SIZE,
+                                    "note": "Au-delà : HLOD World Partition (couche HLOD_Foliage_Instanced du niveau)."}
+                common.write_json(mp, meta)
+            report["_impostors"] = len(imp)
     # Library: relative image paths, collision collection excluded from rendering.
     colls.hide_render = True
     colls.hide_viewport = True
@@ -228,7 +255,7 @@ def build_metadata(aid, a, slots, lod_info, bounds, coll_objs, files, fbx_ok):
         if not p:
             continue
         kinds = LEAF_MAPS if p.startswith("Leaf_") else BARK_MAPS
-        tex[material_name(p)] = {k: os.path.relpath(common.texture_path(p, k), common.ROOT) for k in kinds}
+        tex[slot_material_name(p, a)] = {k: os.path.relpath(common.texture_path(p, k), common.ROOT) for k in kinds}
     return {
         "schema": "noctis.environment_asset/1",
         "id": aid,
@@ -260,3 +287,32 @@ def build_metadata(aid, a, slots, lod_info, bounds, coll_objs, files, fbx_ok):
         "botany": a["botany"],
         "on_water": bool(a.get("on_water", False)),
     }
+
+
+def export_decal_meshes():
+    """Trackway mesh decals for Unreal (deferred-decal material on a thin subdivided plane, ISM / PCG friendly):
+    fbx/decals/SM_Decal_Trackway_<Variant>.fbx, 0.75 x 3 m, pivot at the centre, +Y = walking direction, UVs in
+    the cell of T_Decal_Trackways (envlib/ground.py). Writes meta/decals.json."""
+    import bpy
+    from . import ground, paint
+    cw, ch = ground.DECAL_CELL_M
+    us = np.linspace(-cw / 2, cw / 2, 4)
+    vs = np.linspace(-ch / 2, ch / 2, 13)
+    out = []
+    mat = bpy.data.materials.get("M_Decal_Trackways") or bpy.data.materials.new("M_Decal_Trackways")
+    for cell, (name, desc) in enumerate(ground.DECALS):
+        m = Mesh()
+        u0, v0, u1, v1 = paint.cell_uv_rect(cell, ground.DECAL_GRID)
+        P = np.stack(np.meshgrid(us, vs), -1)
+        P = np.concatenate([P, np.full(P.shape[:2] + (1,), 0.01)], -1)
+        UV = np.stack(np.meshgrid(u0 + (u1 - u0) * (us - us[0]) / cw, v0 + (v1 - v0) * (vs - vs[0]) / ch), -1)
+        m.surface(P, UV, 0, height_norm=1.0)
+        ob = m.to_blender(name, [mat])
+        fn = os.path.join(common.FBX_DIR, "decals", name + ".fbx")
+        common.export_fbx([ob], fn)
+        out.append(dict(ue_name=name, cell=cell, description_fr=desc, file=os.path.relpath(fn, common.ROOT),
+                        triangles=m.tri_count(), size_m=[cw, ch], material="M_Decal_Trackways"))
+        bpy.data.objects.remove(ob, do_unlink=True)
+    common.write_json(os.path.join(common.META_DIR, "decals.json"), {"schema": "noctis.environment_decals/1", "decals": out,
+                                                                      "note_fr": "Décalques maillés (domaine Deferred Decal) : pistes d'empreintes placées par PCG sur les berges et le long des corridors. Silhouettes génériques, pas des moulages d'ichnotaxons."})
+    return len(out)

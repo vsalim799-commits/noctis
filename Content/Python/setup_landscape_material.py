@@ -6,20 +6,30 @@ Creates (or refreshes with --overwrite):
   /Game/Noctis/Landscape/Layers/LI_<Layer>     LandscapeLayerInfoObject per paint layer (weight-blended)
   /Game/Noctis/Landscape/T_LandscapeMasks      RGBA world mask: R static wetness, G predicted corridors,
                                               B flood risk, A water (Build/Environment/landscape/landscape_masks.png)
-and, when a landscape exists in the open level, assigns the material and tries to import the 8 paint layers
+  /Game/Noctis/Landscape/T_LandscapeMasks2     RGBA: R ground cover (small plants), G shore wetness band,
+                                              B, A reserved (Build/Environment/landscape/landscape_masks2.png)
+and, when a landscape exists in the open level, assigns the material and tries to import the 9 paint layers
 (Build/Environment/landscape/layer_<Layer>.png, 2017 x 2017 = heightmap resolution, row 0 = north edge).
 
 Material (Docs/ENVIRONMENT.md §3):
-  * 8 layers from the simulation habitats: Gravel (channel), MudTracks (riverbank), Sand (sandbar), Backswamp,
-    LitterBroadleaf (riparian forest + levee), Silt (floodplain + levee), LitterConifer (upland, speculative habitat),
-    Strata (cutbank cliffs). Each layer = one ground texture set (2K, tileable), world-aligned UVs (tile size from the
-    manifest), shared wrap samplers (no 16-sampler limit), height-blended Landscape Layer Blend for colour, normal
-    and roughness.
+  * 9 layers from the simulation habitats: Gravel (channel), Mud (riverbank), Sand (sandbar), Backswamp,
+    LitterBroadleaf (riparian forest + levee), Silt (damp floodplain + levee), SiltDry (desiccation cracks, driest
+    open-floodplain hollows only), LitterConifer (upland, speculative habitat), Strata (cutbank faces, slopes > 20-28°).
+    Each layer = one ground texture set (2K, tileable, 4-6 m tiles), shared wrap samplers (no 16-sampler limit),
+    height-blended Landscape Layer Blend for colour, normal and roughness.
+  * Anti-tiling (every layer but Strata): two samples per map, the second rotated by a per-layer angle and scaled by
+    1.618, blended by an independent low-frequency noise (T_Ground_MacroNoise.G); the albedo also fades to a third,
+    4.3x larger sample with the camera distance (15-60 m). No discrete feature (tracks, big cracks) is baked in the
+    tiling sets any more: trackways are mesh decals (import_environment.py), strong cracks are the SiltDry layer.
+  * Strata: biplanar world projection, U = world X or Y (the horizontal axis most parallel to the face, from the
+    landscape normal), V = -world Z / tile: beds follow the elevation (contours), not a top-down projection.
   * Moisture: wetness = saturate(R * StaticWetness + MPC_NoctisWeather.GroundWetness * (0.3 + 0.7 R)
-    + B * MPC.Flooding) darkens the albedo and lowers roughness.
+    + B * MPC.Flooding + 0.6 * ShoreBand) darkens the albedo and lowers roughness (ShoreBand = masks2.G).
   * Trails: max(G * StaticTrails, RT_NoctisTrails.R (runtime wear, rect MPC.TrailMaskRect)) blends towards the
-    MudTracks layer (trampled, footprinted mud).
-  * Macro variation: a very low-frequency sample of the silt height map modulates the albedo (anti-tiling).
+    Mud layer (trampled mud; footprints come from the trackway decals).
+  * Far ground cover: the culled small plants (ferns, horsetails, herbs, shrubs: masks2.R) still colour the ground
+    with a green-brown tint that grows with the camera distance (25-65 m).
+  * Macro variation: independent low-frequency noise (T_Ground_MacroNoise.R, 240 m tile) modulates the albedo.
 
 Run inside the editor:  py "Content/Python/setup_landscape_material.py" [--overwrite] [--skip layers,assign]
 Run outside Unreal:     python Content/Python/setup_landscape_material.py --dry-run
@@ -30,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 
@@ -44,6 +55,8 @@ LANDSCAPE_ROOT = "/Game/Noctis/Landscape"
 MATERIAL_PATH = LANDSCAPE_ROOT + "/M_NoctisLandscape"   # == build_level.LANDSCAPE_MATERIAL
 LAYER_ROOT = LANDSCAPE_ROOT + "/Layers"
 MASKS_PATH = LANDSCAPE_ROOT + "/T_LandscapeMasks"
+MASKS2_PATH = LANDSCAPE_ROOT + "/T_LandscapeMasks2"
+MACRO_NOISE_PATH = "/Game/Environment/Textures/Ground/T_Ground_MacroNoise"  # import_environment.py
 GROUND_TEX_ROOT = "/Game/Environment/Textures/Ground"   # import_environment.py
 MPC_WEATHER = "/Game/Environment/MPC_NoctisWeather"
 RT_TRAILS = "/Game/Environment/Vegetation/RT_NoctisTrails"
@@ -95,87 +108,18 @@ def ensure_dir(p):
 
 
 # ----------------------------------------------------------------------------------------------- material graph
+GOLDEN = 1.618
+FAR_SCALE = 4.3
+
+
 def build_material(mat, man, size_cm):
     mel = unreal.MaterialEditingLibrary
     E = lambda cls, x, y: mel.create_material_expression(mat, cls, x, y)  # noqa: E731
     mel.delete_all_material_expressions(mat)
     layers = man["landscape"]["layers"]
     grounds = man["ground_materials"]
-    wp = E(unreal.MaterialExpressionWorldPosition, -3000, 0)
-    wpxy = E(unreal.MaterialExpressionComponentMask, -2850, 0)
-    set_props(wpxy, r=True, g=True, b=False, a=False)
-    mel.connect_material_expressions(wp, "", wpxy, "")
+    trail_layer = man["landscape"].get("trail_layer", "Mud")
     shared = unreal.SamplerSourceMode.SSM_WRAP_WORLD_GROUP_SETTINGS
-    blends = {}
-    for k, prop in (("BaseColor", unreal.MaterialProperty.MP_BASE_COLOR), ("Normal", unreal.MaterialProperty.MP_NORMAL),
-                    ("Roughness", unreal.MaterialProperty.MP_ROUGHNESS)):
-        lb = E(unreal.MaterialExpressionLandscapeLayerBlend, -600, {"BaseColor": -600, "Normal": 0, "Roughness": 600}[k])
-        entries = []
-        for i, L in enumerate(layers):
-            e = unreal.LayerBlendInput()  # VERIFY struct name (FLayerBlendInput)
-            set_props(e, layer_name=L["name"], blend_type=unreal.LandscapeLayerBlendType.LB_HEIGHT_BLEND,
-                      preview_weight=1.0 if L["name"] == "Silt" else 0.0)
-            entries.append(e)
-        lb.set_editor_property("layers", entries)
-        blends[k] = (lb, prop)
-    samples = {}
-    for i, L in enumerate(layers):
-        g = grounds[L["ground_material"]]
-        y = -2400 + i * 700
-        scale = E(unreal.MaterialExpressionDivide, -2650, y)
-        mel.connect_material_expressions(wpxy, "", scale, "A")
-        scale.set_editor_property("const_b", float(g["tile_m"]) * 100.0)
-        for j, (mp, st) in enumerate((("BaseColor", unreal.MaterialSamplerType.SAMPLERTYPE_COLOR),
-                                      ("Normal", unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL),
-                                      ("Roughness", unreal.MaterialSamplerType.SAMPLERTYPE_MASKS),
-                                      ("Height", unreal.MaterialSamplerType.SAMPLERTYPE_GRAYSCALE))):
-            t = E(unreal.MaterialExpressionTextureSampleParameter2D, -2300, y + j * 160)
-            set_props(t, parameter_name="%s_%s" % (L["name"], mp), sampler_type=st, sampler_source=shared)
-            tp = "%s/T_Ground_%s_%s" % (GROUND_TEX_ROOT, L["ground_material"], mp)
-            if eal().does_asset_exist(tp):
-                t.set_editor_property("texture", eal().load_asset(tp))
-            else:
-                log("Texture absente : %s (lancer import_environment.py)" % tp, "WARN")
-            mel.connect_material_expressions(scale, "", t, "UVs")
-            samples[(L["name"], mp)] = t
-        for k, (lb, _) in blends.items():
-            out = "RGB" if k != "Roughness" else "R"
-            mel.connect_material_expressions(samples[(L["name"], k)], out, lb, "Layer " + L["name"])  # VERIFY pin names
-            mel.connect_material_expressions(samples[(L["name"], "Height")], "R", lb, "Height " + L["name"])
-    # world mask (wetness, corridors, flood, water)
-    rect = E(unreal.MaterialExpressionVectorParameter, -2650, 3400)
-    set_props(rect, parameter_name="LandscapeRectCm", default_value=unreal.LinearColor(0.0, -size_cm, size_cm, size_cm))
-    rxy = E(unreal.MaterialExpressionComponentMask, -2450, 3400)
-    set_props(rxy, r=True, g=True, b=False, a=False)
-    mel.connect_material_expressions(rect, "", rxy, "")
-    rzw = E(unreal.MaterialExpressionComponentMask, -2450, 3500)
-    set_props(rzw, r=False, g=False, b=True, a=True)
-    mel.connect_material_expressions(rect, "", rzw, "")
-    sub = E(unreal.MaterialExpressionSubtract, -2300, 3400)
-    mel.connect_material_expressions(wpxy, "", sub, "A")
-    mel.connect_material_expressions(rxy, "", sub, "B")
-    uv = E(unreal.MaterialExpressionDivide, -2150, 3400)
-    mel.connect_material_expressions(sub, "", uv, "A")
-    mel.connect_material_expressions(rzw, "", uv, "B")
-    masks = E(unreal.MaterialExpressionTextureSampleParameter2D, -1950, 3400)
-    set_props(masks, parameter_name="LandscapeMasks", sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)
-    if eal().does_asset_exist(MASKS_PATH):
-        masks.set_editor_property("texture", eal().load_asset(MASKS_PATH))
-    mel.connect_material_expressions(uv, "", masks, "UVs")
-    mpc = eal().load_asset(MPC_WEATHER) if eal().does_asset_exist(MPC_WEATHER) else None
-
-    def mpc_param(name, x, y):
-        if mpc is None:
-            c = E(unreal.MaterialExpressionConstant, x, y)
-            return c
-        n = E(unreal.MaterialExpressionCollectionParameter, x, y)
-        set_props(n, collection=mpc, parameter_name=name)  # VERIFY
-        return n
-
-    def scalar(name, v, x, y):
-        n = E(unreal.MaterialExpressionScalarParameter, x, y)
-        set_props(n, parameter_name=name, default_value=v)
-        return n
 
     def op(cls, a, b, x, y, pa="", pb=""):
         n = E(cls, x, y)
@@ -189,87 +133,252 @@ def build_material(mat, man, size_cm):
             mel.connect_material_expressions(b, pb, n, "B")
         return n
 
-    # wetness = saturate(R * StaticWetness + GroundWetness * (0.3 + 0.7 R) + B * Flooding)
+    def mask(src, x, y, r=False, g=False, b=False, a=False, pin=""):
+        n = E(unreal.MaterialExpressionComponentMask, x, y)
+        set_props(n, r=r, g=g, b=b, a=a)
+        mel.connect_material_expressions(src, pin, n, "")
+        return n
+
+    def const2(u, v, x, y):
+        n = E(unreal.MaterialExpressionConstant2Vector, x, y)
+        set_props(n, r=u, g=v)
+        return n
+
+    def scalar(name, v, x, y):
+        n = E(unreal.MaterialExpressionScalarParameter, x, y)
+        set_props(n, parameter_name=name, default_value=v)
+        return n
+
+    def lerp(a, b, alpha, x, y, pa="", pb="", palpha=""):
+        n = E(unreal.MaterialExpressionLinearInterpolate, x, y)
+        mel.connect_material_expressions(a, pa, n, "A")
+        mel.connect_material_expressions(b, pb, n, "B")
+        mel.connect_material_expressions(alpha, palpha, n, "Alpha")
+        return n
+
+    wp = E(unreal.MaterialExpressionWorldPosition, -4200, 0)
+    wpxy = mask(wp, -4050, 0, r=True, g=True)
+    wpz = mask(wp, -4050, 120, b=True)
+    # camera distance (cm) for the far blends
+    cam = E(unreal.MaterialExpressionCameraPositionWS, -4200, 250)
+    dist = E(unreal.MaterialExpressionDistance, -4050, 250)
+    mel.connect_material_expressions(wp, "", dist, "A")
+    mel.connect_material_expressions(cam, "", dist, "B")
+    far_t = E(unreal.MaterialExpressionSaturate, -3700, 250)
+    mel.connect_material_expressions(op(unreal.MaterialExpressionDivide, op(unreal.MaterialExpressionSubtract, dist, 1500.0, -3900, 250),
+                                        4500.0, -3800, 250), "", far_t, "")
+    # independent macro noise (R albedo variation, G anti-tiling mix, B tint)
+    macro = E(unreal.MaterialExpressionTextureSampleParameter2D, -3700, -3200)
+    set_props(macro, parameter_name="MacroNoise", sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_MASKS, sampler_source=shared)
+    if eal().does_asset_exist(MACRO_NOISE_PATH):
+        macro.set_editor_property("texture", eal().load_asset(MACRO_NOISE_PATH))
+    else:
+        log("Texture absente : %s (lancer import_environment.py)" % MACRO_NOISE_PATH, "WARN")
+    macro_tile = float((man.get("decals") or {}).get("macro_noise", {}).get("tile_m", 240.0)) * 100.0
+    mel.connect_material_expressions(op(unreal.MaterialExpressionDivide, wpxy, macro_tile, -3900, -3200), "", macro, "UVs")
+    mixmask = E(unreal.MaterialExpressionSmoothStep, -3450, -3150)  # VERIFY node (UMaterialExpressionSmoothStep, 5.0+)
+    set_props(mixmask, const_min=0.35, const_max=0.65)
+    mel.connect_material_expressions(macro, "G", mixmask, "Value")
+    # landscape normal for the biplanar strata projection
+    vn = E(unreal.MaterialExpressionVertexNormalWS, -4200, 500)
+    nx = E(unreal.MaterialExpressionAbs, -4000, 500)
+    mel.connect_material_expressions(mask(vn, -4100, 500, r=True), "", nx, "")
+    ny = E(unreal.MaterialExpressionAbs, -4000, 600)
+    mel.connect_material_expressions(mask(vn, -4100, 600, g=True), "", ny, "")
+    bi_w = E(unreal.MaterialExpressionSaturate, -3700, 550)
+    mel.connect_material_expressions(op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionMultiply,
+                                                                          op(unreal.MaterialExpressionSubtract, nx, ny, -3900, 550), 4.0, -3800, 550),
+                                        0.5, -3750, 550), "", bi_w, "")
+    negz = op(unreal.MaterialExpressionMultiply, wpz, -1.0, -3900, 700)
+
+    blends = {}
+    for k, prop in (("BaseColor", unreal.MaterialProperty.MP_BASE_COLOR), ("Normal", unreal.MaterialProperty.MP_NORMAL),
+                    ("Roughness", unreal.MaterialProperty.MP_ROUGHNESS)):
+        lb = E(unreal.MaterialExpressionLandscapeLayerBlend, -600, {"BaseColor": -600, "Normal": 0, "Roughness": 600}[k])
+        entries = []
+        for L in layers:
+            e = unreal.LayerBlendInput()  # VERIFY struct name (FLayerBlendInput)
+            set_props(e, layer_name=L["name"], blend_type=unreal.LandscapeLayerBlendType.LB_HEIGHT_BLEND,
+                      preview_weight=1.0 if L["name"] == "Silt" else 0.0)
+            entries.append(e)
+        lb.set_editor_property("layers", entries)
+        blends[k] = (lb, prop)
+    MAPS = (("BaseColor", unreal.MaterialSamplerType.SAMPLERTYPE_COLOR, "RGB"),
+            ("Normal", unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL, "RGB"),
+            ("Roughness", unreal.MaterialSamplerType.SAMPLERTYPE_MASKS, "R"),
+            ("Height", unreal.MaterialSamplerType.SAMPLERTYPE_GRAYSCALE, "R"))
+    samples = {}  # (layer, map) -> (node, pin) of the final (blended) value
+    for i, L in enumerate(layers):
+        g = grounds[L["ground_material"]]
+        tile = float(g["tile_m"]) * 100.0
+        y = -3000 + i * 1100
+        tex_path = lambda mp: "%s/T_Ground_%s_%s" % (GROUND_TEX_ROOT, L["ground_material"], mp)  # noqa: E731
+
+        def sample(mp, st, uv, x, yy):
+            t = E(unreal.MaterialExpressionTextureSampleParameter2D, x, yy)
+            # same parameter name on every sample of a map: one texture parameter per layer and map
+            set_props(t, parameter_name="%s_%s" % (L["name"], mp), sampler_type=st, sampler_source=shared)
+            if eal().does_asset_exist(tex_path(mp)):
+                t.set_editor_property("texture", eal().load_asset(tex_path(mp)))
+            else:
+                log("Texture absente : %s (lancer import_environment.py)" % tex_path(mp), "WARN")
+            mel.connect_material_expressions(uv, "", t, "UVs")
+            return t
+
+        if L["ground_material"] == "CutbankStrata":
+            # biplanar: (Y, -Z) on faces looking along X, (X, -Z) on faces looking along Y; V follows the elevation
+            wpx = mask(wp, -3300, y, r=True)
+            wpy = mask(wp, -3300, y + 80, g=True)
+            ax = E(unreal.MaterialExpressionAppendVector, -3150, y)
+            mel.connect_material_expressions(wpy, "", ax, "A")
+            mel.connect_material_expressions(negz, "", ax, "B")
+            ay = E(unreal.MaterialExpressionAppendVector, -3150, y + 120)
+            mel.connect_material_expressions(wpx, "", ay, "A")
+            mel.connect_material_expressions(negz, "", ay, "B")
+            uv_x = op(unreal.MaterialExpressionDivide, ax, tile, -3000, y)
+            uv_y = op(unreal.MaterialExpressionDivide, ay, tile, -3000, y + 120)
+            for j, (mp, st, pin) in enumerate(MAPS):
+                sx = sample(mp, st, uv_x, -2700, y + j * 200)
+                sy = sample(mp, st, uv_y, -2500, y + j * 200)
+                samples[(L["name"], mp)] = (lerp(sy, sx, bi_w, -2200, y + j * 200, pin, pin), "")
+            continue
+        # anti-tiling: A = world XY / tile ; B = rotated by a per-layer angle, scaled by 1.618 ; far = x 4.3
+        th = 0.6 + 0.9 * i
+        c_, s_ = math.cos(th), math.sin(th)
+        uv_a = op(unreal.MaterialExpressionDivide, wpxy, tile, -3300, y)
+        du = E(unreal.MaterialExpressionDotProduct, -3300, y + 100)
+        mel.connect_material_expressions(wpxy, "", du, "A")
+        mel.connect_material_expressions(const2(c_, -s_, -3450, y + 100), "", du, "B")
+        dv = E(unreal.MaterialExpressionDotProduct, -3300, y + 180)
+        mel.connect_material_expressions(wpxy, "", dv, "A")
+        mel.connect_material_expressions(const2(s_, c_, -3450, y + 180), "", dv, "B")
+        rot = E(unreal.MaterialExpressionAppendVector, -3150, y + 140)
+        mel.connect_material_expressions(du, "", rot, "A")
+        mel.connect_material_expressions(dv, "", rot, "B")
+        uv_b = op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionDivide, rot, tile * GOLDEN, -3000, y + 140),
+                  const2(0.37 * i, 0.61 * i, -3000, y + 240), -2900, y + 160)
+        uv_f = op(unreal.MaterialExpressionDivide, wpxy, tile * FAR_SCALE, -3000, y + 300)
+        for j, (mp, st, pin) in enumerate(MAPS):
+            sa = sample(mp, st, uv_a, -2700, y + j * 200)
+            sb = sample(mp, st, uv_b, -2500, y + j * 200)
+            near = lerp(sa, sb, mixmask, -2200, y + j * 200, pin, pin)
+            if mp == "BaseColor":
+                sf = sample(mp, st, uv_f, -2500, y + 900)
+                ft = op(unreal.MaterialExpressionMultiply, far_t, 0.6, -2350, y + 900)
+                near = lerp(near, sf, ft, -2050, y + 850, "", pin)
+            samples[(L["name"], mp)] = (near, "")
+    for L in layers:
+        for k, (lb, _) in blends.items():
+            node, pin = samples[(L["name"], k)]
+            mel.connect_material_expressions(node, pin, lb, "Layer " + L["name"])  # VERIFY pin names
+            hn, hp = samples[(L["name"], "Height")]
+            mel.connect_material_expressions(hn, hp, lb, "Height " + L["name"])
+    # world masks (wetness, corridors, flood, water) and masks2 (ground cover, shore band, sand variation)
+    rect = E(unreal.MaterialExpressionVectorParameter, -2650, 3400)
+    set_props(rect, parameter_name="LandscapeRectCm", default_value=unreal.LinearColor(0.0, -size_cm, size_cm, size_cm))
+    rxy = mask(rect, -2450, 3400, r=True, g=True)
+    rzw = mask(rect, -2450, 3500, b=True, a=True)
+    uv = op(unreal.MaterialExpressionDivide, op(unreal.MaterialExpressionSubtract, wpxy, rxy, -2300, 3400), rzw, -2150, 3400)
+
+    def world_mask(name, path, yy):
+        t = E(unreal.MaterialExpressionTextureSampleParameter2D, -1950, yy)
+        set_props(t, parameter_name=name, sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)
+        if eal().does_asset_exist(path):
+            t.set_editor_property("texture", eal().load_asset(path))
+        mel.connect_material_expressions(uv, "", t, "UVs")
+        return t
+    masks = world_mask("LandscapeMasks", MASKS_PATH, 3400)
+    masks2 = world_mask("LandscapeMasks2", MASKS2_PATH, 3650)
+    mpc = eal().load_asset(MPC_WEATHER) if eal().does_asset_exist(MPC_WEATHER) else None
+
+    def mpc_param(name, x, y):
+        if mpc is None:
+            return E(unreal.MaterialExpressionConstant, x, y)
+        n = E(unreal.MaterialExpressionCollectionParameter, x, y)
+        set_props(n, collection=mpc, parameter_name=name)  # VERIFY
+        return n
+
+    # wetness = saturate(R * StaticWetness + GroundWetness * (0.3 + 0.7 R) + B * Flooding + ShoreWetness * masks2.G)
     sw = scalar("StaticWetness", 0.8, -1700, 3600)
     w1 = op(unreal.MaterialExpressionMultiply, masks, sw, -1550, 3600, "R")
     gw = mpc_param("GroundWetness", -1700, 3750)
-    r07 = op(unreal.MaterialExpressionMultiply, masks, 0.7, -1700, 3850, "R")
-    r07b = op(unreal.MaterialExpressionAdd, r07, 0.3, -1550, 3850)
+    r07b = op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionMultiply, masks, 0.7, -1700, 3850, "R"), 0.3, -1550, 3850)
     w2 = op(unreal.MaterialExpressionMultiply, gw, r07b, -1400, 3750)
     fl = mpc_param("Flooding", -1700, 3950)
     w3 = op(unreal.MaterialExpressionMultiply, masks, fl, -1550, 3950, "B")
-    wsum = op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionAdd, w1, w2, -1250, 3650), w3, -1100, 3700)
+    w4 = op(unreal.MaterialExpressionMultiply, masks2, scalar("ShoreWetness", 0.6, -1700, 4050), -1550, 4050, "G")
+    wsum = op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionAdd, w1, w2, -1250, 3650), w3, -1150, 3700),
+              w4, -1050, 3750)
     wet = E(unreal.MaterialExpressionSaturate, -950, 3700)
     mel.connect_material_expressions(wsum, "", wet, "")
     # trails = max(G * StaticTrails, RT_NoctisTrails.R)
-    st = scalar("StaticTrails", 0.6, -1700, 4150)
-    t1 = op(unreal.MaterialExpressionMultiply, masks, st, -1550, 4150, "G")
-    trail = t1
+    st = scalar("StaticTrails", 0.6, -1700, 4250)
+    trail = op(unreal.MaterialExpressionMultiply, masks, st, -1550, 4250, "G")
     if eal().does_asset_exist(RT_TRAILS) and mpc is not None:
-        tr_rect = mpc_param("TrailMaskRect", -2300, 4300)
-        a_xy = E(unreal.MaterialExpressionComponentMask, -2150, 4300)
-        set_props(a_xy, r=True, g=True, b=False, a=False)
-        mel.connect_material_expressions(tr_rect, "", a_xy, "")
-        a_zw = E(unreal.MaterialExpressionComponentMask, -2150, 4400)
-        set_props(a_zw, r=False, g=False, b=True, a=True)
-        mel.connect_material_expressions(tr_rect, "", a_zw, "")
-        tuv = op(unreal.MaterialExpressionDivide, op(unreal.MaterialExpressionSubtract, wpxy, a_xy, -2000, 4300), a_zw, -1850, 4300)
-        rt = E(unreal.MaterialExpressionTextureSampleParameter2D, -1700, 4300)
+        tr_rect = mpc_param("TrailMaskRect", -2300, 4400)
+        a_xy = mask(tr_rect, -2150, 4400, r=True, g=True)
+        a_zw = mask(tr_rect, -2150, 4500, b=True, a=True)
+        tuv = op(unreal.MaterialExpressionDivide, op(unreal.MaterialExpressionSubtract, wpxy, a_xy, -2000, 4400), a_zw, -1850, 4400)
+        rt = E(unreal.MaterialExpressionTextureSampleParameter2D, -1700, 4400)
         set_props(rt, parameter_name="TrailRuntime", sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR)
         rt.set_editor_property("texture", eal().load_asset(RT_TRAILS))  # VERIFY: render target as sampler texture
         mel.connect_material_expressions(tuv, "", rt, "UVs")
-        trail = op(unreal.MaterialExpressionMax, t1, rt, -1400, 4200, "", "R")
-    trail_s = E(unreal.MaterialExpressionSaturate, -1250, 4200)
+        trail = op(unreal.MaterialExpressionMax, trail, rt, -1400, 4300, "", "R")
+    trail_s = E(unreal.MaterialExpressionSaturate, -1250, 4300)
     mel.connect_material_expressions(trail, "", trail_s, "")
-    # combine: trail mud, wetness, macro variation
+    # combine: trail mud, wetness, far ground cover, macro variation
     outs = {}
     for k, (lb, prop) in blends.items():
-        y = {"BaseColor": -600, "Normal": 0, "Roughness": 600}[k]
-        pin = "RGB" if k != "Roughness" else "R"
-        lerp = E(unreal.MaterialExpressionLinearInterpolate, -300, y)
-        mel.connect_material_expressions(lb, "", lerp, "A")
-        if ("MudTracks", k) in samples:
-            mel.connect_material_expressions(samples[("MudTracks", k)], pin, lerp, "B")
-        mel.connect_material_expressions(trail_s, "", lerp, "Alpha")
-        outs[k] = lerp
+        yy = {"BaseColor": -600, "Normal": 0, "Roughness": 600}[k]
+        lerp_n = E(unreal.MaterialExpressionLinearInterpolate, -300, yy)
+        mel.connect_material_expressions(lb, "", lerp_n, "A")
+        if (trail_layer, k) in samples:
+            node, pin = samples[(trail_layer, k)]
+            mel.connect_material_expressions(node, pin, lerp_n, "B")
+        mel.connect_material_expressions(trail_s, "", lerp_n, "Alpha")
+        outs[k] = lerp_n
     dark = E(unreal.MaterialExpressionLinearInterpolate, -100, -600)
     dark.set_editor_property("const_a", 1.0)
     dark.set_editor_property("const_b", 0.55)
     mel.connect_material_expressions(wet, "", dark, "Alpha")
     bc = op(unreal.MaterialExpressionMultiply, outs["BaseColor"], dark, 50, -600)
-    # macro variation from the silt height at 1/150 scale
-    macro_uv = op(unreal.MaterialExpressionDivide, wpxy, 15000.0, -2300, -3000)
-    macro = E(unreal.MaterialExpressionTextureSampleParameter2D, -2100, -3000)
-    set_props(macro, parameter_name="MacroVariation", sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_GRAYSCALE, sampler_source=shared)
-    tp = GROUND_TEX_ROOT + "/T_Ground_FloodplainSilt_Height"
-    if eal().does_asset_exist(tp):
-        macro.set_editor_property("texture", eal().load_asset(tp))
-    mel.connect_material_expressions(macro_uv, "", macro, "UVs")
-    mv = op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionMultiply, macro, 0.3, -1900, -3000, "R"), 0.85, -1750, -3000)
-    bc2 = op(unreal.MaterialExpressionMultiply, bc, mv, 200, -600)
+    # far ground cover: tint = masks2.R * lerp(0.25, 0.85, saturate((dist - 2500) / 4000))
+    gct = E(unreal.MaterialExpressionVectorParameter, -300, -900)
+    set_props(gct, parameter_name="GroundCoverTint", default_value=unreal.LinearColor(0.055, 0.07, 0.028, 1.0))
+    gd = E(unreal.MaterialExpressionSaturate, -500, -1000)
+    mel.connect_material_expressions(op(unreal.MaterialExpressionDivide, op(unreal.MaterialExpressionSubtract, dist, 2500.0, -700, -1000),
+                                        4000.0, -600, -1000), "", gd, "")
+    gdl = E(unreal.MaterialExpressionLinearInterpolate, -350, -1000)
+    gdl.set_editor_property("const_a", 0.25)
+    gdl.set_editor_property("const_b", 0.85)
+    mel.connect_material_expressions(gd, "", gdl, "Alpha")
+    gamt = op(unreal.MaterialExpressionMultiply, masks2, gdl, -200, -1000, "R")
+    bc_gc = lerp(bc, gct, gamt, 120, -800)
+    # macro variation: independent low-frequency noise
+    mv = op(unreal.MaterialExpressionAdd, op(unreal.MaterialExpressionMultiply, macro, 0.36, -3450, -3000, "R"), 0.82, -3300, -3000)
+    bc2 = op(unreal.MaterialExpressionMultiply, bc_gc, mv, 250, -600)
     mel.connect_material_property(bc2, "", unreal.MaterialProperty.MP_BASE_COLOR)
     mel.connect_material_property(outs["Normal"], "", unreal.MaterialProperty.MP_NORMAL)
     rwet = E(unreal.MaterialExpressionLinearInterpolate, 100, 600)
     mel.connect_material_expressions(outs["Roughness"], "", rwet, "A")
-    rwet.set_editor_property("const_b", 0.12)
-    rw = op(unreal.MaterialExpressionMultiply, wet, 0.8, -100, 700)
-    mel.connect_material_expressions(rw, "", rwet, "Alpha")
+    rwet.set_editor_property("const_b", 0.3)  # wet mud is satin, not a mirror (0.12 read as a grey-blue sheet of sky)
+    mel.connect_material_expressions(op(unreal.MaterialExpressionMultiply, wet, 0.7, -100, 700), "", rwet, "Alpha")
     mel.connect_material_property(rwet, "", unreal.MaterialProperty.MP_ROUGHNESS)
     mel.recompile_material(mat)
 
 
 # ----------------------------------------------------------------------------------------------- stages
-def import_masks(path):
+def import_masks(path, asset_path=MASKS_PATH):
     t = unreal.AssetImportTask()
-    for k, v in (("filename", path), ("destination_path", LANDSCAPE_ROOT), ("destination_name", "T_LandscapeMasks"),
+    for k, v in (("filename", path), ("destination_path", LANDSCAPE_ROOT), ("destination_name", asset_path.rsplit("/", 1)[1]),
                  ("automated", True), ("replace_existing", True), ("save", False)):
         t.set_editor_property(k, v)
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([t])
-    tex = eal().load_asset(MASKS_PATH)
+    tex = eal().load_asset(asset_path)
     set_props(tex, srgb=False, compression_settings=unreal.TextureCompressionSettings.TC_VECTOR_DISPLACEMENTMAP,
               mip_gen_settings=unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS, address_x=unreal.TextureAddress.TA_CLAMP,
               address_y=unreal.TextureAddress.TA_CLAMP)
-    eal().save_asset(MASKS_PATH, only_if_is_dirty=False)
+    eal().save_asset(asset_path, only_if_is_dirty=False)
     return tex
 
 
@@ -356,13 +465,21 @@ def main(argv=None):
         for L in lay["layers"]:
             g = man["ground_materials"][L["ground_material"]]
             log("[simulation] couche %-16s habitats %s, tuile %.1f m, textures %s" % (L["name"], L["habitats"], g["tile_m"], ", ".join(g["textures"])))
-        log("[simulation] matériau %s : Landscape Layer Blend (hauteur) x3, humidité (R + MPC.GroundWetness + B*MPC.Flooding), "
-            "corridors (G, RT_NoctisTrails), variation macro" % target)
+        log("[simulation] matériau %s : Landscape Layer Blend (hauteur) x3 ; anti-répétition (2e échantillon tourné / x1,618 mélangé "
+            "par T_Ground_MacroNoise.G, albédo lointain x4,3) ; Strata en projection biplanaire (V = altitude) ; humidité "
+            "(R + MPC.GroundWetness + B*MPC.Flooding + bande de rive masks2.G) ; corridors (G, RT_NoctisTrails) -> couche %s ; "
+            "teinte de couvert bas lointain (masks2.R) ; variation macro indépendante (MacroNoise.R)" % (target, lay.get("trail_layer", "Mud")))
+        for L in lay["layers"]:
+            if L.get("rule"):
+                log("[simulation] couche %s : règle %s" % (L["name"], L["rule"]))
         return 0
     ensure_dir(LANDSCAPE_ROOT)
     mpath = os.path.join(root, lay["masks"]["file"])
     if os.path.exists(mpath):
         import_masks(mpath)
+    m2 = (lay.get("masks2") or {}).get("file")
+    if m2 and os.path.exists(os.path.join(root, m2)):
+        import_masks(os.path.join(root, m2), MASKS2_PATH)
     existing = eal().load_asset(target) if eal().does_asset_exist(target) else None
     if existing is None or a.overwrite:
         folder, name = target.rsplit("/", 1)

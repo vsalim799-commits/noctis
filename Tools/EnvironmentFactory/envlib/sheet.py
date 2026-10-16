@@ -144,17 +144,25 @@ def compose(thumbs, metas, ground_names, path, cols=7):
         b = m.get("bounds_m", {})
         size = ("%.1f m" % h) if (h or 0) >= 0.05 else ("Ø %.1f m (flottant)" % b.get("width", 0))
         tiles.append((im, catalog.ASSETS[aid]["ue_name"].replace("SM_", ""), "%s tris · %s" % ("/".join("%dk" % round(t / 1000) if t >= 1000 else str(t) for t in tris), size)))
+    from . import ground
     for g in ground_names:
         im = ground_swatch(g)
         if im is not None:
-            tiles.append((im, "Ground_" + g, "2K tileable (2x2)"))
+            tiles.append((im, "Ground_" + g, "2K tileable, tuile %.0f m (2x2)" % ground.MATERIALS[g][0]))
+    dec = os.path.join(common.GROUND_DIR, "T_%s_BaseColor.png" % ground.DECAL_PREFIX)
+    if os.path.exists(dec):
+        d = Image.open(dec).convert("RGB")
+        o = Image.open(os.path.join(common.GROUND_DIR, "T_%s_Opacity.png" % ground.DECAL_PREFIX)).convert("L")
+        bg = Image.new("RGB", d.size, (150, 135, 110))
+        bg.paste(d, mask=o)
+        tiles.append((bg.resize((THUMB, THUMB), Image.LANCZOS), "Decal_Trackways", "4 décalques 0,75 x 3 m (non tuilés)"))
     rows = math.ceil(len(tiles) / cols)
     pad, lab = 8, 46
     W = cols * (THUMB + pad) + pad
     H = rows * (THUMB + lab + pad) + pad + 60
     sheet = Image.new("RGB", (W, H), (24, 24, 26))
     d = ImageDraw.Draw(sheet)
-    d.text((pad, 14), "NOCTIS · Hell Creek (Maastrichtien) · EnvironmentFactory — assets LOD0 (triangles LOD0/LOD1/LOD2, hauteur)",
+    d.text((pad, 14), "NOCTIS · Hell Creek (Maastrichtien) · EnvironmentFactory — assets LOD0 (triangles LOD0/LOD1/LOD2[/LOD3 cartes croisées], hauteur)",
            fill=(230, 230, 230), font=_font(26))
     f1, f2 = _font(17), _font(15)
     for i, (im, a, b) in enumerate(tiles):

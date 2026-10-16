@@ -218,7 +218,7 @@ def palette_albedo(pal, P, N0, reg, M, ch, extra):
     col = col * (1 - 0.35 * mud)[:, None] + np.array([[0.13, 0.11, 0.085]]) * (0.35 * mud)[:, None]
     col = np.clip(col, 0.01, 0.9)
     # roughness
-    rough = 0.64 - 0.08 * top + 0.12 * (1 - top) + 0.1 * crease - 0.04 * scute - 0.1 * lip - 0.05 * np.clip(M[:, 7], 0, 1) + 0.06 * rug + 0.04 * extra["n2"]
+    rough = 0.68 - 0.08 * top + 0.12 * (1 - top) + 0.1 * crease - 0.04 * scute - 0.1 * lip - 0.05 * np.clip(M[:, 7], 0, 1) + 0.06 * rug + 0.04 * extra["n2"]
     rough = np.clip(rough + 0.08 * mud, 0.3, 0.92)
     # subsurface weight (soft thin skin high, plates low)
     soft = np.clip(np.maximum.reduce([lip, np.clip(M[:, 7], 0, 1), np.clip(M[:, 1], 0, 1), np.clip(M[:, 11], 0, 1)]), 0, 1)

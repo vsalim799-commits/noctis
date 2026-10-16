@@ -48,24 +48,25 @@ ASSETS = {
         collision="trunk", cull_cm=(0, 0), lod_screen_size=(1.0, 0.35, 0.12)),
     "conifer_taxodium": dict(
         ue_name="SM_Conifer_Taxodioid_B", label_fr="Vieux conifère taxodiacé à cime aplatie et base contreforcée",
-        category="tree", pft="conifer", builder="tree", bark="cupressaceae", atlas="metasequoia", seed=202,
+        category="tree", pft="conifer", builder="tree", bark="cupressaceae", atlas="taxodioid", seed=202,
         spec=dict(
-            trunk=dict(height=26.0, radius=0.85, tip_radius=0.08, sinuosity=0.03, seg_m=0.9, flare=(1.0, 1.4),
-                       buttress=(7, 0.3, 2.2), sink=0.35, taper_pow=0.7, up=0.0),
-            levels=[dict(per_m=1.7, range=(0.40, 1.0), down=(95, 50), down_var=12, length=10.0, shape="flat_top",
-                         len_var=0.35, rad=0.34, tip=0.15, up=0.10, noise=0.10, seg_m=0.7),
-                    dict(per_m=2.6, range=(0.1, 0.98), rot="planar", down=(60, 45), down_var=14, length=2.6,
-                         shape="taper", rad=0.45, tip=0.25, up=0.03, noise=0.15, seg_m=0.4, min_rad=0.008),
-                    dict(per_m=2.4, range=(0.15, 0.95), rot="planar", down=(55, 50), length=0.7, shape="taper",
+            trunk=dict(height=20.0, radius=0.85, tip_radius=0.14, sinuosity=0.03, seg_m=0.9, flare=(1.0, 1.4),
+                       buttress=(7, 0.3, 2.2), sink=0.35, taper_pow=0.65, up=0.0),
+            levels=[dict(per_m=2.0, range=(0.36, 0.97), down=(92, 52), down_var=8, length=9.5, shape="flat_crown",
+                         len_var=0.25, rad=0.36, tip=0.15, up=0.07, noise=0.08, seg_m=0.7, droop_end=-0.03),
+                    dict(per_m=3.0, range=(0.08, 0.98), rot="planar", down=(66, 56), down_var=14, length=3.2,
+                         shape="taper", rad=0.45, tip=0.25, up=0.02, noise=0.15, seg_m=0.4, min_rad=0.008),
+                    dict(per_m=2.8, range=(0.12, 0.95), rot="planar", down=(60, 55), length=0.75, shape="taper",
                          rad=0.5, tip=0.4, noise=0.12, seg_m=0.3, min_rad=0.004, geom=False)],
-            envelope=(0.0, 0.0, 20.0, 11.0, 11.0, 8.0),
-            leaves=dict(CONIFER_LEAVES, levels=[1, 2, 3], spacing=0.26),
+            envelope=(0.0, 0.0, 17.5, 13.5, 13.5, 7.0),
+            leaves=dict(CONIFER_LEAVES, levels=[1, 2, 3], spacing=0.2, scale=(1.1, 1.5), tilt_deg=4, droop=0.06),
             lod=dict(lod1_levels=2, lod2_levels=1)),
         botany=dict(
             basis="Conifère Cupressaceae s.l. des marais arrière et des berges.",
             confidence="FORTEMENT_ETAYE", confidence_subject="Cupressaceae dans la flore", habit_confidence="SPECULATIF",
-            design_assumptions=["Habitus de vieux Taxodium actuel (cime aplatie, contreforts) choisi comme analogue moderne ; le genre Taxodium n'est pas nommé dans les données du projet.",
-                                "Même feuillage distique que la variante A (texture partagée).", GENERIC_COLOUR],
+            design_assumptions=["Habitus de vieux Taxodium actuel (cime large et aplatie à branches maîtresses presque horizontales, contreforts) choisi comme analogue moderne ; le genre Taxodium n'est pas nommé dans les données du projet.",
+                                "Rameaux propres (atlas « taxodioid ») : rameaux latéraux et feuilles linéaires alternes, distincts du rameau opposé de type Metasequoia.",
+                                "Hauteur ~25 m, sous le maximum de 30 m du type fonctionnel conifer (hell_creek.json).", GENERIC_COLOUR],
             speculative=["Contreforts et cime aplatie : traits d'arbres actuels de milieux inondés, non observés sur fossiles."],
             sources=FLORA_SOURCES),
         collision="trunk", cull_cm=(0, 0), lod_screen_size=(1.0, 0.35, 0.12)),
@@ -174,22 +175,48 @@ ASSETS = {
             speculative=["Port retombant : pas d'indice fossile direct."],
             sources=FLORA_SOURCES),
         collision="trunk", cull_cm=(0, 0), lod_screen_size=(1.0, 0.35, 0.12)),
+    "broadleaf_spreading_d": dict(
+        ue_name="SM_Broadleaf_Spreading_D", label_fr="Arbre angiosperme étalé à grandes feuilles cordées",
+        category="tree", pft="angio_tree", builder="tree", bark="angio_smooth", atlas="broadleaf_cordate", seed=747,
+        spec=dict(
+            trunk=dict(height=5.5, radius=0.46, tip_radius=0.22, sinuosity=0.05, seg_m=0.7, flare=(0.3, 0.7), sink=0.25),
+            levels=[dict(count=(3, 4), range=(0.75, 1.0), down=(62, 48), down_var=8, length=11.0, shape="uniform",
+                         len_var=0.2, rad=0.66, tip=0.25, up=0.04, noise=0.14, seg_m=0.7),
+                    dict(per_m=1.6, range=(0.15, 1.0), down=(62, 50), down_var=15, length=4.6, shape="taper",
+                         len_var=0.3, rad=0.48, tip=0.25, up=0.0, noise=0.2, seg_m=0.5),
+                    dict(per_m=3.0, range=(0.1, 1.0), down=(55, 45), down_var=15, length=1.5, shape="taper",
+                         rad=0.5, tip=0.35, noise=0.2, seg_m=0.35, min_rad=0.006, geom=False)],
+            envelope=(0.0, 0.0, 12.5, 11.0, 11.0, 6.0),
+            leaves=dict(levels=[2, 3], spacing=0.2, start=0.12, scale=(1.0, 1.3), tilt_deg=18, spread_deg=55,
+                        bend=0.12, roll_deg=45),
+            lod=dict(lod1_levels=2, lod2_levels=1)),
+        botany=dict(
+            basis="Arbre angiosperme (dicotylédone) : les angiospermes dominent la mégaflore (~380 morphotypes foliaires).",
+            confidence="ETABLI", confidence_subject="dominance et diversité des arbres angiospermes", habit_confidence="INFERE",
+            design_assumptions=["Quatrième silhouette d'arbre feuillu (fût court, 3–4 charpentières très étalées, ~18 m) pour casser la répétition des formes en forêt.",
+                                "Feuille cordée à ovée, entière ou finement dentée, générique (aucun genre attribué).", GENERIC_HERBIVORY, GENERIC_COLOUR],
+            speculative=["Architecture complète extrapolée."],
+            sources=FLORA_SOURCES + ["labandeira2002_kpg_insect_herbivory"]),
+        collision="trunk", cull_cm=(0, 0), lod_screen_size=(1.0, 0.35, 0.12)),
     "ginkgo_tree": dict(
         ue_name="SM_Ginkgo_A", label_fr="Ginkgo (arbre à rameaux courts)",
         category="tree", pft="ginkgo", builder="tree", bark="angio_rough", atlas="ginkgo", seed=808,
         spec=dict(
-            trunk=dict(height=16.0, radius=0.38, tip_radius=0.04, sinuosity=0.05, seg_m=0.8, flare=(0.3, 0.8), sink=0.25),
-            levels=[dict(per_m=1.1, range=(0.25, 0.97), down=(62, 38), down_var=12, length=6.5, shape="flame",
-                         len_var=0.35, rad=0.32, tip=0.2, up=0.07, noise=0.12, seg_m=0.6),
-                    dict(per_m=2.6, range=(0.1, 1.0), down=(55, 45), down_var=20, length=1.7, shape="taper",
-                         rad=0.5, tip=0.35, up=0.05, noise=0.2, seg_m=0.4, min_rad=0.006)],
-            leaves=dict(levels=[1, 2], spacing=0.13, start=0.1, scale=(1.1, 1.45), tilt_deg=15, spread_deg=55, bend=0.08, roll_deg=50),
+            trunk=dict(height=16.0, radius=0.40, tip_radius=0.05, sinuosity=0.012, seg_m=0.8, flare=(0.3, 0.8), sink=0.25, up=0.03),
+            levels=[dict(per_m=1.3, range=(0.22, 0.97), down=(64, 40), down_var=10, length=6.0, shape="flame",
+                         len_var=0.3, rad=0.32, tip=0.2, up=0.06, noise=0.08, seg_m=0.6),
+                    dict(per_m=2.6, range=(0.1, 1.0), down=(55, 45), down_var=18, length=1.8, shape="taper",
+                         rad=0.5, tip=0.35, up=0.05, noise=0.15, seg_m=0.4, min_rad=0.006)],
+            # short shoots (spurs) with leaf clusters along every branch order, the upper trunk included
+            leaves=dict(levels=[0, 1, 2], spacing=0.075, start=0.08, trunk_start=0.45, cards_per=2, scale=(1.0, 1.35),
+                        tilt_deg=15, spread_deg=60, bend=0.08, roll_deg=55),
             lod=dict(lod1_levels=1, lod2_levels=1)),
         botany=dict(
             basis="Ginkgo est signalé dans la Hell Creek (Johnson 2002 ; Wilson et al. 2021), relativement rare à Seafood Salad.",
             confidence="FORTEMENT_ETAYE", confidence_subject="présence de Ginkgo", habit_confidence="INFERE",
-            design_assumptions=["Port clairsemé et rameaux courts du Ginkgo biloba actuel.", "Feuilles en éventail bilobées.", GENERIC_COLOUR],
-            speculative=["Espèce fossile et port exact inconnus ; 16 m."], sources=FLORA_SOURCES),
+            design_assumptions=["Port du Ginkgo biloba actuel : tronc droit, charpentières ascendantes, cime ouverte mais feuillue ; bouquets de feuilles sur rameaux courts (« spurs ») le long de toutes les branches.",
+                                "Feuilles en éventail, bilobées ou entières ; feuillage d'été.", GENERIC_COLOUR],
+            speculative=["Espèce fossile et port exact inconnus ; ~17 m (type fonctionnel ginkgo : 20 m max)."], sources=FLORA_SOURCES),
         collision="trunk", cull_cm=(0, 0), lod_screen_size=(1.0, 0.35, 0.12)),
     # ------------------------------------------------------------------ shrubs
     "shrub_ovate": dict(
@@ -224,26 +251,31 @@ ASSETS = {
         collision="none", cull_cm=(0, 10000), lod_screen_size=(1.0, 0.3, 0.1)),
     # ------------------------------------------------------------------ palms
     "palm_sabalites_tall": dict(
-        ue_name="SM_Palm_Sabalites_Tall", label_fr="Palmier à feuilles costapalmées (type Sabalites), stipe de 6 m",
-        category="palm", pft="palm", builder="palm", bark="palm_trunk", atlas="palm_fan", seed=1111,
-        spec=dict(trunk_h=5.4, trunk_r=0.2, leaves=20, petiole=1.4, blade=2.1, droop=0.35),
+        ue_name="SM_Palm_Sabalites_Tall", label_fr="Palmier à feuilles costapalmées (type Sabalites), stipe de 4,5 m",
+        category="palm", pft="palm", builder="palm", bark="palm_trunk", atlas="palm_segments", seed=1111,
+        spec=dict(trunk_h=4.6, trunk_r=0.2, leaves=22, dead_leaves=6, petiole=1.25, petiole_w=0.03, blade_r=1.05,
+                  segments=40, spread_deg=235, costa=0.55, split=0.42, fold=0.45, arch=0.35, tip_droop=0.35,
+                  plication=0.30, blade_tilt_deg=25),
         botany=dict(
-            basis="Palmiers costapalmés (Sabalites) confirmés au Campanien–Maastrichtien plus au nord (Alberta, Saskatchewan) ; présence dans la Hell Creek même : INFÉRÉE.",
+            basis="Palmiers costapalmés (Sabalites) confirmés au Campanien–Maastrichtien plus au nord (Alberta, Saskatchewan) ; présence dans la Hell Creek même : INFÉRÉE, et rare (hell_creek.json : palm « INFÉRÉE, rare »).",
             confidence="INFERE", confidence_subject="palmiers dans la Hell Creek", habit_confidence="SPECULATIF",
-            design_assumptions=["Limbe costapalmé plissé à segments fendus, d'après la morphologie du genre de feuilles Sabalites.",
-                                "Stipe à bases foliaires persistantes et couronne de ~17 feuilles : port du Sabal actuel (analogue moderne).",
+            design_assumptions=["Limbe costapalmé en 3D : costa prolongeant le pétiole dans le limbe, ~40 segments induplicés (pliés en V), soudés sur la partie interne et libres sur le tiers externe, extrémités bifides retombantes — morphologie du genre de feuilles Sabalites et du Sabal actuel.",
+                                "Couronne sphérique de ~22 feuilles (jeunes dressées, vieilles retombantes) et jupe de feuilles mortes pendantes ; stipe à bases foliaires persistantes : port du Sabal palmetto actuel (analogue moderne).",
+                                "Rareté : 30 inst./ha à masque = 1 (≈ 1 à 2 % des tiges ligneuses de la vallée).",
                                 GENERIC_COLOUR],
-            speculative=["Port arborescent et hauteur (6 m) : seules des feuilles sont connues."],
+            speculative=["Port arborescent et hauteur (~6 m) : seules des feuilles sont connues."],
             sources=["greenwood2022_cretaceous_palms", "johnson2002_hellcreek_megaflora"]),
         collision="trunk", cull_cm=(0, 30000), lod_screen_size=(1.0, 0.3, 0.1)),
     "palm_sabalites_short": dict(
         ue_name="SM_Palm_Sabalites_Acaulescent", label_fr="Palmier acaule à feuilles costapalmées (sous-bois)",
-        category="palm", pft="palm", builder="palm", bark="palm_trunk", atlas="palm_fan", seed=1212,
-        spec=dict(trunk_h=0.25, trunk_r=0.16, leaves=12, petiole=0.9, blade=1.7, droop=0.2),
+        category="palm", pft="palm", builder="palm", bark="palm_trunk", atlas="palm_segments", seed=1212,
+        spec=dict(trunk_h=0.15, trunk_r=0.14, leaves=11, dead_leaves=0, petiole=0.9, petiole_w=0.022, blade_r=0.66,
+                  segments=32, spread_deg=210, costa=0.2, split=0.36, fold=0.28, arch=0.15, tip_droop=0.22,
+                  plication=0.32, blade_tilt_deg=14, petiole_sag=0.02),
         botany=dict(
-            basis="Variante basse du palmier à feuilles de type Sabalites.", confidence="INFERE",
+            basis="Variante basse du palmier à feuilles de type Sabalites (présence INFÉRÉE, rare).", confidence="INFERE",
             confidence_subject="palmiers dans la Hell Creek", habit_confidence="SPECULATIF",
-            design_assumptions=["Port acaule (stipe souterrain) des Sabal de sous-bois actuels.", GENERIC_COLOUR],
+            design_assumptions=["Port acaule (stipe souterrain) des Sabal de sous-bois actuels (type Sabal minor) : feuilles dressées sur longs pétioles, limbe peu costapalmé à ~32 segments pliés.", GENERIC_COLOUR],
             speculative=["Existence d'un palmier acaule dans la formation."],
             sources=["greenwood2022_cretaceous_palms"]),
         collision="none", cull_cm=(0, 15000), lod_screen_size=(1.0, 0.3, 0.1)),
@@ -251,25 +283,25 @@ ASSETS = {
     "fern_tufted": dict(
         ue_name="SM_Fern_Tufted_A", label_fr="Fougère en touffe dressée (frondes pennées lobées)",
         category="fern", pft="fern", builder="fern", atlas="fern", seed=1313,
-        spec=dict(fronds=14, cells=[0, 0, 0, 3], length=(0.9, 1.2), arch=0.45, rise=(55, 75), rosette_r=0.06),
+        spec=dict(fronds=14, cells=[0, 1, 0, 1, 6], length=(0.85, 1.15), arch=0.45, rise=(55, 75), rosette_r=0.06),
         botany=dict(
             basis="Fougères présentes dans la flore (FORTEMENT ÉTAYÉ), relativement peu abondantes à Seafood Salad ; dans les milieux ouverts, fougères, prêles, herbacées et arbustes remplaçaient les prairies.",
             confidence="FORTEMENT_ETAYE", confidence_subject="présence de fougères", habit_confidence="INFERE",
-            design_assumptions=["Touffe en entonnoir de frondes pennées à pennes lobées ; 1 m (hauteur du type fonctionnel fern).", GENERIC_COLOUR],
+            design_assumptions=["Touffe en entonnoir de frondes pennées à pennes pinnatifides (lobes arrondis soudés), longueur et courbure des pennes variables ; 1 m (hauteur du type fonctionnel fern).", GENERIC_COLOUR],
             speculative=["Aucune espèce attribuée."], sources=FLORA_SOURCES),
         collision="none", cull_cm=(0, 6000), lod_screen_size=(1.0, 0.25, 0.08)),
     "fern_lace": dict(
         ue_name="SM_Fern_Bipinnate_B", label_fr="Fougère basse étalée (frondes bipennées)",
         category="fern", pft="fern", builder="fern", atlas="fern", seed=1414,
-        spec=dict(fronds=12, cells=[1, 1, 1, 3], length=(0.6, 0.8), arch=0.5, rise=(45, 65), rosette_r=0.05),
+        spec=dict(fronds=13, cells=[2, 3, 2, 3, 7], length=(0.6, 0.85), arch=0.5, rise=(45, 65), rosette_r=0.05),
         botany=dict(basis="Fougère du sous-bois humide.", confidence="FORTEMENT_ETAYE", confidence_subject="présence de fougères",
-                    habit_confidence="INFERE", design_assumptions=["Frondes bipennées étalées de 0,6 m.", GENERIC_COLOUR],
+                    habit_confidence="INFERE", design_assumptions=["Frondes bipennées étalées de 0,6–0,8 m, pinnules oblongues séparées, lobées vers la base des pennes.", GENERIC_COLOUR],
                     speculative=["Aucune espèce attribuée."], sources=FLORA_SOURCES),
         collision="none", cull_cm=(0, 5000), lod_screen_size=(1.0, 0.25, 0.08)),
     "fern_marsh": dict(
         ue_name="SM_Fern_Marsh_C", label_fr="Fougère de marais (frondes étroites dressées)",
         category="fern", pft="fern", builder="fern", atlas="fern", seed=1515,
-        spec=dict(fronds=18, cells=[2, 2, 2, 2, 3], length=(1.0, 1.35), arch=0.25, rise=(68, 82), rosette_r=0.12, spread=0.25),
+        spec=dict(fronds=18, cells=[4, 5, 4, 5, 6], length=(0.95, 1.25), arch=0.25, rise=(68, 82), rosette_r=0.12, spread=0.25),
         botany=dict(basis="Fougère des sols engorgés (marais arrière, berges).", confidence="FORTEMENT_ETAYE",
                     confidence_subject="présence de fougères", habit_confidence="SPECULATIF",
                     design_assumptions=["Frondes pennées étroites dressées en colonie lâche.", GENERIC_COLOUR],
@@ -279,54 +311,55 @@ ASSETS = {
     "horsetail_unbranched": dict(
         ue_name="SM_Horsetail_Stand_A", label_fr="Peuplement de prêles à tiges simples (avec strobiles)",
         category="horsetail", pft="horsetail", builder="horsetail", bark="horsetail_stem", seed=1616,
-        spec=dict(stems=40, radius=0.55, height=(0.8, 1.45), stem_r=(0.006, 0.0095), internode=(0.05, 0.09),
-                  branched=False, strobili=0.35),
+        spec=dict(stems=34, radius=0.6, height=(0.75, 1.35), stem_r=(0.006, 0.0095), internode=(0.05, 0.09),
+                  branched=False, strobili=0.13, lean=0.03, runners=3),
         botany=dict(
             basis="Prêles (sphénopsides, Equisetum) : INFÉRÉ (résumé de Johnson 1993 non vérifié) ; type fonctionnel horsetail des berges, bancs de sable et marais.",
             confidence="INFERE", confidence_subject="présence de prêles", habit_confidence="INFERE",
-            design_assumptions=["Tiges articulées creuses à gaines dentées et strobiles terminaux : morphologie d'Equisetum actuel.",
-                                "Peuplement clonal de ~0,9 m² (rhizomes).", GENERIC_COLOUR],
+            design_assumptions=["Tiges articulées dressées, presque parallèles, à gaines dentées et extrémité fermée ; strobiles (cônes) allongés et apiculés, brun sombre, sur ~13 % des tiges : morphologie d'Equisetum actuel.",
+                                "Peuplement clonal de ~1,5 m² : tiges issues de rhizomes traçants (bases dispersées le long de 3 rhizomes), pas une touffe en éventail.", GENERIC_COLOUR],
             speculative=["Densité et hauteur (1,2 m, type fonctionnel)."], sources=["johnson2002_hellcreek_megaflora"]),
         collision="none", cull_cm=(0, 5000), lod_screen_size=(1.0, 0.25, 0.08)),
     "horsetail_branched": dict(
         ue_name="SM_Horsetail_Stand_B", label_fr="Peuplement de prêles à verticilles de rameaux",
         category="horsetail", pft="horsetail", builder="horsetail", bark="horsetail_stem", seed=1717,
-        spec=dict(stems=20, radius=0.5, height=(0.75, 1.3), stem_r=(0.0055, 0.008), internode=(0.06, 0.09),
-                  branched=True, strobili=0.0, whorl_scale=1.9, whorl_droop=0.55, lean=0.05),
+        spec=dict(stems=18, radius=0.55, height=(0.7, 1.25), stem_r=(0.0055, 0.008), internode=(0.06, 0.09),
+                  branched=True, strobili=0.0, whorl_scale=1.9, whorl_droop=0.45, lean=0.03, runners=2),
         botany=dict(basis="Prêle à rameaux verticillés.", confidence="INFERE", confidence_subject="présence de prêles",
-                    habit_confidence="INFERE", design_assumptions=["Verticilles de rameaux fins et étalés à chaque nœud (port « en goupillon » d'Equisetum actuel) ; tiges peu nombreuses et droites pour ne jamais lire comme une touffe de graminée.", GENERIC_COLOUR],
+                    habit_confidence="INFERE", design_assumptions=["Verticilles de rameaux fins et étalés aux nœuds à partir de ~0,3 m (port « en goupillon » d'Equisetum actuel) ; tiges peu nombreuses, droites, issues de rhizomes, pour ne jamais lire comme une touffe de graminée.", GENERIC_COLOUR],
                     speculative=["Forme ramifiée : choix de variété."], sources=["johnson2002_hellcreek_megaflora"]),
         collision="none", cull_cm=(0, 4500), lod_screen_size=(1.0, 0.25, 0.08)),
     # ------------------------------------------------------------------ aquatic
     "emergent_broadleaf": dict(
-        ue_name="SM_Aquatic_Emergent_Broad", label_fr="Émergente aquatique à limbes larges pétiolés",
+        ue_name="SM_Aquatic_Emergent_Broad", label_fr="Émergente aquatique à limbes larges pétiolés (SPÉCULATIF)",
         category="aquatic", pft="aquatic_macrophyte", builder="emergent", atlas="emergent_broad", bark="green_stem", seed=1818,
-        spec=dict(leaves=13, petiole=(0.45, 0.8), blade=(0.28, 0.38), radius=0.25, kind="broad"),
+        spec=dict(leaves=13, petiole=(0.4, 0.7), blade=(0.24, 0.34), radius=0.25, kind="broad"),
         botany=dict(
-            basis="Macrophytes aquatiques des eaux calmes (type fonctionnel aquatic_macrophyte : bras morts, marais arrière).",
+            basis="Macrophytes aquatiques des eaux calmes (type fonctionnel aquatic_macrophyte : bras morts, marais arrière ; quasi absents du chenal actif).",
             confidence="INFERE", confidence_subject="plantes aquatiques", habit_confidence="SPECULATIF",
-            design_assumptions=["Émergente générique à limbes cordés sur longs pétioles (aucun taxon attribué).", GENERIC_COLOUR],
-            speculative=["Forme de croissance émergente à larges feuilles."], sources=["johnson2002_hellcreek_megaflora"]),
+            design_assumptions=["Émergente générique à limbes cordés sur longs pétioles, analogue moderne sans appui fossile direct dans les données : minorité (15 % des aquatiques), rives calmes des marais arrière et bras morts seulement.", GENERIC_COLOUR],
+            speculative=["Forme de croissance émergente à larges feuilles : SPÉCULATIF."], sources=["johnson2002_hellcreek_megaflora"]),
         collision="none", cull_cm=(0, 5000), lod_screen_size=(1.0, 0.25, 0.08)),
     "emergent_strap": dict(
-        ue_name="SM_Aquatic_Emergent_Strap", label_fr="Émergente à feuilles rubanées (port de jonc, non graminée)",
+        ue_name="SM_Aquatic_Emergent_Strap", label_fr="Rosette semi-émergente à feuilles rubanées dentées (SPÉCULATIF)",
         category="aquatic", pft="aquatic_macrophyte", builder="emergent", atlas="strap", bark="green_stem", seed=1919,
-        spec=dict(leaves=30, length=(0.8, 1.35), radius=0.22, kind="strap", fans=4, leaves_per_fan=6,
-                  width_scale=2.6, fan_spread_deg=16, stiff=True),
+        spec=dict(leaves=16, length=(0.3, 0.5), radius=0.2, kind="rosette"),
         botany=dict(
-            basis="Macrophyte émergent des rives calmes.", confidence="INFERE", confidence_subject="plantes aquatiques",
+            basis="Macrophyte des eaux calmes (marais arrière, bras morts).", confidence="INFERE", confidence_subject="plantes aquatiques",
             habit_confidence="SPECULATIF",
-            design_assumptions=["Éventails équitants de larges feuilles rubanées à nervation parallèle (port de rubanier / iris actuel, monocotylédone aquatique générique, aucun taxon attribué). Ce n'est PAS une graminée : pas d'épillets, pas de prairie ; la disposition en éventails évite la lecture « touffe d'herbe ».", GENERIC_COLOUR],
-            speculative=["Groupe et forme exacts inconnus."], sources=["johnson2002_hellcreek_megaflora"]),
-        collision="none", cull_cm=(0, 5000), lod_screen_size=(1.0, 0.25, 0.08)),
+            design_assumptions=["Rosette basse (~0,4 m) de feuilles rubanées épaisses à marge dentée, à demi immergée (port de type Stratiotes actuel, aucun taxon attribué) : ni éventail d'iris, ni massette, ni graminée.",
+                                "Minorité (20 % des aquatiques), rives calmes des marais arrière et bras morts seulement.", GENERIC_COLOUR],
+            speculative=["Groupe et forme : SPÉCULATIF."], sources=["johnson2002_hellcreek_megaflora"]),
+        collision="none", cull_cm=(0, 4000), lod_screen_size=(1.0, 0.25, 0.08)),
     "floating_rosettes": dict(
         ue_name="SM_Aquatic_Floating_Rosettes", label_fr="Rosettes flottantes (inspiration Quereuxia)",
         category="aquatic", pft="aquatic_macrophyte", builder="floating", atlas="floating", bark="green_stem", seed=2020,
         spec=dict(rosettes=9, patch=1.8),
         botany=dict(
-            basis="Plante aquatique flottante Quereuxia angulata signalée dans des dépôts d'étang du Dakota du Sud (INFÉRÉ, référence primaire non vérifiée).",
+            basis="Plante aquatique flottante Quereuxia angulata signalée dans des dépôts d'étang du Dakota du Sud (INFÉRÉ, référence primaire non vérifiée) : seul taxon aquatique appuyé par les données du projet.",
             confidence="INFERE", confidence_subject="présence de plantes flottantes de type Quereuxia", habit_confidence="SPECULATIF",
-            design_assumptions=["Rosettes de petites feuilles rhomboïdales dentées à plat sur l'eau ; taille 25–45 cm.", GENERIC_COLOUR],
+            design_assumptions=["Aquatique dominante (65 % des aquatiques), sur l'eau libre calme des bras morts et marais arrière.",
+                                "Rosettes de petites feuilles rhomboïdales dentées à plat sur l'eau ; taille 25–45 cm.", GENERIC_COLOUR],
             speculative=["Disposition et taille exactes des rosettes."], sources=["johnson2002_hellcreek_megaflora"]),
         collision="none", cull_cm=(0, 6000), lod_screen_size=(1.0, 0.25, 0.08), on_water=True),
     # ------------------------------------------------------------------ minor groups present in the data
@@ -342,10 +375,10 @@ ASSETS = {
     "herb_dicot": dict(
         ue_name="SM_Herb_Dicot_A", label_fr="Herbacée dicotylédone basse (touffe de feuilles)",
         category="herb", pft="angio_herb", builder="herb", atlas="herb", bark="green_stem", seed=2222,
-        spec=dict(leaves=16, radius=0.18),
+        spec=dict(leaves=10, radius=0.2, height=0.45, stems=3),
         botany=dict(basis="Herbacées des milieux ouverts (type fonctionnel angio_herb, 0,5 m) ; sous-représentées dans les fossiles (biais taphonomique).",
                     confidence="INFERE", confidence_subject="herbacées angiospermes", habit_confidence="SPECULATIF",
-                    design_assumptions=["Touffe de feuilles pétiolées sans floraison voyante : ni graminée ni prairie fleurie.", GENERIC_COLOUR],
+                    design_assumptions=["Rosette de feuilles pétiolées et 3 tiges feuillées de ~0,45 m (type fonctionnel angio_herb : 0,5 m), sans floraison voyante : ni graminée ni prairie fleurie.", GENERIC_COLOUR],
                     speculative=["Forme générique."], sources=FLORA_SOURCES),
         collision="none", cull_cm=(0, 3500), lod_screen_size=(1.0, 0.25, 0.08)),
     # ------------------------------------------------------------------ deadwood
@@ -390,10 +423,20 @@ DEADWOOD_INNER = "deadwood"
 # --------------------------------------------------------------------------------------------- scatter rules
 # Densities are GAME ASSUMPTIONS (instances per hectare where the simulation density mask = 1), chosen for
 # plausible stand structure (closed riparian forest ~250-400 canopy stems/ha). Masks: Build/Environment/sim.
-# density_gamma (GAME ASSUMPTION, default 1): keep probability = mask ** gamma. The simulation's tree masks are
-# diffuse (open floodplain ~0.15, riparian forest ~0.5); with crowns 10-18 m wide a linear response closes the
-# canopy everywhere, gamma 1.6 keeps the habitat mosaic readable (open floodplain ~12 canopy trees/ha, riparian
-# forest ~100/ha).
+# Keep probability of a candidate (same formula in the Blender helper and in the UE spawn-probability bake,
+# envlib/pcgbake.py):  p = mask ** density_gamma * ((1 - cluster_amp) + cluster_amp * cluster_noise(cluster_m))
+# then slope < slope_max_deg, signed distance to the water > water_buffer_m (negative = may stand in the water),
+# minimum spacing min_spacing_m between instances of the same type, trees and palms also blocked by bigger types.
+# density_gamma (GAME ASSUMPTION, default 1): the simulation's tree masks are diffuse (open floodplain ~0.15,
+# riparian forest ~0.5); with crowns 10-18 m wide a linear response closes the canopy everywhere, gamma 1.6 keeps
+# the habitat mosaic readable (open floodplain ~12 canopy trees/ha, riparian forest ~100/ha).
+# Palms: present but rare in the project data (INFERE, rare): 30/ha at mask = 1 gives ~1 palm/ha on average,
+# 1-2 % of the woody stems.
+# Aquatic macrophytes: the simulated mask is ~0 in the active channel (max 0.031); calm_water_per_ha adds plants
+# in the habitats listed, weighted by the suitabilities of the project data (oxbow lake 1, backswamp 0.6, channel
+# 0.05: rare along the river), in a band around their shores (emergents) and on their slack open water within 8 m of
+# the shore (floating rosettes, the dominant aquatic). Seed 7 has no oxbow lake and no open water in the backswamp,
+# so aquatics are rare there: that is the simulation's answer, not a bug.
 PFT_RULES = {
     "conifer": dict(mask="foliage_conifer", per_ha=220, min_spacing_m=5.5, slope_max_deg=30, water_buffer_m=4,
                     cluster_m=120, cluster_amp=0.6, density_gamma=1.6,
@@ -401,11 +444,13 @@ PFT_RULES = {
                     habitat_bias={"backswamp": {"conifer_glyptostrobus": 2.0, "conifer_taxodium": 1.6}}),
     "angio_tree": dict(mask="foliage_angio_tree", per_ha=260, min_spacing_m=6.0, slope_max_deg=30, water_buffer_m=3,
                        cluster_m=90, cluster_amp=0.5, density_gamma=1.6,
-                       assets={"broadleaf_canopy_a": 0.42, "broadleaf_canopy_b": 0.38, "broadleaf_riparian_c": 0.20},
-                       habitat_bias={"riverbank": {"broadleaf_riparian_c": 4.0}, "levee_woodland": {"broadleaf_riparian_c": 1.5}}),
+                       assets={"broadleaf_canopy_a": 0.32, "broadleaf_canopy_b": 0.30, "broadleaf_riparian_c": 0.18,
+                               "broadleaf_spreading_d": 0.20},
+                       habitat_bias={"riverbank": {"broadleaf_riparian_c": 4.0}, "levee_woodland": {"broadleaf_riparian_c": 1.5},
+                                     "floodplain_open": {"broadleaf_spreading_d": 2.0}}),
     "ginkgo": dict(mask="foliage_ginkgo", per_ha=40, min_spacing_m=8.0, slope_max_deg=30, water_buffer_m=4,
                    cluster_m=150, cluster_amp=0.8, density_gamma=1.3, assets={"ginkgo_tree": 1.0}),
-    "palm": dict(mask="foliage_palm", per_ha=160, min_spacing_m=3.0, slope_max_deg=30, water_buffer_m=3,
+    "palm": dict(mask="foliage_palm", per_ha=30, min_spacing_m=3.0, slope_max_deg=30, water_buffer_m=3,
                  cluster_m=60, cluster_amp=0.9, assets={"palm_sabalites_tall": 0.45, "palm_sabalites_short": 0.55}),
     "angio_shrub": dict(mask="foliage_angio_shrub", per_ha=900, min_spacing_m=1.6, slope_max_deg=35, water_buffer_m=2,
                         cluster_m=30, cluster_amp=0.7, assets={"shrub_ovate": 0.55, "shrub_small_leaf": 0.45}),
@@ -414,15 +459,30 @@ PFT_RULES = {
     "fern": dict(mask="foliage_fern", per_ha=4000, min_spacing_m=0.8, slope_max_deg=40, water_buffer_m=1,
                  cluster_m=12, cluster_amp=0.8, assets={"fern_tufted": 0.45, "fern_lace": 0.35, "fern_marsh": 0.20},
                  habitat_bias={"backswamp": {"fern_marsh": 4.0}, "riverbank": {"fern_marsh": 2.0}}),
-    "horsetail": dict(mask="foliage_horsetail", per_ha=2600, min_spacing_m=0.9, slope_max_deg=35, water_buffer_m=-1.5,
-                      cluster_m=10, cluster_amp=0.9, assets={"horsetail_unbranched": 0.6, "horsetail_branched": 0.4}),
+    "horsetail": dict(mask="foliage_horsetail", per_ha=2600, min_spacing_m=1.1, slope_max_deg=35, water_buffer_m=-1.5,
+                      cluster_m=12, cluster_amp=0.9, assets={"horsetail_unbranched": 0.6, "horsetail_branched": 0.4}),
     "angio_herb": dict(mask="foliage_angio_herb", per_ha=3000, min_spacing_m=0.5, slope_max_deg=40, water_buffer_m=1,
-                       cluster_m=8, cluster_amp=0.8, assets={"herb_dicot": 1.0}),
+                       cluster_m=12, cluster_amp=0.8, assets={"herb_dicot": 1.0}),
     "aquatic_macrophyte": dict(mask="foliage_aquatic_macrophyte", per_ha=3000, min_spacing_m=0.8, slope_max_deg=20,
-                               water_buffer_m=-6.0, cluster_m=10, cluster_amp=0.9, shoreline_per_ha=900,
-                               assets={"emergent_strap": 0.45, "emergent_broadleaf": 0.35, "floating_rosettes": 0.20}),
+                               water_buffer_m=-6.0, cluster_m=12, cluster_amp=0.9,
+                               # habitat suitabilities of aquatic_macrophyte in hell_creek.json (channel 0.05: rare)
+                               calm_water_per_ha=900, calm_water_habitats={"oxbow_lake": 1.0, "backswamp": 0.6, "channel": 0.05},
+                               assets={"floating_rosettes": 0.65, "emergent_strap": 0.20, "emergent_broadleaf": 0.15},
+                               # where each asset may stand, as signed distance to the shore (m, negative = in the water);
+                               # floating mats stay within 8 m of the shore (slack water), never mid-channel
+                               water_band={"floating_rosettes": (-8.0, -0.4), "emergent_strap": (-1.5, 0.3),
+                                           "emergent_broadleaf": (-1.2, 0.5)}),
 }
+# Random scale per category (uniform); trees and palms are also capped so that they never exceed the height_m of
+# their plant functional type in Data/Environments/hell_creek.json (manifest: assets.<id>.scale_range).
+SCALE_RANGE = {"tree": (0.78, 1.1), "palm": (0.85, 1.1), "shrub": (0.8, 1.2), "fern": (0.75, 1.2), "horsetail": (0.8, 1.2),
+               "herb": (0.8, 1.2), "aquatic": (0.8, 1.2), "deadwood": (0.8, 1.2)}
+PFT_HEIGHT_M = {"conifer": 30.0, "angio_tree": 25.0, "ginkgo": 20.0, "palm": 6.0}  # hell_creek.json sim.plant_functional_types
+
 # Deadwood is not simulated as a plant type: habitat-driven placement (GAME ASSUMPTION), denser near the river.
+# In Unreal the forest habitats go to PCG_Noctis_Foliage and the river habitats (RIVER_DEBRIS_HABITATS: drift
+# logs and root plates on bars, banks and cutbanks) to build_level.py's PCG_Noctis_RiverDebris, so the two
+# graphs never place the same driftwood twice. The Blender helper places both.
 DEADWOOD_RULES = {
     "deadwood_log": dict(habitats={"riparian_forest": 12, "levee_woodland": 10, "backswamp": 8, "upland_conifer_forest": 8,
                                    "sandbar": 6, "riverbank": 10}, min_spacing_m=8),
@@ -431,7 +491,19 @@ DEADWOOD_RULES = {
     "deadwood_branches": dict(habitats={"riparian_forest": 60, "levee_woodland": 50, "upland_conifer_forest": 40,
                                         "backswamp": 25, "floodplain_open": 8, "sandbar": 15, "riverbank": 15}, min_spacing_m=3),
 }
+RIVER_DEBRIS_HABITATS = ("sandbar", "riverbank", "cutbank_cliff")
 
 
 def asset_ids(category=None):
     return [k for k, v in ASSETS.items() if category is None or v["category"] == category]
+
+
+def scale_range(aid, height_m=None):
+    """Random uniform scale range of an asset; trees / palms capped at their PFT height (data) when known."""
+    a = ASSETS[aid]
+    lo, hi = SCALE_RANGE.get(a["category"], (0.85, 1.15))
+    cap = PFT_HEIGHT_M.get(a["pft"])
+    if cap and height_m:
+        hi = min(hi, cap / float(height_m))
+        lo = min(lo, hi * 0.8)
+    return [round(lo, 3), round(hi, 3)]

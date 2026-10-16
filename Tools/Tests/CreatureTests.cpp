@@ -9,16 +9,19 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <utility>
+#include <vector>
 
 using namespace noctis;
 
 namespace
 {
-std::unique_ptr<WorldSimulation> emptyWorld()
+std::unique_ptr<WorldSimulation> emptyWorld(double startHour = 5.0)
 {
     SimConfig cfg = noctistest::smallWorldConfig(5u, 1, 0.0f);
     cfg.spawnPopulation = false;
     cfg.initialRemains = false;
+    cfg.startHour = startHour;
     return noctistest::makeWorld(cfg);
 }
 
@@ -457,4 +460,292 @@ NOCTIS_TEST("creatures.drink.stale_water_memory_retarget")
     CHECK_GT(c->phys.hydration, 0.5f);
     NOTE("hydration 0.30 -> %.2f after 15 min; moved %.1f m, now %.1f m from the drink site", static_cast<double>(c->phys.hydration),
          static_cast<double>(distance(c->pos2(), spot)), static_cast<double>(distance(c->pos2(), site)));
+}
+
+NOCTIS_TEST("creatures.hunting.terrestrial_predator_stops_at_deep_water")
+{
+    // A hungry Acheroraptor on the bank hunting a Champsosaurus in water deeper than the raptor can wade (> 0.9 x hip)
+    // gives up (HuntAbandon, param 2) and never strikes it there. It used to swim in after it and kill it with about one
+    // bite per second while both swam, the Champsosaurus fleeing at its land speed instead of its faster swim speed.
+    // Several river sites, one fresh world each.
+    std::vector<std::pair<Vec2, Vec2>> sites; // (prey in deep water, predator on the bank 14 m away)
+    {
+        std::unique_ptr<WorldSimulation> w = emptyWorld();
+        REQUIRE(w != nullptr);
+        const Terrain& t = w->terrain();
+        const WaterSystem& wa = w->water();
+        const Rect2 bounds = t.bounds();
+        for (float y = bounds.min.y + 100.0f; y < bounds.max.y - 100.0f && sites.size() < 4; y += 37.0f)
+        {
+            for (float x = bounds.min.x + 100.0f; x < bounds.max.x - 100.0f && sites.size() < 4; x += 37.0f)
+            {
+                const Vec2 q{x, y};
+                bool farFromOthers = true;
+                for (const auto& st : sites)
+                {
+                    farFromOthers = farFromOthers && distance(st.first, q) > 800.0f;
+                }
+                if (!farFromOthers || wa.depthAt(q, t) < 1.5f)
+                {
+                    continue;
+                }
+                for (int a = 0; a < 16; ++a)
+                {
+                    const Vec2 b = q + Vec2::fromHeading(static_cast<float>(a) * kTwoPi / 16.0f) * 14.0f;
+                    if (bounds.contains(b) && wa.depthAt(b, t) <= 0.0f && t.slopeDegAt(b) < 8.0f)
+                    {
+                        sites.emplace_back(q, b);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    REQUIRE(!sites.empty());
+    int deepStrikes = 0;
+    int strikes = 0;
+    int waterAbandons = 0;
+    int preyDead = 0;
+    for (const auto& st : sites)
+    {
+        std::unique_ptr<WorldSimulation> w = emptyWorld(19.5); // dusk: Acheroraptor is crepuscular
+        REQUIRE(w != nullptr);
+        const int raptor = agentSpecies(*w, "acheroraptor_temertyorum");
+        const int champ = agentSpecies(*w, "champsosaurus");
+        if (raptor < 0 || champ < 0)
+        {
+            NOTE("Acheroraptor or Champsosaurus absent from the data set: skipped");
+            return;
+        }
+        const SpeciesSim& rs = w->db().speciesAt(raptor).sim;
+        const SpeciesSim& cs = w->db().speciesAt(champ).sim;
+        const EntityId pid = w->creatures().spawn(raptor, Sex::Male, std::max(1.0f, rs.growth.maturityAgeYears * 1.5f), st.second, w->context()).id;
+        const EntityId qid = w->creatures().spawn(champ, Sex::Female, std::max(1.0f, cs.growth.maturityAgeYears * 1.5f), st.first, w->context()).id;
+        float raptorHip = 0.5f;
+        WorldSimulation* wp = w.get();
+        const int handle = w->events().subscribe([&](const SimEvent& e) {
+            if (e.type == EventType::Attack && e.subject == pid && e.other == qid)
+            {
+                ++strikes;
+                deepStrikes += wp->water().depthAt(e.position.xy(), wp->terrain()) > 0.9f * raptorHip ? 1 : 0;
+            }
+            if (e.type == EventType::HuntAbandon && e.subject == pid && e.param == 2u)
+            {
+                ++waterAbandons;
+            }
+        });
+        for (int s = 0; s < 240; ++s)
+        {
+            Creature* p = w->creatures().find(pid);
+            REQUIRE(p != nullptr && p->alive);
+            raptorHip = p->hipHeightM;
+            p->phys.hunger = 0.95f;
+            if (s == 5)
+            {
+                // Force the hunt on this individual (the predator has had 5 s to perceive it).
+                p->behavior.current = BehaviorId::Hunt;
+                p->behavior.hunt = HuntPhase::Stalk;
+                p->behavior.target = qid;
+                p->behavior.huntPhaseStart = w->context().now;
+                p->behavior.startedAt = w->context().now;
+                p->behavior.commitUntil = w->context().now + 30.0;
+                p->behavior.nextDecision = w->context().now;
+            }
+            w->advance(1.0, 1.0);
+        }
+        w->events().unsubscribe(handle);
+        const Creature* q = w->creatures().find(qid);
+        preyDead += q && q->alive ? 0 : 1;
+    }
+    CHECK_EQ(deepStrikes, 0);
+    CHECK_EQ(preyDead, 0);
+    CHECK_GE(waterAbandons, static_cast<int>(sites.size()));
+    NOTE("%zu sites: %d strikes (%d in deep water), %d prey killed, %d abandons at deep water", sites.size(), strikes, deepStrikes, preyDead, waterAbandons);
+}
+
+NOCTIS_TEST("creatures.hunting.prey_appraisal_armour_and_size")
+{
+    // An adult T. rex appraises an adult Ankylosaurus (osteoderm armour, tail club, its own size) as poor prey and an adult
+    // Triceratops as modest prey, both clearly below a juvenile hadrosaur. Before, the armoured adult was as attractive
+    // as the juvenile (opportunity 0.37 vs 0.38).
+    std::unique_ptr<WorldSimulation> w = emptyWorld();
+    REQUIRE(w != nullptr);
+    const int rex = agentSpecies(*w, "tyrannosaurus_rex");
+    const int anky = agentSpecies(*w, "ankylosaurus_magniventris");
+    const int trike = agentSpecies(*w, "triceratops_horridus");
+    const int edmo = agentSpecies(*w, "edmontosaurus_annectens");
+    if (rex < 0 || anky < 0 || trike < 0 || edmo < 0)
+    {
+        NOTE("a species is absent from the data set: skipped");
+        return;
+    }
+    const EntityId rid = spawnAdult(*w, rex, 41u);
+    Creature* r = w->creatures().find(rid);
+    REQUIRE(r != nullptr);
+    r->phys.hunger = 0.0f; // appraisal only: no hunt
+    const Vec2 p = r->pos2();
+    const EntityId aid = w->creatures().spawn(anky, Sex::Female, 15.0f, p + Vec2{25.0f, 0.0f}, w->context()).id;
+    const EntityId tid = w->creatures().spawn(trike, Sex::Female, 15.0f, p + Vec2{0.0f, 25.0f}, w->context()).id;
+    const EntityId jid = w->creatures().spawn(edmo, Sex::Female, 2.0f, p + Vec2{-25.0f, 0.0f}, w->context()).id;
+    float oppA = -1.0f;
+    float oppT = -1.0f;
+    float oppJ = -1.0f;
+    for (int s = 0; s < 30 && (oppA < 0.0f || oppT < 0.0f || oppJ < 0.0f); ++s)
+    {
+        w->advance(1.0, 1.0);
+        r = w->creatures().find(rid);
+        REQUIRE(r != nullptr);
+        for (const Awareness& a : r->perception.known)
+        {
+            if (a.relation != Relation::Prey)
+            {
+                continue;
+            }
+            if (a.entity == aid)
+            {
+                oppA = a.opportunity;
+            }
+            else if (a.entity == tid)
+            {
+                oppT = a.opportunity;
+            }
+            else if (a.entity == jid)
+            {
+                oppJ = a.opportunity;
+            }
+        }
+    }
+    REQUIRE(oppA >= 0.0f && oppT >= 0.0f && oppJ >= 0.0f);
+    CHECK_LT(oppA, 0.1f);
+    CHECK_LT(oppT, 0.25f);
+    CHECK_GT(oppJ, 2.0f * oppA);
+    CHECK_GT(oppJ, oppT);
+    NOTE("adult T. rex: adult Ankylosaurus %.3f, adult Triceratops %.3f, 2-year-old Edmontosaurus %.3f", static_cast<double>(oppA), static_cast<double>(oppT),
+         static_cast<double>(oppJ));
+}
+
+NOCTIS_TEST("creatures.death_cause.delayed_predation_credited")
+{
+    // Prey that dies of a hunting predator's wounds after the strike (bleeding out, or the predator's counter-blow while
+    // the prey was striking) is a predation death and is credited to that predator: HuntKill (param 1), hunt history and,
+    // while it is still in the struggle, feeding. Before, only a death at the predator's own strike was credited, so
+    // predation deaths outnumbered HuntKill events.
+    std::unique_ptr<WorldSimulation> w = emptyWorld();
+    REQUIRE(w != nullptr);
+    const int rex = agentSpecies(*w, "tyrannosaurus_rex");
+    const int trike = agentSpecies(*w, "triceratops_horridus");
+    if (rex < 0 || trike < 0)
+    {
+        NOTE("T. rex or Triceratops absent from the data set: skipped");
+        return;
+    }
+    const EntityId vid = spawnAdult(*w, trike, 201u);
+    Creature* v = w->creatures().find(vid);
+    REQUIRE(v != nullptr);
+    const EntityId rid = w->creatures().spawn(rex, Sex::Male, 25.0f, v->pos2() + Vec2{40.0f, 0.0f}, w->context()).id;
+    Creature* r = w->creatures().find(rid);
+    v = w->creatures().find(vid);
+    REQUIRE(r != nullptr && v != nullptr);
+    r->phys.hunger = 0.0f;
+    r->behavior.engagedPrey = vid; // still in the hunting struggle it started
+    r->behavior.engagedPreyUntil = w->context().now + 7200.0;
+    Injury inj;
+    inj.region = BodyRegion::Torso;
+    inj.type = InjuryType::Puncture;
+    inj.severity = 0.5f;
+    inj.initialSeverity = 0.5f;
+    inj.bleeding = 2.0f; // exaggerated so the test is short
+    inj.time = w->context().now;
+    inj.cause = rid;
+    inj.causeSpecies = static_cast<i16>(rex);
+    inj.predatory = true;
+    v->injuries.active.push_back(inj);
+    int kills = 0;
+    u32 killParam = 99u;
+    bool feeding = false;
+    w->events().subscribe([&](const SimEvent& e) {
+        if (e.type == EventType::HuntKill && e.subject == rid && e.other == vid)
+        {
+            ++kills;
+            killParam = e.param;
+            const Creature* k = w->creatures().find(rid);
+            feeding = k && k->behavior.current == BehaviorId::FeedCarcass;
+        }
+    });
+    DeathCause cause = DeathCause::Unknown;
+    for (int s = 0; s < 3600; ++s)
+    {
+        w->step(1.0);
+        const Creature* x = w->creatures().find(vid);
+        if (!x || !x->alive)
+        {
+            cause = x ? x->deathCause : DeathCause::Unknown;
+            break;
+        }
+    }
+    for (const DeathRecord& d : w->creatures().deaths())
+    {
+        if (d.id == vid)
+        {
+            cause = d.cause;
+        }
+    }
+    const Creature* k = w->creatures().find(rid);
+    REQUIRE(k != nullptr);
+    CHECK(cause == DeathCause::Predation);
+    CHECK_EQ(kills, 1);
+    CHECK_EQ(killParam, 1u);
+    CHECK(feeding);
+    CHECK_EQ(k->history.huntsSucceeded, 1);
+    NOTE("Triceratops bleeding from a T. rex bite -> %s, HuntKill x%d (param %u), T. rex feeding: %s", deathCauseLabelFr(cause), kills, killParam,
+         feeding ? "yes" : "no");
+}
+
+NOCTIS_TEST("creatures.combat.giants_disengage")
+{
+    // An adult T. rex that is not hunting and an adult Triceratops a few metres apart: a fight may start (the
+    // Triceratops defends itself against the predator), but blows between multi-tonne animals are scaled to their size
+    // and a hurt animal breaks off, so neither dies within 10 min. Both used to keep striking in Defend until one or
+    // both died (about 25 blows in 25 s).
+    int deaths = 0;
+    int blows = 0;
+    for (u64 seed = 301u; seed < 305u; ++seed)
+    {
+        std::unique_ptr<WorldSimulation> w = emptyWorld();
+        REQUIRE(w != nullptr);
+        const int rex = agentSpecies(*w, "tyrannosaurus_rex");
+        const int trike = agentSpecies(*w, "triceratops_horridus");
+        if (rex < 0 || trike < 0)
+        {
+            NOTE("T. rex or Triceratops absent from the data set: skipped");
+            return;
+        }
+        const EntityId tid = spawnAdult(*w, trike, seed);
+        Creature* t = w->creatures().find(tid);
+        REQUIRE(t != nullptr);
+        const Vec2 tp = t->pos2();
+        const EntityId rid = w->creatures().spawn(rex, Sex::Male, 25.0f, tp + Vec2::fromHeading(t->loco.heading) * 6.0f, w->context()).id;
+        const int handle = w->events().subscribe([&](const SimEvent& e) {
+            if (e.type == EventType::Attack && (e.subject == rid || e.subject == tid))
+            {
+                ++blows;
+            }
+        });
+        for (int s = 0; s < 600; ++s)
+        {
+            if (Creature* r = w->creatures().find(rid); r && r->alive)
+            {
+                r->phys.hunger = 0.0f; // not hunting
+            }
+            w->advance(1.0, 1.0);
+        }
+        w->events().unsubscribe(handle);
+        for (const EntityId id : {rid, tid})
+        {
+            const Creature* x = w->creatures().find(id);
+            deaths += x && x->alive ? 0 : 1;
+        }
+    }
+    CHECK_EQ(deaths, 0);
+    NOTE("4 encounters: %d blows exchanged, %d deaths", blows, deaths);
 }

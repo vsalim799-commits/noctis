@@ -46,6 +46,8 @@ def shape_factor(shape, x):
         return 0.3 + 0.7 * math.sin(math.pi * (0.2 + 0.75 * x))
     if shape == "flame":
         return 0.15 + 0.85 * math.sin(math.pi * (0.08 + 0.85 * x)) ** 0.7 * (1 - 0.5 * x)
+    if shape == "flat_crown":  # old Taxodium-like crown: longest limbs near the top -> broad, flat-topped umbrella
+        return 0.35 + 0.65 * x ** 0.55 * (1 - 0.25 * max(0.0, x - 0.85) / 0.15)
     if shape == "columnar":
         return 0.35 + 0.65 * (1 - x ** 2.5)
     if shape == "taper":
@@ -235,9 +237,10 @@ def build_tree(spec, seed, lod=0, bark_tile=(0.9, 1.4), atlas_layout=None, uv_re
                 continue
             seg = np.linalg.norm(np.diff(b.pts, axis=0), axis=1)
             total = seg.sum()
-            n = max(1, int(total * (1 - lv.get("start", 0.3)) / lv["spacing"]))
-            ts = lv.get("start", 0.3) + (1 - lv.get("start", 0.3)) * (np.arange(n) + rng.uniform(0.2, 0.8, n)) / n
-            if lv.get("terminal", True):
+            st = lv.get("trunk_start", 0.6) if b.level == 0 else lv.get("start", 0.3)
+            n = max(1, int(total * (1 - st) / lv["spacing"]))
+            ts = st + (1 - st) * (np.arange(n) + rng.uniform(0.2, 0.8, n)) / n
+            if lv.get("terminal", True) and b.level > 0:
                 ts = np.append(ts, 1.0)
             ts = np.repeat(ts, lv.get("cards_per", 1))
             for t in ts:

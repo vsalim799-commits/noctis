@@ -81,6 +81,7 @@ def _loft_table(sections, nsamp=160, caps=None, flat_ends=(True, True)):
             k1["u"] = keys[-1]["u"] + 0.02
             keys = keys + [k1]
     u = np.array([s["u"] for s in keys], dtype=np.float64)
+    nsamp = max(nsamp, int((u[-1] - u[0]) / 0.004) + 1)      # <= 4 mm table spacing (fast section changes at tips)
     cols = ["cy", "top", "bot", "hw", "nt", "nb", "tw", "bw"]
     dflt = {"nt": None, "nb": None, "tw": 1.0, "bw": 1.0}
     def get(s, c):

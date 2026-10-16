@@ -3,8 +3,10 @@
 Both scenes use the public helper Tools/CreatureFactory/scenes/vegetation_library.py (terrain crop from the
 simulation heightmap, habitat-blended ground material, simulated river level, mask-driven scatter with
 camera-distance LOD), i.e. exactly what a creature beauty shot would use.
-  valley_aerial.png   low aerial over the meanders at golden hour (sun ~6 deg), atmospheric haze (mist pass)
-  valley_ground.png   eye level (1.6 m) on a riverbank among horsetails and ferns, morning mist (height fog + mist)
+  valley_aerial.png   low aerial over the meanders, late afternoon (sun 12 deg, three-quarter side light from the
+                      left: the camera looks ~105 deg away from the sun), atmospheric haze (mist pass)
+  valley_ground.png   eye level (1.6 m) on a riverbank among horsetails and ferns, morning mist (height fog capped at
+                      0.5, blue-grey, warmer towards the sun side), horizon in the upper third
 """
 from __future__ import annotations
 
@@ -46,7 +48,10 @@ def setup_render(sc, samples, res=(1920, 1080), preview=False, threads=3):
     cy.glossy_bounces = 2
     cy.transmission_bounces = 2
     cy.volume_bounces = 0
-    cy.transparent_max_bounces = 24
+    # Dense stands of alpha cards (horsetail whorls, crowns seen edge-on) stack dozens of transparent layers: a path
+    # that runs out of transparent bounces is terminated (black sample, Mist = 1) and the haze then shows up as
+    # bright specks over the foliage. 64 keeps those paths alive; the cost is only paid where layers pile up.
+    cy.transparent_max_bounces = 64
     cy.caustics_reflective = False
     cy.caustics_refractive = False
     cy.sample_clamp_indirect = 8.0
@@ -178,7 +183,27 @@ def mist_compositor(sc, color, amount, start, depth, falloff="QUADRATIC", glare=
         hmix.blend_type = "MIX"
         nt.links.new(fog, hmix.inputs[0])
         nt.links.new(image, hmix.inputs[1])
-        hmix.inputs[2].default_value = (*hf.get("color", color), 1.0)
+        if hf.get("sun_color"):
+            # light scattered forward through the mist: the fog warms up towards the side of the frame facing the sun
+            ell = nt.nodes.new("CompositorNodeEllipseMask")
+            ell.x = 0.5 + 0.62 * float(hf.get("sun_side", 1.0))
+            ell.y = 0.62
+            ell.width = 1.3
+            ell.height = 1.1
+            bl = nt.nodes.new("CompositorNodeBlur")
+            bl.filter_type = "FAST_GAUSS"
+            bl.use_relative = True
+            bl.factor_x = 0.35
+            bl.factor_y = 0.35
+            nt.links.new(ell.outputs["Mask"], bl.inputs["Image"])
+            cm = nt.nodes.new("CompositorNodeMixRGB")
+            cm.blend_type = "MIX"
+            nt.links.new(bl.outputs["Image"], cm.inputs[0])
+            cm.inputs[1].default_value = (*hf.get("color", color), 1.0)
+            cm.inputs[2].default_value = (*hf["sun_color"], 1.0)
+            nt.links.new(cm.outputs[0], hmix.inputs[2])
+        else:
+            hmix.inputs[2].default_value = (*hf.get("color", color), 1.0)
         image = hmix.outputs[0]
     mul = nt.nodes.new("CompositorNodeMath")
     mul.operation = "MULTIPLY"
@@ -204,10 +229,12 @@ def mist_compositor(sc, color, amount, start, depth, falloff="QUADRATIC", glare=
 
 
 def far_terrain(sim, exclude_center, exclude_size, res=16.0, canopy=True, name="FarTerrain"):
-    """Whole 8 km valley at coarse resolution around the detailed crop: canopy relief and colour from the
-    simulation's tree masks (reads as forest under haze), water from the simulated river level."""
+    """Whole 8 km valley at coarse resolution around the detailed crop: a smooth canopy surface (no random bump:
+    lit by a low sun, a bumpy 16 m mesh reads as sand dunes) at ~18 m over the wooded habitats, forest colour with
+    low-frequency variation, open floodplain, sand bars and water from the simulation masks; fully rough."""
     import bpy
     from . import terrain as T
+    from . import texgen as tg
     from scipy import ndimage
     size = sim.size
     n = int(size / res) + 1
@@ -217,10 +244,9 @@ def far_terrain(sim, exclude_center, exclude_size, res=16.0, canopy=True, name="
     trees = np.clip(sim.sample("foliage_conifer", X, Y) + sim.sample("foliage_angio_tree", X, Y) + 0.5 * sim.sample("foliage_ginkgo", X, Y), 0, 1)
     trees = ndimage.gaussian_filter(trees, 1.0)
     water = sim.sample("water_mask", X, Y)
-    rng = np.random.default_rng(5)
-    bump = ndimage.gaussian_filter(rng.random(X.shape), 1.6)
-    bump = (bump - bump.mean()) / bump.std()
-    canopy_h = ndimage.gaussian_filter(np.clip(trees * 2.2, 0, 1), 1.5) * (22 + 1.5 * bump) * (water < 0.2)
+    var = tg.fbm(X.shape, 5, octaves=((6, 1.0), (24, 0.6), (96, 0.3)))
+    cover = ndimage.gaussian_filter(np.clip(trees * 2.2, 0, 1), 1.5) * (water < 0.2)
+    canopy_h = cover * (17.0 + 3.0 * var)
     if canopy:
         Z = Z + canopy_h
     keep = np.ones((n - 1, n - 1), bool)
@@ -231,14 +257,13 @@ def far_terrain(sim, exclude_center, exclude_size, res=16.0, canopy=True, name="
         keep = ~((np.abs(QX - exclude_center[0]) < h) & (np.abs(QY - exclude_center[1]) < h))
     ox, oy = exclude_center
     ob = T._grid_object(name, X - ox, Y - oy, Z - 0.3, keep, (ox, oy, size), None)
-    # vertex colours: forest canopy / open floodplain / sand / water
-    col = np.zeros(X.shape + (3,))
-    open_c = np.array([0.20, 0.22, 0.10])
-    forest = np.array([0.045, 0.075, 0.03]) * (0.8 + 0.25 * bump[..., None])
-    sand = np.array([0.42, 0.38, 0.28])
+    # vertex colours: forest canopy / open floodplain / sand / water (linear)
+    open_c = np.array([0.075, 0.085, 0.04])
+    forest = np.array([0.032, 0.055, 0.024]) * (0.75 + 0.5 * var[..., None])
+    sand = np.array([0.30, 0.27, 0.20])
     wcol = np.array([0.03, 0.04, 0.035])
     sb = sim.sample("weight_sandbar", X, Y)
-    t = np.clip(trees * 2.0, 0, 1)[..., None]
+    t = np.clip(cover * 1.4, 0, 1)[..., None]
     col = open_c * (1 - t) + forest * t
     col = col * (1 - sb[..., None]) + sand * sb[..., None]
     col = col * (1 - water[..., None]) + wcol * water[..., None]
@@ -251,7 +276,8 @@ def far_terrain(sim, exclude_center, exclude_size, res=16.0, canopy=True, name="
     a.attribute_name = "FarCol"
     p = mat.node_tree.nodes["Principled BSDF"]
     mat.node_tree.links.new(a.outputs["Color"], p.inputs["Base Color"])
-    p.inputs["Roughness"].default_value = 0.85
+    p.inputs["Roughness"].default_value = 1.0
+    p.inputs["Specular IOR Level"].default_value = 0.1
     me.materials.append(mat)
     return ob
 
@@ -319,10 +345,13 @@ def _finish(sc, path, t_setup, extra):
 
 
 # ----------------------------------------------------------------------------------------------- aerial
+# Camera azimuth ~299 deg (looking WNW); sun at 194 deg (SSW), 12 deg high: three-quarter side light from the left,
+# ~105 deg from the view direction, so the near forest is lit instead of backlit. Trees up to 250 m in LOD0/1,
+# LOD1 up to 700 m: emergent conifers keep their spire silhouettes above the broadleaf canopy.
 AERIAL = dict(center=(3600.0, 4800.0), size=3200.0, res=2.5,
               cam=(4420.0, 4300.0, 135.0), target=(3520.0, 4800.0, 0.0), lens=30.0,
-              sun_elev=6.0, sun_az=250.0, exposure=-0.3, sun_strength=6.0, sky_strength=0.28, sun_color=(1.0, 0.64, 0.34),
-              mist_color=(0.84, 0.58, 0.36), mist_amount=0.45, leaf_roughness=0.7, canopy_shade=0.6)
+              sun_elev=12.0, sun_az=194.0, exposure=-0.15, sun_strength=5.0, sky_strength=0.32, sun_color=(1.0, 0.76, 0.52),
+              mist_color=(0.74, 0.70, 0.66), mist_amount=0.38, leaf_roughness=0.7, canopy_shade=0.6, tree_lod=(250, 700))
 
 
 def render_aerial(samples=None, preview=False):
@@ -350,13 +379,13 @@ def render_aerial(samples=None, preview=False):
     tz = float(T.height_at(sim, np.array([cfg["target"][0]]), np.array([cfg["target"][1]]), 0)[0])
     cam = _camera(sc, (cfg["cam"][0] - ox, cfg["cam"][1] - oy, cz), (cfg["target"][0] - ox, cfg["target"][1] - oy, tz), lens=cfg["lens"])
     sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=cfg.get("sun_strength", 6.0), sky_strength=cfg.get("sky_strength", 0.28),
-        air=1.3, dust=3.5, sun_color=cfg.get("sun_color", (1.0, 0.64, 0.34)))
+        air=1.2, dust=2.5, sun_color=cfg.get("sun_color", (1.0, 0.64, 0.34)))
     mist_compositor(sc, color=cfg.get("mist_color", (0.84, 0.58, 0.36)), amount=cfg.get("mist_amount", 0.45), start=200, depth=3800)
     stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0,
                         lod_distances={"tree": tuple(cfg.get("tree_lod", (90, 320)))}, budget=300000)
     # rough leaves: no sub-pixel specular glitter under the grazing sun
     tune_leaf_materials(roughness=cfg.get("leaf_roughness", 0.7), specular=0.2)
-    sc.cycles.transparent_max_bounces = 16
+    sc.cycles.transparent_max_bounces = cfg.get("transparent_max_bounces", 64)
     _cloud_layer(sc, altitude=1900.0, coverage=0.42)
     path = os.path.join(common.OUT_DIR, "valley_aerial%s.png" % ("_preview" if preview else ""))
     return _finish(sc, path, time.time() - t0, dict(scene="aerial", config=cfg, instances=stats))
@@ -368,10 +397,11 @@ def render_aerial(samples=None, preview=False):
 # pitch < 0 looks down. cam=None falls back to the automatic search (_find_spot).
 GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=8.0, sun_az=100.0, lens=26.0,
               eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None,
-              cam=(3851.0, 4528.0), yaw_deg=5.0, pitch_deg=-3.5, fog_density=0.0065, fog_height=2.5, mist_amount=0.45,
-              mist_depth=650.0, fog_mode="analytic", fog_color=(0.86, 0.84, 0.80),
+              cam=(3851.0, 4528.0), yaw_deg=5.0, pitch_deg=-7.5, fog_density=0.0065, fog_height=2.5, mist_amount=0.42,
+              mist_depth=650.0, fog_mode="analytic", fog_color=(0.52, 0.57, 0.63), fog_max=0.45,
+              fog_sun_color=(0.78, 0.68, 0.54),
               fog_size=(320.0, 320.0, 8.0), volume_step_rate=16.0, volume_max_steps=32,  # fog_mode="volume" only
-              transparent_max_bounces=16,
+              transparent_max_bounces=64,
               # visible lateral half-width at distance d is ~0.69 d (26 mm lens); the frame bottom meets the ground at ~3.5 m
               fern_bed=((2.8, 1.3, "fern_tufted"), (3.5, 2.1, "fern_lace"), (4.5, 2.7, "fern_marsh"), (5.5, 3.3, "fern_tufted"),
                         (6.5, 2.2, "fern_lace"), (7.5, 4.4, "fern_tufted"), (4.0, 0.9, "fern_marsh"), (9.0, 5.2, "fern_marsh")))
@@ -486,8 +516,9 @@ def render_ground(samples=None, preview=False):
     hfog = None
     if fog_mode == "analytic":
         hfog = dict(z0=wl - 0.3, cam_z=cz, density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5),
-                    color=cfg.get("fog_color", (0.86, 0.84, 0.80)))
-    mist_compositor(sc, color=(0.85, 0.82, 0.77), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650),
+                    color=cfg.get("fog_color", (0.86, 0.84, 0.80)), max=cfg.get("fog_max", 0.5),
+                    sun_color=cfg.get("fog_sun_color"), sun_side=1.0 if math.sin(math.radians(cfg["sun_az"] - cfg["yaw_deg"])) > 0 else -1.0)
+    mist_compositor(sc, color=(0.64, 0.66, 0.68), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650),
                     glare=True, height_fog=hfog)
     if fog_mode == "volume":
         fsx, fsy, fsz = cfg.get("fog_size", (560.0, 560.0, 12.0))
@@ -496,7 +527,7 @@ def render_ground(samples=None, preview=False):
         # coarse volume marching: the fog is soft, the cost is in the long grazing rays through the layer
         sc.cycles.volume_step_rate = cfg.get("volume_step_rate", 4.0)
         sc.cycles.volume_max_steps = cfg.get("volume_max_steps", 128)
-    sc.cycles.transparent_max_bounces = cfg.get("transparent_max_bounces", 24)
+    sc.cycles.transparent_max_bounces = cfg.get("transparent_max_bounces", 64)
     # trees, palms and shrubs kept out of the first metres of the lens axis (ferns / horsetails may grow there)
     big = {"tree", "palm", "shrub", "deadwood"}
     lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)
@@ -521,12 +552,24 @@ def render_ground(samples=None, preview=False):
         if float(T.height_at(sim, p[:1], p[1:])[0]) < wl_here + 0.3:
             continue
         extra.append(dict(asset=aid, x=float(p[0]), y=float(p[1]), scale=rng.uniform(0.95, 1.25)))
+    # two trackways on the open bank to the right of the frame, walking down to the water (art direction, like the
+    # hand-placed plants; the scatter adds the statistical ones)
+    decs = []
+    for d, lat, cell in ((4.2, -2.0, 0), (6.5, -3.9, 3)):
+        p = cam_xy + view * d + side * lat
+        if float(T.height_at(sim, p[:1], p[1:])[0]) > wl_here + 0.05:
+            decs.append(dict(x=float(p[0]), y=float(p[1]), cell=cell))
     stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0, keep_clear=[(cam_xy[0], cam_xy[1], 1.2)] + lens_clear,
-                        extra=extra, lod_distances={"tree": (80, 300), "fern": (25, 70), "horsetail": (25, 80)}, budget=250000)
+                        extra=extra, extra_decals=decs, lod_distances={"tree": (80, 300), "fern": (25, 70), "horsetail": (25, 80)},
+                        # small plants only as far as the game draws them (cull distances of the manifest): beyond, the
+                        # ground-cover tint of the terrain material takes over, as in M_NoctisLandscape; sub-pixel plants
+                        # on the far bank also break the compositor fog (it reads the mist distance per pixel)
+                        max_distances={"fern": "cull", "horsetail": "cull", "herb": "cull", "aquatic": "cull"},
+                        budget=250000)
     path = os.path.join(common.OUT_DIR, "valley_ground%s.png" % ("_preview" if preview else ""))
     return _finish(sc, path, time.time() - t0, dict(scene="ground", config={k: v for k, v in cfg.items()}, camera_sim_m=[float(cam_xy[0]), float(cam_xy[1])],
                                                     view_dir=[float(view[0]), float(view[1])], instances=stats,
-                                                    note="%d plantes de premier plan placées à la main (direction artistique) ; le reste suit les masques." % len(extra)))
+                                                    note="%d plantes et %d pistes de premier plan placées à la main (direction artistique) ; le reste suit les masques." % (len(extra), len(decs))))
 
 
 def _cloud_layer(sc, altitude=1900.0, coverage=0.4, size=40000.0):

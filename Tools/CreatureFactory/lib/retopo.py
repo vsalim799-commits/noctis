@@ -128,7 +128,7 @@ def run(ctx):
     # orbits (eye pit, lids, brow) and nostrils. Subdivide, then project the new vertices.
     me.vertices.foreach_set("co", bl.to_bl(Va).astype(np.float32).ravel())
     me.update()
-    spots = [(np.array(e["center"]), 0.17, 2) for e in doc["eyes"]]
+    spots = [(np.array(e["center"]), 0.2, 3) for e in doc["eyes"]]
     spots += [(np.array(sh_["center"]), 0.09, 1) for sh_ in doc["shapes"] if sh_.get("tag") == "naris"]
     densify(bpy, me, spots, bl)
     Vb = np.empty(len(me.vertices) * 3, np.float32)

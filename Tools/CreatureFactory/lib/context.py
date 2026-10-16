@@ -14,7 +14,7 @@ QUALITY = {
     "hero": dict(
         h_base=0.012,          # marching-cubes voxel of the smooth sculpt (retopo source)
         h_high=0.006,          # voxel of the displaced high-poly (detail stage)
-        retopo_faces=34000,    # quad target of the voxel remesh -> ~68k body triangles
+        retopo_faces=31500,    # quad target of the voxel remesh -> ~68k body tris (+claws, teeth, eyes: LOD0 < 80k)
         lods=[0.5, 0.25, 0.12],
         tex=4096,              # texture size (px)
         bake_ss=1,             # texel supersampling (1 = centre only)

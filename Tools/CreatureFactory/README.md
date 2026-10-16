@@ -167,10 +167,12 @@ Durées, vitesses, Froude, foulée, glissement : `anim_clips.json` et métadonn�
 
 ### render / video
 Studio Cycles comparable à la référence : cyclorama anthracite sans raccord avec sol gris, grande
-lumière douce zénithale légèrement en avant, deux contre-jours, débouchage faible ; Principled BSDF avec
+lumière douce zénithale légèrement en avant (éclairement ~4 W/m² pour que l'albédo ventral reste sous le
+blanc avec AgX), deux contre-jours, débouchage faible, et un « lavage » du fond tourné vers le mur (il
+ne touche pas l'animal) pour obtenir le fond anthracite au lieu d'un noir ; Principled BSDF avec
 diffusion sous-surfacique (carte SSS), cartes de rugosité/normales, micro-occlusion cuite multipliée dans
-l'albédo (rendu seulement). Plans : `side`, `front34`, `head`, `flank`, `midstride` (pose de marche,
-contrôle des déformations), `foot` ; 1600×900, 64 échantillons + OpenImageDenoise ; planche contact.
+l'albédo (rendu seulement). Plans : `side` (marche, jambes écartées, 3/4 avant bas comme la référence), `front34`, `head`, `flank`,
+`midstride` (pose de marche, contrôle des déformations), `foot` ; 1600×900, 64 échantillons + OpenImageDenoise ; planche contact.
 `video` : travelling de marche 1280×720, 24 i/s, 4 s, encodé avec `/usr/bin/ffmpeg`.
 
 ## Politique science / spéculation
@@ -199,6 +201,44 @@ contrôle des déformations), `foot` ; 1600×900, 64 échantillons + OpenImageDe
 * `Output/factory/<espèce>/` : rendus, planche contact, vidéo, métadonnées, `stages/` (contrôles
   intermédiaires : argile, UV, cartes).
 
-## Limites connues
+## Temps de calcul (T. rex, hero, machine partagée 4 CPU, `nice -n 10`)
 
-Voir la section en fin de fichier (mise à jour après chaque passe).
+| étape | durée | sortie principale |
+|---|---|---|
+| anatomy | 2 s | 36 os, ~228 primitives |
+| sdf | 30–130 s (avec aperçus argile) | sculpture lisse 0,88 M triangles (voxel 12 mm) |
+| detail | 130–300 s (avec aperçus) | high-poly 3,5 M triangles, relief −7 / +16 mm (voxel 6 mm) |
+| retopo | 25–140 s | low-poly 36 k quads / 72 k triangles, écart p99,9 = 2,2 cm |
+| uv | ~60 s | 10 cartes, 56 % de couverture |
+| bake | 5–12 min | 9 cartes 4096² (+ copies 2K) |
+| rig + anim | ~6 s | 36 os déformants, 12 clips |
+| export | 30–60 s | FBX (mesh + 3 LOD + 12 animations), GLB 21 MB, métadonnées |
+| render | 2–6 min par plan | 6 plans 1600×900 + planche contact |
+
+Les durées varient d'un facteur 2 à 3 selon la charge des autres agents.
+
+## Limites connues (passe hero du 16/10/2026, T. rex)
+
+* **Sculpture** : la forme est un assemblage de primitives SDF (lofts, sweep, ellipsoïdes, cônes) ; elle
+  reste plus lisse et moins « anatomique » qu'un sculpt manuel (pas de muscles secondaires, cicatrices,
+  plis de flexion pilotés). Tête : museau arrondi, arcade et paupières lisibles, mais les volumes fins
+  (fosse antéorbitaire, bords des os jugal/lacrymal) sont adoucis. Bras repris du modèle three.js
+  (peu détaillés).
+* **Relief** : ±1,6 cm maximum ; sur la cuisson 4K (≈ 2,35 mm/texel sur le corps) les écailles de moins
+  de ~3 texels sont filtrées (les fines écailles ventrales n'existent que sur le high-poly).
+* **Retopologie** : remaillage voxel (quads uniformes), pas de boucles d'arêtes suivant les muscles ni
+  d'anneaux dédiés aux articulations ; densification seulement autour des yeux et narines.
+* **Poids** : dérivés des volumes SDF + lissage ; la masse de la cuisse est partagée entre bassin et fémur
+  (jonction un peu rigide aux grandes amplitudes) ; pas de formes correctives.
+* **UV** : îles anatomiques, couverture ≈ 56 % de la texture 4K.
+* **Budget** : LOD0 = 82 278 triangles (corps 72 166 + griffes 4 320 + dents cachées 3 360 + yeux),
+  légèrement au-dessus de la cible 80 k à cause de la densification des orbites (nécessaire pour que la
+  peau ne recouvre pas les globes) ; LOD1..3 = 41 k / 21 k / 9,9 k.
+* **Masse** : le volume sculpté (~11,4 m³) correspond à ~9,7 t à 850 kg/m³ : un grand adulte de la taille de
+  « Sue » (≈ 9,5 t, Hutchinson et al. 2011), plus lourd que les 7 t de `sim.adult_mass_kg` (adulte type).
+* **Animation** : FK procédurale précalculée (pas de mocap), pas de course, intérieur de la bouche non
+  modélisé (petite ouverture seulement).
+* **Rendus** : Cycles CPU 64 échantillons + OpenImageDenoise (micro-détail légèrement lissé), ~5 min par
+  plan sur la machine partagée ; la vidéo n'est pas régénérée dans cette passe.
+* **Couleurs** : SPÉCULATIVES (aucune donnée de couleur pour T. rex).
+

@@ -195,8 +195,45 @@ int cmdRun(const Args& a)
     std::map<EventType, int> counts;
     std::vector<std::string> notable;
     std::map<std::string, int> calls;
+    // Hunting audit: repeated pursuits of the same individual by the same predator (the 10 min refractory
+    // period after a failed, strikeless pursuit), kills credited to a predator vs predation deaths, and kills
+    // made in water deeper than the predator can wade (0.9 x hip).
+    struct PursuitPair
+    {
+        double lastChase = -1e18;
+        bool struck = false;
+    };
+    std::map<std::pair<u32, u32>, PursuitPair> pursuits;
+    int reChases = 0, reChasesSoon = 0, reChasesSoonNoStrike = 0;
+    int huntKills = 0, huntKillsDelayed = 0, huntKillsDeep = 0, predationDeaths = 0;
     w.events().subscribe([&](const SimEvent& e) {
         ++counts[e.type];
+        if (e.type == EventType::HuntChase)
+        {
+            auto it = pursuits.find({e.subject.value, e.other.value});
+            if (it != pursuits.end())
+            {
+                ++reChases;
+                if (e.time - it->second.lastChase < 600.0)
+                {
+                    ++reChasesSoon;
+                    reChasesSoonNoStrike += it->second.struck ? 0 : 1;
+                }
+            }
+            pursuits[{e.subject.value, e.other.value}] = PursuitPair{e.time, false};
+        }
+        else if (e.type == EventType::Attack)
+        {
+            auto it = pursuits.find({e.subject.value, e.other.value});
+            if (it != pursuits.end())
+            {
+                it->second.struck = true;
+            }
+        }
+        else if (e.type == EventType::Death && e.param == static_cast<u32>(DeathCause::Predation))
+        {
+            ++predationDeaths;
+        }
         if (e.type == EventType::Vocalization)
         {
             const Creature* c = w.creatures().find(e.subject);
@@ -210,10 +247,23 @@ int cmdRun(const Args& a)
             e.type == EventType::FireIgnition || e.type == EventType::Immigration || e.type == EventType::Emigration ||
             (e.type == EventType::Death && e.param != static_cast<u32>(DeathCause::Unknown)))
         {
-            char buf[256];
+            char buf[384];
             const Creature* c = w.creatures().find(e.subject);
-            std::snprintf(buf, sizeof(buf), "%s  %-18s %-30s mag=%.1f", w.clock().formatted().c_str(), eventTypeName(e.type),
-                          c ? w.db().speciesAt(c->speciesIndex).scientificName.c_str() : "", e.magnitude);
+            int len = std::snprintf(buf, sizeof(buf), "%s  %-18s %-30s mag=%.1f", w.clock().formatted().c_str(), eventTypeName(e.type),
+                                    c ? w.db().speciesAt(c->speciesIndex).scientificName.c_str() : "", e.magnitude);
+            if (e.type == EventType::HuntKill)
+            {
+                const Creature* prey = w.creatures().find(e.other);
+                const float depth = w.water().depthAt(e.position.xy(), w.terrain());
+                ++huntKills;
+                huntKillsDelayed += e.param == 1u ? 1 : 0;
+                huntKillsDeep += c && e.param == 0u && depth > 0.9f * c->hipHeightM ? 1 : 0; // at the blow (a delayed death may occur after the prey fled into water)
+                if (len > 0 && static_cast<size_t>(len) < sizeof(buf))
+                {
+                    std::snprintf(buf + len, sizeof(buf) - static_cast<size_t>(len), "  proie=%s eau=%.2f m%s",
+                                  prey ? w.db().speciesAt(prey->speciesIndex).id.c_str() : "?", static_cast<double>(depth), e.param == 1u ? " (différée)" : "");
+                }
+            }
             notable.push_back(buf);
         }
     });
@@ -248,6 +298,9 @@ int cmdRun(const Args& a)
     {
         std::printf("%s=%d ", eventTypeName(c.first), c.second);
     }
+    std::printf("\nChasse : poursuites %d, dont %d du même individu par le même prédateur (%d moins de 600 s après la précédente, %d sans coup porté) ; "
+                "mises à mort créditées %d (dont %d différées ; %d au coup même dans une eau plus profonde que le prédateur ne peut passer à gué) ; morts par prédation %d",
+                counts[EventType::HuntChase], reChases, reChasesSoon, reChasesSoonNoStrike, huntKills, huntKillsDelayed, huntKillsDeep, predationDeaths);
     std::printf("\nVocalisations par espèce:contexte:comportement :\n");
     for (const auto& c : calls)
     {

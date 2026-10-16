@@ -9,7 +9,8 @@ Stages (each re-runnable alone, outputs cached in Build/Environment/):
   sim         noctis_sim export-terrain + export-ground (seed 7) -> Build/Environment/sim
   flora       leaf / bark textures, LOD0-2 meshes, UCX collision, FBX (cm), library .blend, metadata JSON
   ground      tileable 2K ground texture sets -> Build/Environment/ground
-  landscape   UE5 paint-layer weightmaps at heightmap resolution (from the simulation masks) -> Build/Environment/landscape
+  landscape   UE5 paint-layer weightmaps (simulation masks) -> Build/Environment/landscape, PCG spawn-probability
+              textures -> Build/Environment/pcg
   manifest    Build/Environment/manifest.json (assets, textures, scatter rules, landscape layers) read by the UE scripts
   sheet       Output/environment/assets_sheet.png (--samples 0: re-compose from cached thumbnails)
   aerial      Output/environment/valley_aerial.png
@@ -50,8 +51,10 @@ def stage_ground(args):
 
 
 def stage_landscape(args):
-    from envlib import landscape
-    return landscape.run()
+    from envlib import landscape, pcgbake
+    files = landscape.run()
+    pcgbake.run()  # needs meta/ (flora) for the scale ranges; re-run after flora when assets change height
+    return files
 
 
 def stage_manifest(args):

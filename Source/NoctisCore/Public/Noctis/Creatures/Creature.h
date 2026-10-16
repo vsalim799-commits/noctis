@@ -384,15 +384,20 @@ struct BehaviorState
     // when an animal flips between Display, Defend and Vigilance in one standoff.
     double callBoutStart = -1e9;
     double callBoutSeen = -1e9;
-    // Death-cause attribution only (no effect on behaviour): the prey this predator is fighting in a
-    // hunting bout it started. A hunting predator struck by its prey re-appraises it as a threat and
-    // switches to Defend, so its later blows in the same struggle are still credited to the hunt.
+    // Courtship calling bout (same waning rule, separate clock).
+    double courtBoutStart = -1e9;
+    double courtBoutSeen = -1e9;
+    // Death-cause attribution: the prey this predator is fighting in a hunting bout it started. A hunting
+    // predator struck by its prey re-appraises it as a threat and switches to Defend, so its later blows in
+    // the same struggle are still credited to the hunt (and a kill then makes it feed).
     EntityId engagedPrey;
     double engagedPreyUntil = -1e9;
-    // Hunting: the individual given up on after a failed pursuit (not re-targeted until giveUpUntil),
-    // and the start time of the current pursuit (first sprint of the bout).
-    EntityId giveUpTarget;
-    double giveUpUntil = -1e9;
+    // Hunting: the last few individuals given up on after a failed pursuit, each not re-targeted until its
+    // expiry (a small ring so that giving up on another animal does not release an earlier one), and the
+    // start time of the current pursuit (first sprint of the bout).
+    static constexpr int kGiveUpSlots = 4;
+    std::array<EntityId, kGiveUpSlots> giveUpTargets{};
+    std::array<double, kGiveUpSlots> giveUpUntil{-1e9, -1e9, -1e9, -1e9};
     double chaseStartedAt = -1e9;
     // Closed-loop seek command for a chase/attack: re-aimed by locomotion at every sub-step towards
     // seekPoint + seekVel * t, so contact geometry does not depend on the decision interval. Cleared at

@@ -71,11 +71,11 @@ SKIN = {
 PALETTE = {
     "status": "SPÉCULATIF",
     "note": "Couleur inconnue (science.integument : 'Couleur : inconnue'). Palette terne et contre-ombrée (dos gris-brun sombre, flancs brun chaud, ventre chamois pâle) choisie pour la lisibilité ; aucun motif ni couleur tirés d'une référence.",
-    "dorsal": [0.05, 0.037, 0.025],        # linear RGB (sRGB ~ 63,54,44)
-    "flank": [0.13, 0.088, 0.052],         # sRGB ~ 101,84,65
-    "ventral": [0.40, 0.30, 0.18],         # sRGB ~ 170,149,118
-    "head_top": [0.038, 0.03, 0.022],
-    "lip": [0.27, 0.2, 0.12],
+    "dorsal": [0.04, 0.028, 0.019],        # linear RGB (sRGB ~ 56,47,38)
+    "flank": [0.14, 0.088, 0.048],         # sRGB ~ 105,84,62
+    "ventral": [0.42, 0.31, 0.17],         # sRGB ~ 173,151,115
+    "head_top": [0.032, 0.024, 0.018],
+    "lip": [0.22, 0.165, 0.1],
     "mottle_dark": [0.022, 0.019, 0.015],
     "band_dark": [0.026, 0.022, 0.018],
     "scute": [0.034, 0.029, 0.024],
@@ -194,12 +194,14 @@ HEAD_UP = [
     (0.70, 0.67, 0.105, 0.312, 0.17, 0.6, 2.5, 6.0),
     (0.85, 0.615, 0.095, 0.288, 0.17, 0.64, 2.5, 6.0),
     (1.00, 0.565, 0.09, 0.27, 0.17, 0.67, 2.5, 6.0),
-    (1.14, 0.52, 0.09, 0.252, 0.17, 0.7, 2.5, 5.5),
-    (1.24, 0.485, 0.095, 0.235, 0.18, 0.72, 2.5, 4.5),
-    (1.31, 0.46, 0.1, 0.22, 0.19, 0.72, 2.45, 4.0),
-    (1.36, 0.445, 0.105, 0.21, 0.2, 0.72, 2.4, 3.6),
+    (1.14, 0.52, 0.09, 0.25, 0.17, 0.7, 2.5, 5.5),
+    # premaxilla: half-width converging over the last 25 cm (U in dorsal view), end section's widest
+    # level raised to mid-height so the ellipsoidal cap gives a blunt, near-vertical rounded front
+    (1.24, 0.488, 0.095, 0.232, 0.18, 0.72, 2.5, 4.5),
+    (1.31, 0.468, 0.1, 0.208, 0.26, 0.72, 2.45, 4.0),
+    (1.36, 0.452, 0.105, 0.185, 0.42, 0.72, 2.4, 3.6),
 ]
-HEAD_CAPS = [0.1, 0.13]         # analytic ellipsoidal caps: occiput, premaxilla (rounded U in dorsal view)
+HEAD_CAPS = [0.1, 0.1]          # analytic ellipsoidal caps: occiput, premaxilla
 # lower jaw (dentary + surangular/angular + skin): u, v_bot, hw (max), bw (bottom taper). Its top is
 # flat and as wide as the upper lip: the two volumes meet along the lip line, whose rounded corners
 # form the mouth groove.
@@ -214,12 +216,12 @@ HEAD_LO = [
     (0.90, -0.19, 0.276, 0.74),
     (1.06, -0.16, 0.262, 0.76),
     (1.20, -0.135, 0.245, 0.78),
-    (1.27, -0.12, 0.23, 0.80),
-    (1.31, -0.11, 0.215, 0.82),
+    (1.25, -0.125, 0.225, 0.80),
+    (1.29, -0.115, 0.2, 0.82),
 ]
 LIP_INSET = 0.006            # the upper lip overhangs the mandible laterally (varanid-like lips, design)
 RICTUS_U = 0.34             # mouth corner, under the front half of the orbit
-EYE_U, EYE_V = 0.46, 0.53
+EYE_U, EYE_V = 0.46, 0.515
 R_EYE = 0.055
 
 
@@ -282,7 +284,7 @@ def head_shapes():
         top = 0.05
         cy = vt - top
         secs.append(dict(u=u, cy=cy, top=top, bot=cy - vb, hw=hw, nt=5.0, nb=2.2, bw=bw))
-    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.1, 0.08], blend=0.025,
+    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.1, 0.07], blend=0.025,
                   region="jaw", tag="mandible"))
     for sg in (1, -1):
         w = lambda c: H(c[0], c[1], c[2] * sg)
@@ -326,7 +328,7 @@ def head_details(cast, base_shapes):
         # ---------------- jugal ridge (cheekbone line under the orbit) and antorbital fossa --------
         jg = out(0.36, 0.31)
         S.append(E("head", "head", jg - cast.normal(jg) * 0.035, [0.27, 0.085, 0.07], mr(HR((0, 0.25, -0.04))), 0.08,
-                   masks=["rugose"], tag="jugal_swelling"))
+                   tag="jugal_swelling"))
         mx0, mx1 = out(1.22, 0.21), out(0.62, 0.23)
         S.append(RC("head", "head", mx0 - cast.normal(mx0) * 0.04, mx1 - cast.normal(mx1) * 0.045, 0.055, 0.065, 0.09, tag="maxillary_swelling"))
         fo = out(0.86, 0.36)
@@ -356,7 +358,7 @@ def head_details(cast, base_shapes):
         # pit for the eyeball (separate mesh)
         S.append(E("head", "head", ec, [R_EYE + 0.003] * 3, (0, 0, 0), 0.004, sign=-1, tag="eye_pit"))
         # lids: capsule arcs along an almond palpebral opening, hugging the eyeball
-        a_, bu, bd = 0.043, 0.026, 0.021
+        a_, bu, bd = 0.044, 0.029, 0.022
         for upper in (True, False):
             pts, rad = [], []
             r0 = 0.017 if upper else 0.013
@@ -385,7 +387,7 @@ def head_details(cast, base_shapes):
         jh = out(0.27, 0.31)
         S.append(E("head", "head", jh - cast.normal(jh) * 0.02, [0.06, 0.035, 0.04], mr(HR((0, 0.3, 0))), 0.04, masks=["rugose"], tag="jugal_horn"))
         # ---------------- nostril: external naris high at the front of the snout -----------------
-        na = cast.cast_at(H(1.37, 0.35, 0.1 * sg), HD(np.array([0.5, 0.1, -0.86 * sg])))
+        na = cast.cast_at(H(1.38, 0.37, 0.08 * sg), HD(np.array([0.5, 0.1, -0.86 * sg])))
         nn = cast.normal(na)
         nf = HD(np.array([1.0, -0.25, 0.0]))
         nf = nf - (nf @ nn) * nn
@@ -395,10 +397,13 @@ def head_details(cast, base_shapes):
         nrot = basis_to_euler(nx, ny, nn)
         S.append(E("head", "head", na + nn * 0.012 + nx * 0.008, [0.04, 0.014, 0.028], nrot, 0.01, sign=-1, masks=["nostril"], tag="naris"))
         # ---------------- lip margin: mask for the supralabial / infralabial scale rows -------------
-        lip_u = [1.4, 1.36, 1.32, 1.22, 1.08, 0.94, 0.8, 0.66, 0.54, 0.44, RICTUS_U]
+        lip_u = [1.3, 1.22, 1.08, 0.94, 0.8, 0.66, 0.54, 0.44, RICTUS_U]
         hits = []
         for u in lip_u:
-            hits.append(cast.cast(H(u, lip_v(min(u, 1.36)) + 0.01, 0.8 * sg), np.array([0, 0, -sg])))
+            try:
+                hits.append(cast.cast(H(u, lip_v(min(u, 1.36)) + 0.01, 0.8 * sg), np.array([0, 0, -sg])))
+            except RuntimeError:          # ray passes in front of the rounded snout tip
+                continue
         for k in range(len(hits) - 1):
             a, b = hits[k], hits[k + 1]
             S.append(CAP("head", "head", a, b, 0.05, 0.02, mask_only=True, masks=["lip"], tag="lip_mask"))
@@ -407,16 +412,16 @@ def head_details(cast, base_shapes):
         # adult T. rex). Kept inside the closed head volume at rest.
         for j in range(15):
             t = j / 14.0
-            u = 1.38 - 0.86 * t
+            u = 1.27 - 0.76 * t            # kept behind the rounded premaxillary cap (hidden by the lips)
             vl = _up_sec(u)["vl"]
             length = 0.05 + 0.06 * math.sin(math.pi * min(1.0, 0.15 + 0.9 * t)) if j >= 4 else 0.045
-            hwj = upper_width(u, vl + 0.06) - 0.085
+            hwj = upper_width(u, vl + 0.06) - 0.1
             root = H(u, vl + 0.035 + 0.6 * length, hwj * sg)
             tip = H(u - 0.01, vl + 0.035, (hwj - 0.004) * sg)
             teeth.append(dict(jaw="upper", side=side, root=list(root), tip=list(tip), radius=0.016 + 0.01 * (length / 0.11)))
         for j in range(13):
             t = j / 12.0
-            u = 1.3 - 0.8 * t
+            u = 1.2 - 0.7 * t
             vl = _up_sec(u)["vl"]
             length = 0.04 + 0.04 * math.sin(math.pi * min(1.0, 0.2 + 0.8 * t))
             hwj = min(upper_width(u, vl + 0.06) - 0.08, jaw_hw(u) - 0.06)
@@ -476,11 +481,11 @@ BODY_KEYS = [
     (0.90, 3.48, 0.385, 1.36, 0.58, 0.47, 2.3, 2.0),
     (1.60, 3.40, 0.405, 1.37, 0.6, 0.47, 2.3, 2.0),
     (2.20, 3.28, 0.42, 1.12, 0.54, 0.46, 2.3, 2.0),
-    (2.62, 3.21, 0.44, 0.92, 0.42, 0.45, 2.25, 2.0),
-    (2.96, 3.34, 0.46, 0.82, 0.39, 0.45, 2.2, 2.0),
-    (3.26, 3.57, 0.44, 0.7, 0.355, 0.45, 2.2, 2.0),
-    (3.50, 3.86, 0.36, 0.5, 0.34, 0.45, 2.1, 2.0),
-    (3.72, 4.02, 0.28, 0.4, 0.32, 0.45, 2.0, 2.0),
+    (2.62, 3.21, 0.44, 0.92, 0.47, 0.45, 2.25, 2.0),
+    (2.96, 3.34, 0.46, 0.82, 0.45, 0.45, 2.2, 2.0),
+    (3.26, 3.57, 0.44, 0.7, 0.42, 0.45, 2.2, 2.0),
+    (3.50, 3.86, 0.36, 0.5, 0.39, 0.45, 2.1, 2.0),
+    (3.72, 4.02, 0.28, 0.4, 0.35, 0.45, 2.0, 2.0),
 ]
 TAIL_X0, TAIL_TIP = -0.85, -7.05
 

@@ -5,11 +5,12 @@ so that Blender (X, Y) = sim (x, y) - origin, origin = crop centre (kept small f
 object carries custom properties noctis_origin_x/y, noctis_size_m used by the vegetation helper.
 
 Heights: bicubic interpolation of heightmap.png (4.06 m spacing) plus a small procedural micro-relief
-(design assumption, documented): +-0.15 m fbm away from the water, so close-ups do not show the 4 m grid.
+(design assumption, documented): isotropic domain-warped fbm (envlib.fields.micro_relief, RMS ~0.06 m) away from
+the water and the sand bars, only on meshes fine enough to carry it (wavelengths >= 4 x mesh spacing), so
+close-ups do not show the 4 m grid and coarse (aerial) meshes get no aliased shading bands.
 """
 from __future__ import annotations
 
-import math
 import os
 
 import numpy as np
@@ -114,23 +115,22 @@ class SimData:
         return out
 
 
-def micro_relief(X, Y, seed=3, amp=0.15):
-    """Deterministic procedural micro-relief (metres) from world coordinates (sum of hashed sines)."""
-    rng = np.random.default_rng(seed)
-    h = np.zeros_like(X, dtype=np.float64)
-    for k in range(10):
-        f = 2 * math.pi / rng.uniform(3.0, 40.0)
-        a = rng.uniform(0, 2 * math.pi)
-        ph = rng.uniform(0, 2 * math.pi)
-        h += math.sqrt(f) * np.sin((X * math.cos(a) + Y * math.sin(a)) * f + ph)
-    return amp * h / 10.0
+def micro_relief(X, Y, seed=3, amp=0.15, min_wavelength=0.0):
+    """Procedural micro-relief (metres) from world coordinates: see envlib.fields.micro_relief."""
+    from . import fields
+    return fields.micro_relief(X, Y, amp=amp, min_wavelength=min_wavelength, seed=seed)
 
 
-def height_at(sim, x, y, micro=0.15):
+def height_at(sim, x, y, micro=0.15, res_m=0.0):
+    """Terrain height (m) at simulation coordinates. micro: micro-relief amplitude, faded out in the water and on
+    the sand bars (flat, wind- and current-smoothed surfaces); res_m: spacing of the mesh that will carry the
+    heights (micro-relief wavelengths below 4 x res_m are dropped)."""
     z = sim.sample("height", x, y, order=3)
     if micro:
         wet = sim.sample("water_mask", x, y)
-        z = z + micro_relief(x, y, amp=micro) * (1 - np.clip(wet * 2, 0, 1))
+        bar = sim.sample("weight_sandbar", x, y)
+        fade = (1 - np.clip(wet * 2, 0, 1)) * (1 - np.clip(bar * 1.5, 0, 1))
+        z = z + micro_relief(x, y, amp=micro, min_wavelength=4.0 * res_m) * fade
     return z
 
 
@@ -145,7 +145,8 @@ def build_terrain(center, size_m, res_m=2.0, name="NoctisTerrain", detail=None, 
     xs = cx - size_m / 2 + np.arange(n) * res_m
     ys = cy - size_m / 2 + np.arange(n) * res_m
     X, Y = np.meshgrid(xs, ys)
-    Z = height_at(sim, X, Y, micro)
+    # micro-relief only where the mesh can carry it: a 2.5 m aerial crop gets none (aliased bands otherwise)
+    Z = height_at(sim, X, Y, micro if res_m <= 1.0 else 0.0, res_m=res_m)
     keep = np.ones((n - 1, n - 1), bool)
     if detail:
         dx0 = detail["center"][0] - detail["size"] / 2 + res_m
@@ -162,9 +163,15 @@ def build_terrain(center, size_m, res_m=2.0, name="NoctisTerrain", detail=None, 
         dxs = detail["center"][0] - detail["size"] / 2 + np.arange(dn) * detail["res"]
         dys = detail["center"][1] - detail["size"] / 2 + np.arange(dn) * detail["res"]
         DX, DY = np.meshgrid(dxs, dys)
-        DZ = height_at(sim, DX, DY, micro) + 0.01
+        # the patch blends into the coarse crop over its last 8 m (no step at the seam)
+        edge = np.minimum.reduce([DX - dxs[0], dxs[-1] - DX, DY - dys[0], dys[-1] - DY])
+        win = np.clip(edge / 8.0, 0.0, 1.0)
+        win = win * win * (3 - 2 * win)
+        base = height_at(sim, DX, DY, micro if res_m <= 1.0 else 0.0, res_m=res_m)
+        fine = height_at(sim, DX, DY, micro, res_m=detail["res"])
+        DZ = base + (fine - base) * win + 0.01 * win
         if detail.get("displace"):
-            DZ = DZ + detail["displace"](DX, DY)
+            DZ = DZ + detail["displace"](DX, DY) * win
         pob = _grid_object(name + "_Detail", DX - cx, DY - cy, DZ, np.ones((dn - 1, dn - 1), bool), (cx, cy, size_m), collection)
         pob["noctis_detail"] = True
         ob["noctis_detail_object"] = pob.name
@@ -235,9 +242,20 @@ def crop_masks(sim, center, size_m, px=1024, out_dir=None, warp_m=6.0):
     else:
         layers["trails"] = np.zeros_like(X, dtype=np.float32)
     layers["water"] = ndimage.gaussian_filter(sim.sample("water_mask", X, Y), 0.8)
+    # same derived masks as the landscape stage (envlib/landscape.py): dry hollows (SiltDry layer), ground cover of the
+    # small plants (far tint), shore wetness band
+    from . import landscape as LS
+    trees = np.clip(sim.sample("foliage_angio_tree", Xw, Yw) + sim.sample("foliage_conifer", Xw, Yw), 0, 1)
+    layers["dry"] = ndimage.gaussian_filter(LS.dry_mask(sim.sample("moisture_initial", Xw, Yw), trees), 1.2) * layers["floodplain_open"]
+    gc = sum(k * sim.sample("foliage_" + p, X, Y) for p, k in (("fern", 1.4), ("horsetail", 1.0), ("angio_herb", 1.0), ("angio_shrub", 0.8)))
+    layers["groundcover"] = ndimage.gaussian_filter(np.clip(gc / 0.9, 0, 1), 2.0)
+    wv = layers["water"] > 0.5
+    dist = ndimage.distance_transform_edt(~wv) * (size_m / px)
+    layers["shore"] = (1 - tg.smoothstep(0.0, 12.0, dist)) * (~wv)
     packs = {"A": ["channel", "riverbank", "sandbar", "backswamp"],
              "B": ["riparian_forest", "floodplain_open", "levee_woodland", "upland_conifer_forest"],
-             "C": ["cutbank_cliff", "wetness", "trails", "water"]}
+             "C": ["cutbank_cliff", "wetness", "trails", "water"],
+             "D": ["oxbow_lake", "dry", "groundcover", "shore"]}
     out = {}
     for k, names in packs.items():
         arr = np.stack([layers[nm] for nm in names], -1)
