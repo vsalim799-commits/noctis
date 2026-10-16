@@ -359,6 +359,7 @@ def render_ground(samples=None, preview=False):
     detail_c = (float(cam_xy[0] + view[0] * 30), float(cam_xy[1] + view[1] * 30))
     disp = _detail_displacement(sim, center, cfg["crop_size"])
     terrain = veg.build_terrain(center, cfg["crop_size"], res_m=cfg["res"], shading=True, water=True, mask_px=2048,
+                                water_kw=dict(bump_strength=0.03, wave_scale=0.5),
                                 detail=dict(center=detail_c, size=cfg["detail_size"], res=cfg["detail_res"], displace=disp))
     far_terrain(sim, center, cfg["crop_size"], res=16.0)
     ox, oy = center
@@ -376,7 +377,7 @@ def render_ground(samples=None, preview=False):
     _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * 150, cam_xy[1] - oy + view[1] * 150), z0=wl - 1.0, size=(560, 560, 12),
                 density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5))
     # trees, palms and shrubs kept out of the first metres of the lens axis (ferns / horsetails may grow there)
-    big = {"tree", "palm", "shrub"}
+    big = {"tree", "palm", "shrub", "deadwood"}
     lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)
                   for d, r in ((3.0, 3.5), (8.0, 4.5), (15.0, 5.5), (24.0, 6.0))]
     # foreground art direction: a few hand-placed horsetail stands and ferns 2-7 m in front of the camera

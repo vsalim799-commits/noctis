@@ -169,7 +169,7 @@ def terrain_material(masks, name="M_NoctisTerrain_Render", ground_dir=None, tile
     return mat
 
 
-def water_material(name="M_NoctisWater_Render", color=(0.055, 0.065, 0.045), wave_scale=0.35):
+def water_material(name="M_NoctisWater_Render", color=(0.055, 0.065, 0.045), wave_scale=0.35, bump_strength=0.08):
     """Silty, opaque-looking river water: dark Principled, low roughness, wind ripples (bump)."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
@@ -188,7 +188,7 @@ def water_material(name="M_NoctisWater_Render", color=(0.055, 0.065, 0.045), wav
     nt.links.new(tc.outputs["Object"], map_.inputs["Vector"])
     nt.links.new(map_.outputs["Vector"], n1.inputs["Vector"])
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.08
+    bump.inputs["Strength"].default_value = bump_strength
     bump.inputs["Distance"].default_value = 0.02
     nt.links.new(n1.outputs["Fac"], bump.inputs["Height"])
     nt.links.new(bump.outputs["Normal"], p.inputs["Normal"])

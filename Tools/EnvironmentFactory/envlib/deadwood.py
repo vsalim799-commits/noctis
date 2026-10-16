@@ -164,7 +164,10 @@ def rootwad(spec, seed, lod, bark_tile, inner_tile):
     lump = 1 + 0.18 * np.sin(3 * TH + 1.3) + 0.1 * np.sin(7 * TH + 0.4)
     y = RR * Rp * lump * np.cos(TH)
     z = RR * Rp * 0.8 * lump * np.sin(TH)
-    for face, sx in ((1.0, 0.35), (-1.0, -0.15)):
+    lump = lump + 0.07 * np.sin(13 * TH + 2.1) * RR
+    y = RR * Rp * lump * np.cos(TH)
+    z = RR * Rp * 0.8 * lump * np.sin(TH)
+    for face, sx in ((1.0, 0.5), (-1.0, -0.3)):
         xx = sx * (1 - RR ** 2) * Rp * 0.6
         P = center + np.stack([xx, y, z], -1)
         P[..., 2] = np.maximum(P[..., 2], -0.1)
@@ -173,16 +176,33 @@ def rootwad(spec, seed, lod, bark_tile, inner_tile):
             P = P[:, ::-1]
             UV = UV[:, ::-1]
         m.surface(P, UV, 2, height_norm=3.0)
-    # roots radiating from the plate edge and the face
-    for k in range((26, 14, 6)[lod]):
+    # roots: thick tapering main roots curving out of the plate rim and its torn face, drooping under their
+    # weight, with secondary roots; a few short broken stubs on the face (torn when the tree fell)
+    for k in range((20, 11, 6)[lod]):
         a = rng.uniform(0, 2 * math.pi)
-        s = rng.uniform(0.5, 1.0)
-        start = center + np.array([0.1, math.cos(a) * Rp * s * 0.8, math.sin(a) * Rp * 0.8 * s * 0.8])
-        d = normalize(np.array([rng.uniform(-0.2, 0.6), math.cos(a), math.sin(a)]))
-        L = rng.uniform(0.4, 1.4) * Rp
-        pts = grow_polyline(start, d, L, (5, 3, 2)[lod], rng, up=-0.1, noise=0.3)
+        s = rng.uniform(0.6, 1.0)
+        start = center + np.array([rng.uniform(0.0, 0.25), math.cos(a) * Rp * s * 0.85, math.sin(a) * Rp * 0.8 * s * 0.85])
+        d = normalize(np.array([rng.uniform(0.15, 0.8), math.cos(a), math.sin(a) * 0.8]))
+        L = rng.uniform(0.35, 0.9) * Rp
+        pts = grow_polyline(start, d, L, (8, 4, 2)[lod], rng, up=-0.3, noise=0.25)
         pts[:, 2] = np.maximum(pts[:, 2], -0.05)
-        m.tube(pts, np.linspace(rng.uniform(0.03, 0.09), 0.006, len(pts)), (5, 4, 3)[lod], 0, uv_scale=bark_tile, cap=False, height_norm=3.0)
+        r0 = rng.uniform(0.05, 0.13)
+        m.tube(pts, r0 * np.linspace(1.0, 0.12, len(pts)) ** 1.3, (6, 4, 3)[lod], 0, uv_scale=bark_tile, cap=False, height_norm=3.0)
+        if lod == 0:
+            for j in range(int(rng.integers(1, 3))):
+                q = pts[int(rng.integers(2, len(pts) - 2))]
+                d2 = normalize(d + rng.normal(0, 0.7, 3))
+                sp = grow_polyline(q, d2, rng.uniform(0.2, 0.5) * Rp, 4, rng, up=-0.3, noise=0.3)
+                sp[:, 2] = np.maximum(sp[:, 2], -0.05)
+                m.tube(sp, r0 * 0.45 * np.linspace(1.0, 0.1, len(sp)), 4, 0, uv_scale=bark_tile, cap=False, height_norm=3.0)
+    for k in range((10, 5, 0)[lod]):
+        a = rng.uniform(0, 2 * math.pi)
+        s = rng.uniform(0.1, 0.7)
+        start = center + np.array([0.2, math.cos(a) * Rp * s, math.sin(a) * Rp * 0.8 * s])
+        d = normalize(np.array([1.0, rng.normal(0, 0.4), rng.normal(0, 0.4)]))
+        pts = grow_polyline(start, d, rng.uniform(0.12, 0.45), 2, rng, noise=0.2)
+        m.tube(pts, np.linspace(rng.uniform(0.04, 0.09), 0.03, len(pts)), (6, 4, 3)[lod], 0, uv_scale=bark_tile, cap=True,
+               cap_mat=1, height_norm=3.0)
     hulls = []
     if lod == 0:
         V, _ = m.arrays()

@@ -197,9 +197,8 @@ HEAD_LO = [
     (0.84, 0.137, -0.205, 0.255, 2.3),
     (1.02, 0.135, -0.165, 0.228, 2.35),
     (1.18, 0.14, -0.125, 0.208, 2.4),
-    (1.30, 0.15, -0.09, 0.19, 2.4),
-    (1.39, 0.162, -0.055, 0.165, 2.4),
-]
+    (1.30, 0.155, -0.075, 0.18, 2.4),
+    ]
 EYE_U, EYE_V = 0.43, 0.62
 R_EYE = 0.055
 
@@ -236,7 +235,7 @@ def head_shapes():
             hw = min(hw, upper_width(u, vl + 0.03) - 0.012)
         cy = vt - 0.06
         secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vb, hw=hw, nt=3.4, nb=nb))
-    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.12, 0.09], blend=0.012,
+    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.12, 0.085], blend=0.012,
                   region="jaw", tag="mandible"))
     for sg in (1, -1):
         w = lambda c: H(c[0], c[1], c[2] * sg)
@@ -248,14 +247,14 @@ def head_shapes():
         S.append(E("head", "head", w((0.38, 0.35, 0.29)), [0.32, 0.075, 0.07], mr(HR((0.05, 0.36, 0.06))), 0.12, tag="jugal"))
         S.append(E("head", "head", w((0.08, 0.32, 0.36)), [0.14, 0.13, 0.08], mr(HR((0, 0.22, 0))), 0.1, tag="quadratojugal"))
         # jowls: M. pterygoideus ventralis wrapping the back of the lower jaw
-        S.append(E("jaw", "jaw", w((-0.02, -0.1, 0.22)), [0.22, 0.13, 0.09], mr(HR((0, 0.25, 0.25))), 0.25, tag="pterygoideus",
+        S.append(E("jaw", "jaw", w((-0.02, -0.12, 0.2)), [0.2, 0.12, 0.08], mr(HR((0, 0.25, 0.25))), 0.18, tag="pterygoideus",
                    masks=["jowl"]))
         # surangular shelf above the jaw angle
-        S.append(E("jaw", "jaw", w((0.34, -0.02, 0.31)), [0.27, 0.1, 0.05], mr(HR((0, 0.3, 0.06))), 0.1, tag="surangular"))
+        S.append(E("jaw", "jaw", w((0.32, -0.04, 0.3)), [0.26, 0.09, 0.04], mr(HR((0, 0.3, 0.06))), 0.12, tag="surangular"))
         # antorbital region: shallow skin-covered depression in front of the orbit (design)
         S.append(E("head", "head", w((0.8, 0.44, 0.30)), [0.2, 0.075, 0.04], mr(HR((0, 0.3, -0.05))), 0.06, sign=-1, tag="antorbital_fossa"))
     # throat / gular skin between the rami, blending into the neck
-    S.append(E("jaw", "jaw", H(0.28, -0.2), [0.5, 0.13, 0.25], HR((0, 0, 0.08)), 0.15, tag="throat", masks=["throat"]))
+    S.append(E("jaw", "jaw", H(0.24, -0.22), [0.48, 0.12, 0.22], HR((0, 0, 0.1)), 0.15, tag="throat", masks=["throat"]))
     # nasal ridge (paired rugose nasals) along the top of the snout
     S.append(RC("head", "head", H(1.36, 0.43), H(0.6, 0.69), 0.05, 0.075, 0.07, scale=[1, 1, 1.35], masks=["rugose"], tag="nasal_ridge"))
     # detail masks (no volume): rugose cornified skin over the nasals
@@ -289,7 +288,7 @@ def head_details(cast, base_shapes):
         eye_dir = HD(np.array([0.53, 0.07, 0.845 * sg]))
         eye_dir /= np.linalg.norm(eye_dir)
         surf = cast.cast_at(H(EYE_U, EYE_V, 0.25 * sg), -eye_dir, back=0.8)
-        ec = surf - eye_dir * (R_EYE - 0.008)          # cornea ~0.8 cm proud of the smooth head surface
+        ec = surf - eye_dir * (R_EYE - 0.024)          # eyeball ~2.4 cm proud of the smooth head surface (lids cover its rim)
         eyes.append(dict(side=side, center=list(ec), radius=R_EYE, direction=list(eye_dir), bone=f"eye_{side}"))
         fwd = HD(np.array([1.0, 0.12, 0.0]))
         bz = eye_dir
@@ -303,7 +302,7 @@ def head_details(cast, base_shapes):
         lid_rot = basis_to_euler(bx, by, bz)
         L = lambda x, y, z: ec + bx * x + by * y + bz * z
         # orbit mound (soft tissue around the eyeball)
-        S.append(E("head", "head", L(0.0, 0.0, -0.04), [0.13, 0.095, 0.055], lid_rot, 0.06, masks=["lid"], tag="orbit_mound"))
+        S.append(E("head", "head", L(0.0, 0.0, -0.012), [0.11, 0.08, 0.036], lid_rot, 0.05, masks=["lid"], tag="orbit_mound"))
         # pit for the eyeball (separate mesh)
         S.append(E("head", "head", ec, [R_EYE + 0.003] * 3, (0, 0, 0), 0.004, sign=-1, tag="eye_pit"))
         # lids: capsule arcs along an almond palpebral opening, hugging the eyeball
@@ -329,7 +328,7 @@ def head_details(cast, base_shapes):
         S += _arc_chain([L(0.06, 0.04, 0.012), L(0.0, 0.068, 0.012), L(-0.064, 0.044, 0.008)], [0.006, 0.008, 0.006], 0.008, sign=-1, tag="lid_crease")
         # ---------------- brow: lacrimal horn in front, postorbital boss above-behind ----------------
         # (rugose bosses of adult T. rex; the brow shelf overhangs and shades the eye)
-        S.append(E("head", "head", L(0.0, 0.092, -0.03), [0.16, 0.042, 0.06], lid_rot, 0.05, masks=["brow"], tag="brow_ridge"))
+        S.append(E("head", "head", L(0.0, 0.088, -0.03), [0.15, 0.038, 0.055], lid_rot, 0.07, masks=["brow"], tag="brow_ridge"))
         S.append(E("head", "head", L(-0.12, 0.1, -0.05), [0.09, 0.065, 0.065], lid_rot, 0.05, masks=["rugose", "brow"], tag="postorbital_boss"))
         S.append(E("head", "head", L(0.18, 0.085, -0.055), [0.085, 0.042, 0.05], lid_rot, 0.05, masks=["rugose", "brow"], tag="lacrimal_horn"))
         # jugal 'horn' (cornual process) below-behind the orbit
@@ -370,7 +369,7 @@ def head_details(cast, base_shapes):
             vl = _up_interp(u)[1]
             length = 0.05 + 0.06 * math.sin(math.pi * min(1.0, 0.15 + 0.9 * t)) if j >= 4 else 0.045
             hwj = upper_width(u, vl + 0.06) - 0.06
-            root = H(u, vl + 0.035 + length, hwj * sg)
+            root = H(u, vl + 0.035 + 0.7 * length, hwj * sg)
             tip = H(u - 0.01, vl + 0.035, (hwj - 0.004) * sg)
             teeth.append(dict(jaw="upper", side=side, root=list(root), tip=list(tip), radius=0.016 + 0.01 * (length / 0.11)))
         for j in range(13):
@@ -379,7 +378,7 @@ def head_details(cast, base_shapes):
             vl = _up_interp(u)[1]
             length = 0.04 + 0.04 * math.sin(math.pi * min(1.0, 0.2 + 0.8 * t))
             hwj = upper_width(u, vl + 0.06) - 0.075
-            root = H(u, vl - 0.02 - length, hwj * sg)
+            root = H(u, vl - 0.02 - 0.7 * length, hwj * sg)
             tip = H(u + 0.01, vl - 0.02, (hwj - 0.004) * sg)
             teeth.append(dict(jaw="lower", side=side, root=list(root), tip=list(tip), radius=0.014 + 0.008 * (length / 0.08)))
     return S, eyes, teeth

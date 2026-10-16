@@ -369,10 +369,10 @@ ASSETS = {
     "deadwood_rootwad": dict(
         ue_name="SM_Deadwood_RootWad", label_fr="Souche déracinée (galette racinaire)",
         category="deadwood", pft="deadwood", builder="rootwad", bark="angio_smooth", seed=2525,
-        spec=dict(radius=1.5, log_length=3.0, log_radius=0.35),
+        spec=dict(radius=1.5, log_length=6.5, log_radius=0.36),
         botany=dict(basis="Arbre déraciné par l'érosion de berge (berges concaves des méandres).", confidence="INFERE",
                     confidence_subject="arbres déracinés sur berges érodées",
-                    design_assumptions=["Galette racinaire verticale avec motte de limon.", GENERIC_COLOUR], speculative=[],
+                    design_assumptions=["Galette racinaire verticale avec motte de limon, grosses racines arquées et moignons arrachés ; tronc de 6,5 m couché.", GENERIC_COLOUR], speculative=[],
                     sources=["fastovsky2016_hellcreek_primer"]),
         collision="hulls", cull_cm=(0, 15000), lod_screen_size=(1.0, 0.3, 0.1), nanite=True),
     "deadwood_branches": dict(
