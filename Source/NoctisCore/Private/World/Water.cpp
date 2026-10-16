@@ -277,43 +277,47 @@ WaterQuery WaterSystem::query(const Vec2& p, const Terrain& terrain) const
     return q;
 }
 
-bool WaterSystem::findDrinkSite(const Vec2& from, float maxRadius, DrinkSite& out) const
+bool WaterSystem::findDrinkSite(const Vec2& from, float maxRadius, DrinkSite& out, bool widenPastUnusable) const
 {
     std::vector<u32> hits;
     float radius = std::min(maxRadius, 400.0f);
+    // With widenPastUnusable the radius keeps growing until a *usable* site is found. Otherwise the search
+    // stops at the first ring that contains any site, so a dried-up ephemeral lake or a low channel nearby
+    // ends it with no result: animals there (juvenile Edmontosaurus without water memories) never got a
+    // drink target and died of thirst. The default keeps the original behaviour for the other callers
+    // (basecamp placement, level export, sensors), so the world layout is unchanged.
     while (true)
     {
         hits.clear();
         drinkIndex_.query(from, radius, hits);
-        if (!hits.empty() || radius >= maxRadius)
+        float best = 1e30f;
+        bool found = false;
+        for (const u32 h : hits)
         {
-            break;
+            const DrinkSite& d = drinkSites_[h];
+            // Dried-up ephemeral bodies do not count.
+            if (d.bodyId >= 1000 && lakes_[static_cast<size_t>(d.bodyId - 1000)].depth < 0.05f)
+            {
+                continue;
+            }
+            if (d.bodyId >= 0 && d.bodyId < 1000 && rivers_[static_cast<size_t>(d.bodyId)].stage < 0.08f)
+            {
+                continue;
+            }
+            const float dd = distanceSq(d.position, from);
+            if (dd < best)
+            {
+                best = dd;
+                out = d;
+                found = true;
+            }
+        }
+        if (found || radius >= maxRadius || (!widenPastUnusable && !hits.empty()))
+        {
+            return found;
         }
         radius = std::min(maxRadius, radius * 2.5f);
     }
-    float best = 1e30f;
-    bool found = false;
-    for (const u32 h : hits)
-    {
-        const DrinkSite& d = drinkSites_[h];
-        // Dried-up ephemeral bodies do not count.
-        if (d.bodyId >= 1000 && lakes_[static_cast<size_t>(d.bodyId - 1000)].depth < 0.05f)
-        {
-            continue;
-        }
-        if (d.bodyId >= 0 && d.bodyId < 1000 && rivers_[static_cast<size_t>(d.bodyId)].stage < 0.08f)
-        {
-            continue;
-        }
-        const float dd = distanceSq(d.position, from);
-        if (dd < best)
-        {
-            best = dd;
-            out = d;
-            found = true;
-        }
-    }
-    return found;
 }
 
 float WaterSystem::noiseLevelDb(const Vec2& p) const

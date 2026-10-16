@@ -160,7 +160,10 @@ def run(ctx_assets=None, force_textures=False, export=True):
     scene.collection.children.link(root)
     colls = bpy.data.collections.new("Collision")
     scene.collection.children.link(colls)
-    ids = ctx_assets or list(catalog.ASSETS)
+    # The library .blend is always rebuilt complete (meshes are cheap; textures are cached), so a partial run
+    # (--assets) never drops assets from it; FBX / metadata are only rewritten for the selected ids.
+    ids = list(catalog.ASSETS)
+    selected = set(ctx_assets or ids)
     report = {}
     for aid in ids:
         a = catalog.ASSETS[aid]
@@ -189,6 +192,8 @@ def run(ctx_assets=None, force_textures=False, export=True):
                     coll_objs.append(hull_object("UCX_%s_%02d" % (name, k), V, F, colls))
         files = {}
         fbx_ok = {}
+        if aid not in selected:
+            continue
         if export:
             d = os.path.join(common.FBX_DIR, aid)
             for lod, ob in enumerate(lod_objs):

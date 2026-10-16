@@ -170,6 +170,10 @@ def compose(thumbs, metas, ground_names, path, cols=7):
 def run(samples=20, ids=None):
     t0 = time.time()
     thumbs = render_thumbs(ids=ids, samples=samples)
+    if ids:  # partial refresh: keep the cached thumbnails of the other assets
+        d = os.path.join(common.BUILD, "sheet")
+        thumbs = {a: thumbs.get(a) or os.path.join(d, "%s_lod0.png" % a) for a in catalog.ASSETS
+                  if a in thumbs or os.path.exists(os.path.join(d, "%s_lod0.png" % a))}
     metas = {aid: common.read_json(os.path.join(common.META_DIR, aid + ".json"), {}) for aid in thumbs}
     from . import ground
     path = compose(thumbs, metas, list(ground.MATERIALS), os.path.join(common.OUT_DIR, "assets_sheet.png"))

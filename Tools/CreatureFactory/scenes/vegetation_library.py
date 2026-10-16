@@ -270,7 +270,8 @@ def scatter(terrain, camera=None, asset_ids=None, seed=7, density=1.0, lod_dista
 
     density: global multiplier of the per-hectare densities (manifest).  range_scale: multiplies the per-category
     maximum distances.  lod_distances: {category: (lod1_from_m, lod2_from_m)} overrides.  keep_clear: iterable of
-    (x, y, radius) in simulation metres.  extra: hand-placed instances [{asset, x, y, yaw_deg?, scale?}].
+    (x, y, radius) or (x, y, radius, {categories}) in simulation metres (the 4th element limits the clearing to
+    those categories, e.g. keep trees out of the lens but let ferns grow there).  extra: hand-placed instances [{asset, x, y, yaw_deg?, scale?}].
     Returns a dict of statistics (instances per asset and LOD)."""
     import bpy
     from mathutils import Matrix, Vector
@@ -320,7 +321,10 @@ def scatter(terrain, camera=None, asset_ids=None, seed=7, density=1.0, lod_dista
         if cat == "aquatic":
             ok &= wd < 2.0  # aquatic plants stay in or right next to the water
         ok &= F.grid(F.slope, x, y) < rule.get("slope_max_deg", 35)
-        for (kx, ky, kr) in keep_clear:
+        for kc in keep_clear:
+            kx, ky, kr = kc[:3]
+            if len(kc) > 3 and kc[3] and cat not in kc[3]:
+                continue  # this clearing only applies to the listed categories
             ok &= np.hypot(x - kx, y - ky) > kr
         return ok
 

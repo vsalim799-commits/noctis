@@ -261,8 +261,12 @@ def render_aerial(samples=None, preview=False):
 
 
 # ----------------------------------------------------------------------------------------------- ground
-GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=9.0, sun_az=95.0, lens=28.0,
-              eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None)
+# cam: explicit camera position (sim m) on the west riverbank of the meander at x~3850, y~4530 (riverbank habitat,
+# horsetail + fern masks, 2.7 m above the simulated river level); yaw = compass azimuth of the view (deg),
+# pitch < 0 looks down. cam=None falls back to the automatic search (_find_spot).
+GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=8.0, sun_az=100.0, lens=26.0,
+              eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None,
+              cam=(3851.0, 4528.0), yaw_deg=14.0, pitch_deg=-3.5, fog_density=0.0065, mist_amount=0.5, mist_depth=650.0)
 
 
 def _find_spot(veg, sim, cfg):
@@ -339,12 +343,17 @@ def render_ground(samples=None, preview=False):
     setup_render(sc, samples or (16 if preview else 128), preview=preview)
     cfg = GROUND
     sim = veg.sim_data()
-    spot = cfg["spot"] or _find_spot(veg, sim, cfg)
-    x, y, wdir = spot
-    # camera 3 m inland from the bank point, looking along the bank, slightly towards the water
-    tangent = np.array([-wdir[1], wdir[0]])
-    view = tangent * math.cos(math.radians(28)) + wdir * math.sin(math.radians(28))
-    cam_xy = np.array([x, y]) - wdir * 3.0
+    if cfg.get("cam"):
+        cam_xy = np.array(cfg["cam"], float)
+        yaw = math.radians(cfg["yaw_deg"])
+        view = np.array([math.sin(yaw), math.cos(yaw)])
+        x, y = cam_xy
+    else:
+        x, y, wdir = cfg["spot"] or _find_spot(veg, sim, cfg)
+        # camera 3 m inland from the bank point, looking along the bank, slightly towards the water
+        tangent = np.array([-wdir[1], wdir[0]])
+        view = tangent * math.cos(math.radians(28)) + wdir * math.sin(math.radians(28))
+        cam_xy = np.array([x, y]) - wdir * 3.0
     center = (float(cam_xy[0] + view[0] * 250), float(cam_xy[1] + view[1] * 250))
     detail_c = (float(cam_xy[0] + view[0] * 30), float(cam_xy[1] + view[1] * 30))
     disp = _detail_displacement(sim, center, cfg["crop_size"])
@@ -353,30 +362,39 @@ def render_ground(samples=None, preview=False):
     far_terrain(sim, center, cfg["crop_size"], res=16.0)
     ox, oy = center
     gz = float(T.height_at(sim, np.array([cam_xy[0]]), np.array([cam_xy[1]]))[0])
-    tgt = cam_xy + view * 60
-    tz = float(T.height_at(sim, np.array([tgt[0]]), np.array([tgt[1]]))[0]) + 2.0
-    cam = _camera(sc, (cam_xy[0] - ox, cam_xy[1] - oy, gz + cfg["eye"]), (tgt[0] - ox, tgt[1] - oy, tz), lens=cfg["lens"],
+    cz = gz + cfg["eye"]
+    pitch = math.radians(cfg.get("pitch_deg", 0.0))
+    tgt = cam_xy + view * 60 * math.cos(pitch)
+    tz = cz + 60 * math.sin(pitch)
+    cam = _camera(sc, (cam_xy[0] - ox, cam_xy[1] - oy, cz), (tgt[0] - ox, tgt[1] - oy, tz), lens=cfg["lens"],
                   dof=(14.0, 8.0))
-    sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=3.2, sky_strength=0.55, air=1.0, dust=4.0, sun_color=(1.0, 0.86, 0.70))
-    mist_compositor(sc, color=(0.80, 0.80, 0.78), amount=0.65, start=8, depth=420, glare=True)
-    # low morning fog over the river and the bank (heterogeneous volume, height falloff)
-    _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * 120, cam_xy[1] - oy + view[1] * 120), z0=gz - 3.0, size=(520, 520, 14))
+    sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=3.4, sky_strength=0.55, air=1.0, dust=4.0, sun_color=(1.0, 0.84, 0.66))
+    mist_compositor(sc, color=(0.82, 0.82, 0.80), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650), glare=True)
+    # low morning fog lying on the river and the banks (heterogeneous volume, height falloff from the water level)
+    wl = float(sim.sample("water_surface", np.array([cam_xy[0] + view[0] * 40]), np.array([cam_xy[1] + view[1] * 40]))[0])
+    _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * 150, cam_xy[1] - oy + view[1] * 150), z0=wl - 1.0, size=(560, 560, 12),
+                density=cfg.get("fog_density", 0.0065), height=4.5)
+    # trees, palms and shrubs kept out of the first metres of the lens axis (ferns / horsetails may grow there)
+    big = {"tree", "palm", "shrub"}
+    lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)
+                  for d, r in ((3.0, 3.5), (8.0, 4.5), (15.0, 5.5), (24.0, 6.0))]
     # foreground art direction: a few hand-placed horsetail stands and ferns 2-7 m in front of the camera
     rng = np.random.default_rng(11)
     extra = []
     side = np.array([-view[1], view[0]])
-    for k in range(9):
+    wl_here = float(sim.sample("water_surface", np.array([x]), np.array([y]))[0])
+    for k in range(11):
         d = rng.uniform(2.5, 9.0)
-        lat = rng.uniform(-3.5, 3.5) * (d / 6)
+        lat = rng.uniform(-2.0, 3.8) * (d / 6)  # side points left: mostly on the left (inland) side of the frame
         p = cam_xy + view * d + side * lat
-        if np.dot(p - cam_xy, wdir) > 2.5:
-            continue
+        if float(T.height_at(sim, p[:1], p[1:])[0]) < wl_here + 0.3:
+            continue  # not in the water
         extra.append(dict(asset=["horsetail_unbranched", "horsetail_branched", "fern_tufted", "fern_marsh"][k % 4],
                           x=float(p[0]), y=float(p[1]), scale=rng.uniform(0.9, 1.15)))
-    stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0, keep_clear=[(cam_xy[0], cam_xy[1], 1.2)],
+    stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0, keep_clear=[(cam_xy[0], cam_xy[1], 1.2)] + lens_clear,
                         extra=extra, lod_distances={"tree": (80, 300), "fern": (25, 70), "horsetail": (25, 80)}, budget=250000)
     path = os.path.join(common.OUT_DIR, "valley_ground%s.png" % ("_preview" if preview else ""))
-    return _finish(sc, path, time.time() - t0, dict(scene="ground", spot_sim_m=[float(x), float(y)], camera_sim_m=[float(cam_xy[0]), float(cam_xy[1])],
+    return _finish(sc, path, time.time() - t0, dict(scene="ground", config={k: v for k, v in cfg.items()}, camera_sim_m=[float(cam_xy[0]), float(cam_xy[1])],
                                                     view_dir=[float(view[0]), float(view[1])], instances=stats,
                                                     note="9 touffes de premier plan placées à la main (direction artistique) ; le reste suit les masques."))
 

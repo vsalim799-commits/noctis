@@ -288,7 +288,7 @@ bool findWater(Context& k, Vec2& out)
         }
     }
     DrinkSite site;
-    if (k.ctx.water && k.ctx.water->findDrinkSite(p, 3500.0f, site))
+    if (k.ctx.water && k.ctx.water->findDrinkSite(p, 3500.0f, site, true)) // look past dried-up nearby sites
     {
         const float cost = distance(p, site.position);
         if (cost < best)
@@ -1106,7 +1106,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         }
         if (!b.hasTargetPos)
         {
-            setMove(c, b.desiredDir, walk, Posture::Normal);
+            // No known water: range in the current direction, around obstacles (a fixed heading into a bank
+            // or deep water left thirsty animals standing still).
+            setMove(c, steer(c, sp, ctx, b.desiredDir, walk), walk, Posture::Normal);
             break;
         }
         const float litresPerS = 0.0003f * c.massKg + 0.002f;

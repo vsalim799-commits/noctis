@@ -213,7 +213,7 @@ Creature& CreatureSystem::spawn(int speciesIndex, Sex sex, float ageYears, const
     c.memory.homeCenter = p;
     c.memory.homeRadius = std::max(150.0f, s.social.territorial ? s.social.territoryRadiusM : 250.0f + 450.0f * std::log10(std::max(1.0f, c.massKg)));
     DrinkSite site;
-    if (ctx.water && ctx.water->findDrinkSite(p, 4000.0f, site))
+    if (ctx.water && ctx.water->findDrinkSite(p, 4000.0f, site, true)) // nearest usable water, past dried-up sites
     {
         rememberPlace(c, MemoryKind::Water, site.position, 0.6f, ctx.now);
     }

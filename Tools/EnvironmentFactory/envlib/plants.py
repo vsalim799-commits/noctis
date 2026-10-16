@@ -170,7 +170,8 @@ def horsetail(spec, seed, lod, rects, layout, bark_tile):
         a = rng.uniform(0, 2 * math.pi)
         base = np.array([rr * math.cos(a), rr * math.sin(a), -0.05])
         h = rng.uniform(*spec["height"]) * (1 - 0.3 * rr / spec["radius"])
-        lean = np.array([rng.normal(0, 0.08), rng.normal(0, 0.08), 1.0]) + np.array([base[0], base[1], 0]) * 0.25
+        lv = spec.get("lean", 0.08)
+        lean = np.array([rng.normal(0, lv), rng.normal(0, lv), 1.0]) + np.array([base[0], base[1], 0]) * 0.25
         inter = rng.uniform(*spec["internode"])
         nseg = max(2, int(h / (inter * (2.0 if lod == 0 else 4.0))))
         z = np.linspace(0, 1, nseg + 1)
@@ -198,10 +199,11 @@ def horsetail(spec, seed, lod, rects, layout, bark_tile):
                 if f < 0.3 or f > 0.97:
                     continue
                 c = base + d * k * inter
-                R = cs[0] * 0.5 * (1.15 - 0.6 * f) * rng.uniform(0.85, 1.1)
+                # whorl_scale > 1: long, spreading branches (bottlebrush silhouette, never read as a grass tuft)
+                R = cs[0] * 0.5 * (1.15 - 0.6 * f) * rng.uniform(0.85, 1.1) * spec.get("whorl_scale", 1.0)
                 kk = 8 if lod == 0 else 5
                 th = np.linspace(0, 2 * math.pi, kk, endpoint=False) + rng.uniform(0, 1)
-                ring = c + np.stack([np.cos(th) * R, np.sin(th) * R, np.full(kk, -R * 0.35 + R * 0.6 * (1 - f))], 1)
+                ring = c + np.stack([np.cos(th) * R, np.sin(th) * R, np.full(kk, -R * spec.get("whorl_droop", 0.35) + R * 0.6 * (1 - f))], 1)
                 cell = int(rng.integers(0, len(rects)))
                 u0, v0, u1, v1 = rects[cell]
                 uc = ((u0 + u1) / 2, (v0 + v1) / 2)
@@ -216,6 +218,34 @@ def emergent(spec, seed, lod, rects, layout, bark_tile):
     rng = np.random.default_rng(seed)
     m = Mesh()
     cs = layout["cell_size_m"]
+    if spec["kind"] == "strap" and spec.get("fans"):
+        # Equitant fans (iris / bur-reed-like habit): each shoot is a flat fan of overlapping strap leaves in one
+        # plane, so the clump reads as a few broad fans rather than a grass tuft.
+        nf = spec["fans"] if lod < 2 else max(2, spec["fans"] // 2)
+        per = spec["leaves_per_fan"] if lod == 0 else max(3, spec["leaves_per_fan"] - (2 if lod == 1 else 3))
+        hmax = spec["length"][1]
+        ws = spec.get("width_scale", 1.0)
+        n = 0
+        for j in range(nf):
+            phi = rng.uniform(0, math.pi)
+            r0 = spec["radius"] * math.sqrt(rng.random())
+            ba = rng.uniform(0, 2 * math.pi)
+            base0 = np.array([math.cos(ba) * r0, math.sin(ba) * r0, -0.1])
+            plane = np.array([math.cos(phi), math.sin(phi), 0.0])
+            for k in range(per):
+                u = (k - (per - 1) / 2) / max(1, (per - 1) / 2)
+                ang = math.radians(spec.get("fan_spread_deg", 24)) * u + rng.normal(0, 0.04)
+                d0 = normalize(plane * math.sin(ang) + np.array([0, 0, math.cos(ang)]) + rng.normal(0, 0.03, 3))
+                L = rng.uniform(*spec["length"]) * (1.0 - 0.28 * abs(u))
+                base = base0 + plane * u * 0.025
+                cell = int(rng.choice([0, 1, 2, 3], p=[0.3, 0.3, 0.3, 0.1]))
+                w = cs[0] * (L / cs[1]) * ws * (1.4 if lod == 2 else 1.0)
+                stiff = 0.35 if spec.get("stiff") else 1.0  # sword-like, upright leaves
+                _frond(m, base, d0, L, w, rects[cell], 1, rng, (6, 4, 2)[lod], arch=(0.12 + 0.3 * abs(u)) * stiff, fold=0.3,
+                       twist=rng.normal(0, 0.25) * stiff, height_norm=hmax,
+                       droop_tip=(rng.uniform(0, 0.25) + 0.3 * abs(u)) * stiff)
+                n += 1
+        return m, dict(leaves=n, fans=nf)
     if spec["kind"] == "strap":
         n = spec["leaves"] if lod == 0 else int(spec["leaves"] * (0.6 if lod == 1 else 0.35))
         hmax = spec["length"][1]

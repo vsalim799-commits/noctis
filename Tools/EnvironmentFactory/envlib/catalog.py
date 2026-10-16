@@ -291,10 +291,10 @@ ASSETS = {
     "horsetail_branched": dict(
         ue_name="SM_Horsetail_Stand_B", label_fr="Peuplement de prêles à verticilles de rameaux",
         category="horsetail", pft="horsetail", builder="horsetail", bark="horsetail_stem", seed=1717,
-        spec=dict(stems=34, radius=0.5, height=(0.6, 1.0), stem_r=(0.004, 0.006), internode=(0.04, 0.07),
-                  branched=True, strobili=0.0),
+        spec=dict(stems=20, radius=0.5, height=(0.75, 1.3), stem_r=(0.0055, 0.008), internode=(0.06, 0.09),
+                  branched=True, strobili=0.0, whorl_scale=1.9, whorl_droop=0.55, lean=0.05),
         botany=dict(basis="Prêle à rameaux verticillés.", confidence="INFERE", confidence_subject="présence de prêles",
-                    habit_confidence="INFERE", design_assumptions=["Verticilles de rameaux fins à chaque nœud (Equisetum actuel).", GENERIC_COLOUR],
+                    habit_confidence="INFERE", design_assumptions=["Verticilles de rameaux fins et étalés à chaque nœud (port « en goupillon » d'Equisetum actuel) ; tiges peu nombreuses et droites pour ne jamais lire comme une touffe de graminée.", GENERIC_COLOUR],
                     speculative=["Forme ramifiée : choix de variété."], sources=["johnson2002_hellcreek_megaflora"]),
         collision="none", cull_cm=(0, 4500), lod_screen_size=(1.0, 0.25, 0.08)),
     # ------------------------------------------------------------------ aquatic
@@ -311,11 +311,12 @@ ASSETS = {
     "emergent_strap": dict(
         ue_name="SM_Aquatic_Emergent_Strap", label_fr="Émergente à feuilles rubanées (port de jonc, non graminée)",
         category="aquatic", pft="aquatic_macrophyte", builder="emergent", atlas="strap", bark="green_stem", seed=1919,
-        spec=dict(leaves=30, length=(0.8, 1.35), radius=0.22, kind="strap"),
+        spec=dict(leaves=30, length=(0.8, 1.35), radius=0.22, kind="strap", fans=4, leaves_per_fan=6,
+                  width_scale=2.6, fan_spread_deg=16, stiff=True),
         botany=dict(
             basis="Macrophyte émergent des rives calmes.", confidence="INFERE", confidence_subject="plantes aquatiques",
             habit_confidence="SPECULATIF",
-            design_assumptions=["Touffe de feuilles rubanées à nervation parallèle (monocotylédone aquatique générique). Ce n'est PAS une graminée : pas d'épillets, pas de prairie.", GENERIC_COLOUR],
+            design_assumptions=["Éventails équitants de larges feuilles rubanées à nervation parallèle (port de rubanier / iris actuel, monocotylédone aquatique générique, aucun taxon attribué). Ce n'est PAS une graminée : pas d'épillets, pas de prairie ; la disposition en éventails évite la lecture « touffe d'herbe ».", GENERIC_COLOUR],
             speculative=["Groupe et forme exacts inconnus."], sources=["johnson2002_hellcreek_megaflora"]),
         collision="none", cull_cm=(0, 5000), lod_screen_size=(1.0, 0.25, 0.08)),
     "floating_rosettes": dict(

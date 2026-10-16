@@ -193,7 +193,7 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
             voice_A = (x, f0_exp, pitch, dur_v)
         out.append(_sound(ds, sp, call, stem + "_" + vname, group, x, style, ctx, f0, f0_exp, pitch, 1.0, dur_v, lvl, T, RH,
                           conf, srcs, basis, toggle, {"voice": vname, "marking_seed": mseed, "size_ratio": 1.0},
-                          f"{_label_head(sp, call, fr_ctx)} — voix {vname[-1]}", random_group=f"{stem}_adult"))
+                          f"{_label_head(sp, ci, style, fr_ctx)} — voix {vname[-1]}", random_group=f"{stem}_adult"))
     # Subadult voice: only for the first contact-type call of species heavier than 20 kg.
     if ctx == "contact" and sp.mass >= 20.0 and ci == next((i for i, c in enumerate(sp.sim["vocal"]["call_types"])
                                                          if D.parse_call_context(c.get("context", "")) == "contact"), -1):
@@ -204,7 +204,7 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
         out.append(_sound(ds, sp, call, stem + "_subadult", group, x, style, ctx, f0, _expected_f0(f, benv), pitch,
                           SUBADULT_SIZE_RATIO, dur, lvl_s, T, RH, conf, srcs, basis, toggle,
                           {"voice": "subadult", "marking_seed": 0.5, "size_ratio": SUBADULT_SIZE_RATIO},
-                          f"{_label_head(sp, call, fr_ctx)} — subadulte (10 % de la masse adulte)"))
+                          f"{_label_head(sp, ci, style, fr_ctx)} — subadulte (10 % de la masse adulte)"))
     # Distance variants from voice A.
     xA, f0A, pitchA, durA = voice_A
     for dname, dist, fol in DISTANCES.get(sp.region, []):
@@ -215,7 +215,7 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
         s = _sound(ds, sp, call, f"{stem}_{dname}", group, y, style, ctx, f0, f0A, pitchA, 1.0, durA, lvl, T, RH, conf,
                    list(dict.fromkeys(srcs + [ISO1] + ([ISO2] if fol > 0 else []))), basis, toggle,
                    {"voice": "voiceA", "distance_m": dist, "foliage_equivalent_m": fol},
-                   f"{_label_head(sp, call, fr_ctx)} — entendu à {dist:.0f} m"
+                   f"{_label_head(sp, ci, style, fr_ctx)} — entendu à {dist:.0f} m"
                    + (" à travers la forêt riveraine" if fol > 0 else " en terrain découvert"),
                    distance_m=dist)
         # Calibrate the file on the level received at that distance (finalize: level.received_spl_db), not at 1 m.
@@ -242,9 +242,14 @@ def _build_call(ds, sp, call, ci, comm, T, RH):
     return out
 
 
-def _label_head(sp, call, fr_ctx) -> str:
-    """UI label: the call is named as a hypothesis with its *supposed* context (never as a known function)."""
-    return f"{sp.name_fr} — cri hypothétique [{call['id']}] (contexte supposé : {fr_ctx})"
+STYLE_LABEL_FR = {"closed": "bouche fermée", "open": "bouche ouverte", "hiss": "souffle", "huff": "expiration nasale"}
+
+
+def _label_head(sp, ci, style, fr_ctx) -> str:
+    """UI label: the call is named as a hypothesis by its index and production model, with its *supposed* context (never
+    as a known function). The data id (parameters.call_type, e.g. 'threat_rumble', 'alarm_bellow') is not shown: it names
+    a function, which the game does not claim to know."""
+    return f"{sp.name_fr} — cri hypothétique n° {ci + 1} ({STYLE_LABEL_FR[style]} ; contexte supposé : {fr_ctx})"
 
 
 def low_fractions(x: np.ndarray) -> tuple[float, float]:

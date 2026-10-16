@@ -61,7 +61,7 @@ def stage_manifest(args):
 
 def stage_sheet(args):
     from envlib import sheet
-    return sheet.run(samples=args.samples or 20)
+    return sheet.run(samples=args.samples or 20, ids=args.assets.split(",") if args.assets else None)
 
 
 def stage_aerial(args):

@@ -85,7 +85,9 @@ Modules : `vocal`, `footsteps`, `foley`, `ambience`, `equipment`.
   timbre ; les voix A–C sont identiques bit à bit à la version 1.1) formant un `random_group` par type de cri, + un
   subadulte (10 % de la masse) pour le premier cri de contact des espèces de plus de 20 kg.
 * Libellés et légendes : le cri est toujours présenté comme une hypothèse avec son **contexte supposé**
-  (« cri hypothétique [threat_rumble] (contexte supposé : menace) ») ; l'identifiant de type n'est qu'une clé de données.
+  (« Tyrannosaurus rex — cri hypothétique n° 2 (bouche fermée ; contexte supposé : menace) — voix A ») ; l'identifiant
+  de type (`parameters.call_type`, p. ex. `threat_rumble`, `alarm_bellow`) n'est qu'une clé de données et n'est jamais
+  affiché, car il nomme une fonction que le jeu ne prétend pas connaître.
 * Infrasons : `parameters.infrasonic_energy_fraction` (énergie sous 20 Hz) et `below_30hz_energy_fraction` ; au-delà
   de 25 % d'énergie sous 30 Hz (grondements des plus grands animaux : ~79 % sous 20 Hz pour le grondement de menace de
   T. rex, voix A) `ue5.accessibility.visual_cue_required` impose la légende (« très grave, en partie infrasonore ») et le
@@ -264,7 +266,10 @@ coupure nette des textures granulaires denses (sable, limon : enveloppe 2–12 k
 < 12 dB) ; composante continue < −80 dBFS ; énergie au-dessus de 20 kHz < −30 dB (hors vocalisations : les harmoniques des cris aigus de petits mammifères, ~10,5 kHz pour la détresse de Kryptobaatar, font partie du modèle analysé par l'enregistreur du jeu) ; variantes de distance calibrées sur
 le niveau reçu ; tonnerre : niveau géométrique vs modèle linéique du cœur (± 4 dB) et tonnerre ≤ 2 km > pluie forte ;
 préréglages d'atténuation importables (`attenuate: false` ou tous les champs numériques) ; aucun son à fondu enchaîné
-dans un groupe de concurrence à une seule place ; alias résolus ; toutes les voix de cris dans un groupe aléatoire.
+dans un groupe de concurrence à une seule place, et cibles `crossfade_with` qui désignent bien des sons du manifeste
+(les lits de pluie et de vent citaient des clés de couche sans le préfixe `amb_`, ce qui rendait le contrôle précédent
+inopérant) ; alias résolus ; toutes les voix de cris dans un groupe aléatoire ; libellés des cris sans identifiant de
+type (qui nomme une fonction) et avec « contexte supposé ».
 
 ## Limites connues
 
@@ -304,4 +309,6 @@ Gardner & DeMar 2013 (lissamphibiens, non vérifiée) ; fiches espèces et envir
 précipitations, faune, incendies : Bamforth et al. 2014). Aucune nouvelle référence n'a été ajoutée en 1.2. Les
 doublons de `Data/Sources` (même article sous deux identifiants, parfois avec des statuts `verified` contradictoires)
 portent désormais `alias_of` vers une entrée canonique dont ils reprennent le statut ; le manifeste ne cite que les
-identifiants canoniques.
+identifiants canoniques. Les copies d'un même identifiant dans deux fichiers thématiques ont aussi été alignées
+(`dashzeveg1995_ukhaa_tolgod` et `loope1998_dune_field` : vérifiées dans `bib_djadochta.json`, non vérifiées dans
+`bib_environments.json` ; la copie de `bib_environments.json` reprend désormais l'entrée vérifiée).

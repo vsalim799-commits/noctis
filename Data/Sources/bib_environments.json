@@ -298,17 +298,17 @@
     },
     {
       "id": "dashzeveg1995_ukhaa_tolgod",
-      "authors": "Dashzeveg, D.; Novacek, M.J.; Norell, M.A.; et al.",
+      "authors": "Dashzeveg, D.; Novacek, M.J.; Norell, M.A.; Clark, J.M.; Chiappe, L.M.; Davidson, A.; McKenna, M.C.; Dingus, L.; Swisher, C.; Perle, A.",
       "year": 1995,
       "title": "Extraordinary preservation in a new vertebrate assemblage from the Late Cretaceous of Mongolia",
       "container": "Nature",
-      "volume": null,
-      "pages": null,
-      "doi": null,
+      "volume": "374(6521)",
+      "pages": "446-449",
+      "doi": "10.1038/374446a0",
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+      "verified": true,
+      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id dashzeveg1995_ukhaa_tolgod) par une autre fiche du projet, pour garder un statut cohérent entre les copies du même identifiant : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : fiche de référence open-paleo/data (dashzeveg1995a.yml)"
     },
     {
       "id": "fastovsky1997_tugrikin_shireh",
@@ -327,17 +327,17 @@
     },
     {
       "id": "loope1998_dune_field",
-      "authors": "Loope, D.B.; Dingus, L.; Swisher, C.C., III; Minjin, C.",
+      "authors": "Loope, D.B.; Dingus, L.; Swisher, C.C.; Minjin, C.",
       "year": 1998,
       "title": "Life and death in a Late Cretaceous dune field, Nemegt basin, Mongolia",
       "container": "Geology",
-      "volume": null,
-      "pages": null,
-      "doi": null,
+      "volume": "26(1)",
+      "pages": "27-30",
+      "doi": "10.1130/0091-7613(1998)026<0027:LADIAL>2.3.CO;2",
       "url": null,
       "type": "article",
-      "verified": false,
-      "verification": "NON VÉRIFIÉ — budget WebSearch de la session épuisé avant vérification ; titre/auteurs/année cités de mémoire, volume/pages/DOI laissés à null. À vérifier avant de relever la confiance des affirmations associées."
+      "verified": true,
+      "verification": "Reprise de la vérification enregistrée dans Data/Sources/bib_djadochta.json (id loope1998_dune_field) par une autre fiche du projet, pour garder un statut cohérent entre les copies du même identifiant : GitHub code search 2026-10-03 (quota WebSearch épuisé) — vérification secondaire : fiche open-paleo/data (loope1998a.yml)"
     },
     {
       "id": "loope1999_sandslides",

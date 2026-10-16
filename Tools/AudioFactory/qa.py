@@ -439,6 +439,10 @@ def measure(rec):
     check("sources_known", all(s in SOURCES for s in rec.get("sources", [])), [s for s in rec.get("sources", []) if s not in SOURCES])
     if rec["category"] == "vocal":
         check("vocal_is_hypothesis", rec.get("hypothesis") is True)
+        # The UI label must not name the call by a function (data ids such as 'threat_rumble', 'alarm_bellow').
+        ct = (rec.get("parameters") or {}).get("call_type") or ""
+        check("vocal_label_no_function_id", bool(ct) and ct not in (rec.get("label_fr") or "") and "contexte supposé" in (rec.get("label_fr") or ""),
+              rec.get("label_fr"))
     ue = rec.get("ue5", {})
     check("ue5_hints", all(k in ue for k in ("sound_class", "attenuation_preset", "looping", "concurrency")))
     if "preview_png" in rec:
@@ -565,6 +569,9 @@ def main(argv=None) -> int:
             bad_con += [f"{r['id']}~{o['id']}" for o in mates if o["ue5"]["concurrency"] == ue["concurrency"]
                         and con[ue["concurrency"]]["max_count"] < 2]
     lib.append({"name": "concurrency_allows_crossfades", "ok": not bad_con, "detail": bad_con[:20]})
+    # crossfade_with must name sound ids of the manifest (otherwise the check above, the importer and the director miss them).
+    dangling = sorted({f"{r['id']}->{k}" for r in man["sounds"] for k in (r["ue5"].get("crossfade_with") or []) if k not in by_id})
+    lib.append({"name": "crossfade_targets_resolve", "ok": not dangling, "detail": dangling[:20]})
     # Aliases (single-layer mixes) point at an existing sound.
     aliases = man["ue5"].get("aliases") or {}
     bad_alias = [a for a, v in aliases.items() if v.get("target") not in by_id]

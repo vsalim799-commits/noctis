@@ -51,7 +51,10 @@ public:
 
     WaterQuery query(const Vec2& p, const Terrain& terrain) const;
     float depthAt(const Vec2& p, const Terrain& terrain) const { return query(p, terrain).depth; }
-    bool findDrinkSite(const Vec2& from, float maxRadius, DrinkSite& out) const;
+    // Nearest usable drink site within maxRadius (dried-up ephemeral lakes and channels below drinking stage are
+    // skipped). The search widens in rings; by default it stops at the first ring containing any site, usable or
+    // not. widenPastUnusable keeps widening until a usable site is found (used by animals looking for water).
+    bool findDrinkSite(const Vec2& from, float maxRadius, DrinkSite& out, bool widenPastUnusable = false) const;
     // Broadband water noise level (dB SPL) at a point — moving water masks quiet sounds.
     float noiseLevelDb(const Vec2& p) const;
 

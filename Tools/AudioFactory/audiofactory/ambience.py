@@ -1069,7 +1069,7 @@ def job_layer(ds: D.Dataset, key: str) -> list[M.Sound]:
     att = {"river": "ATT_Water_Line", "fire": "ATT_Ambience_Point"}.get(kind, "ATT_Ambience_Bed2D")
     con = "CON_Weather_Rain" if weather else ("CON_Fire" if kind == "fire" else "CON_Ambience_Layer")
     ue = M.ue5("SC_Weather" if weather else "SC_Ambience_Layer", att, True, con, priority=0.5,
-               extra={"layer_role": kind, "crossfade_with": [k for k in LAYERS if LAYERS[k][1] == kind and k != key and LAYERS[k][0] == region],
+               extra={"layer_role": kind, "crossfade_with": [f"amb_{k}" for k in LAYERS if LAYERS[k][1] == kind and k != key and LAYERS[k][0] == region],
                       "drive_parameter": {"wind_conifer": "vent (m/s)", "wind_broadleaf": "vent (m/s)", "wind_desert": "vent (m/s)",
                                           "river": "débit (m³/s) et distance au chenal", "rain": "intensité (mm/h)",
                                           "rain_interior": "intensité (mm/h), joueur dans le véhicule",

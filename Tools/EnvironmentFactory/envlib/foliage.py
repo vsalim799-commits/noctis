@@ -406,14 +406,15 @@ def _p_whorl(cv, rng, cell):
     """Horsetail branch whorl seen from above: thin jointed branches radiating from the node."""
     W, H = cv.W, cv.H
     c = np.array([W * 0.5, H * 0.5])
-    n = [10, 12, 14, 9][cell]
-    col = np.array([0.30, 0.42, 0.17])
+    n = [16, 18, 20, 15][cell]
+    col = np.array([0.24, 0.38, 0.13])
     for k in range(n):
-        a = 2 * math.pi * k / n + rng.uniform(-0.15, 0.15)
-        L = W * rng.uniform(0.38, 0.48)
+        a = 2 * math.pi * k / n + rng.uniform(-0.12, 0.12)
+        L = W * rng.uniform(0.40, 0.49)
         end = c + np.array([math.cos(a), math.sin(a)]) * L
         pts = _curve(c, end, rng.uniform(-0.03, 0.03) * W, n=6)
-        cv.stroke(pts, W * 0.012, W * 0.006, _jit(col, rng, dv=0.08), height=0.6, transl=0.5, rough=0.5, noise_amp=0.1)
+        # branches drawn thick enough to survive mip-mapping (the whorl must read at 5-10 m)
+        cv.stroke(pts, W * 0.02, W * 0.011, _jit(col, rng, dv=0.08), height=0.6, transl=0.5, rough=0.5, noise_amp=0.1)
         for j in range(1, 4):  # small dark joints
             q = c + (end - c) * j / 4
             cv.ellipse(q, W * 0.007, W * 0.005, a, (0.16, 0.16, 0.10), height=0.7)
