@@ -1,0 +1,44 @@
+D1 - perception / body-update data race in CreatureSystem::step (Docs/PERFORMANCE.md, section 6.3).
+
+Splits phase 1 of CreatureSystem::step into two parallelFor passes: first every animal's body
+(updatePhysiology, updateInjuries, updateMemory), then every animal's perception. perceive() reads
+other animals' health, fatigue and defence, which the old single pass could be writing on another
+thread at the same time (ThreadSanitizer: Perception.cpp perceive() vs Body.cpp recomputeImpairment /
+updatePhysiology), making N-thread runs differ from 1-thread runs from time to time.
+Cost: one more parallelFor per step (Docs/PERFORMANCE.md, section 2.4). Changes trajectories.
+
+Not applied: Source/NoctisCore/Private/Creatures belongs to another work stream. Made against commit
+5eabfd4 (CreatureSystem.cpp blob bf18c48); also applies to the working copy of 16 October 2026, 04:30.
+Apply from the repository root with:  git apply Docs/patches/D1_perception_body_phase_split.diff
+
+diff --git a/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp b/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp
+index bf18c48..052b2e9 100644
+--- a/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp
++++ b/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp
+@@ -413,7 +413,7 @@ void CreatureSystem::step(WorldContext& ctx)
+     const size_t n = creatures_.size();
+     JobScheduler& jobs = *ctx.jobs;
+ 
+-    // 1) Body + 2) perception (parallel, writes only to self).
++    // 1) Body (parallel, writes only to self).
+     jobs.parallelFor(n, [&](size_t i) {
+         Creature& c = creatures_[i];
+         if (!c.alive)
+@@ -430,6 +430,17 @@ void CreatureSystem::step(WorldContext& ctx)
+             updateMemory(c, sp, ctx, elapsed);
+             c.lastUpdate = now;
+         }
++    }, 8);
++
++    // 2) Perception (parallel, writes only to self). Separate pass: perceive() reads other animals' body
++    // state (health, fatigue, defence), which must not change while it is read.
++    jobs.parallelFor(n, [&](size_t i) {
++        Creature& c = creatures_[i];
++        if (!c.alive)
++        {
++            return;
++        }
++        const SpeciesRuntime& sp = (*species_)[static_cast<size_t>(c.speciesIndex)];
+         const float perceptionInterval = lodInterval(c.lod, lod_.perceptionFullS, lod_.perceptionNearS, lod_.perceptionFarS);
+         if (now - c.lastPerception >= perceptionInterval)
+         {

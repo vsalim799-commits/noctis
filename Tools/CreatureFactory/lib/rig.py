@@ -195,7 +195,7 @@ def run(ctx):
     pal = doc["palette"]
     m_body = material_body(ctx, bpy)
     m_eye = material_simple(bpy, "M_Eye", (0.3, 0.2, 0.05), 0.04, spec=0.8, coat=1.0, image=ctx.path("textures", f"T_{ctx.species}_Eye_BaseColor.png"))
-    m_claw = material_simple(bpy, "M_Claw", tuple(pal["claw"]), 0.38, spec=0.55, use_vcol=True)
+    m_claw = material_simple(bpy, "M_Claw", tuple(pal["claw"]), 0.55, spec=0.5, use_vcol=True)
     m_tooth = material_simple(bpy, "M_Teeth", tuple(pal["tooth"]), 0.3, spec=0.6)
     me.materials.clear()
     me.materials.append(m_body)

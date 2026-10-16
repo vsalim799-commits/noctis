@@ -53,11 +53,28 @@ jambe, pied, bras), leurs rayons de fusion et des **masques** (plis du cou, gorg
 scutellées du métatarse/des orteils, coussinets, peau rugueuse cornée, paupières, lèvres, narines…), les
 yeux, griffes et dents, les paramètres de peau (`skin`) et la palette (`palette`, SPÉCULATIF).
 Pour le T. rex elle est dérivée du modèle three.js (`Tools/Preview/src/creature/trex_anatomy.js`), dont
-`species/tyrannosaurus_rex.py` corrige les défauts connus (voir son en-tête) : crâne refait en sections
-lofts (museau plus long et effilé, silhouette dorsale « en trou de serrure », profil nasal convexe), œil
-avec globe séparé, paupières et arcade (lacrymal + postorbitaire) au lieu d'un trou, pattes ré-posées à
-la hauteur de hanche de l'espèce avec voie étroite et jambes plus épaisses, cou moins large, muscles
-caudofémoraux intégrés.
+`species/tyrannosaurus_rex.py` corrige les défauts connus (voir son en-tête) :
+
+* **tête refaite** en deux « lofts » (crâne + lèvre supérieure, mandibule) à sections superellipses
+  **effilées** (paramètre `tw` : la demi-largeur diminue vers le haut → museau en ogive, nasaux étroits
+  au-dessus de maxillaires inclinés) ; silhouette dorsale « en trou de serrure » (museau étroit, région
+  temporale large de ~0,9 m) pour des orbites tournées vers l'avant ; profil dorsal le plus haut au-dessus
+  du lacrymal/postorbitaire ; mandibule profonde au surangulaire ; muscles adducteurs, joues
+  (jugal/quadratojugal), bajoues (ptérygoïdien), gorge ;
+* **lèvres** (Cullen et al. 2023) : les deux lofts se rejoignent par des faces plates de même largeur ; leurs
+  coins arrondis forment la commissure (sillon labial) qui remonte vers l'arrière et disparaît sous la joue
+  derrière le coin de la bouche ; dents cachées à l'intérieur ;
+* **œil** : globe séparé (UV polaires, iris), affleurant ~8 mm au-dessus de la surface, paupières en arcs
+  épais en amande, pli palpébral, **arcade** continue (lacrymal → postorbitaire) qui surplombe et ombre
+  l'œil, corne lacrymale et bosse postorbitaire rugueuses, renflement jugal, narine ovale à l'avant ;
+* **pattes** ré-posées à la hauteur de hanche de l'espèce (acétabulum 3,1 m) avec les longueurs osseuses
+  inchangées (fémur 1,30 / tibia 1,155 / métatarse 0,61 m) et une **musculature massive** : cuisse en
+  « pilon » (iliotibial, fémorotibial), caudofémoral reliant la base de la queue au 4e trochanter
+  (Persons & Currie 2011), gastrocnémien effilé vers le tendon, orteils plus épais ;
+* tronc plus large au thorax, **queue plus épaisse plus longtemps** (moins conique).
+
+Les tables de sections (tête, tronc) et les formes sont des valeurs de sculpture documentées dans le
+module ; ce qui n'est pas mesuré sur des fossiles est listé comme spéculatif dans les métadonnées.
 
 ### sdf
 Évaluation numba du champ (union lisse polynomiale, soustractions lisses, culling par grille + AABB),
@@ -70,14 +87,18 @@ Relief de peau (`lib/skin.py`, même fonction pour le maillage et pour la cuisso
 écailles « basement » non imbriquées (3 couches de Worley, poids par région, plus grosses sur le dos, plus
 fines sous le ventre), micro-écailles des paupières et des lèvres, écailles de grande taille éparses
 (hypothèse de design), plaques cornées rugueuses du museau et des bosses orbitaires, plis du cou
-(dorso-ventraux), de la gorge et des articulations, rides en fBm, scutelles transversales à l'avant du
-métatarse et sur les orteils, coussinets plantaires. Un filtre (taille de voxel ou de texel) supprime
+(dorso-ventraux), de la gorge et des articulations, rides (sillons étroits le long des lignes d'un bruit
+fBm « ridged », étirés le long de l'axe de l'os dominant : plis longitudinaux du tronc et de la queue, peau
+bombée entre les sillons), scutelles transversales irrégulières à l'avant du métatarse et sur les orteils,
+coussinets plantaires, rangées d'écailles labiales plus grandes. Un filtre (taille de voxel ou de texel) supprime
 l'aliasing. Le maillage dense (voxel 6 mm en hero) est déplacé le long de la normale SDF.
 
 ### retopo
-Décimation à ~160 k faces puis **QuadriFlow** (symétrie X, cible de faces de la qualité), projection de
-Newton sur la surface exacte du SDF et relaxation tangentielle, symétrisation exacte. Griffes décimées
-(~360 triangles chacune). Les LOD sont produits à l'export.
+Remaillage voxel OpenVDB de Blender (quads uniformes, taille de voxel déduite de la cible de faces de la
+qualité) — QuadriFlow a été essayé d'abord mais perdait des morceaux de queue sur ce modèle —, puis
+projection de Newton sur la surface exacte du SDF et relaxation tangentielle ; densification locale
+(subdivision) autour des yeux et des narines, projetée le long de la normale. Écart sculpture → low-poly
+mesuré (`retopo_stats.json`). Griffes décimées (~360 triangles chacune). Les LOD sont produits à l'export.
 
 ### uv
 Cartes anatomiques (os dominant de chaque face) : tête+mâchoire, corps (bassin, dos, cou, queue), cuisse

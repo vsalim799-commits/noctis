@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,7 @@ struct RunDigest
     u64 stateHash = 0;
     u64 eventHash = 0;
     size_t events = 0;
+    size_t hunts = 0; // HuntTargetSelected events: predator-on-prey perception ran
     size_t alive = 0;
     std::string census;
     double wallS = 0.0;
@@ -47,6 +49,7 @@ RunDigest runSchedule(u64 seed, int threads, double realtimeS, double accelerate
     d.stateHash = noctistest::hashWorldState(*w);
     d.eventHash = rec.hash();
     d.events = rec.total();
+    d.hunts = rec.count(EventType::HuntTargetSelected);
     d.alive = w->creatures().aliveCount();
     d.census = noctistest::censusLine(*w);
     return d;
@@ -67,24 +70,54 @@ void compareDigests(const RunDigest& a, const RunDigest& b, const char* what)
 
 NOCTIS_TEST("sim.determinism.same_seed_threads")
 {
-    // Start at 21:00 so that 6.5 accelerated hours cross midnight (daily update) and a 6-hourly update.
     const int n = std::max(2, noctistest::testThreads());
+    // Schedule A, seed 11: start at 21:00 so that 6.5 accelerated hours cross midnight (daily update) and a
+    // 6-hourly update. Its animals never hunt (0 HuntTargetSelected), so it does not exercise predator-on-prey
+    // perception: schedule B below covers that.
     const RunDigest a = runSchedule(11u, 1, 600.0, 6.5, 21.0);
     const RunDigest b = runSchedule(11u, 1, 600.0, 6.5, 21.0);
     const RunDigest c = runSchedule(11u, n, 600.0, 6.5, 21.0);
     REQUIRE_GT(a.alive, size_t(0));
-    NOTE("1 thread : state %016llx events %016llx (%zu events, %zu alive, %.1f s)", static_cast<unsigned long long>(a.stateHash),
-         static_cast<unsigned long long>(a.eventHash), a.events, a.alive, a.wallS);
-    NOTE("1 thread': state %016llx events %016llx (%zu events, %.1f s)", static_cast<unsigned long long>(b.stateHash),
+    NOTE("A, 1 thread : state %016llx events %016llx (%zu events, %zu hunts, %zu alive, %.1f s)", static_cast<unsigned long long>(a.stateHash),
+         static_cast<unsigned long long>(a.eventHash), a.events, a.hunts, a.alive, a.wallS);
+    NOTE("A, 1 thread': state %016llx events %016llx (%zu events, %.1f s)", static_cast<unsigned long long>(b.stateHash),
          static_cast<unsigned long long>(b.eventHash), b.events, b.wallS);
-    NOTE("%d threads: state %016llx events %016llx (%zu events, %.1f s)", n, static_cast<unsigned long long>(c.stateHash),
+    NOTE("A, %d threads: state %016llx events %016llx (%zu events, %.1f s)", n, static_cast<unsigned long long>(c.stateHash),
          static_cast<unsigned long long>(c.eventHash), c.events, c.wallS);
-    NOTE("census: %s", a.census.c_str());
-    compareDigests(a, b, "two single-threaded runs with the same seed");
-    compareDigests(a, c, "single-threaded and multi-threaded runs");
-    // A different seed must give a different valley (the hash is not trivially constant).
-    const RunDigest other = runSchedule(12u, 1, 60.0, 1.0, 21.0);
-    CHECK_NE(other.stateHash, a.stateHash);
+    NOTE("A census: %s", a.census.c_str());
+    compareDigests(a, b, "schedule A: two single-threaded runs with the same seed");
+    compareDigests(a, c, "schedule A: single-threaded and multi-threaded runs");
+
+    // Schedule B, seed 1: the schedule of sim.events.rate_sanity (05:00, 30 min of real time, then 12 accelerated
+    // hours), where predators meet an Edmontosaurus herd within the first hours. Predators then evaluate prey
+    // (perceive() reads other animals' body state) and several threads emit events at the same instant, the two
+    // paths where thread scheduling could leak into the results (perception / body-update race,
+    // Docs/PERFORMANCE.md section 6.3; same-time event order, which EventBus::flush's total sort key makes
+    // independent of the threads). Compared twice against the single-threaded run: without a sanitizer such a race
+    // shows only in some runs; ThreadSanitizer (CI) is the reliable detector. Until the D1 fix
+    // (Docs/patches/D1_perception_body_phase_split.diff) is applied, these two comparisons fail now and then:
+    // that is the defect they are meant to catch, not a flaky test.
+    const RunDigest h = runSchedule(1u, 1, 1800.0, 12.0, 5.0);
+    REQUIRE_GT(h.hunts, size_t(0)); // otherwise this schedule no longer covers predator-on-prey perception
+    const RunDigest hn1 = runSchedule(1u, n, 1800.0, 12.0, 5.0);
+    const RunDigest hn2 = runSchedule(1u, n, 1800.0, 12.0, 5.0);
+    NOTE("B, 1 thread : state %016llx events %016llx (%zu events, %zu hunts, %zu alive, %.1f s)", static_cast<unsigned long long>(h.stateHash),
+         static_cast<unsigned long long>(h.eventHash), h.events, h.hunts, h.alive, h.wallS);
+    NOTE("B, %d threads: state %016llx events %016llx (%zu events, %.1f s); again: %016llx / %016llx (%zu events, %.1f s)", n,
+         static_cast<unsigned long long>(hn1.stateHash), static_cast<unsigned long long>(hn1.eventHash), hn1.events, hn1.wallS,
+         static_cast<unsigned long long>(hn2.stateHash), static_cast<unsigned long long>(hn2.eventHash), hn2.events, hn2.wallS);
+    compareDigests(h, hn1, "schedule B: single-threaded and multi-threaded runs (1st; race D1 if its patch is not applied, Docs/PERFORMANCE.md 6.3)");
+    compareDigests(h, hn2, "schedule B: single-threaded and multi-threaded runs (2nd; race D1 if its patch is not applied, Docs/PERFORMANCE.md 6.3)");
+
+    // A different seed gives a different valley (the hash is not trivially constant). Compared right after
+    // initialize, where the clock and the tick count are the same for both seeds, so only the seed can make the
+    // two hashes differ.
+    std::unique_ptr<WorldSimulation> w11 = noctistest::makeWorld(noctistest::smallWorldConfig(11u, 1, 0.3f));
+    std::unique_ptr<WorldSimulation> w12 = noctistest::makeWorld(noctistest::smallWorldConfig(12u, 1, 0.3f));
+    REQUIRE(w11 != nullptr && w12 != nullptr);
+    CHECK_EQ(w11->tick(), w12->tick());
+    CHECK_EQ(w11->clock().seconds(), w12->clock().seconds());
+    CHECK_NE(noctistest::hashWorldState(*w11), noctistest::hashWorldState(*w12));
 }
 
 NOCTIS_TEST_LONG("sim.determinism.three_days_threads")
@@ -142,10 +175,8 @@ NOCTIS_TEST("sim.events.rate_sanity")
     {
         noctistest::failf(__FILE__, __LINE__, "%zu malformed event(s), first: %s", rec.badEvents(), rec.firstBad().c_str());
     }
-    if (rec.outOfOrder() > 0)
-    {
-        NOTE("%zu event(s) dispatched with a time earlier than a previous event", rec.outOfOrder());
-    }
+    // Events are dispatched in time order (EventBus::flush sorts each step's events by time first).
+    CHECK_EQ(rec.outOfOrder(), size_t(0));
     CHECK_GT(rec.total(), size_t(0));
     // Biological plausibility bounds (generous): an animal calling more than once a minute, on
     // average over half a day, or a population-wide rate above 20 calls per animal-hour indicates a
@@ -336,15 +367,21 @@ NOCTIS_TEST_LONG("sim.soak.20_days")
     {
         noctistest::failf(__FILE__, __LINE__, "%zu malformed event(s), first: %s", rec.badEvents(), rec.firstBad().c_str());
     }
+    CHECK_EQ(rec.outOfOrder(), size_t(0));
     u32 loudest = 0;
     const size_t maxCalls = rec.maxCallsPerIndividual(&loudest);
+    const Creature* lc = w->creatures().find(EntityId(loudest));
     const double vocRate = static_cast<double>(rec.count(EventType::Vocalization)) / std::max(1.0, creatureDays * 24.0);
-    NOTE("20 days: alive %zu -> %zu (min %zu, max %zu), %zu events, %.2f calls/creature/h, max %zu calls by one individual", alive0,
-         w->creatures().aliveCount(), minAlive, maxAlive, rec.total(), vocRate, maxCalls);
-    const size_t maxAlarms = rec.maxCallsPerIndividual(CallContext::Alarm);
+    NOTE("20 days: alive %zu -> %zu (min %zu, max %zu), %zu events, %.2f calls/creature/h, max %zu calls by one individual (%s)", alive0,
+         w->creatures().aliveCount(), minAlive, maxAlive, rec.total(), vocRate, maxCalls,
+         lc ? w->db().speciesAt(lc->speciesIndex).id.c_str() : "-");
+    u32 alarmist = 0;
+    const size_t maxAlarms = rec.maxCallsPerIndividual(CallContext::Alarm, &alarmist);
+    const Creature* ac = w->creatures().find(EntityId(alarmist));
     const double alarmRate = static_cast<double>(rec.calls(CallContext::Alarm)) / std::max(1.0, creatureDays * 24.0);
-    NOTE("alarm calls: %zu (%.2f /creature/h), at most %zu by one individual (%.1f /h)", rec.calls(CallContext::Alarm), alarmRate, maxAlarms,
-         static_cast<double>(maxAlarms) / (20.0 * 24.0));
+    NOTE("alarm calls: %zu (%.2f /creature/h), at most %zu by one individual (%.1f /h, %s%s)", rec.calls(CallContext::Alarm), alarmRate, maxAlarms,
+         static_cast<double>(maxAlarms) / (20.0 * 24.0), ac ? w->db().speciesAt(ac->speciesIndex).id.c_str() : "-",
+         ac ? (ac->alive ? (ac->ageYears(w->clock().seconds()) < w->creatures().speciesOf(*ac).sim().growth.maturityAgeYears ? ", juvenile" : ", adult") : ", dead") : "");
     CHECK_LE(vocRate, 20.0);
     CHECK_LE(static_cast<double>(maxCalls) / (20.0 * 24.0), 60.0);
     CHECK_LE(static_cast<double>(maxAlarms) / (20.0 * 24.0), 20.0);

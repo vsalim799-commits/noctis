@@ -66,8 +66,15 @@ class _NT:
             self.link(v, sock)
 
 
-def terrain_material(masks, name="M_NoctisTerrain_Render", ground_dir=None, tile_scale=1.0, sharp=4.0):
-    """masks: dict mask name -> (png path, channel letter) from terrain.crop_masks()."""
+# Forest habitats and their canopy closure, for the optional understorey shade of the render material.
+CANOPY = {"riparian_forest": 1.0, "levee_woodland": 0.7, "upland_conifer_forest": 1.0, "backswamp": 0.5}
+
+
+def terrain_material(masks, name="M_NoctisTerrain_Render", ground_dir=None, tile_scale=1.0, sharp=4.0, canopy_shade=0.0):
+    """masks: dict mask name -> (png path, channel letter) from terrain.crop_masks().
+    canopy_shade (0..1, render-only approximation): darkens the forest floor where the habitats are wooded. Alpha-card
+    LODs are far more porous than a real closed canopy, so from above the sun- and sky-lit litter shows through the
+    crowns as bright specks; real understorey light under a closed canopy is a few % of open light."""
     from . import ground as groundmod
     ground_dir = ground_dir or common.GROUND_DIR
     mat = bpy.data.materials.new(name)
@@ -144,6 +151,22 @@ def terrain_material(masks, name="M_NoctisTerrain_Render", ground_dir=None, tile
         dark = T.math("SUBTRACT", 1.0, T.math("MULTIPLY", wk, 0.35, x=500), x=600)
         col = T.vmath("SCALE", col, x=700, scale=dark)
         rough = T.math("MULTIPLY", rough, T.math("SUBTRACT", 1.0, T.math("MULTIPLY", wk, 0.45, x=500), x=600), x=700)
+    # understorey shade (render-only, see docstring)
+    if canopy_shade > 0:
+        cw = None
+        for hname, k in CANOPY.items():
+            if hname in chan:
+                term = T.math("MULTIPLY", chan[hname], float(k), x=500)
+                cw = term if cw is None else T.math("ADD", cw, term, x=550)
+        if cw is not None:
+            cw = T.math("MINIMUM", cw, 1.0, x=600)
+            shade = T.math("SUBTRACT", 1.0, T.math("MULTIPLY", cw, float(canopy_shade), x=650), x=700)
+            col = T.vmath("SCALE", col, x=750, scale=shade)
+            # no sky sheen on the shaded litter: seen at grazing angles through porous crowns, a glossy floor
+            # mirrors the bright horizon and sparkles (the real canopy would occlude that sky)
+            rough = T.math("MAXIMUM", rough, cw, x=800)
+            spec_k = T.math("MULTIPLY", 0.4, shade, x=800)
+            T.link(spec_k, bsdf.inputs["Specular IOR Level"])
     # macro variation
     noise = T.node("ShaderNodeTexNoise", 600, 900)
     noise.inputs["Scale"].default_value = 0.012
@@ -165,7 +188,8 @@ def terrain_material(masks, name="M_NoctisTerrain_Render", ground_dir=None, tile
     nm.inputs["Strength"].default_value = 1.0
     T.link(comb.outputs["Color"], nm.inputs["Color"])
     T.link(nm.outputs["Normal"], bsdf.inputs["Normal"])
-    bsdf.inputs["Specular IOR Level"].default_value = 0.4
+    if not bsdf.inputs["Specular IOR Level"].is_linked:
+        bsdf.inputs["Specular IOR Level"].default_value = 0.4
     return mat
 
 

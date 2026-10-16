@@ -163,13 +163,31 @@ normale en est dérivée.
 ## Rendus de contrôle
 
 * `assets_sheet.png` : vignette Cycles du LOD0 de chaque asset (triangles des 3 LOD, hauteur) + les 8 sols.
-* `valley_aerial.png` : vol bas au-dessus des méandres à l'heure dorée, brume.
-* `valley_ground.png` : à hauteur d'œil sur une berge, prêles et fougères, conifères et feuillus derrière,
-  brume matinale.
+* `valley_aerial.png` : vol bas (135 m) au-dessus des méandres à l'heure dorée (soleil à 6°), brume de
+  distance, couche de nuages ; recadrage de 3,2 km de la simulation (centre x 3600, y 4800) + la vallée entière
+  à basse résolution au-delà.
+* `valley_ground.png` : à hauteur d'œil (1,6 m) sur la berge ouest d'un méandre (x 3851, y 4528), prêles et
+  fougères, conifères taxodiacés et feuillus derrière, brume matinale ; recadrage de 900 m + patch fin de 90 m
+  à 0,1 m (micro-relief cuit depuis les hauteurs des textures de sol) ; une vingtaine de plantes de premier plan
+  placées à la main (direction artistique), tout le reste suit les masques.
 Les deux scènes utilisent exactement le helper public `Tools/CreatureFactory/scenes/vegetation_library.py`
 (terrain recadré depuis la simulation, sol mélangé par habitats, niveau d'eau simulé, dispersion par les masques
 de la simulation, LOD par distance à la caméra). Chaque rendu écrit un `.json` voisin (réglages, nombre
-d'instances par asset et par LOD, temps).
+d'instances par asset et par LOD, temps mural et CPU, charge machine).
+
+Techniques de rendu à connaître (`envlib/scenes.py`) :
+* **Brume** : passe Mist mélangée au compositeur ; **brouillard bas analytique** (épaisseur optique ∝ densité ×
+  distance × moyenne de exp(−hauteur au-dessus de l'eau / 2,5 m) entre la caméra et le point vu ; distance
+  tirée de la passe Mist, moyennée donc anti-crénelée, hauteur de la passe Position), sans bruit et gratuit,
+  à la place d'un volume Cycles (2,5 fois plus lent et granuleux à 12–16 échantillons). La passe Depth (un seul
+  échantillon par pixel) ne sert qu'à exclure le ciel : l'utiliser comme distance donne des blocs sombres
+  autour des tiges fines.
+* **Passes non débruitées** : Mist / Position ne passent pas par OIDN ; là où des échantillons traversent les
+  trous des cartes alpha, la brume « perce » en points clairs sur les houppiers. Une ouverture morphologique de
+  1 px (Dilate/Erode −1 puis +1) sur la passe Mist les supprime sans déplacer les silhouettes (c'était la
+  cause des paillettes beiges des premiers rendus aériens).
+* **Ombre de sous-bois** (`canopy_shade`, vue aérienne) : assombrit et mate le sol des habitats boisés, car les
+  houppiers en cartes sont plus poreux qu'une vraie canopée fermée.
 
 ## Limites connues
 

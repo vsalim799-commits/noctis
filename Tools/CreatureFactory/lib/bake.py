@@ -185,8 +185,8 @@ def palette_albedo(pal, P, N0, reg, M, ch, extra):
     tail = R["tail"] / rs
     # countershading: ventral -> flank -> dorsal by normal and by height above the local belly line
     col = c("ventral") * (1 - smoothstep(-0.65, 0.05, ny))[:, None] + c("flank") * smoothstep(-0.65, 0.05, ny)[:, None]
-    dor = smoothstep(0.05, 0.75, ny)
-    col = col * (1 - dor)[:, None] + c("dorsal") * dor[:, None]
+    dor = smoothstep(-0.05, 0.6, ny)
+    col = col * (1 - dor)[:, None] + (c("dorsal") * 0.88) * dor[:, None]
     # head: darker crown, lighter lips / jaw margin
     ht = head * smoothstep(0.2, 0.8, ny)
     col = col * (1 - ht)[:, None] + c("head_top") * ht[:, None]
@@ -195,7 +195,7 @@ def palette_albedo(pal, P, N0, reg, M, ch, extra):
     # mottling (two scales of fBm), stronger dorsally
     n1, n2 = extra["n1"], extra["n2"]
     mot = smoothstep(0.08, 0.42, n1 + 0.45 * n2) * (0.35 + 0.65 * smoothstep(-0.3, 0.6, ny)) * (1 - 0.6 * head)
-    col = col * (1 - 0.55 * mot)[:, None] + c("mottle_dark") * (0.55 * mot)[:, None]
+    col = col * (1 - 0.65 * mot)[:, None] + c("mottle_dark") * (0.65 * mot)[:, None]
     # faint transverse dorsal bands on the tail and the back (speculative)
     x = P[:, 0]
     band = smoothstep(0.25, 0.75, 0.5 + 0.5 * np.sin(2 * np.pi * (x + 0.15 * n2) / 0.62)) * smoothstep(-1.0, -1.6, x) * smoothstep(0.0, 0.6, ny)
@@ -212,13 +212,13 @@ def palette_albedo(pal, P, N0, reg, M, ch, extra):
     col *= (0.86 + 0.28 * rnd)[:, None]
     col *= (0.70 + 0.30 * top)[:, None]
     col *= (1 + 0.18 * feat)[:, None]
-    col *= (1 - 0.45 * crease)[:, None]
+    col *= (1 - 0.3 * crease)[:, None]
     # dried mud on the feet (speculative grime)
     mud = smoothstep(0.55, 0.05, P[:, 1]) * smoothstep(-0.2, 0.3, extra["n3"])
     col = col * (1 - 0.35 * mud)[:, None] + np.array([[0.13, 0.11, 0.085]]) * (0.35 * mud)[:, None]
     col = np.clip(col, 0.01, 0.9)
     # roughness
-    rough = 0.64 - 0.08 * top + 0.12 * (1 - top) + 0.1 * crease - 0.14 * scute - 0.1 * lip - 0.05 * np.clip(M[:, 7], 0, 1) + 0.06 * rug + 0.04 * extra["n2"]
+    rough = 0.64 - 0.08 * top + 0.12 * (1 - top) + 0.1 * crease - 0.04 * scute - 0.1 * lip - 0.05 * np.clip(M[:, 7], 0, 1) + 0.06 * rug + 0.04 * extra["n2"]
     rough = np.clip(rough + 0.08 * mud, 0.3, 0.92)
     # subsurface weight (soft thin skin high, plates low)
     soft = np.clip(np.maximum.reduce([lip, np.clip(M[:, 7], 0, 1), np.clip(M[:, 1], 0, 1), np.clip(M[:, 11], 0, 1)]), 0, 1)

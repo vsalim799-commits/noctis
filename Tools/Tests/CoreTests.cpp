@@ -102,7 +102,7 @@ NOCTIS_TEST("core.random.splitmix_and_hash")
     // FNV-1a 64 basis is 14695981039346656037). Changing it would reshuffle every derived seed, so
     // the test pins the current values instead of the standard ones (see Docs/PERFORMANCE.md, QA notes).
     CHECK_EQ(hashString(""), 1469598103934665603ull);
-    CHECK_EQ(hashString("a"), hashString("a"));
+    CHECK_EQ(hashString("a"), 4953267810257967366ull); // 0x44bd8ad473cd9906, recomputed independently (Python)
     CHECK_NE(hashString("ab"), hashString("ba"));
 }
 

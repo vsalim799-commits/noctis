@@ -196,8 +196,8 @@ def skin_disp(x, y, z, nx, ny, nz, reg, mk, bone, P, LW, BH, BA, BL, out):
     # --- micro scales on lids and lips -------------------------------------------------------------
     if m_micro > 0.02:
         c = P[6] if m_lip >= m_lid else P[7]
-        h, t, hid = scale_layer(x, y, z, c, 0.22, 51, P[50])
-        disp += m_micro * h * 0.2 * c
+        h, t, hid = scale_layer(x, y, z, c, 0.16, 51, P[50])
+        disp += m_micro * h * 0.24 * c
         top += m_micro * t
         rnd += m_micro * hid
     # --- rugose cornified plates -----------------------------------------------------------------
@@ -248,17 +248,19 @@ def skin_disp(x, y, z, nx, ny, nz, reg, mk, bone, P, LW, BH, BA, BL, out):
         front = nx * fx + ny * fy + nz * fz
         upn = ny
         L = P[14] if m_sm >= m_st else P[15]
-        warp = 0.18 * vnoise(x * 9.0, y * 9.0, z * 9.0, 81)
+        warp = 0.28 * vnoise(x * 9.0, y * 9.0, z * 9.0, 81) + 0.1 * vnoise(x * 23.0, y * 23.0, z * 23.0, 83)
         uu = u / L + warp
         k = math.floor(uu)
         fr = uu - k
-        band = _smooth(0.0, 0.12, fr) * _smooth(1.0, 0.86, fr)
+        # shingle profile: each plate rises towards its distal edge (overlapping, bird-like scutes),
+        # slightly domed, with a per-plate length jitter
+        band = _smooth(0.0, 0.1, fr) * _smooth(1.0, 0.9, fr) * (0.62 + 0.38 * _smooth(0.0, 0.85, fr))
         # lateral subdivision of each band (brick pattern) away from the front midline
         sx = hy * az - hz * ay
         sy = hz * ax - hx * az
         sz = hx * ay - hy * ax
         lat = (sx * fx + sy * fy + sz * fz)
-        cols = lat / (L * 1.25) + 0.5 * (k % 2)
+        cols = lat / (L * (1.1 + 0.5 * _hash(int(k), 7, bone, 93))) + 0.5 * (k % 2) + 0.15 * vnoise(x * 11.0, y * 11.0, z * 11.0, 95)
         cf = cols - math.floor(cols)
         colg = _smooth(0.0, 0.1, cf) * _smooth(1.0, 0.9, cf)
         fronty = max(0.0, front) if m_sm >= m_st else max(0.0, 0.6 * upn + 0.6 * front)
@@ -310,13 +312,27 @@ def skin_disp(x, y, z, nx, ny, nz, reg, mk, bone, P, LW, BH, BA, BL, out):
         disp += a * P[27] * (math.sqrt(abs(s)) - 0.62)
         crease = max(crease, a * (1.0 - _smooth(0.0, 0.45, abs(s))))
     # --- wrinkles: ridged fBm on flanks / thighs / neck / tail --------------------------------------
-    ww = (reg[3] + reg[6] + reg[2] + 0.6 * reg[5] + 0.5 * reg[4]) / rs
+    ww = (reg[3] + reg[6] + reg[2] + 0.8 * reg[5] + 0.5 * reg[4]) / rs
     if ww > 0.02:
         f = 1.0 / P[29]
-        rn = 1.0 - abs(fbm(x * f, y * f * 1.7, z * f, 117, 3) * 2.0)
+        # anisotropic: wrinkles stretched along the local bone axis (long skin folds along the trunk
+        # and tail, like the loose skin of large reptiles); P[23] = stretch factor (0 = isotropic)
+        xs = x
+        ys = y
+        zs = z
+        if bone >= 0 and P[23] > 0:
+            dd = x * BA[bone, 0] + y * BA[bone, 1] + z * BA[bone, 2]
+            xs = x - P[23] * dd * BA[bone, 0]
+            ys = y - P[23] * dd * BA[bone, 1]
+            zs = z - P[23] * dd * BA[bone, 2]
+        rn = 1.0 - abs(fbm(xs * f, ys * f, zs * f, 117, 4) * 2.0)
         rn = rn * rn
-        disp += ww * P[28] * (rn - 0.5) * (1.0 - plate)
-        crease = max(crease, ww * 0.5 * max(0.0, rn - 0.6) / 0.4)
+        # second, finer and isotropic wrinkle octave
+        rn2 = 1.0 - abs(fbm(x * f * 2.7, y * f * 2.7, z * f * 2.7, 131, 2) * 2.0)
+        rn2 = rn2 * rn2
+        # narrow grooves along the ridged-noise lines, broad puffy skin between them
+        disp += ww * P[28] * ((0.5 - rn) + 0.35 * (0.5 - rn2)) * (1.0 - plate)
+        crease = max(crease, ww * 0.35 * max(0.0, rn - 0.6) / 0.4)
     out[0] = disp
     out[1] = min(1.0, top)
     out[2] = rnd - math.floor(rnd)
@@ -356,6 +372,7 @@ def pack_params(skin, doc, filter_width=0.0):
     P[27] = skin["joint_folds"]["amplitude_m"]
     P[28] = skin["flank_wrinkles"]["amplitude_m"]
     P[29] = skin["flank_wrinkles"]["scale_m"]
+    P[23] = skin["flank_wrinkles"].get("axis_stretch", 0.0)
     P[50] = filter_width
     for r, name in enumerate(REGIONS):
         P[30 + r] = fs["regions"].get(name, 0.0)

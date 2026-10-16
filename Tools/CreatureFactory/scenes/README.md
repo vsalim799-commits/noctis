@@ -48,9 +48,13 @@ stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0,
   la caméra (micro-relief cuit depuis les hauteurs des textures de sol : empreintes, rides de sable).
 * Garder `keep_clear` autour des pattes (3–6 m) pour éviter qu'une fougère traverse la créature, puis replacer à la
   main 3 à 10 plantes de premier plan via `extra` pour composer le cadre.
-* Lumière : voir `Tools/EnvironmentFactory/envlib/scenes.py` (ciel Nishita + soleil, brume par passe Mist, brouillard
-  bas volumétrique) ; les deux rendus de référence sont `Output/environment/valley_aerial.png` et
-  `valley_ground.png`.
+* Lumière : voir `Tools/EnvironmentFactory/envlib/scenes.py` (ciel Nishita + soleil, brume par passe Mist,
+  brouillard bas « analytique » au compositeur : `mist_compositor(..., height_fog=dict(z0=niveau_eau, cam_z=...,
+  density=0.0065, height=2.5))`, sans bruit et sans coût de rendu ; un volume Cycles reste possible mais il est
+  lent et granuleux à peu d'échantillons) ; les deux rendus de référence sont `Output/environment/valley_aerial.png`
+  et `valley_ground.png`. Réutiliser `mist_compositor` plutôt qu'un mélange Mist maison : il applique une ouverture
+  morphologique de 1 px à la passe Mist (non débruitée), sinon la brume perce en points clairs à travers les
+  cartes de feuillage ; et son brouillard bas tire la distance de la passe Mist (anti-crénelée), pas de Depth.
 * Plans larges sous soleil rasant : les reflets spéculaires de milliers de cartes de feuilles sous-pixel
   scintillent ; `envlib.scenes.tune_leaf_materials(roughness=0.7, specular=0.2)` (Tools/EnvironmentFactory) les
   adoucit après `scatter()`.

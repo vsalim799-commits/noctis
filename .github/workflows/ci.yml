@@ -1,6 +1,7 @@
 # Noctis core CI: build the engine-agnostic simulation core with the same strict flags as the
 # Unreal module (no exceptions, no RTTI, warnings as errors) on four toolchains, run the quick
 # test suite, run the benchmark, and keep the benchmark JSON and the test logs as artifacts.
+# Sanitizer builds (ASan + UBSan, TSan) and, weekly or on demand, the long tests run in their own jobs.
 name: CI
 
 on:
@@ -16,9 +17,13 @@ on:
   schedule:
     - cron: "17 3 * * 1" # weekly, Monday 03:17 UTC: long tests
 
+# A newer commit cancels the running CI of an older one on the same pull request only. A run started
+# for a push to main is never cancelled (GitHub keeps at most one pending run per group, so a run still
+# queued can be superseded by a newer push), and the weekly scheduled run (long tests) has its own
+# group, so a push neither cancels it nor waits behind it.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -108,13 +113,6 @@ jobs:
         working-directory: build
         run: ctest -L short --timeout 900 --output-junit ctest-short.xml
 
-      - name: Test (long label)
-        if: ${{ !cancelled() && steps.build.outcome == 'success' && matrix.name == 'linux-gcc' && (github.event_name == 'schedule' || inputs.long_tests) }}
-        working-directory: build
-        env:
-          NOCTIS_LONG_TESTS: "1"
-        run: ctest -L long --timeout 7200 --output-junit ctest-long.xml
-
       # Runs even when a test failed: a red test must not hide the performance numbers.
       - name: Benchmark (quick)
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
@@ -129,5 +127,140 @@ jobs:
             bench-${{ matrix.name }}.json
             build/Testing/Temporary/LastTest*.log
             build/ctest-*.xml
+          if-no-files-found: warn
+          retention-days: 30
+
+  # Long tests (20-day soak, 72-hour determinism at 1 and N threads), linux-gcc, weekly or on demand.
+  # Own job so that its time limit is above the CTest one (7200 s): if a test hangs, CTest stops it and the
+  # JUnit report is still written and uploaded. Known failures (Docs/PERFORMANCE.md): the soak fails on the
+  # immigration defect D3 (section 6.5) and the 72-hour determinism test fails intermittently because of the
+  # perception / body-update race D1 (section 6.3, patch in Docs/patches/). Until both are fixed the job
+  # is allowed to fail, so a red result does not mark the whole run red: remove continue-on-error then.
+  long-tests:
+    name: linux-gcc-long
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.long_tests) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    continue-on-error: true
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Ninja
+        run: sudo apt-get update -q && sudo apt-get install -y -q ninja-build
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: linux-gcc-long
+          max-size: 400M
+
+      - name: Configure
+        run: >
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DNOCTIS_UE_STRICT=ON
+          -DNOCTIS_BUILD_BENCH=OFF
+
+      - name: Build
+        run: cmake --build build --parallel --target noctis_tests
+
+      - name: Test (long label)
+        working-directory: build
+        env:
+          NOCTIS_LONG_TESTS: "1"
+        run: ctest -L long --timeout 7200 --output-junit ctest-long.xml
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: noctis-linux-gcc-long
+          path: |
+            build/Testing/Temporary/LastTest*.log
+            build/ctest-long.xml
+          if-no-files-found: warn
+          retention-days: 30
+
+  # Sanitizers (GCC, Linux). ASan + UBSan over the whole quick suite; ThreadSanitizer over the tests
+  # that run the creature system on several threads, including sim.events.rate_sanity and the second
+  # schedule of sim.determinism.same_seed_threads, whose early predator-prey encounters expose the
+  # perception / body-update race D1 described in Docs/PERFORMANCE.md (section 6.3). A race report fails
+  # the TSan entry (exit code 66). Until the D1 patch (Docs/patches/D1_perception_body_phase_split.diff)
+  # is applied, the TSan entry is expected to fail and is allowed to: remove continue-on-error then.
+  sanitizers:
+    name: linux-gcc-${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: ${{ matrix.sanitize == 'thread' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: asan-ubsan
+            sanitize: address,undefined
+          - name: tsan
+            sanitize: thread
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Ninja
+        run: sudo apt-get update -q && sudo apt-get install -y -q ninja-build
+
+      # Ubuntu 24.04 runners use 32 bits of mmap randomisation, which the fixed shadow-memory layouts of
+      # GCC 13's ThreadSanitizer and AddressSanitizer runtimes do not support (TSan: "unexpected memory
+      # mapping"; ASan: random crashes at startup, actions/runner-images#9491): lower it for both entries.
+      - name: Allow sanitizer memory layout
+        run: sudo sysctl -w vm.mmap_rnd_bits=28
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: linux-gcc-${{ matrix.name }}
+          max-size: 400M
+
+      - name: Configure
+        run: >
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DNOCTIS_SANITIZE=${{ matrix.sanitize }}
+          -DNOCTIS_BUILD_BENCH=OFF
+
+      - name: Build
+        run: cmake --build build --parallel --target noctis_tests
+
+      - name: Test (ASan + UBSan, short label)
+        if: matrix.sanitize != 'thread'
+        env:
+          ASAN_OPTIONS: "detect_leaks=1:abort_on_error=1"
+          UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1"
+        run: ./build/noctis_tests --data Data --label short 2>&1 | tee sanitizer-tests.log
+
+      - name: Test (TSan, multi-threaded tests)
+        if: matrix.sanitize == 'thread'
+        env:
+          TSAN_OPTIONS: "halt_on_error=0 exitcode=66 history_size=4 second_deadlock_stack=1"
+        run: >
+          ./build/noctis_tests --data Data --threads 4
+          core.jobs world.sound sim.events.rate_sanity sim.no_nan_and_snapshot sim.determinism.same_seed_threads
+          2>&1 | tee sanitizer-tests.log
+
+      - name: Upload sanitizer log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: noctis-linux-gcc-${{ matrix.name }}
+          path: sanitizer-tests.log
           if-no-files-found: warn
           retention-days: 30

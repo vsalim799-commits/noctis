@@ -81,10 +81,12 @@ def blender_to_sim(terrain, X, Y):
 
 # ----------------------------------------------------------------------------------------------- terrain
 def build_terrain(center, size_m, res_m=2.0, shading=True, water=True, detail=None, name="NoctisTerrain", mask_px=1024,
-                  water_kw=None):
+                  water_kw=None, canopy_shade=0.0):
     """Terrain crop from the simulation heightmap (+ habitat-blended ground material and river water).
     detail: optional dict(center=(x, y), size=m, res=m) high-resolution patch near the camera.
-    water_kw: options of the water shader (color, wave_scale, bump_strength: 0.03 = calm mirror, 0.08 = breeze)."""
+    water_kw: options of the water shader (color, wave_scale, bump_strength: 0.03 = calm mirror, 0.08 = breeze).
+    canopy_shade: 0..1 darkening of the forest floor under wooded habitats (aerial shots: ~0.75, hides the lit litter
+    seen through the porous alpha-card crowns; eye-level shots: 0-0.3)."""
     import bpy
     from envlib import terrain as T
     from envlib import terrain_shading as TS
@@ -95,7 +97,7 @@ def build_terrain(center, size_m, res_m=2.0, shading=True, water=True, detail=No
     mat = None
     if shading:
         masks, _ = T.crop_masks(sim, center, size_m, px=mask_px)
-        mat = TS.terrain_material(masks)
+        mat = TS.terrain_material(masks, canopy_shade=canopy_shade)
     ob = T.build_terrain(center, size_m, res_m=res_m, name=name, detail=detail, sim=sim, collection=coll, material=mat)
     if water:
         T.build_water(center, size_m, res_m=max(2.0, res_m), name=name + "_Water", sim=sim, collection=coll,

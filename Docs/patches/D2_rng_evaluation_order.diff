@@ -1,0 +1,96 @@
+D2 - unspecified evaluation order of random draws (Docs/PERFORMANCE.md, section 6.4).
+
+Seven expressions draw two random numbers inside function arguments or operands whose evaluation
+order C++ leaves unspecified (GCC evaluates right to left, Clang left to right), so GCC and Clang
+builds give different worlds for the same seed. The patch draws them into locals first, in GCC's
+order, so GCC results are unchanged and Clang (and MSVC) reproduce them.
+
+Not applied: Source/NoctisCore/Private/Creatures belongs to another work stream. Made against commit
+5eabfd4; also applies (with line offsets) to the working copy of 16 October 2026, 04:30.
+Apply from the repository root with:  git apply Docs/patches/D2_rng_evaluation_order.diff
+
+diff --git a/Source/NoctisCore/Private/Creatures/Behavior.cpp b/Source/NoctisCore/Private/Creatures/Behavior.cpp
+index c15c44e..8ab36ac 100644
+--- a/Source/NoctisCore/Private/Creatures/Behavior.cpp
++++ b/Source/NoctisCore/Private/Creatures/Behavior.cpp
+@@ -775,7 +775,9 @@ void executeHunt(Context& k, float dt)
+         // Search: move through the range; prefer remembered prey areas and water sources (where prey gathers).
+         if (!b.hasTargetPos || distance(p, b.targetPos) < 15.0f)
+         {
+-            Vec2 goal = p + Vec2::fromHeading(c.rng.range(0.0f, kTwoPi)) * c.rng.range(150.0f, 450.0f);
++            const float xcDist1 = c.rng.range(150.0f, 450.0f);
++            const float xcHead1 = c.rng.range(0.0f, kTwoPi);
++            Vec2 goal = p + Vec2::fromHeading(xcHead1) * xcDist1;
+             float bestScore = -1.0f;
+             for (const PlaceMemory& m : c.memory.places)
+             {
+@@ -1036,7 +1038,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
+             float bestScore = -1.0f;
+             for (int i = 0; i < 6; ++i)
+             {
+-                const Vec2 cand = ctx.terrain->clampToBounds(p + Vec2::fromHeading(c.rng.range(0.0f, kTwoPi)) * c.rng.range(40.0f, 220.0f), 30.0f);
++                const float xcDist2 = c.rng.range(40.0f, 220.0f);
++                const float xcHead2 = c.rng.range(0.0f, kTwoPi);
++                const Vec2 cand = ctx.terrain->clampToBounds(p + Vec2::fromHeading(xcHead2) * xcDist2, 30.0f);
+                 float score = s.habitat[static_cast<int>(ctx.terrain->habitatAt(cand))] + 0.1f * c.rng.uniform();
+                 for (const PlaceMemory& m : c.memory.places)
+                 {
+@@ -1318,7 +1322,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
+         {
+             const Vec2 center = c.social.territoryRadius > 0.0f ? c.social.territoryCenter : c.memory.homeCenter;
+             const float r = c.social.territoryRadius > 0.0f ? c.social.territoryRadius : c.memory.homeRadius;
+-            b.targetPos = ctx.terrain->clampToBounds(center + Vec2::fromHeading(c.rng.range(0.0f, kTwoPi)) * r * c.rng.range(0.4f, 0.8f), 40.0f);
++            const float xcDist3 = c.rng.range(0.4f, 0.8f);
++            const float xcHead3 = c.rng.range(0.0f, kTwoPi);
++            b.targetPos = ctx.terrain->clampToBounds(center + Vec2::fromHeading(xcHead3) * r * xcDist3, 40.0f);
+             b.hasTargetPos = true;
+         }
+         setMove(c, steer(c, sp, ctx, b.targetPos - p, walk), walk, Posture::Normal);
+@@ -1366,7 +1372,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
+             float bestScore = ctx.vegetation->canopyCover(p);
+             for (int i = 0; i < 10; ++i)
+             {
+-                const Vec2 cand = ctx.terrain->clampToBounds(p + Vec2::fromHeading(c.rng.range(0.0f, kTwoPi)) * c.rng.range(20.0f, 180.0f), 30.0f);
++                const float xcDist4 = c.rng.range(20.0f, 180.0f);
++                const float xcHead4 = c.rng.range(0.0f, kTwoPi);
++                const Vec2 cand = ctx.terrain->clampToBounds(p + Vec2::fromHeading(xcHead4) * xcDist4, 30.0f);
+                 float score = ctx.vegetation->canopyCover(cand);
+                 if (ctx.water && ctx.water->depthAt(cand, *ctx.terrain) > 0.2f && ctx.water->depthAt(cand, *ctx.terrain) < c.hipHeightM * 0.6f)
+                 {
+@@ -1448,7 +1456,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
+                 float bestScore = -1.0f;
+                 for (int i = 0; i < 12; ++i)
+                 {
+-                    const Vec2 cand = ctx.terrain->clampToBounds(p + Vec2::fromHeading(c.rng.range(0.0f, kTwoPi)) * c.rng.range(20.0f, 300.0f), 40.0f);
++                    const float xcDist5 = c.rng.range(20.0f, 300.0f);
++                    const float xcHead5 = c.rng.range(0.0f, kTwoPi);
++                    const Vec2 cand = ctx.terrain->clampToBounds(p + Vec2::fromHeading(xcHead5) * xcDist5, 40.0f);
+                     if (ctx.water && ctx.water->depthAt(cand, *ctx.terrain) > 0.0f)
+                     {
+                         continue;
+diff --git a/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp b/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp
+index bf18c48..5bfd713 100644
+--- a/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp
++++ b/Source/NoctisCore/Private/Creatures/CreatureSystem.cpp
+@@ -1275,7 +1275,9 @@ void CreatureSystem::handleHatching(WorldContext& ctx)
+     {
+         const Creature* mum = find(h.egg.mother);
+         const u32 group = mum && mum->alive ? mum->social.groupId : 0u;
+-        Creature& baby = spawn(h.speciesIndex, rng_.chance(0.5f) ? Sex::Female : Sex::Male, 0.0f, h.position + Vec2{rng_.range(-1.0f, 1.0f), rng_.range(-1.0f, 1.0f)},
++        const Vec2 xcOff1{rng_.range(-1.0f, 1.0f), rng_.range(-1.0f, 1.0f)};
++        const Sex xcSex1 = rng_.chance(0.5f) ? Sex::Female : Sex::Male;
++        Creature& baby = spawn(h.speciesIndex, xcSex1, 0.0f, h.position + xcOff1,
+                                ctx, group, h.egg.mother, h.egg.father, h.egg.geneticSeed);
+         ++births_[static_cast<size_t>(h.speciesIndex)];
+         SimEvent e;
+@@ -1547,7 +1549,9 @@ void CreatureSystem::immigrate(int speciesIndex, WorldContext& ctx)
+     for (int k = 0; k < groupSize; ++k)
+     {
+         const float age = rng_.range(s.growth.maturityAgeYears * 0.6f, std::max(s.growth.maturityAgeYears * 0.7f, s.growth.maxLifespanYears * 0.6f));
+-        Creature& c = spawn(speciesIndex, rng_.chance(0.5f) ? Sex::Female : Sex::Male, age, best + Vec2{rng_.range(-15.0f, 15.0f), rng_.range(-15.0f, 15.0f)}, ctx,
++        const Vec2 xcOff2{rng_.range(-15.0f, 15.0f), rng_.range(-15.0f, 15.0f)};
++        const Sex xcSex2 = rng_.chance(0.5f) ? Sex::Female : Sex::Male;
++        Creature& c = spawn(speciesIndex, xcSex2, age, best + xcOff2, ctx,
+                             group);
+         ++immigrants_[static_cast<size_t>(speciesIndex)];
+         SimEvent e;

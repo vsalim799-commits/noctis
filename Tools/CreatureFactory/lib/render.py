@@ -4,8 +4,8 @@ Studio (like the reference benchmark): dark charcoal seamless cyclorama with a l
 large soft top key slightly in front, two rim lights behind, a weak fill from the camera side.
 Principled BSDF with subsurface scattering (weight from the SSS map), roughness / normal maps, and
 the baked micro-occlusion multiplied into the albedo (render only).
-Shots (1600x900, Cycles 64 spp + OpenImageDenoise): side, front34, head, flank, midstride (walk clip
-mid-stride, deformation check), foot. Output: Output/factory/<sp>/<sp>_<shot>.png + contact sheet.
+Shots (1600x900, Cycles 64 spp + OpenImageDenoise): side (walk clip, legs apart, profile), front34,
+head, flank, midstride (walk clip mid-stride, deformation check), foot. Output: Output/factory/<sp>/<sp>_<shot>.png + contact sheet.
 """
 from __future__ import annotations
 
@@ -15,9 +15,9 @@ import numpy as np
 
 # shot: (eye, target, lens, action, frame or phase, fstop)
 SHOTS = {
-    "side": ((-0.4, 2.3, 23.0), (-0.6, 2.05, 0.0), 50.0, "idle", 1, None),
+    "side": ((-0.4, 2.1, 23.0), (-0.6, 2.05, 0.0), 50.0, "walk", 0.12, None),
     "front34": ((10.8, 3.6, 9.6), (0.9, 2.25, 0.0), 42.0, "idle", 60, None),
-    "head": ((7.3, 4.45, 3.3), (3.75, 3.72, 0.1), 50.0, "idle", 1, 11.0),
+    "head": ((7.2, 4.35, 3.4), (4.12, 3.8, 0.12), 55.0, "idle", 1, 11.0),
     "flank": ((2.6, 2.7, 5.6), (0.5, 2.45, 0.35), 45.0, "idle", 1, None),
     "midstride": ((3.5, 3.0, 15.5), (-0.4, 2.0, 0.0), 45.0, "walk", 0.62, None),
     "foot": ((2.2, 0.75, 2.9), (0.5, 0.35, 0.45), 55.0, "idle", 1, 7.0),
@@ -68,19 +68,25 @@ def setup_body_material(bpy):
 
 
 def studio(bpy, bl):
-    """Lights fixed around the creature (Blender space: creature along Y facing -Y, centre ~(0, 0, 2.3))."""
+    """Lights fixed around the creature (Blender space: creature along Y facing -Y, centre ~(0, 0, 2.3)).
+    Levels: key irradiance on the back ~4 W/m2 so that the pale ventral albedo (~0.36) stays below
+    white under AgX; charcoal backdrop, mid-grey floor pool, two cool rims, weak fill."""
     from mathutils import Vector
     sc = bpy.context.scene
-    bl.emission_world(sc, color=(0.006, 0.006, 0.0065), strength=1.0)
-    cyc = bl.cyclorama(depth=70.0, width=90.0, radius=9.0, height=40.0, back=26.0, color=(0.012, 0.012, 0.013),
-                       floor_color=(0.05, 0.05, 0.052))
+    bl.emission_world(sc, color=(0.02, 0.02, 0.021), strength=1.0)
+    cyc = bl.cyclorama(depth=70.0, width=90.0, radius=9.0, height=40.0, back=26.0, color=(0.05, 0.05, 0.053),
+                       floor_color=(0.075, 0.075, 0.078))
     cyc.rotation_euler = (0, 0, -math.pi / 2)      # wall behind the creature's right side camera (+X_b is the far side)
     c = Vector((0.0, 0.3, 2.3))
     L = []
-    L.append(bl.area_light("key", (-3.0, -1.5, 12.5), c, size=9.0, size_y=6.0, power=4200, color=(1.0, 0.965, 0.92), spread=100))
-    L.append(bl.area_light("rim_back", (9.0, 4.0, 7.5), c + Vector((0, 0, 1.0)), size=4.0, power=2200, color=(0.85, 0.9, 1.0), spread=70))
-    L.append(bl.area_light("rim_head", (6.0, -9.0, 6.5), Vector((0.0, -4.0, 3.9)), size=2.5, power=700, color=(0.9, 0.93, 1.0), spread=70))
-    L.append(bl.area_light("fill", (-14.0, -6.0, 3.0), c, size=6.0, power=260, color=(0.9, 0.93, 1.0), spread=120))
+    L.append(bl.area_light("key", (-3.0, -1.5, 12.5), c, size=9.0, size_y=6.0, power=1500, color=(1.0, 0.965, 0.92), spread=100))
+    L.append(bl.area_light("rim_back", (9.0, 4.0, 7.5), c + Vector((0, 0, 1.0)), size=4.0, power=1300, color=(0.85, 0.9, 1.0), spread=70))
+    L.append(bl.area_light("rim_head", (6.0, -9.0, 6.5), Vector((0.0, -4.0, 3.9)), size=2.5, power=450, color=(0.9, 0.93, 1.0), spread=70))
+    L.append(bl.area_light("fill", (-14.0, -6.0, 3.0), c, size=6.0, power=160, color=(0.9, 0.93, 1.0), spread=120))
+    # backdrop wash: faces the far wall (+X_b) from behind the creature, so it cannot light the animal;
+    # turns the black void into the charcoal studio wall of the reference look
+    L.append(bl.area_light("backdrop", (11.0, 0.0, 9.0), Vector((26.0, 0.0, 5.0)), size=16.0, size_y=8.0, power=1400,
+                           color=(0.92, 0.94, 1.0), spread=90))
     return L
 
 

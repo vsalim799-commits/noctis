@@ -97,7 +97,8 @@ commande `noctis_sim`. Unreal rend, spatialise, anime et collecte les entrées d
 | `Source/Noctis/Public/Save/NoctisSaveGame.h` | Colle de sauvegarde (voir [Sauvegarde](#sauvegarde)). |
 | `Source/Noctis/Private/Tests/NoctisSimulationTests.cpp` | Tests d'automatisation `Noctis.*`. |
 | `Source/NoctisEditor/` | Validation des données, validateur d'assets, commande de rechargement, commandlet, `UNoctisEditorLibrary`. |
-| `Config/DefaultEngine.ini` | Lumen (GI + réflexions), Nanite, VSM, sky atmosphere, exposition physique, RVT, collisions `NoctisCreature`, réglages `[/Script/Noctis.NoctisSettings]`. |
+| `Tools/UECheck/` | Vérifications **sans moteur** : compilation syntaxique de la couche UE contre une doublure de l'API Unreal et les vrais en-têtes du cœur, cœur compilé comme sous UBT, miroir autonome des tests d'automatisation (voir [1 bis](#1-bis-vérifier-la-couche-unreal-sans-moteur-quelques-minutes)). |
+| `Config/DefaultEngine.ini` | Lumen (GI + réflexions), Nanite, sky atmosphere, exposition physique, RVT, collisions `NoctisCreature`, réglages `[/Script/Noctis.NoctisSettings]`. Les VSM (défaut d'UE 5) et les variables par niveau sont laissées à `DefaultScalability.ini` (priorités, voir [Risques](#risques-connus)). |
 | `Config/DefaultScalability.ini` | Valeurs Low/Medium/High/Epic propres à Noctis (non mesurées : à valider). |
 | `Config/DefaultInput.ini` | Enhanced Input (classes par défaut, contexte `IMC_UI` automatique). |
 
@@ -109,7 +110,7 @@ Assets référencés par chemin dans le code (créés par les scripts Python) :
 | `/Game/Environment/MPC_NoctisWeather`, `/Game/Environment/Vegetation/RT_NoctisTrails`, `/Game/Environment/Water/M_NoctisWater` | `setup_project.py` |
 | `/Game/UI/WBP_NoctisHUD` (+ `WBP_FieldJournal`, `WBP_FieldMap`, `WBP_Spectrogram`, `WBP_Hypotheses`, `WBP_Reports`) | `setup_project.py` (vides, mise en page à faire) |
 | `/Game/Maps/HellCreek` (World Partition) | `setup_project.py` |
-| `/Game/Creatures/<espèce>/DA_<espèce>`, `SK_`, `ABP_`, `IK_`, `MI_`, `T_` ; `/Game/Creatures/_Shared/M_NoctisCreatureSkin` | `import_creatures.py` |
+| `/Game/Creatures/<espèce>/DA_<espèce>`, `SK_` (+ LOD 1–3), `Animations/A_<espèce>_<clip>`, `ABP_`, `IK_`, `MI_<espèce>_<emplacement>`, `Textures/T_` ; `/Game/Creatures/_Shared/M_NoctisCreatureSkin` | `import_creatures.py` |
 | `/Game/Audio/Classes/SC_*`, `Attenuation/ATT_*` (dont `ATT_Noctis_SpatialOnly`), `Concurrency/*` (dont `SCON_Noctis_Calls`), `Submixes/SM_*`, `Creatures/<espèce>/voc_*`, `Weather/SC_Thunder`, `Water/SC_Splash`, `Foley/SC_VegetationCrash`, `Foley/SC_Impact` | `import_audio.py` |
 
 ---
@@ -182,6 +183,14 @@ Assets référencés par chemin dans le code (créés par les scripts Python) :
    composant) et alpha de contact, tissus mous (cou, queue, ventre, gorge), respiration, cible du regard, mâchoire.
    Graphe conseillé : machine d'états/blendspace synchronisé sur `GaitPhase` → décalage du bassin → IK des pieds
    (Control Rig ou Two Bone IK, alpha = contact) → os modifiés pour les tissus mous → Look At → mâchoire.
+   **Clips** : `DA_<espèce>.Clips` (rempli par `import_creatures.py` depuis les métadonnées de la fabrique) donne pour
+   chaque clip sa séquence, sa boucle, la vitesse, la durée de foulée, la longueur de foulée et le facteur de service
+   **auxquels il a été animé** ; `GetLocomotionSequence()` / `GetClipSequence(nom)` (sûres sur les threads
+   d'animation) rendent la séquence de l'allure simulée (`walk`, `walk_fast`, `run`, `swim`, `idle`) et
+   `LocomotionPlayRate` = fréquence de foulée simulée × durée de foulée du clip : les pieds animés tombent au rythme
+   des pieds simulés. **Mouvement racine** : la simulation place l'acteur ; les séquences sont importées avec
+   *Enable Root Motion* (racine verrouillée sur la pose de référence) et l'instance est en `IgnoreRootMotion` — le
+   mouvement extrait est jeté, le maillage ne dérive pas.
 
 ---
 
@@ -300,17 +309,28 @@ ou sans interface : `UnrealEditor-Cmd <Projet>/Noctis.uproject -run=pythonscript
   le script affiche les valeurs exactes (résolution, position, échelle) pour *Landscape > Import from File* avec
   `Build/Terrain/heightmap.png` produit par `noctis_sim export-terrain --out Build/Terrain` (même graine que
   `Seed`). Couches de peinture : `weight_<habitat>.png` ; densités de végétation pour PCG : `foliage_<type>.png`.
-* **`import_creatures.py`** attend la sortie de `Tools/CreatureFactory` dans `Build/Creatures/<espèce>/` :
-  FBX du maillage (`<espèce>.fbx`, `SK_<espèce>.fbx` ou le plus gros FBX hors `anim/`), animations (`anim/*.fbx`),
-  textures `…_<carte>.png` (`basecolor`, `normal`, `roughness`, `ao`, `sss`, avec jeton de matériau optionnel
-  `eye`, `teeth`, `claws`…), et le squelette `Data/Anatomy/<espèce>.json`. Il crée maillage, squelette, physique,
-  séquences, textures (couleur en sRGB, masques linéaires, normales BC5), instances du matériau maître
-  `M_NoctisCreatureSkin` (modèle *Subsurface*, mouillure/boue par données primitives), `ABP_<espèce>` (parent
-  `UNoctisCreatureAnimInstance`, graphe vide), `IK_<espèce>` (racine de reciblage, chaînes Spine/Neck/Head/Jaw/Tail/
-  LeftLeg/RightLeg/LeftArm/RightArm, buts sur orteils et mains) et remplit `DA_<espèce>`. Sous UE 5.5, l'import FBX
-  passe par Interchange qui ignore `FbxImportUI` : le script bascule temporairement
-  `Interchange.FeatureFlags.Import.FBX 0` (option `--interchange` pour ne pas le faire). L'étape `export` de la
-  fabrique n'existait pas encore au moment de l'écriture : si ses noms de fichiers diffèrent, adapter `find_inputs()`.
+* **`import_creatures.py`** suit le contrat d'export de `Tools/CreatureFactory` (schéma
+  `noctis.creature_asset/1`, `Build/Creatures/<espèce>/export/<espèce>_metadata.json`) : `SK_<espèce>.fbx` et ses
+  LOD `_LOD1..3` (importés comme LOD du même maillage), une FBX par clip `A_<espèce>_<clip>.fbx`, textures
+  `export/textures/T_<espèce>_<Carte>.png` (`BaseColor` sRGB, `Normal_DX` — convention UE ; à défaut `Normal`
+  OpenGL importée avec *Flip Green Channel* —, `ORM` linéaire, `SSS` poids de diffusion, `Eye_BaseColor` ; `Height`,
+  `Cavity`, `Masks` importées pour les artistes mais non branchées), os et chaînes de reciblage des métadonnées.
+  Il crée maillage, squelette, physique, séquences (mouvement racine activé, racine verrouillée), instances du
+  matériau maître `M_NoctisCreatureSkin` par emplacement du maillage (`M_Body`, `M_Eye`, `M_Claw`, `M_Teeth` →
+  `MI_<espèce>_body|eye|claws|teeth`) : modèle *Subsurface*, ORM (R occlusion, G rugosité), `SSS` × `SubsurfaceAmount`
+  en opacité de diffusion, `SubsurfaceColor` chair, `Tint`/`VertexColorAmount` (griffes : couleurs de sommets de la
+  fabrique, base sombre → pointe claire), mouillure/boue/état corporel par données primitives (0–4).
+  `ABP_<espèce>` (parent `UNoctisCreatureAnimInstance`, graphe vide), `IK_<espèce>` (racine de reciblage, chaînes
+  Spine/Neck/Tail/Jaw/LeftLeg/RightLeg/LeftArm/RightArm des métadonnées, buts sur orteils et mains) et `DA_<espèce>` :
+  `MeshBodyLengthM` = longueur mesurée sur la sculpture (`sizes.model.length_m`), `MeshYawOffsetDeg` (mesuré sur le
+  squelette importé ; −90 par convention de la fabrique, qui regarde +Y comme le Mannequin), `Clips` (vitesse, durée
+  et longueur de foulée, facteur de
+  service de chaque clip), os du bassin/tête/mâchoire/pieds/cou/queue. Sans métadonnées, une recherche tolérante
+  (premier fichier qui correspond) reste en place pour d'autres sources. Sous UE 5.5, l'import FBX passe par
+  Interchange qui ignore `FbxImportUI` : le script bascule temporairement `Interchange.FeatureFlags.Import.FBX 0`
+  (option `--interchange` pour ne pas le faire). `--resolution 2k` prend les cartes 2K de la fabrique (BaseColor,
+  ORM ; sa normale 2K n'existe qu'en OpenGL, la `Normal_DX` 4K est gardée). Un matériau maître d'une version
+  précédente (paramètres `Roughness`/`AO`/`Subsurface` séparés) est détecté et recréé.
 * **Notes de reciblage** : l'IK des pieds vient de la simulation (cibles des pieds), pas de l'animation ; le
   reciblage (IK Retargeter `IK_<source>` → `IK_<espèce>`, chaînes de même nom) ne sert qu'à réutiliser des clips
   entre espèces de même plan corporel (théropode → théropode, cératopsien → ankylosaure avec prudence). Ne jamais
@@ -347,6 +367,21 @@ ctest --test-dir build                     # suite courte
 ```
 
 Si le cœur ne compile pas en mode strict CMake (`-fno-exceptions -fno-rtti -Werror`), il ne compilera pas sous UBT.
+
+### 1 bis. Vérifier la couche Unreal sans moteur (quelques minutes)
+
+```
+python3 Tools/UECheck/check_ue_layer.py --all -j 4
+```
+
+Compile chaque fichier de `Source/Noctis` et `Source/NoctisEditor` avec clang (`-fsyntax-only`, C++20, sans
+exceptions ni RTTI, `-Wshadow-all -Wundef -Werror`) contre les vrais en-têtes du cœur et une doublure de l'API UE
+5.4/5.5 (`Tools/UECheck/stub`), en configuration éditeur puis sans éditeur (`WITH_EDITOR=0`, pas de tests ni de
+dessin de débogage) ; compile le cœur comme UBT le fait (branche Unreal de `Platform.h`, macros `check`/`verify`/
+`ensure`/`TEXT`/`IN`/`OUT`…) ; puis construit et lance le miroir autonome des tests `Noctis.Simulation.*`.
+À lancer après toute modification de l'API du cœur : c'est le moyen le plus rapide de voir que la couche UE ne suit
+plus. **Ce n'est pas une compilation Unreal** (voir `Tools/UECheck/README.md`) : les signatures UE de la doublure
+sont celles que ce code suppose ; UBT reste juge.
 
 ### 2. Générer les fichiers de projet
 
@@ -527,39 +562,85 @@ pendant 5 minutes ; (6) drone à 120 m au-dessus de la forêt riveraine.
 * **Interchange (5.5)** : si la bascule `Interchange.FeatureFlags.Import.FBX` disparaît, l'import FBX ignore les
   options du script (échelle, normales) : vérifier l'échelle des maillages importés (le validateur d'assets avertit
   si `MeshBodyLengthM` et la boîte englobante divergent).
+* **Orientation et mouvement racine des clips** : `README` de la fabrique : « la créature regarde +Y » ; ses
+  métadonnées de clips disent « +X UE après conversion » pour la translation du mouvement racine. Les deux ne peuvent
+  pas être vrais ensemble. `import_creatures.py` mesure donc la direction bassin → tête sur la pose de référence du
+  squelette importé (bibliothèque Python `AnimPoseExtensions`, UE 5.1+) et en déduit `MeshYawOffsetDeg` (−90 si la
+  tête est sur +Y, 0 si elle est sur +X), avec un avertissement si la mesure contredit la convention de la fabrique ;
+  à défaut de mesure il applique −90. Une clé `ue5.mesh_yaw_offset_deg` dans les métadonnées l'emporte sur tout. Au
+  premier import, vérifier dans une partie que les animaux avancent tête la première. Le mouvement racine est de
+  toute façon jeté (`IgnoreRootMotion`).
+* **Priorités des variables console** : une valeur posée dans `[ConsoleVariables]` ou `[/Script/Engine.RendererSettings]`
+  de `DefaultEngine.ini` est plus prioritaire que la scalabilité et figerait le réglage à tous les niveaux. C'est
+  pourquoi `r.Shadow.Virtual.Enable`, `r.VolumetricFog*`, `noctis.Creatures.*` et `noctis.Vegetation.Interactors` ne
+  sont réglés que dans `DefaultScalability.ini` (corrigé dans cette passe : ils étaient aussi dans `DefaultEngine.ini`).
+  Vérifier au premier lancement qu'aucun message « was ignored as it is lower priority » n'apparaît pour eux.
+* **Sons rares sur des simulations courtes** : sur les 500 instantanés du miroir de `SnapshotConsistency` (vallée
+  réduite, 2 h simulées) aucun son n'est publié, et en suivant un animal en détail complet pendant 5 minutes il reste
+  immobile (aucun pas). Les vérifications « aucun son publié deux fois » sont donc peu exercées par les tests ; la
+  chaîne audio (directeur, MetaSound de pas, synthèse) doit être éprouvée en jeu, près d'un troupeau actif.
+* **Bug du cœur signalé, non corrigé ici** : `AcousticRecorder` (`Private/Research/Acoustics.cpp`, calcul de `extra`
+  avant `SignalSynth::render`) retranche `20 log10 d` alors que `render` applique maintenant
+  `SoundField::spreadingLossDb` (source linéique pour le tonnerre) : dans les **enregistrements** du joueur, le tonnerre
+  est trop fort d'environ `20 log10 d − spreadingLossDb(d)` (≈ +31 dB à 1 km). La couche UE (gain des cris synthétisés
+  en jeu, `FNoctisSoundExtra::ExtraGainDb`) utilise déjà `spreadingLossDb` ; la même correction d'une ligne est à faire
+  dans le cœur par ses mainteneurs.
 
 ---
 
 ## Ce qui a été vérifié ici
 
-Environnement : Linux, gcc 13, 4 cœurs partagés avec d'autres processus, **sans Unreal Engine**.
+Environnement : Linux, gcc 13, clang 18, 4 cœurs partagés avec d'autres processus, **sans Unreal Engine**.
+Aucune compilation UBT, aucun lancement de l'éditeur, aucun test d'automatisation dans Unreal, aucun script Python
+dans Unreal, aucun rendu, audio, mesure GPU ou empaquetage n'a pu être fait.
 
 * **Cœur, compilation stricte** : `cmake --build build --target noctis_sim` réussit avec
-  `-fno-exceptions -fno-rtti -Wall -Wextra -Wshadow -Werror` (mode `NOCTIS_STANDALONE`). `Platform.h` n'a pas été
-  modifié par cette passe.
-* **Logique des tests d'automatisation, hors Unreal** : `Source/Noctis/Private/Sim/NoctisSnapshotChecks.h` (sans
-  dépendance Unreal) a été compilé avec les mêmes options strictes contre `libnoctis_core.a` et exécuté :
-  * vallée réduite (513², 256², population × 0,25, graine 42) : démarrage 2,3 s, 27 espèces chargées, 66 individus ;
-  * planificateur série contre pool de 2 threads : **empreintes identiques à chacun des 60 points de contrôle**
-    (30 s de temps réel par pas de 0,05 s) puis après 10 minutes accélérées (pas de 2 s) ; graine 43 ≠ graine 42 ;
-  * chaque instantané validé par `ValidateSnapshot` (ids, espèces, valeurs finies, bornes, pieds, soleil, météo) ;
-  * découpage du runner reproduit (un job de 0 pas avec commande puis des jobs de 1 à 2 pas, instantané et requêtes
-    auxiliaires à chaque job) contre un seul job de 59 pas : **même état bit à bit** (empreinte avec et sans sons) ;
-    `tick()` vaut 0 après l'initialisation (ce que vérifie le test de commande).
-* **Vallée complète hors Unreal** (réglages par défaut du projet : 2017², 1024², population × 1, graine 7, 2 threads) :
-  démarrage 7,2 s ; 254 individus agents ; pas de 50 ms : 0,09 ms en moyenne, p95 0,15 ms, max 4,6 ms (pics
-  horaires) avec un seul animal en détail complet près du camp ; temps accéléré : 1,5 ms par pas de 2 s.
-  `noctis_bench --quick --threads 2` (même machine, charge partagée : CPU/mur ≈ 0,5, chiffres bruités) : coût net
-  par animal et par pas **≈ 0,12 ms en détail complet** (Full), 0,0018 ms (Near), 0,0004 ms (Far) ; tous les 254
-  animaux forcés en Full : 29 ms par pas en moyenne, p95 99 ms. Le budget du job est donc fixé par le nombre
-  d'animaux en détail complet autour des observateurs (≈ 40 animaux Full ≈ 5 ms par pas), pas par la population.
-  Mémoire du monde : +95 Mo. Instantané : 17 µs.
-* **Données** : `EvidenceDatabase::load` + `validate()` sur `Data/` : 27 espèces, 2 environnements, 0 problème ;
-  14 espèces agents dans `hell_creek` (ce que le validateur éditeur comparera aux `DA_*`).
-* **Python** : les quatre scripts passent `python3 -m py_compile` ; la classification des textures et la table des
-  os ont été testées sur des noms d'exemple et sur `Data/Anatomy/tyrannosaurus_rex.json`. Aucun appel au module
-  `unreal` n'a pu être exécuté.
+  `-fno-exceptions -fno-rtti -Wall -Wextra -Wshadow -Werror` (mode `NOCTIS_STANDALONE`). `Platform.h` n'a pas eu
+  besoin d'être modifié : sa branche Unreal (`NOCTISCORE_API`, `NOCTIS_ASSERT` → `checkSlow`, `CoreTypes.h` +
+  `AssertionMacros.h` seulement) est en place, le pont de journalisation est dans `NoctisCoreModule.cpp`.
+* **Cœur compilé comme sous UBT** (`Tools/UECheck/check_ue_layer.py --core`) : les 35 fichiers de
+  `NoctisCore/Private` passent avec `NOCTISCORE_API` défini, les macros d'UE (`check`, `verify`, `ensure`, `TEXT`,
+  `IN`, `OUT`, `OPTIONAL`, `LIKELY`…) et `-Wshadow-all -Wundef -Werror` : aucune collision de macro, aucun ombrage de
+  membre ou de global (équivalents des erreurs C4456–C4459 d'UBT).
+* **Couche UE contre une doublure de l'API Unreal** (`check_ue_layer.py`, clang `-fsyntax-only`, C++20, sans
+  exceptions ni RTTI, `-Wall -Wextra -Wshadow-all -Wundef -Werror`) : **32/32 unités de compilation** en configuration
+  éditeur (modules `Noctis`, `NoctisEditor`, `NoctisCoreModule.cpp`), **27/27** sans éditeur (`WITH_EDITOR=0`, sans
+  tests ni dessin de débogage ni Gameplay Debugger). Toute l'utilisation de l'API du cœur par la couche UE est donc
+  vérifiée contre les vrais en-têtes ; un test négatif (méthode du cœur mal nommée, argument UE manquant, `FString`
+  passé à `UE_LOG`) est bien rejeté. Ce que la doublure ne peut pas prouver : voir `Tools/UECheck/README.md`.
+* **Miroir autonome des tests d'automatisation** (`check_ue_layer.py --snapshot`, mêmes vallée réduite 513² / 256² /
+  population × 0,25, pas et code d'empreinte que `NoctisSimulationTests.cpp`, planificateurs du cœur au lieu de
+  `ParallelFor`), sur les sources actuelles du cœur : **tous les contrôles passent** (≈ 10 s) —
+  démarrage (27 espèces chargées, 14 simulées individuellement dans `hell_creek`, 66 individus), 40 pas ;
+  série / pool de 2 / pool de 3 threads : **empreintes identiques aux 41 points de contrôle** (30 s de temps réel par
+  pas de 0,05 s, puis 10 min accélérées par pas de 2 s ; empreinte finale `595c05a945edbf6b` à t = 630 s), graine 43 ≠
+  graine 42 ; 500 instantanés cohérents (`ValidateSnapshot` : ids, espèces, valeurs finies, bornes, pieds, soleil,
+  météo ; temps croissant ; aucun son republié) jusqu'à t = 7 960 s ; découpage du runner (un job de 0 pas avec
+  commande puis jobs de 1 à 2 pas à 30 i/s, 59 pas) contre un seul job de 59 pas : **même état bit à bit**.
+* **Mesures antérieures (passe précédente, même machine)** : vallée complète (2017², 1024², population × 1,
+  graine 7, 2 threads) : démarrage 7,2 s ; 254 individus agents ; pas de 50 ms : 0,09 ms en moyenne, p95 0,15 ms,
+  max 4,6 ms (pics horaires) avec un seul animal en détail complet près du camp ; temps accéléré : 1,5 ms par pas de
+  2 s ; `noctis_bench --quick --threads 2` : ≈ 0,12 ms par animal en détail complet et par pas, 0,0018 ms (Near),
+  0,0004 ms (Far) ; tous les animaux forcés en Full : 29 ms par pas en moyenne. Mémoire du monde : +95 Mo.
+  Instantané : 17 µs.
+* **Données** : `EvidenceDatabase::load` sur `Data/` : 27 espèces, 2 environnements, 393 sources, 3 profils.
+* **Contrat de la fabrique de créatures** : les fonctions pures de `import_creatures.py` (recherche des entrées,
+  classement des textures, choix des normales, os, chaînes de reciblage) ont été exécutées, avec un module `unreal`
+  factice, sur la sortie réelle `Build/Creatures/tyrannosaurus_rex/export` : maillage + 3 LOD, 12 clips, 9 textures
+  (`Normal_DX` retenue, `Eye_BaseColor` → emplacement `eye`), 36 os, 8 chaînes de reciblage des métadonnées.
+* **Contrat audio** : `Data/Audio/manifest.json` actuel (2 160 sons) contre `import_audio.py` et
+  `ANoctisAudioDirector` : 0 fichier manquant dans `Build/Audio`, calibration présente pour tous les sons, les
+  19 groupes aléatoires attendus (tonnerre 0,5/2/5/12 km, eau, végétation) existent, les identifiants utilisés par le
+  directeur (`amb_thunder_<d>m_0N`, `fol_water_stroke_<classe>_0N`, `fol_vegetation_crash_<classe>_0N`, lits de pluie
+  et de vent) existent, et les 42 types de cris des fiches d'espèces ont leur `voc_<espèce>_<cri>_voiceA`.
+* **Python** : les scripts de `Content/Python` passent `python3 -m py_compile`. Aucun appel au module `unreal` n'a
+  pu être exécuté.
 * **`Noctis.uproject`** : JSON valide.
 
-Ce qui **n'a pas** été vérifié : toute compilation UBT, l'exécution de l'éditeur, des tests d'automatisation, des
-scripts Python dans Unreal, le rendu, l'audio, les performances GPU, l'empaquetage.
+Corrections de cette passe (résumé) : gain des cris synthétisés pour le tonnerre (`spreadingLossDb`), composition
+de rotation des imposteurs (quaternions au lieu d'une somme de rotateurs), garde contre un `PlayerController` nul
+avant `CreateWidget`, retour par valeur d'un `UFUNCTION`, mouvement racine ignoré et clips de la fabrique dans
+`DA_<espèce>` / l'instance d'animation, import des créatures aligné sur le contrat réel de la fabrique (métadonnées,
+LOD, ORM, `Normal_DX`, poids SSS en échantillonneur *Linear Grayscale*, emplacements de matériaux, orientation mesurée
+sur le squelette), conflits de priorité des variables console entre `DefaultEngine.ini` et `DefaultScalability.ini`,
+outil `Tools/UECheck`.

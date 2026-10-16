@@ -1134,7 +1134,17 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
             // Far LOD) does not carry the animal past the arrival radius.
             const float cruise = walk * (d > 300.0f ? 1.2f : 0.8f);
             const float v = std::min(cruise, std::max(0.1f, (d - 0.5f * arrive) / dt));
-            setMove(c, steer(c, sp, ctx, cohesionBias(b.targetPos - p), v), v, Posture::Normal);
+            // Group cohesion may bend the route to water (at most 60 deg) but never turns the animal back. With the
+            // herd resting far from the water, the cohesion pull (which grows with the distance to the centroid)
+            // cancelled the pull to the water at about twice the allowed spread, and a thirsty juvenile Edmontosaurus
+            // paced back and forth there for over a day until it died of thirst 50-240 m from the drink site.
+            const Vec2 toWater = (b.targetPos - p) / d;
+            Vec2 route = cohesionBias(toWater);
+            if (dot(route, toWater) < 0.5f)
+            {
+                route = rotate(toWater, (cross(toWater, route) >= 0.0f ? 1.0f : -1.0f) * (kPi / 3.0f));
+            }
+            setMove(c, steer(c, sp, ctx, route, v), v, Posture::Normal);
         }
         else
         {
@@ -1216,7 +1226,9 @@ void executeBehavior(Creature& c, const SpeciesRuntime& sp, const CreatureSystem
         // it heard an alarm or its group bolted).
         if (s.social.alarmCalls && ctx.toggle("alarm_calls") && now - b.startedAt < 2.0 && ownAlarmThreat(c) > 0.4f)
         {
-            requestCall(c, CallContext::Alarm, now, 15.0f);
+            // Waning bout: an animal that keeps re-fleeing from a predator lingering nearby (one Edmontosaurus fled a
+            // Nanotyrannus every ~40 s for an hour, 93 alarms) calls less and less often, as in the other contexts.
+            requestCall(c, CallContext::Alarm, now, boutInterval(c, now, 15.0f, 600.0f));
         }
         if (c.injuries.healthIndex < 0.6f && now - b.startedAt < 2.0)
         {

@@ -4,7 +4,7 @@ Both scenes use the public helper Tools/CreatureFactory/scenes/vegetation_librar
 simulation heightmap, habitat-blended ground material, simulated river level, mask-driven scatter with
 camera-distance LOD), i.e. exactly what a creature beauty shot would use.
   valley_aerial.png   low aerial over the meanders at golden hour (sun ~6 deg), atmospheric haze (mist pass)
-  valley_ground.png   eye level (1.6 m) on a riverbank among horsetails and ferns, morning mist (volume + mist)
+  valley_ground.png   eye level (1.6 m) on a riverbank among horsetails and ferns, morning mist (height fog + mist)
 """
 from __future__ import annotations
 
@@ -99,8 +99,31 @@ def sky(sc, elev, az, sun_strength=4.0, sky_strength=0.35, air=1.0, dust=2.0, su
     return sun
 
 
-def mist_compositor(sc, color, amount, start, depth, falloff="QUADRATIC", glare=True):
+def mist_compositor(sc, color, amount, start, depth, falloff="QUADRATIC", glare=True, height_fog=None):
+    """Distance haze from the Mist pass, optionally preceded by an analytic height fog (noise-free, no volume):
+    height_fog = dict(z0=water level (Blender Z), cam_z=camera Z, density=1/m, height=m, color=(r, g, b)).
+    Optical depth along a view ray ~ density * distance * mean(exp(-h/H)) with h the height above z0, averaged
+    between the camera and the hit point (distance from the Mist pass, height from the Position pass); the sky
+    (Depth pass = no hit) is left to the mist. The distance saturates at start + depth of the mist settings."""
+    import math as _m
     import bpy
+
+    def despeckle(sock):
+        # The Mist / Depth / Position passes are not denoised: where some samples of a pixel pass through the holes
+        # of alpha cards to a far surface, the pass is locally much "further" than its neighbours and the haze
+        # colour shows up as bright specks over the foliage. A 1 px morphological opening (erode then dilate)
+        # removes these isolated high values; unlike a plain erode it keeps silhouettes in place (no dark blocks
+        # around small far objects).
+        er = nt.nodes.new("CompositorNodeDilateErode")
+        er.mode = "STEP"
+        er.distance = -1
+        nt.links.new(sock, er.inputs["Mask"])
+        di = nt.nodes.new("CompositorNodeDilateErode")
+        di.mode = "STEP"
+        di.distance = 1
+        nt.links.new(er.outputs["Mask"], di.inputs["Mask"])
+        return di.outputs["Mask"]
+
     vl = sc.view_layers[0]
     vl.use_pass_mist = True
     ms = sc.world.mist_settings
@@ -111,14 +134,60 @@ def mist_compositor(sc, color, amount, start, depth, falloff="QUADRATIC", glare=
     nt = sc.node_tree
     nt.nodes.clear()
     rl = nt.nodes.new("CompositorNodeRLayers")
+    image = rl.outputs["Image"]
+    if height_fog:
+        vl.use_pass_z = True
+        vl.use_pass_position = True
+        nt.nodes.remove(rl)
+        rl = nt.nodes.new("CompositorNodeRLayers")  # sockets of the passes enabled above
+        image = rl.outputs["Image"]
+        hf = height_fog
+
+        def math(op, a, b=None):
+            n = nt.nodes.new("CompositorNodeMath")
+            n.operation = op
+            for i, v in enumerate((a, b)):
+                if v is None:
+                    continue
+                if isinstance(v, (int, float)):
+                    n.inputs[i].default_value = float(v)
+                else:
+                    nt.links.new(v, n.inputs[i])
+            return n.outputs[0]
+
+        sep = nt.nodes.new("CompositorNodeSeparateColor")
+        nt.links.new(rl.outputs["Position"], sep.inputs["Image"])
+        H = float(hf.get("height", 2.5))
+        hp = math("MAXIMUM", math("SUBTRACT", sep.outputs["Blue"], float(hf["z0"])), 0.0)
+        fp = math("EXPONENT", math("MULTIPLY", hp, -1.0 / H))
+        fc = _m.exp(-max(float(hf["cam_z"]) - float(hf["z0"]), 0.0) / H)
+        favg = math("MULTIPLY", math("ADD", fp, fc), 0.5)
+        # Distance from the Mist pass (averaged over the samples, hence anti-aliased; the Depth pass holds one sample
+        # per pixel and makes blocky fog edges around thin stems and far silhouettes). Inverse of the mist falloff.
+        mist_d = despeckle(rl.outputs["Mist"])
+        if falloff == "QUADRATIC":
+            mist_d = math("SQRT", mist_d)
+        elif falloff == "INVERSE_QUADRATIC":
+            mist_d = math("POWER", mist_d, 0.25)
+        dist = math("ADD", math("MULTIPLY", mist_d, float(depth)), float(start))
+        od = math("MULTIPLY", math("MULTIPLY", dist, favg), float(hf.get("density", 0.006)))
+        fog = math("SUBTRACT", 1.0, math("EXPONENT", math("MULTIPLY", od, -1.0)))
+        fog = math("MULTIPLY", fog, math("LESS_THAN", rl.outputs["Depth"], 1.0e6))  # no fog on the sky
+        fog = math("MULTIPLY", fog, float(hf.get("max", 0.92)))
+        hmix = nt.nodes.new("CompositorNodeMixRGB")
+        hmix.blend_type = "MIX"
+        nt.links.new(fog, hmix.inputs[0])
+        nt.links.new(image, hmix.inputs[1])
+        hmix.inputs[2].default_value = (*hf.get("color", color), 1.0)
+        image = hmix.outputs[0]
     mul = nt.nodes.new("CompositorNodeMath")
     mul.operation = "MULTIPLY"
     mul.inputs[1].default_value = amount
-    nt.links.new(rl.outputs["Mist"], mul.inputs[0])
+    nt.links.new(despeckle(rl.outputs["Mist"]), mul.inputs[0])
     mix = nt.nodes.new("CompositorNodeMixRGB")
     mix.blend_type = "MIX"
     nt.links.new(mul.outputs[0], mix.inputs[0])
-    nt.links.new(rl.outputs["Image"], mix.inputs[1])
+    nt.links.new(image, mix.inputs[1])
     mix.inputs[2].default_value = (*color, 1.0)
     last = mix.outputs[0]
     if glare:
@@ -253,7 +322,7 @@ def _finish(sc, path, t_setup, extra):
 AERIAL = dict(center=(3600.0, 4800.0), size=3200.0, res=2.5,
               cam=(4420.0, 4300.0, 135.0), target=(3520.0, 4800.0, 0.0), lens=30.0,
               sun_elev=6.0, sun_az=250.0, exposure=-0.3, sun_strength=6.0, sky_strength=0.28, sun_color=(1.0, 0.64, 0.34),
-              mist_color=(0.84, 0.58, 0.36), mist_amount=0.45, leaf_roughness=0.7)
+              mist_color=(0.84, 0.58, 0.36), mist_amount=0.45, leaf_roughness=0.7, canopy_shade=0.6)
 
 
 def render_aerial(samples=None, preview=False):
@@ -269,7 +338,8 @@ def render_aerial(samples=None, preview=False):
     sc.cycles.diffuse_bounces = 1
     sc.cycles.glossy_bounces = 1
     sim = veg.sim_data()
-    terrain = veg.build_terrain(cfg["center"], cfg["size"], res_m=cfg["res"], shading=True, water=True, mask_px=2048)
+    terrain = veg.build_terrain(cfg["center"], cfg["size"], res_m=cfg["res"], shading=True, water=True, mask_px=2048,
+                                canopy_shade=cfg.get("canopy_shade", 0.0))
     far_terrain(sim, cfg["center"], cfg["size"])
     from . import terrain as T
     from . import terrain_shading as TS
@@ -283,7 +353,7 @@ def render_aerial(samples=None, preview=False):
         air=1.3, dust=3.5, sun_color=cfg.get("sun_color", (1.0, 0.64, 0.34)))
     mist_compositor(sc, color=cfg.get("mist_color", (0.84, 0.58, 0.36)), amount=cfg.get("mist_amount", 0.45), start=200, depth=3800)
     stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0,
-                        lod_distances={"tree": (90, 320)}, budget=300000)
+                        lod_distances={"tree": tuple(cfg.get("tree_lod", (90, 320)))}, budget=300000)
     # rough leaves: no sub-pixel specular glitter under the grazing sun
     tune_leaf_materials(roughness=cfg.get("leaf_roughness", 0.7), specular=0.2)
     sc.cycles.transparent_max_bounces = 16
@@ -299,11 +369,12 @@ def render_aerial(samples=None, preview=False):
 GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=8.0, sun_az=100.0, lens=26.0,
               eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None,
               cam=(3851.0, 4528.0), yaw_deg=5.0, pitch_deg=-3.5, fog_density=0.0065, fog_height=2.5, mist_amount=0.45,
-              mist_depth=650.0, fog_size=(420.0, 420.0, 8.0), volume_step_rate=8.0, volume_max_steps=64,
+              mist_depth=650.0, fog_mode="analytic", fog_color=(0.86, 0.84, 0.80),
+              fog_size=(320.0, 320.0, 8.0), volume_step_rate=16.0, volume_max_steps=32,  # fog_mode="volume" only
+              transparent_max_bounces=16,
               # visible lateral half-width at distance d is ~0.69 d (26 mm lens); the frame bottom meets the ground at ~3.5 m
               fern_bed=((2.8, 1.3, "fern_tufted"), (3.5, 2.1, "fern_lace"), (4.5, 2.7, "fern_marsh"), (5.5, 3.3, "fern_tufted"),
-                        (6.5, 2.2, "fern_lace"), (7.5, 4.4, "fern_tufted"), (4.0, 0.9, "fern_lace"), (9.0, 5.2, "fern_marsh"),
-                        (3.2, -1.0, "fern_lace")))
+                        (6.5, 2.2, "fern_lace"), (7.5, 4.4, "fern_tufted"), (4.0, 0.9, "fern_marsh"), (9.0, 5.2, "fern_marsh")))
 
 
 def _find_spot(veg, sim, cfg):
@@ -407,15 +478,25 @@ def render_ground(samples=None, preview=False):
     cam = _camera(sc, (cam_xy[0] - ox, cam_xy[1] - oy, cz), (tgt[0] - ox, tgt[1] - oy, tz), lens=cfg["lens"],
                   dof=(14.0, 8.0))
     sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=3.8, sky_strength=0.5, air=1.0, dust=4.0, sun_color=(1.0, 0.80, 0.58))
-    mist_compositor(sc, color=(0.85, 0.82, 0.77), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650), glare=True)
-    # low morning fog lying on the river and the banks (heterogeneous volume, height falloff from the water level)
+    # low morning fog lying on the river and the banks, height falloff from the water level.
+    # "analytic" (default): compositor height fog from the Position / Depth passes, noise-free and free;
+    # "volume": heterogeneous Cycles volume (wisps, light scattering) but slow and grainy at low sample counts.
     wl = float(sim.sample("water_surface", np.array([cam_xy[0] + view[0] * 40]), np.array([cam_xy[1] + view[1] * 40]))[0])
-    fsx, fsy, fsz = cfg.get("fog_size", (560.0, 560.0, 12.0))
-    _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * (fsy / 2 - 30), cam_xy[1] - oy + view[1] * (fsy / 2 - 30)), z0=wl - 1.0,
-                size=(fsx, fsy, fsz), density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5))
-    # coarse volume marching: the fog is soft, the cost is in the long grazing rays through the layer
-    sc.cycles.volume_step_rate = cfg.get("volume_step_rate", 4.0)
-    sc.cycles.volume_max_steps = cfg.get("volume_max_steps", 128)
+    fog_mode = cfg.get("fog_mode", "analytic")
+    hfog = None
+    if fog_mode == "analytic":
+        hfog = dict(z0=wl - 0.3, cam_z=cz, density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5),
+                    color=cfg.get("fog_color", (0.86, 0.84, 0.80)))
+    mist_compositor(sc, color=(0.85, 0.82, 0.77), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650),
+                    glare=True, height_fog=hfog)
+    if fog_mode == "volume":
+        fsx, fsy, fsz = cfg.get("fog_size", (560.0, 560.0, 12.0))
+        _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * (fsy / 2 - 30), cam_xy[1] - oy + view[1] * (fsy / 2 - 30)), z0=wl - 1.0,
+                    size=(fsx, fsy, fsz), density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5))
+        # coarse volume marching: the fog is soft, the cost is in the long grazing rays through the layer
+        sc.cycles.volume_step_rate = cfg.get("volume_step_rate", 4.0)
+        sc.cycles.volume_max_steps = cfg.get("volume_max_steps", 128)
+    sc.cycles.transparent_max_bounces = cfg.get("transparent_max_bounces", 24)
     # trees, palms and shrubs kept out of the first metres of the lens axis (ferns / horsetails may grow there)
     big = {"tree", "palm", "shrub", "deadwood"}
     lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)

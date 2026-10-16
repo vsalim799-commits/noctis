@@ -95,7 +95,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintPure, Category = "Noctis")
-	const FNoctisEnvironmentState& GetEnvironmentState() const { return State; }
+	FNoctisEnvironmentState GetEnvironmentState() const { return State; } // by value: UFUNCTION return values are not references
 
 	/** Called every frame after the scene was updated (designer hook). */
 	UFUNCTION(BlueprintImplementableEvent, Category = "Noctis")

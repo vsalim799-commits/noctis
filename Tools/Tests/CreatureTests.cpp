@@ -394,3 +394,67 @@ NOCTIS_TEST("creatures.death_cause.attribution")
         NOTE("%-50s -> %s", k.what, deathCauseLabelFr(got));
     }
 }
+
+NOCTIS_TEST("creatures.drink.stale_water_memory_retarget")
+{
+    // A thirsty animal whose nearest water memory is the dry spot where it stands (left there after drinking with only
+    // its muzzle in the channel), 12-20 m from the nearest drink site and facing away from it, must give up that memory
+    // and walk to the site. It used to re-target the same dry spot at every decision and stand there until it died.
+    std::unique_ptr<WorldSimulation> w = emptyWorld();
+    REQUIRE(w != nullptr);
+    const int si = agentSpecies(*w, "edmontosaurus_annectens");
+    if (si < 0)
+    {
+        NOTE("Edmontosaurus absent from the data set: skipped");
+        return;
+    }
+    const Terrain& t = w->terrain();
+    const WaterSystem& wa = w->water();
+    // A dry, gentle spot 14 m from a usable drink site, with no usable site within 12 m and an easy, dry walk to it.
+    Vec2 spot;
+    Vec2 site;
+    bool found = false;
+    const std::vector<DrinkSite>& sites = wa.drinkSites();
+    for (size_t k = 0; k < sites.size() && !found; k += 3)
+    {
+        DrinkSite usable;
+        if (!wa.findDrinkSite(sites[k].position, 0.5f, usable))
+        {
+            continue; // dried-up body
+        }
+        for (int a = 0; a < 8 && !found; ++a)
+        {
+            const Vec2 dir = Vec2::fromHeading(static_cast<float>(a) * kTwoPi / 8.0f);
+            const Vec2 q = usable.position + dir * 14.0f;
+            DrinkSite near;
+            bool easy = wa.depthAt(q, t) <= 0.0f && t.slopeDegAt(q) < 6.0f && !wa.findDrinkSite(q, 12.0f, near);
+            for (int s = 1; s <= 7 && easy; ++s)
+            {
+                const Vec2 r = q - dir * (2.0f * static_cast<float>(s));
+                easy = wa.depthAt(r, t) <= 0.0f && std::fabs(t.heightAt(r) - t.heightAt(r + dir * 2.0f)) < 0.5f;
+            }
+            if (easy)
+            {
+                spot = q;
+                site = usable.position;
+                found = true;
+            }
+        }
+    }
+    REQUIRE(found);
+    Creature& c0 = w->creatures().spawn(si, Sex::Female, 12.0f, spot, w->context());
+    const EntityId id = c0.id;
+    c0.loco.heading = (spot - site).heading(); // facing away from the water
+    c0.memory.places.clear();
+    rememberPlace(c0, MemoryKind::Water, spot, 0.6f, w->context().now);
+    c0.phys.hydration = 0.3f;
+    for (int m = 0; m < 15; ++m)
+    {
+        w->advance(60.0, 1.0);
+    }
+    const Creature* c = w->creatures().find(id);
+    REQUIRE(c != nullptr && c->alive);
+    CHECK_GT(c->phys.hydration, 0.5f);
+    NOTE("hydration 0.30 -> %.2f after 15 min; moved %.1f m, now %.1f m from the drink site", static_cast<double>(c->phys.hydration),
+         static_cast<double>(distance(c->pos2(), spot)), static_cast<double>(distance(c->pos2(), site)));
+}

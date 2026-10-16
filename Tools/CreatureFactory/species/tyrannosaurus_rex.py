@@ -4,17 +4,22 @@ Input : Build/Creatures/tyrannosaurus_rex/anatomy_base_from_js.json (node Tools/
 Output: the factory anatomy spec (bones with heads AND tails, SDF shapes with masks for the skin
         detail stage, eye/claw/tooth placements, skin + palette parameters, documented assumptions).
 
-What is kept from the JS sculpt: trunk, tail, neck, arms, legs and feet volumes (re-posed).
-What is changed, and why (weaknesses noted on the three.js renders):
-  * skull rebuilt from lofted superellipse sections (was a few ellipsoids + a flat lip cutter ->
-    boxy skull, blunt snout): long tapering snout, keyhole dorsal outline (narrow snout, broad
-    temporal region), convex nasal profile, deep posterior skull, sinuous lip line;
-  * eye rebuilt: eyeball as a separate mesh flush with puffy upper/lower lids, a brow shelf
-    (lacrimal + postorbital) overhanging it, so it no longer reads as a hole;
-  * hind legs re-posed to the species hip height (acetabulum 3.1 m, sim.hip_height_m) with the
-    same bone lengths (femur 1.30, tibia 1.155, metatarsus 0.61 m) and less crouch, thigh and shank
-    musculature thickened (soft tissue = plausible reconstruction);
-  * body raised with the hips, belly line raised slightly so the trunk reads less long/low.
+What is kept from the JS sculpt: arms, metatarsi and toes (re-posed, thickened), bone names.
+What is changed, and why (weaknesses noted on the three.js renders and on the first factory pass):
+  * skull rebuilt from two lofts with TAPERED superellipse sections (parameter tw: the half-width
+    shrinks towards the top -> gothic-arch snout, narrow nasals over sloping maxillae; the old boxy
+    skull came from untapered sections), keyhole dorsal outline (narrow snout, ~0.9 m temporal
+    region) so the orbits face forward, deep posterior skull and mandible, blunt rounded premaxilla;
+  * lips (Cullen et al. 2023, inferred): the upper-head and mandible lofts meet along flat faces of
+    equal width, their rounded edges form the labial groove (no duck-bill overhang, teeth hidden);
+  * eye rebuilt: eyeball as a separate mesh slightly proud of the skin, almond lids, lid crease, and a
+    continuous brow shelf (lacrimal horn -> postorbital boss) overhanging it, so it no longer reads
+    as a hole; jugal swelling below, maxillary swelling along the snout, small oval naris;
+  * hind legs re-posed to the species hip height (acetabulum 3.1 m, sim.hip_height_m) with the same
+    bone lengths (femur 1.30, tibia 1.155, metatarsus 0.61 m) and a massive drumstick thigh,
+    M. caudofemoralis to the 4th trochanter (Persons & Currie 2011), tapered gastrocnemius;
+  * trunk swept along the vertebral centre-line (sections per key), broader ribcage, tail deep for
+    longer (less conical); everything above the legs raised with the hips.
 """
 from __future__ import annotations
 
@@ -37,48 +42,49 @@ JS_SOURCE = "Tools/Preview/src/creature/trex_anatomy.js"
 # pelvis and tail of T. rex; exact diameters / patterns used here are not taken from the paper.
 SKIN = {
     "status": "basement scales: strongly_supported (bell2017_tyrannosaur_integument); sizes, folds, scutes, pads: design / phylogenetic bracket",
-    "scale_layers_m": [0.010, 0.017, 0.027],          # Worley cell size of the fine / medium / large basement-scale layers
-    "scale_height_ratio": 0.17,                       # dome height / cell size
-    "groove_ratio": 0.06,                             # groove half-width / cell size
+    "scale_layers_m": [0.010, 0.017, 0.028],          # Worley cell size of the fine / medium / large basement-scale layers
+    "scale_height_ratio": 0.2,                        # dome height / cell size
+    "groove_ratio": 0.07,                             # groove half-width / cell size
     "region_layers": {                                # weights of the three layers per region
-        "head": [0.75, 0.25, 0.0], "jaw": [0.85, 0.15, 0.0], "neck": [0.25, 0.6, 0.15], "torso": [0.0, 0.45, 0.55],
+        "head": [0.7, 0.3, 0.0], "jaw": [0.8, 0.2, 0.0], "neck": [0.25, 0.55, 0.2], "torso": [0.0, 0.45, 0.55],
         "belly": [0.45, 0.55, 0.0], "tail": [0.1, 0.5, 0.4], "thigh": [0.05, 0.45, 0.5], "shin": [0.3, 0.6, 0.1],
         "foot": [0.7, 0.3, 0.0], "arm": [0.7, 0.3, 0.0]},
     "dorsal_coarsen": 0.35,                           # dorsal surfaces shift weight towards the large layer
     "ventral_refine": 0.45,                           # ventral surfaces shift weight towards the fine layer
-    "feature_scales": {"cell_m": 0.075, "density": 0.16, "radius_ratio": 0.42, "height_m": 0.0055,
-                       "regions": {"head": 0.6, "neck": 1.0, "torso": 0.7, "tail": 0.6, "thigh": 0.5},
+    "feature_scales": {"cell_m": 0.07, "density": 0.24, "radius_ratio": 0.4, "height_m": 0.008,
+                       "regions": {"head": 0.5, "jaw": 0.3, "neck": 1.0, "torso": 0.8, "tail": 0.7, "thigh": 0.7, "shin": 0.4},
                        "status": "design assumption (not documented for T. rex)"},
-    "neck_folds": {"wavelength_m": 0.09, "amplitude_m": 0.013, "status": "design (soft tissue, plausible)"},
-    "throat_folds": {"wavelength_m": 0.07, "amplitude_m": 0.008},
-    "joint_folds": {"wavelength_m": 0.05, "amplitude_m": 0.007},
-    "flank_wrinkles": {"amplitude_m": 0.0025, "scale_m": 0.11},
-    "scutes": {"meta_length_m": 0.055, "toe_length_m": 0.042, "height_m": 0.0075,
+    "neck_folds": {"wavelength_m": 0.12, "amplitude_m": 0.02, "status": "design (soft tissue, plausible)"},
+    "throat_folds": {"wavelength_m": 0.08, "amplitude_m": 0.011},
+    "joint_folds": {"wavelength_m": 0.06, "amplitude_m": 0.01},
+    "flank_wrinkles": {"amplitude_m": 0.008, "scale_m": 0.15, "axis_stretch": 0.65,
+                       "status": "design: loose-skin wrinkles along the body axis (extant large reptiles), not preserved"},
+    "scutes": {"meta_length_m": 0.055, "toe_length_m": 0.042, "height_m": 0.009,
                "status": "inferred by phylogenetic bracket (scutate scales of birds) - not preserved in T. rex"},
-    "pads": {"cell_m": 0.022, "height_m": 0.006},
-    "rugose": {"cell_m": 0.03, "height_m": 0.009, "status": "cornified skin over rugose skull bones (nasal, lacrimal, postorbital, jugal): plausible, design"},
-    "lip_scales_m": 0.008,
+    "pads": {"cell_m": 0.024, "height_m": 0.007},
+    "rugose": {"cell_m": 0.032, "height_m": 0.011, "status": "cornified skin over rugose skull bones (nasal, lacrimal, postorbital, jugal): plausible, design"},
+    "lip_scales_m": 0.017,
     "lid_scales_m": 0.006,
 }
 
 # Colour is unknown for every non-avian dinosaur: muted, countershaded palette, SPÉCULATIF.
 PALETTE = {
     "status": "SPÉCULATIF",
-    "note": "Couleur inconnue (science.integument : 'Couleur : inconnue'). Palette terne et contre-ombrée choisie pour la lisibilité ; aucun motif tiré d'une référence.",
-    "dorsal": [0.062, 0.054, 0.038],       # linear RGB
-    "flank": [0.118, 0.098, 0.068],
-    "ventral": [0.30, 0.25, 0.175],
-    "head_top": [0.05, 0.043, 0.032],
-    "lip": [0.21, 0.165, 0.12],
-    "mottle_dark": [0.032, 0.028, 0.021],
-    "band_dark": [0.036, 0.031, 0.024],
-    "scute": [0.045, 0.04, 0.034],
+    "note": "Couleur inconnue (science.integument : 'Couleur : inconnue'). Palette terne et contre-ombrée (dos gris-brun sombre, flancs brun chaud, ventre chamois pâle) choisie pour la lisibilité ; aucun motif ni couleur tirés d'une référence.",
+    "dorsal": [0.05, 0.037, 0.025],        # linear RGB (sRGB ~ 63,54,44)
+    "flank": [0.13, 0.088, 0.052],         # sRGB ~ 101,84,65
+    "ventral": [0.40, 0.30, 0.18],         # sRGB ~ 170,149,118
+    "head_top": [0.038, 0.03, 0.022],
+    "lip": [0.27, 0.2, 0.12],
+    "mottle_dark": [0.022, 0.019, 0.015],
+    "band_dark": [0.026, 0.022, 0.018],
+    "scute": [0.034, 0.029, 0.024],
     "pad": [0.1, 0.085, 0.065],
-    "rugose": [0.085, 0.07, 0.052],
-    "claw": [0.035, 0.03, 0.027],
+    "rugose": [0.095, 0.075, 0.053],
+    "claw": [0.03, 0.026, 0.023],
     "claw_tip": [0.16, 0.14, 0.11],
     "tooth": [0.62, 0.56, 0.45],
-    "iris": [0.42, 0.26, 0.07],
+    "iris": [0.36, 0.2, 0.05],
     "gum": [0.32, 0.12, 0.10],
 }
 
@@ -178,41 +184,43 @@ def mirror_shape(s):
 # < 1 gives the tapering 'gothic arch' section, narrow nasals over sloping maxillae), nt, nb.
 HEAD_UP = [
     # u     v_top  v_lip  hw     fr    tw    nt   nb
-    (-0.14, 0.50, 0.25, 0.30, 0.40, 0.75, 2.0, 2.2),
-    (-0.02, 0.60, 0.20, 0.42, 0.28, 0.68, 2.0, 2.5),
-    (0.10, 0.665, 0.17, 0.455, 0.24, 0.64, 2.1, 2.8),
-    (0.22, 0.695, 0.155, 0.45, 0.24, 0.62, 2.1, 2.9),
-    (0.34, 0.705, 0.145, 0.42, 0.25, 0.6, 2.2, 3.0),
-    (0.45, 0.698, 0.135, 0.37, 0.26, 0.6, 2.3, 3.0),
-    (0.56, 0.68, 0.12, 0.315, 0.27, 0.62, 2.4, 3.1),
-    (0.70, 0.65, 0.105, 0.285, 0.28, 0.66, 2.5, 3.1),
-    (0.85, 0.615, 0.095, 0.265, 0.29, 0.68, 2.5, 3.1),
-    (1.00, 0.578, 0.09, 0.248, 0.30, 0.7, 2.5, 3.0),
-    (1.15, 0.54, 0.09, 0.232, 0.31, 0.72, 2.5, 2.9),
-    (1.27, 0.5, 0.095, 0.212, 0.33, 0.74, 2.5, 2.8),
-    (1.37, 0.455, 0.105, 0.182, 0.35, 0.76, 2.4, 2.6),
-    (1.44, 0.4, 0.12, 0.14, 0.38, 0.8, 2.3, 2.4),
+    (-0.06, 0.58, 0.22, 0.36, 0.26, 0.72, 2.0, 3.5),
+    (0.04, 0.67, 0.185, 0.42, 0.2, 0.66, 2.1, 4.5),
+    (0.14, 0.735, 0.165, 0.445, 0.18, 0.6, 2.2, 5.0),
+    (0.25, 0.77, 0.155, 0.445, 0.17, 0.56, 2.2, 5.5),
+    (0.36, 0.775, 0.145, 0.43, 0.17, 0.54, 2.3, 6.0),
+    (0.46, 0.755, 0.135, 0.395, 0.17, 0.52, 2.3, 6.0),
+    (0.57, 0.72, 0.12, 0.35, 0.17, 0.54, 2.4, 6.0),
+    (0.70, 0.67, 0.105, 0.312, 0.17, 0.6, 2.5, 6.0),
+    (0.85, 0.615, 0.095, 0.288, 0.17, 0.64, 2.5, 6.0),
+    (1.00, 0.565, 0.09, 0.27, 0.17, 0.67, 2.5, 6.0),
+    (1.14, 0.52, 0.09, 0.252, 0.17, 0.7, 2.5, 5.5),
+    (1.24, 0.485, 0.095, 0.235, 0.18, 0.72, 2.5, 4.5),
+    (1.31, 0.46, 0.1, 0.22, 0.19, 0.72, 2.45, 4.0),
+    (1.36, 0.445, 0.105, 0.21, 0.2, 0.72, 2.4, 3.6),
 ]
-HEAD_CAPS = [0.12, 0.07]
-# lower jaw (dentary + surangular/angular + skin): u, v_bot, hw (max), bw (bottom taper)
+HEAD_CAPS = [0.1, 0.13]         # analytic ellipsoidal caps: occiput, premaxilla (rounded U in dorsal view)
+# lower jaw (dentary + surangular/angular + skin): u, v_bot, hw (max), bw (bottom taper). Its top is
+# flat and as wide as the upper lip: the two volumes meet along the lip line, whose rounded corners
+# form the mouth groove.
 HEAD_LO = [
-    (-0.18, -0.07, 0.30, 0.80),
-    (-0.06, -0.19, 0.40, 0.75),
-    (0.08, -0.265, 0.43, 0.72),
-    (0.22, -0.295, 0.42, 0.70),
-    (0.38, -0.28, 0.375, 0.70),
-    (0.55, -0.24, 0.32, 0.70),
-    (0.72, -0.2, 0.275, 0.72),
-    (0.90, -0.17, 0.245, 0.74),
-    (1.06, -0.145, 0.225, 0.76),
-    (1.20, -0.125, 0.205, 0.78),
-    (1.30, -0.105, 0.185, 0.80),
-    (1.37, -0.08, 0.16, 0.85),
+    (-0.18, -0.08, 0.30, 0.80),
+    (-0.06, -0.25, 0.38, 0.74),
+    (0.08, -0.35, 0.40, 0.70),
+    (0.22, -0.375, 0.40, 0.68),
+    (0.38, -0.35, 0.4, 0.68),
+    (0.55, -0.29, 0.35, 0.70),
+    (0.72, -0.235, 0.31, 0.72),
+    (0.90, -0.19, 0.276, 0.74),
+    (1.06, -0.16, 0.262, 0.76),
+    (1.20, -0.135, 0.245, 0.78),
+    (1.27, -0.12, 0.23, 0.80),
+    (1.31, -0.11, 0.215, 0.82),
 ]
-LIP_INSET = 0.004            # the upper lip overhangs the mandible laterally (varanid-like lips, design)
+LIP_INSET = 0.006            # the upper lip overhangs the mandible laterally (varanid-like lips, design)
 RICTUS_U = 0.34             # mouth corner, under the front half of the orbit
-EYE_U, EYE_V = 0.46, 0.49
-R_EYE = 0.052
+EYE_U, EYE_V = 0.46, 0.53
+R_EYE = 0.055
 
 
 def _up_sec(u):
@@ -243,13 +251,13 @@ def upper_width(u, v):
 def jaw_hw(u):
     us = [s[0] for s in HEAD_LO]
     hw = float(np.interp(u, us, [s[2] for s in HEAD_LO]))
-    vl = _up_sec(min(max(u, -0.14), 1.44))["vl"]
+    vl = _up_sec(min(max(u, -0.06), 1.36))["vl"]
     return min(hw, upper_width(u, vl + 0.025) - LIP_INSET) if u > RICTUS_U - 0.1 else hw
 
 
 def lip_v(u):
     """Upper-lip margin height; rises behind the rictus into the cheek."""
-    v = _up_sec(min(u, 1.44))["vl"]
+    v = _up_sec(min(u, 1.36))["vl"]
     if u < RICTUS_U + 0.12:
         v += 0.10 * ((RICTUS_U + 0.12 - u) / 0.2) ** 1.6
     return v
@@ -266,13 +274,15 @@ def head_shapes():
                   region="head", tag="cranium"))
     secs = []
     for u, vb, hw, bw in HEAD_LO:
-        vl = _up_sec(min(max(u, -0.14), 1.44))["vl"]
-        vt = vl - 0.012
+        su = _up_sec(min(max(u, -0.06), 1.36))
+        vl = su["vl"]
+        vt = vl - 0.004
         if u > RICTUS_U - 0.1:
-            hw = min(hw, upper_width(u, vl + 0.025) - LIP_INSET)
-        cy = vt - 0.3 * (vt - vb)
-        secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vb, hw=hw, nt=2.8, nb=2.2, bw=bw))
-    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.1, 0.05], blend=0.022,
+            hw = min(hw, upper_width(u, vl + 0.02) - LIP_INSET)
+        top = 0.05
+        cy = vt - top
+        secs.append(dict(u=u, cy=cy, top=top, bot=cy - vb, hw=hw, nt=5.0, nb=2.2, bw=bw))
+    S.append(dict(bone="jaw", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.1, 0.08], blend=0.025,
                   region="jaw", tag="mandible"))
     for sg in (1, -1):
         w = lambda c: H(c[0], c[1], c[2] * sg)
@@ -281,12 +291,12 @@ def head_shapes():
         # fenestrae on each side of the sagittal crest: broad, rounded skull top behind the orbits
         S.append(E("head", "head", w((0.08, 0.58, 0.2)), [0.25, 0.1, 0.15], mr(HR((0.25, 0.1, -0.08))), 0.12, tag="adductor"))
         # cheek over the jugal / quadratojugal: covers the back of the mouth line behind the rictus
-        S.append(E("head", "head", w((0.1, 0.2, 0.3)), [0.3, 0.16, 0.1], mr(HR((0.0, 0.22, 0.12))), 0.14, tag="cheek"))
+        S.append(E("head", "head", w((0.06, 0.16, 0.28)), [0.28, 0.17, 0.1], mr(HR((0.0, 0.22, 0.2))), 0.14, tag="cheek"))
         # jowl: M. pterygoideus ventralis wrapping the back of the lower jaw (rounded, deep)
-        S.append(E("jaw", "jaw", w((-0.02, -0.16, 0.2)), [0.22, 0.14, 0.12], mr(HR((0, 0.25, 0.3))), 0.15, tag="pterygoideus",
+        S.append(E("jaw", "jaw", w((-0.04, -0.24, 0.22)), [0.25, 0.19, 0.15], mr(HR((0, 0.25, 0.3))), 0.12, tag="pterygoideus",
                    masks=["jowl"]))
     # throat / gular skin between the rami, blending into the neck
-    S.append(E("jaw", "jaw", H(0.28, -0.2), [0.5, 0.1, 0.22], HR((0, 0, 0.12)), 0.14, tag="throat", masks=["throat"]))
+    S.append(E("jaw", "jaw", H(0.3, -0.24), [0.45, 0.1, 0.24], HR((0, 0, 0.1)), 0.12, tag="throat", masks=["throat"]))
     # detail mask (no volume): rugose cornified skin over the nasals
     S.append(E("head", "head", H(0.95, 0.56), [0.52, 0.11, 0.12], HR((0, 0, -0.3)), 0.05, mask_only=True, masks=["rugose"], tag="nasal_rugose"))
     return S
@@ -315,10 +325,12 @@ def head_details(cast, base_shapes):
         out = lambda u, v: cast.cast(H(u, v, 1.2 * sg), np.array([0, 0, -sg]))   # lateral surface point
         # ---------------- jugal ridge (cheekbone line under the orbit) and antorbital fossa --------
         jg = out(0.36, 0.31)
-        S.append(E("head", "head", jg - cast.normal(jg) * 0.035, [0.24, 0.065, 0.055], mr(HR((0, 0.25, -0.04))), 0.08,
+        S.append(E("head", "head", jg - cast.normal(jg) * 0.035, [0.27, 0.085, 0.07], mr(HR((0, 0.25, -0.04))), 0.08,
                    masks=["rugose"], tag="jugal_swelling"))
+        mx0, mx1 = out(1.22, 0.21), out(0.62, 0.23)
+        S.append(RC("head", "head", mx0 - cast.normal(mx0) * 0.04, mx1 - cast.normal(mx1) * 0.045, 0.055, 0.065, 0.09, tag="maxillary_swelling"))
         fo = out(0.86, 0.36)
-        S.append(E("head", "head", fo + cast.normal(fo) * 0.008, [0.16, 0.065, 0.02], mr(HR((0, 0.28, -0.06))), 0.06, sign=-1,
+        S.append(E("head", "head", fo + cast.normal(fo) * 0.03, [0.17, 0.075, 0.045], mr(HR((0, 0.28, -0.06))), 0.06, sign=-1,
                    tag="antorbital_fossa"))
         # ---------------- eye ------------------------------------------------------------------------
         # optical axis forward-outward (~55 deg binocular overlap, Stevens 2006), slightly upward
@@ -344,7 +356,7 @@ def head_details(cast, base_shapes):
         # pit for the eyeball (separate mesh)
         S.append(E("head", "head", ec, [R_EYE + 0.003] * 3, (0, 0, 0), 0.004, sign=-1, tag="eye_pit"))
         # lids: capsule arcs along an almond palpebral opening, hugging the eyeball
-        a_, bu, bd = 0.04, 0.022, 0.019
+        a_, bu, bd = 0.043, 0.026, 0.021
         for upper in (True, False):
             pts, rad = [], []
             r0 = 0.017 if upper else 0.013
@@ -366,14 +378,14 @@ def head_details(cast, base_shapes):
         S += _arc_chain([L(0.06, 0.042, zs - 0.004), L(0.0, 0.058, zs - 0.002), L(-0.062, 0.04, zs - 0.006)], [0.005, 0.007, 0.005], 0.007, sign=-1, tag="lid_crease")
         # ---------------- brow: continuous shelf from the lacrimal horn to the postorbital boss, ---------
         # overhanging the eye (rugose bosses of adult tyrannosaurids; soft-tissue thickness = design)
-        S.append(E("head", "head", L(0.01, 0.07, zs - 0.022), [0.14, 0.032, 0.04], lid_rot, 0.045, masks=["brow", "rugose"], tag="brow_ridge"))
-        S.append(E("head", "head", L(0.19, 0.06, zs - 0.04), [0.075, 0.04, 0.045], lid_rot, 0.05, masks=["rugose", "brow"], tag="lacrimal_horn"))
-        S.append(E("head", "head", L(-0.15, 0.075, zs - 0.045), [0.085, 0.055, 0.05], lid_rot, 0.05, masks=["rugose", "brow"], tag="postorbital_boss"))
+        S.append(E("head", "head", L(0.01, 0.066, zs - 0.008), [0.14, 0.03, 0.045], lid_rot, 0.04, masks=["brow", "rugose"], tag="brow_ridge"))
+        S.append(E("head", "head", L(0.19, 0.06, zs - 0.035), [0.06, 0.042, 0.045], lid_rot, 0.045, masks=["rugose", "brow"], tag="lacrimal_horn"))
+        S.append(E("head", "head", L(-0.15, 0.072, zs - 0.045), [0.085, 0.05, 0.05], lid_rot, 0.055, masks=["rugose", "brow"], tag="postorbital_boss"))
         # jugal 'horn' (cornual process) below-behind the orbit
         jh = out(0.27, 0.31)
         S.append(E("head", "head", jh - cast.normal(jh) * 0.02, [0.06, 0.035, 0.04], mr(HR((0, 0.3, 0))), 0.04, masks=["rugose"], tag="jugal_horn"))
         # ---------------- nostril: external naris high at the front of the snout -----------------
-        na = cast.cast_at(H(1.32, 0.35, 0.12 * sg), HD(np.array([0.35, 0.05, -0.94 * sg])))
+        na = cast.cast_at(H(1.37, 0.35, 0.1 * sg), HD(np.array([0.5, 0.1, -0.86 * sg])))
         nn = cast.normal(na)
         nf = HD(np.array([1.0, -0.25, 0.0]))
         nf = nf - (nf @ nn) * nn
@@ -381,13 +393,12 @@ def head_details(cast, base_shapes):
         ny = np.cross(nn, nf)
         nx = nf
         nrot = basis_to_euler(nx, ny, nn)
-        S.append(E("head", "head", na - nn * 0.022 - nx * 0.02, [0.1, 0.05, 0.04], nrot, 0.04, masks=["nostril"], tag="narial_swelling"))
-        S.append(E("head", "head", na + nn * 0.01 + nx * 0.01, [0.042, 0.016, 0.03], nrot, 0.008, sign=-1, masks=["nostril"], tag="naris"))
+        S.append(E("head", "head", na + nn * 0.012 + nx * 0.008, [0.04, 0.014, 0.028], nrot, 0.01, sign=-1, masks=["nostril"], tag="naris"))
         # ---------------- lip margin: mask for the supralabial / infralabial scale rows -------------
-        lip_u = [1.44, 1.4, 1.34, 1.22, 1.08, 0.94, 0.8, 0.66, 0.54, 0.44, RICTUS_U]
+        lip_u = [1.4, 1.36, 1.32, 1.22, 1.08, 0.94, 0.8, 0.66, 0.54, 0.44, RICTUS_U]
         hits = []
         for u in lip_u:
-            hits.append(cast.cast(H(u, lip_v(min(u, 1.43)) + 0.01, 0.8 * sg), np.array([0, 0, -sg])))
+            hits.append(cast.cast(H(u, lip_v(min(u, 1.36)) + 0.01, 0.8 * sg), np.array([0, 0, -sg])))
         for k in range(len(hits) - 1):
             a, b = hits[k], hits[k + 1]
             S.append(CAP("head", "head", a, b, 0.05, 0.02, mask_only=True, masks=["lip"], tag="lip_mask"))
@@ -399,8 +410,8 @@ def head_details(cast, base_shapes):
             u = 1.38 - 0.86 * t
             vl = _up_sec(u)["vl"]
             length = 0.05 + 0.06 * math.sin(math.pi * min(1.0, 0.15 + 0.9 * t)) if j >= 4 else 0.045
-            hwj = upper_width(u, vl + 0.06) - 0.06
-            root = H(u, vl + 0.035 + 0.7 * length, hwj * sg)
+            hwj = upper_width(u, vl + 0.06) - 0.085
+            root = H(u, vl + 0.035 + 0.6 * length, hwj * sg)
             tip = H(u - 0.01, vl + 0.035, (hwj - 0.004) * sg)
             teeth.append(dict(jaw="upper", side=side, root=list(root), tip=list(tip), radius=0.016 + 0.01 * (length / 0.11)))
         for j in range(13):
@@ -452,24 +463,24 @@ def classify_js_masks(s):
 # the coracoids to the pubic boot, short thick S-shaped neck.
 BODY_KEYS = [
     # x,     y,    top,   bot,   hw,    fw,  nt,  nb
-    (-7.05, 2.79, 0.030, 0.034, 0.028, 0.40, 2.0, 2.0),
-    (-6.40, 2.87, 0.066, 0.088, 0.060, 0.38, 2.0, 1.9),
-    (-5.60, 2.97, 0.100, 0.150, 0.092, 0.36, 2.0, 1.9),
-    (-4.70, 3.08, 0.155, 0.250, 0.148, 0.34, 2.05, 1.9),
-    (-3.80, 3.18, 0.210, 0.360, 0.210, 0.33, 2.1, 1.9),
-    (-2.90, 3.28, 0.260, 0.480, 0.275, 0.33, 2.1, 1.9),
-    (-2.00, 3.37, 0.310, 0.610, 0.345, 0.34, 2.15, 1.95),
-    (-1.20, 3.44, 0.350, 0.740, 0.410, 0.36, 2.2, 2.0),
-    (-0.50, 3.49, 0.370, 0.870, 0.460, 0.40, 2.3, 2.0),
-    (0.20, 3.51, 0.370, 1.060, 0.485, 0.42, 2.3, 2.0),
-    (0.90, 3.48, 0.385, 1.360, 0.505, 0.45, 2.3, 2.0),
-    (1.60, 3.40, 0.405, 1.370, 0.515, 0.45, 2.3, 2.0),
-    (2.20, 3.28, 0.420, 1.120, 0.475, 0.45, 2.3, 2.0),
-    (2.62, 3.21, 0.430, 0.900, 0.400, 0.45, 2.25, 2.0),
-    (2.96, 3.34, 0.450, 0.800, 0.370, 0.45, 2.2, 2.0),
-    (3.26, 3.57, 0.430, 0.680, 0.340, 0.45, 2.2, 2.0),
-    (3.50, 3.82, 0.360, 0.560, 0.320, 0.45, 2.1, 2.0),
-    (3.64, 3.93, 0.280, 0.450, 0.290, 0.45, 2.0, 2.0),
+    (-7.05, 2.74, 0.03, 0.034, 0.028, 0.40, 2.0, 2.0),
+    (-6.50, 2.83, 0.085, 0.11, 0.075, 0.38, 2.0, 1.9),
+    (-5.80, 2.94, 0.14, 0.2, 0.125, 0.36, 2.0, 1.9),
+    (-5.00, 3.05, 0.195, 0.3, 0.175, 0.34, 2.05, 1.9),
+    (-4.10, 3.16, 0.235, 0.375, 0.218, 0.33, 2.1, 1.9),
+    (-3.20, 3.26, 0.285, 0.48, 0.275, 0.33, 2.1, 1.9),
+    (-2.30, 3.35, 0.33, 0.6, 0.34, 0.34, 2.15, 1.95),
+    (-1.40, 3.43, 0.36, 0.73, 0.41, 0.36, 2.2, 2.0),
+    (-0.60, 3.49, 0.375, 0.87, 0.47, 0.40, 2.3, 2.0),
+    (0.20, 3.51, 0.375, 1.06, 0.5, 0.42, 2.3, 2.0),
+    (0.90, 3.48, 0.385, 1.36, 0.58, 0.47, 2.3, 2.0),
+    (1.60, 3.40, 0.405, 1.37, 0.6, 0.47, 2.3, 2.0),
+    (2.20, 3.28, 0.42, 1.12, 0.54, 0.46, 2.3, 2.0),
+    (2.62, 3.21, 0.44, 0.92, 0.42, 0.45, 2.25, 2.0),
+    (2.96, 3.34, 0.46, 0.82, 0.39, 0.45, 2.2, 2.0),
+    (3.26, 3.57, 0.44, 0.7, 0.355, 0.45, 2.2, 2.0),
+    (3.50, 3.86, 0.36, 0.5, 0.34, 0.45, 2.1, 2.0),
+    (3.72, 4.02, 0.28, 0.4, 0.32, 0.45, 2.0, 2.0),
 ]
 TAIL_X0, TAIL_TIP = -0.85, -7.05
 
@@ -568,22 +579,35 @@ def body_shapes(bones, legs):
         S.append(E("neck_02", "neck", m([3.05, 3.45, 0.14]), [0.36, 0.42, 0.19], mr([0, 0, 0.8]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
         S.append(E("neck_03", "neck", m([3.32, 3.65, 0.13]), [0.3, 0.38, 0.17], mr([0, 0, 0.7]), 0.16, masks=["neck_folds"], tag="neck_lateral"))
         # ---------------- hind limb ----------------------------------------------------------------
+        # Massive thigh (Hutchinson et al. 2011 Sue models: limb muscle mass ~ 2 x 13 % of body
+        # mass; Persons & Currie 2011 for the M. caudofemoralis): a drumstick that bulges well out of
+        # the flank, broad over the ilium, tapering to the knee. Soft-tissue outlines = plausible design.
         fd = (knee - hip) / np.linalg.norm(knee - hip)
         ang = math.atan2(-fd[0], -fd[1])          # rotation about z bringing local +y onto (hip - knee)
-        # thigh: long teardrop along the femur, broadest proximally
-        S.append(E(f"thigh_{s}", "thigh", hip + 0.4 * (knee - hip) + [0.02, 0, 0.1 * sg], [0.47, 0.8, 0.25], mr([0, 0, ang]), 0.12, tag="thigh_main"))
-        S.append(E(f"thigh_{s}", "thigh", hip + [0.02, 0.1, 0.07 * sg], [0.78, 0.42, 0.24], mr([0, 0, 0.08]), 0.14, tag="thigh_iliotibialis"))
-        S.append(RC(f"thigh_{s}", "thigh", hip + 0.55 * (knee - hip) + [0, 0, 0.06 * sg], knee + [0.0, 0.04, 0.0], 0.34, 0.22, 0.1, tag="thigh_lower"))
+        lat = np.array([0.0, 0.0, sg])
+        S.append(E(f"thigh_{s}", "thigh", hip + np.array([0.05, 0.1, 0.0]) + 0.1 * lat, [0.75, 0.45, 0.26], mr([0, 0, 0.12]), 0.18,
+                   tag="thigh_upper"))
+        S.append(E(f"thigh_{s}", "thigh", hip + 0.5 * (knee - hip) + 0.15 * lat + [-0.03, 0, 0], [0.48, 0.74, 0.25], mr([0, 0, ang]), 0.065,
+                   tag="thigh_main"))
+        S.append(E(f"thigh_{s}", "thigh", hip + 0.66 * (knee - hip) + 0.06 * lat + [0.19, 0, 0], [0.22, 0.46, 0.21], mr([0, 0, ang - 0.15]), 0.08,
+                   tag="thigh_cranial"))
+        S.append(RC(f"thigh_{s}", "thigh", hip + 0.6 * (knee - hip) + 0.06 * lat, knee + [0.0, 0.05, 0.0], 0.34, 0.235, 0.08,
+                    tag="thigh_lower"))
         # M. caudofemoralis longus: tail base -> 4th trochanter, bulging under the tail
-        S.append(RC("pelvis", "thigh", m([-1.7, 3.04, 0.17]), hip + 0.35 * (knee - hip) + [-0.22, 0, -0.03 * sg], 0.24, 0.27, 0.3, tag="caudofemoralis"))
-        S.append(E(f"shin_{s}", "shin", knee + [0.01, -0.02, 0], [0.19, 0.19, 0.19], (0, 0, 0), 0.09, masks=["joint_folds"], tag="knee"))
+        S.append(RC("pelvis", "thigh", m([-1.8, 3.0, 0.16]), hip + 0.35 * (knee - hip) + [-0.25, 0, 0.02 * sg], 0.26, 0.3, 0.3,
+                    tag="caudofemoralis"))
+        S.append(E(f"shin_{s}", "shin", knee + [0.03, -0.01, 0], [0.23, 0.22, 0.21], (0, 0, 0), 0.08, masks=["joint_folds"], tag="knee"))
         sd = (ankle - knee) / np.linalg.norm(ankle - knee)
         post = np.array([sd[1], -sd[0], 0.0]) * (-1 if sd[1] < 0 else 1)
         post = post if post[0] < 0 else -post
         sang = math.atan2(-sd[0], -sd[1])
-        S.append(RC(f"shin_{s}", "shin", knee + [0.0, -0.06, 0], ankle + [0, 0.03, 0], 0.235, 0.145, 0.08, scale=[1, 1, 0.92], tag="shank"))
-        S.append(E(f"shin_{s}", "shin", knee + 0.32 * (ankle - knee) + post * 0.1, [0.235, 0.5, 0.2], mr([0, 0, sang]), 0.09, tag="gastrocnemius"))
-        S.append(E(f"shin_{s}", "shin", knee + 0.4 * (ankle - knee) - post * 0.09, [0.13, 0.42, 0.13], mr([0, 0, sang]), 0.07, tag="tibialis"))
+        S.append(RC(f"shin_{s}", "shin", knee + [0.0, -0.06, 0], ankle + [0, 0.03, 0], 0.25, 0.16, 0.1, scale=[1, 1, 0.92], tag="shank"))
+        # M. gastrocnemius: deep belly behind the upper shank, tendon to the ankle
+        # M. gastrocnemius: deep belly behind the upper shank tapering smoothly into the tendon
+        S.append(RC(f"shin_{s}", "shin", knee + 0.12 * (ankle - knee) + post * 0.08, ankle + post * 0.06 + [0, 0.08, 0], 0.25, 0.075, 0.14,
+                    scale=[1, 1, 0.85], tag="gastrocnemius"))
+        # M. tibialis cranialis / extensors in front of the tibia
+        S.append(E(f"shin_{s}", "shin", knee + 0.36 * (ankle - knee) - post * 0.1, [0.13, 0.4, 0.14], mr([0, 0, sang]), 0.07, tag="tibialis"))
     return S
 
 
@@ -605,9 +629,11 @@ def build(js):
             d1 = nh["toes_" + S.lower()] - nh["metatarsus_" + S.lower()]
             s = transform_shape(s, rot_between(d0, d1), jb["meta" + S], nh["metatarsus_" + S.lower()])
             if s.get("feature") != "claw":
-                s = scale_shape(s, 1.05)
+                s = scale_shape(s, 1.1)
         elif b.startswith("toes"):
             s = transform_shape(s, np.eye(3), jb["toes" + S], nh["toes_" + S.lower()])
+            if s.get("feature") != "claw":
+                s = scale_shape(s, 1.12)
         else:
             s = transform_shape(s, np.eye(3), np.zeros(3), np.array([0, DY, 0.0]))
         s["bone"] = JS_TO_NEW[b]

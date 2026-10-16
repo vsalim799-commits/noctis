@@ -5,6 +5,8 @@
 //     --exclude PATTERN     skip matching tests (repeatable)
 //     --label short|long|all  which label set to run (default: short)
 //     --list                list matching tests and exit
+//     --check-groups G1,G2  exit 1 unless every selected test name starts with "G1.", "G2."... (CTest guard:
+//                           one CTest entry per group, so a test outside every group would never run)
 //     --data DIR            Data/ directory (default: NOCTIS_DATA_DIR env, else the source tree)
 //     --threads N           worker threads for multi-threaded tests (default: min(4, hardware))
 //     --skip-unless-env VAR exit with code 77 (CTest "skipped") unless VAR is set to a non-empty value
@@ -98,8 +100,8 @@ bool matches(const std::string& pattern, const char* name)
 
 void printUsage()
 {
-    std::printf("usage: noctis_tests [--label short|long|all] [--exclude PATTERN] [--list] [--data DIR] [--threads N]\n"
-                "                    [--skip-unless-env VAR] [--quiet] [pattern ...]\n");
+    std::printf("usage: noctis_tests [--label short|long|all] [--exclude PATTERN] [--list] [--check-groups G1,G2,...] [--data DIR]\n"
+                "                    [--threads N] [--skip-unless-env VAR] [--quiet] [pattern ...]\n");
 }
 } // namespace runnerimpl
 
@@ -171,6 +173,8 @@ int main(int argc, char** argv)
     std::vector<std::string> excludes;
     unsigned labelMask = kShort;
     bool list = false;
+    std::vector<std::string> groups; // --check-groups, each with its trailing '.'
+    bool checkGroups = false;
     RunState& st = state();
     if (const char* env = std::getenv("NOCTIS_DATA_DIR"))
     {
@@ -188,6 +192,36 @@ int main(int argc, char** argv)
         if (a == "--list")
         {
             list = true;
+        }
+        else if (a == "--check-groups")
+        {
+            const char* v = value();
+            if (!v || !*v)
+            {
+                printUsage();
+                return 2;
+            }
+            checkGroups = true;
+            std::string g;
+            for (const char* p = v;; ++p)
+            {
+                if (*p == ',' || *p == ';' || *p == '\0')
+                {
+                    if (!g.empty())
+                    {
+                        groups.push_back(g + ".");
+                    }
+                    g.clear();
+                    if (*p == '\0')
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    g += *p;
+                }
+            }
         }
         else if (a == "--quiet")
         {
@@ -299,6 +333,26 @@ int main(int argc, char** argv)
         }
     }
     std::sort(selected.begin(), selected.end(), [](const TestInfo* a, const TestInfo* b) { return std::strcmp(a->name, b->name) < 0; });
+    if (checkGroups)
+    {
+        size_t orphans = 0;
+        for (const TestInfo* t : selected)
+        {
+            bool inGroup = false;
+            for (const std::string& g : groups)
+            {
+                inGroup = inGroup || std::strncmp(t->name, g.c_str(), g.size()) == 0;
+            }
+            if (!inGroup)
+            {
+                ++orphans;
+                std::printf("not in any test group: %s (%s:%d)\n", t->name, t->file, t->line);
+            }
+        }
+        std::printf("%zu test(s) checked against %zu group(s): %zu outside every group%s\n", selected.size(), groups.size(), orphans,
+                    orphans > 0 ? " (add the group to NOCTIS_TEST_GROUPS in CMakeLists.txt, or rename the test)" : "");
+        return orphans == 0 && !selected.empty() ? 0 : 1;
+    }
     if (list)
     {
         for (const TestInfo* t : selected)

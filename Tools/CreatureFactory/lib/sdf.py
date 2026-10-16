@@ -64,18 +64,22 @@ def _cap_sections(keys, caps):
     return sorted(out, key=lambda s: s["u"])
 
 
-def _loft_table(sections, nsamp=160, caps=None):
+def _loft_table(sections, nsamp=160, caps=None, flat_ends=(True, True)):
     """Resample loft key sections (dicts) to a dense uniform-u table with monotone cubic interp."""
     from scipy.interpolate import PchipInterpolator
     keys = _cap_sections(sections, caps) if caps else sorted(sections, key=lambda s: s["u"])
     # flat ends: duplicate the end sections 2 cm outward so the PCHIP slope is zero where the
     # analytic end caps start (no normal discontinuity / visible seam at the loft ends)
     if len(keys) >= 2:
-        k0 = dict(keys[0])
-        k0["u"] = keys[0]["u"] - 0.02
-        k1 = dict(keys[-1])
-        k1["u"] = keys[-1]["u"] + 0.02
-        keys = [k0] + list(keys) + [k1]
+        keys = list(keys)
+        if flat_ends[0]:
+            k0 = dict(keys[0])
+            k0["u"] = keys[0]["u"] - 0.02
+            keys = [k0] + keys
+        if flat_ends[1]:
+            k1 = dict(keys[-1])
+            k1["u"] = keys[-1]["u"] + 0.02
+            keys = keys + [k1]
     u = np.array([s["u"] for s in keys], dtype=np.float64)
     cols = ["cy", "top", "bot", "hw", "nt", "nb", "tw", "bw"]
     dflt = {"nt": None, "nb": None, "tw": 1.0, "bw": 1.0}
@@ -264,7 +268,7 @@ class Compiled:
                 self.box[i, 3:] = (tab[:, 0:3] + ext[:, None]).max(0)
             else:
                 o, R = loft_frame(s)
-                u0, du, tab = _loft_table(s["sections"])
+                u0, du, tab = _loft_table(s["sections"], caps=s.get("section_caps"), flat_ends=tuple(s.get("flat_ends", (True, True))))
                 cp = s.get("caps") or [0.0, 0.0]
                 P[16] = cp[0]
                 P[17] = cp[1]

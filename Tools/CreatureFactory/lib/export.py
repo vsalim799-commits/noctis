@@ -308,6 +308,23 @@ def run(ctx):
     ctx.log(f"  metadata: {os.path.join(exp, f'{sp}_metadata.json')}")
 
 
+def mass_check(st, sim):
+    """Sculpt volume -> mass for two whole-body densities, compared with the species value and with
+    published adult estimates (values confirmed in Data/Sources verification notes)."""
+    if not st:
+        return None
+    v = st.get("volume_m3")
+    return {
+        "sculpt_volume_m3": v,
+        "mass_kg_at_850_kg_m3": round(v * 850) if v else None,
+        "mass_kg_at_950_kg_m3": round(v * 950) if v else None,
+        "density_note": "850 kg/m3 = assumed whole-body density with air sacs (design assumption), 950 = without",
+        "species_sim_adult_mass_kg": sim.get("adult_mass_kg"),
+        "published_adults_kg": {"FMNH PR 2081 'Sue' (hutchinson2011_trex_mass)": 9501, "RSM P2523.8 'Scotty' (persons2019_trex_scotty)": 8870},
+        "interpretation": "the sculpt is a large (Sue-sized) adult; it is heavier than the 7 t used by the simulation for a typical adult",
+    }
+
+
 def build_metadata(ctx, doc, sdata, tri, clips, texinfo, files, anim_files, glb, ver, ver_anim):
     sim = sdata["sim"]
     sci = sdata["science"]
@@ -338,6 +355,7 @@ def build_metadata(ctx, doc, sdata, tri, clips, texinfo, files, anim_files, glb,
                                  foot_length_m=sim.get("foot_length_m")),
             "model": stat("sdf_stats.json"),
             "note": "model length/height measured on the sculpt (metres); mass_at_950_kg_m3 = sculpt volume x 950 kg/m3 (rough check only, air sacs ignored)",
+            "mass_check": mass_check(stat("sdf_stats.json"), sim),
         },
         "triangles": tri,
         "stage_stats": {k: stat(f"{k}_stats.json") for k in ("detail", "retopo", "uv", "bake", "rig")},
@@ -395,6 +413,8 @@ def build_metadata(ctx, doc, sdata, tri, clips, texinfo, files, anim_files, glb,
                 "no_run": "no running clip: adult T. rex limited to walking / fast walking (Hutchinson & Garcia 2002; Sellers et al. 2017)",
                 "vocal": "closed-mouth vocal posture only (Riede et al. 2016 hypothesis); no open-mouth roar",
                 "tail": "deep tail base with a large M. caudofemoralis (Persons & Currie 2011)",
+                "skull": "keyhole dorsal outline (narrow snout, broad temporal region), deep posterior skull and mandible, Sue-sized skull ~1.45 m (Brochu 2003); soft tissue added over it is a design reconstruction",
+                "hind_limb": "acetabulum at sim.hip_height_m = 3.1 m, femur 1.30 / tibia 1.155 / metatarsus 0.61 m (adult, Sue-sized); massive thigh musculature (Hutchinson et al. 2011 limb-muscle volumes, qualitative)",
             },
             "references": refs,
             "references_not_in_bibliography": missing,
@@ -405,7 +425,9 @@ def build_metadata(ctx, doc, sdata, tri, clips, texinfo, files, anim_files, glb,
             "sparse larger feature scales (not documented for T. rex)",
             "cornified rugose skin over the skull rugosities (plausible, design)",
             "scutate scales on the metatarsus/toes and plantar pads (phylogenetic bracket with birds; not preserved for T. rex)",
-            "skin folds on the neck, throat and joints; wrinkles (design)",
+            "skin folds on the neck, throat and joints; longitudinal wrinkles along the trunk/tail (design, extant large reptiles)",
+            "head soft-tissue outline over the skull: tapered snout sections, cheeks, jowls (M. pterygoideus), brow shelf, lid shape, labial groove and enlarged lip scale rows (design over the skeleton; lips themselves: Cullen et al. 2023, inferred)",
+            "shingle-like overlapping profile and brick jitter of the metatarsal/toe scutes (design)",
             "soft-tissue volumes (muscles, jowls, belly) over the skeleton",
             "dried mud on the feet",
             "resting posture (on the pubic boot, legs folded) and all behaviours other than walking",

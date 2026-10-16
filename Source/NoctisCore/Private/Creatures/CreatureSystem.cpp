@@ -973,6 +973,20 @@ void CreatureSystem::resolveIntents(WorldContext& ctx)
                 else
                 {
                     c.behavior.hasTargetPos = false;
+                    // No water where the animal tried to drink: typically a water memory left on the dry bank where it
+                    // stood while only its muzzle reached the channel (or a spot that has since dried up), more than
+                    // 12 m from any drink site. findWater picks the nearest memory first, so without this the animal
+                    // re-targeted the same dry spot at every decision and stood there until it died of thirst (seen
+                    // for four adult Edmontosaurus 8-14 m from flowing water). Each failed attempt halves the water
+                    // memories within 15 m, so after three attempts (< 0.1, below recall) the next decision falls
+                    // back to the nearest usable drink site or another memory. Game assumption: halving rate, radius.
+                    for (PlaceMemory& m : c.memory.places)
+                    {
+                        if (m.kind == MemoryKind::Water && distanceSq(m.position, it.position) < 15.0f * 15.0f)
+                        {
+                            m.strength *= 0.5f;
+                        }
+                    }
                 }
                 break;
             }

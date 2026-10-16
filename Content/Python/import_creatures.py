@@ -13,7 +13,9 @@ Usage (editor Python console or command line):
 Factory contract (Tools/CreatureFactory/README.md, "export"; schema "noctis.creature_asset/1"):
     Build/Creatures/<id>/export/<id>_metadata.json   files, clips, skeleton (bones, retarget chains), sizes, textures
     Build/Creatures/<id>/export/SK_<id>.fbx (+ SK_<id>_LOD1..3.fbx)   skeletal mesh, 1 unit = 1 cm, faces +Y like the
-                                                     UE Mannequin (DA MeshYawOffsetDeg = -90), material slots
+                                                     UE Mannequin per the factory README (DA MeshYawOffsetDeg = -90;
+                                                     measured on the imported pelvis -> head direction when the
+                                                     Python AnimPose library is available), material slots
                                                      M_Body, M_Eye, M_Claw, M_Teeth
     Build/Creatures/<id>/export/A_<id>_<clip>.fbx    one animation per clip, root motion on bone "root"
     Build/Creatures/<id>/export/textures/T_<id>_<Map>.png  (4K; textures/2k/ holds the 2K set)
@@ -41,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import math
 import os
 import re
 import struct
@@ -369,7 +372,9 @@ def ensure_master_material(overwrite: bool):
         base = texture_param(material, "BaseColor", unreal.MaterialSamplerType.SAMPLERTYPE_COLOR, -2000, -400)
         normal = texture_param(material, "Normal", unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL, -2000, 0)
         orm = texture_param(material, "ORM", unreal.MaterialSamplerType.SAMPLERTYPE_MASKS, -2000, 300)
-        sss = texture_param(material, "SSS", unreal.MaterialSamplerType.SAMPLERTYPE_GRAYSCALE, -2000, 700)  # VERIFY: SAMPLERTYPE_GRAYSCALE
+        # Linear grayscale: the SSS weight map is imported with sRGB off and TC_Grayscale (sampler must match or the
+        # material fails to compile).
+        sss = texture_param(material, "SSS", unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_GRAYSCALE, -2000, 700)
         tint = vector_param(material, "Tint", (1.0, 1.0, 1.0), -2000, -700)
         vertex = mel.create_material_expression(material, unreal.MaterialExpressionVertexColor, -2000, -900)
         vertex_amount = scalar_param(material, "VertexColorAmount", 0.0, -1800, -1000)
@@ -377,7 +382,8 @@ def ensure_master_material(overwrite: bool):
         mud = scalar_param(material, "Mud", 0.0, -1300, -550, primitive_index=1)
         mud_color = vector_param(material, "MudColor", (0.11, 0.085, 0.06), -1600, -800)
         # Albedo: texture x tint x (optional) vertex colour (claws: dark base -> light tip, baked by the factory rig).
-        vertex_mix = lerp(material, const(material, 1.0, -1600, -980), vertex, vertex_amount, -1400, -950, "", "RGB", "")
+        # VertexColor's first (unnamed) output is RGB.
+        vertex_mix = lerp(material, const(material, 1.0, -1600, -980), vertex, vertex_amount, -1400, -950)
         albedo = multiply(material, multiply(material, base, tint, -1600, -500, "RGB", ""), vertex_mix, -1300, -450)
         # Wet skin darkens and becomes glossy; mud covers the body (artists can mask it with vertex colour or Masks).
         wet_dark = lerp(material, const(material, 1.0, -1100, -700), const(material, 0.55, -1100, -620), wet, -900, -650)
@@ -574,11 +580,42 @@ def create_anim_blueprint(species: str, folder: str, skeleton):
     return unreal.EditorAssetLibrary.load_blueprint_class(path)
 
 
-def mesh_yaw_offset(metadata, mesh) -> float:
-    """Yaw (deg) that turns the mesh's forward axis onto the actor's +X."""
+def measured_yaw_offset(skeleton, head: str, pelvis: str):
+    """Yaw (deg) bringing the pelvis -> head direction of the imported reference pose onto +X, or None.
+    UE yaw turns +X towards +Y, so a head on +Y (Mannequin convention) needs -90."""
+    if not skeleton or not head or not pelvis:
+        return None
+    try:
+        pose = unreal.AnimPoseExtensions.get_reference_pose(skeleton)  # VERIFY: AnimPose library (UE 5.1+)
+        space = unreal.AnimPoseSpaces.WORLD
+        h = unreal.AnimPoseExtensions.get_bone_pose(pose, head, space).translation
+        p = unreal.AnimPoseExtensions.get_bone_pose(pose, pelvis, space).translation
+    except Exception as exc:  # noqa: BLE001 - API absent or renamed
+        nc.info(f"    pose de référence illisible depuis Python ({exc}) : orientation non mesurée.")
+        return None
+    dx, dy = h.x - p.x, h.y - p.y
+    if math.hypot(dx, dy) < 1.0:  # cm
+        return None
+    yaw = -math.degrees(math.atan2(dy, dx))
+    # Snap to the nearest quarter turn when the skeleton is axis-aligned (it is for the factory rigs).
+    snapped = round(yaw / 90.0) * 90.0
+    return snapped if abs(snapped - yaw) < 10.0 else yaw
+
+
+def mesh_yaw_offset(metadata, mesh, skeleton=None, head: str = "", pelvis: str = "") -> float:
+    """Yaw (deg) that turns the mesh's forward axis onto the actor's +X: explicit metadata, else measured on the
+    imported skeleton (pelvis -> head), else the factory convention (-90), else a bounding-box guess."""
+    explicit = ((metadata or {}).get("ue5") or {}).get("mesh_yaw_offset_deg")
+    if explicit is not None:
+        return float(explicit)
+    measured = measured_yaw_offset(skeleton, head, pelvis)
+    if measured is not None:
+        if metadata and abs(((measured - FACTORY_MESH_YAW_DEG) + 180.0) % 360.0 - 180.0) > 1.0:
+            nc.warn(f"{mesh.get_name()} : tête mesurée à un lacet de {measured:+.0f}° (convention de la fabrique : "
+                    f"{FACTORY_MESH_YAW_DEG:+.0f}°) — la mesure est retenue.")
+        return measured
     if metadata:
-        explicit = (metadata.get("ue5") or {}).get("mesh_yaw_offset_deg")
-        return float(explicit) if explicit is not None else FACTORY_MESH_YAW_DEG
+        return FACTORY_MESH_YAW_DEG
     extent = mesh.get_imported_bounds().box_extent
     if extent.y > 1.5 * extent.x:
         nc.warn(f"{mesh.get_name()} : maillage allongé selon Y — MeshYawOffsetDeg = -90 supposé (vérifier que la tête pointe vers +X de l'acteur).")
@@ -699,7 +736,7 @@ def import_species(species: str, doc: dict, args) -> bool:
     if adult_m > 0.0 and not (0.5 * adult_m <= mesh_length_m <= 2.0 * adult_m):
         nc.warn(f"{species} : maillage de {mesh_length_m:.2f} m pour une longueur adulte simulée de {adult_m:.2f} m — "
                 f"échelle d'import à vérifier (--scale {100.0 * args.scale if mesh_length_m < adult_m else args.scale / 100.0:g}).")
-    yaw = mesh_yaw_offset(metadata, mesh)
+    yaw = mesh_yaw_offset(metadata, mesh, skeleton, mapping.get("head_bone") or "", mapping.get("pelvis_bone") or "")
 
     # Visual data asset.
     def configure_da(da):

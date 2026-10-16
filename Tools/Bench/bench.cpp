@@ -9,16 +9,19 @@
 // cells, full initial populations) unless --small:
 //   * initialisation time, total and per stage (data, terrain, hydrology, vegetation, population);
 //   * step cost per creature for each level of detail (Full / Near / Far forced on every animal),
-//     net of the creature-free baseline step;
+//     net of the creature-free baseline step measured at the same thread count;
 //   * throughput in simulated seconds per wall-clock second at 1 thread and N threads, for three
 //     regimes: real time at 10 Hz, the CLI "run" regime (1 s steps, full detail near the observer),
 //     and accelerated time (x100: no full detail, 10 s steps);
 //   * resident memory after initialisation and peak;
 //   * fixed cost of one parallelFor on the standalone thread pool (dispatch + wake-up + join) at 1 and
 //     N threads, the floor under every multi-threaded step.
-// The 1-thread and N-thread worlds run the identical step sequence (the simulation is deterministic
-// across thread counts), so both series measure the same workload; "consistency" in the report holds
-// the event count and census at the end of each run as a check. Every timed section also records
+// The 1-thread and N-thread worlds run the identical step sequence, so both series measure the same
+// workload as long as the simulation is deterministic across thread counts. "consistency" in the report
+// holds, for each thread count, digests of the final world state and of every event dispatched during the
+// run, and "consistent" says whether they all match the 1-thread run; a mismatch (e.g. the perception /
+// body-update race of Docs/PERFORMANCE.md section 6.3) is reported as a warning, not an error, because the
+// timings stay valid as a measurement of nearly the same workload. Every timed section also records
 // process CPU time / wall time ("cpu_per_wall": average busy cores) and throughput scenarios record
 // their mean LOD mix, so a serial section can be told apart from a starved (shared) machine.
 // Timings are wall-clock (steady_clock) on whatever machine runs the benchmark: compare runs from
@@ -363,6 +366,110 @@ int countLod(const WorldSimulation& w, LodLevel l)
     return n;
 }
 
+// ------------------------------------------------------------------ consistency digests
+
+// FNV-1a 64 over raw bytes (same construction as the test suite's Hasher).
+struct Digest
+{
+    u64 h = 14695981039346656037ull;
+    void bytes(const void* p, size_t n)
+    {
+        const unsigned char* b = static_cast<const unsigned char*>(p);
+        for (size_t i = 0; i < n; ++i)
+        {
+            h ^= b[i];
+            h *= 1099511628211ull;
+        }
+    }
+    void u(u64 v) { bytes(&v, sizeof(v)); }
+    void f(float v)
+    {
+        u32 bits = 0;
+        std::memcpy(&bits, &v, sizeof(bits));
+        bytes(&bits, sizeof(bits));
+    }
+    void d(double v)
+    {
+        u64 bits = 0;
+        std::memcpy(&bits, &v, sizeof(bits));
+        bytes(&bits, sizeof(bits));
+    }
+};
+
+// Digest of the observable world state: clock, tick, every creature (alive or dead) in storage order,
+// deaths, carcasses, footprints, weather and vegetation (a subset of the test suite's hashWorldState).
+u64 worldStateDigest(WorldSimulation& w)
+{
+    Digest h;
+    h.d(w.clock().seconds());
+    h.u(w.tick());
+    for (const Creature& c : w.creatures().creatures())
+    {
+        h.u(c.id.value);
+        h.u(static_cast<u64>(static_cast<i64>(c.speciesIndex)));
+        h.u(c.alive ? 1u : 0u);
+        h.u(static_cast<u64>(c.lod));
+        h.f(c.loco.position.x);
+        h.f(c.loco.position.y);
+        h.f(c.loco.position.z);
+        h.f(c.loco.heading);
+        h.f(c.loco.speed);
+        h.f(c.massKg);
+        h.f(c.phys.energyReserveMJ);
+        h.f(c.phys.hydration);
+        h.f(c.phys.fatigue);
+        h.f(c.injuries.healthIndex);
+        h.u(static_cast<u64>(c.behavior.current));
+        h.u(c.rng.stateForSave());
+    }
+    h.u(w.creatures().deaths().size());
+    h.u(w.carcasses().all().size());
+    h.u(w.tracks().count());
+    h.f(w.weather().state().temperatureC);
+    h.d(w.vegetation().totalBiomassKg());
+    return h.h;
+}
+
+// Ordered digest of every event dispatched while it exists.
+class EventDigest
+{
+public:
+    explicit EventDigest(WorldSimulation& w) : world_(w)
+    {
+        handle_ = w.events().subscribe([this](const SimEvent& e) {
+            ++count_;
+            digest_.u(static_cast<u64>(e.type));
+            digest_.d(e.time);
+            digest_.u(e.subject.value);
+            digest_.u(e.other.value);
+            digest_.f(e.position.x);
+            digest_.f(e.position.y);
+            digest_.f(e.position.z);
+            digest_.f(e.magnitude);
+            digest_.u(e.param);
+            digest_.u(e.param2);
+        });
+    }
+    ~EventDigest() { world_.events().unsubscribe(handle_); }
+    EventDigest(const EventDigest&) = delete;
+    EventDigest& operator=(const EventDigest&) = delete;
+    u64 value() const { return digest_.h; }
+    size_t count() const { return count_; }
+
+private:
+    WorldSimulation& world_;
+    int handle_ = 0;
+    Digest digest_;
+    size_t count_ = 0;
+};
+
+std::string hex64(u64 v)
+{
+    char b[24];
+    std::snprintf(b, sizeof(b), "%016llx", static_cast<unsigned long long>(v));
+    return b;
+}
+
 struct Throughput
 {
     std::string scenario;
@@ -653,37 +760,63 @@ int main(int argc, char** argv)
         veg.build(env->sim, terrain, hashCombine(opt.seed, 0x9E), sc.vegetationCellM);
         init.set("vegetation_ms", msSince(t0));
     }
-    double initNoPopMs = 0.0;
-    StepStats baseline;
-    {
-        std::unique_ptr<WorldSimulation> w = std::make_unique<WorldSimulation>();
-        const auto t0 = Clock::now();
-        if (!w->initialize(makeConfig(opt, 1, false)))
-        {
-            return 1;
-        }
-        initNoPopMs = msSince(t0);
-        w->setTimeScale(1.0f);
-        w->advance(5.0, 0.1);
-        baseline = measureSteps(*w, 0.1, lodSimS);
-    }
-    init.set("world_without_population_ms", initNoPopMs);
-
-    // --- Full world at 1 thread, then at N threads. Both worlds go through exactly the same sequence of
-    // steps and the simulation is deterministic across thread counts, so the two series measure the same
-    // workload; "consistency" records the event count and census at the end of each run to prove it.
-    JsonValue memory = JsonValue::makeObject();
-    JsonValue lodArr = JsonValue::makeArray();
-    JsonValue thrArr = JsonValue::makeArray();
-    JsonValue timings = JsonValue::makeObject();
-    JsonValue consistency = JsonValue::makeArray();
     std::vector<int> threadCounts{1};
     if (opt.threads > 1)
     {
         threadCounts.push_back(opt.threads);
     }
+    // Creature-free baseline step (environment, vegetation, research, events) at each thread count: the
+    // vegetation update runs in parallel, so its cost depends on the thread count, and each LOD step is net
+    // of the baseline of its own thread count. An empty creature system issues no parallelFor, so the
+    // scheduler's fixed cost ("scheduler_parallel_for") stays in the per-creature figure at N threads.
+    double initNoPopMs = 0.0;
+    std::vector<StepStats> baselines;
+    JsonValue baselineArr = JsonValue::makeArray();
     for (const int threads : threadCounts)
     {
+        std::unique_ptr<WorldSimulation> w = std::make_unique<WorldSimulation>();
+        const auto t0 = Clock::now();
+        if (!w->initialize(makeConfig(opt, threads, false)))
+        {
+            return 1;
+        }
+        if (threads == 1)
+        {
+            initNoPopMs = msSince(t0);
+        }
+        w->setTimeScale(1.0f);
+        w->advance(5.0, 0.1);
+        baselines.push_back(measureSteps(*w, 0.1, lodSimS));
+        JsonValue bj = stepJson(baselines.back());
+        bj.set("threads", threads);
+        bj.set("dt_s", 0.1);
+        baselineArr.push(bj);
+        std::printf("baseline (no creatures) %d thread(s): step %.0f us (p95 %.0f, CPU/wall %.2f)\n", threads, baselines.back().meanUs,
+                    baselines.back().p95Us, baselines.back().cpuPerWall);
+    }
+    init.set("world_without_population_ms", initNoPopMs);
+    report.set("baseline_step", baselineArr);
+
+    // --- Full world at 1 thread, then at N threads. Both worlds go through exactly the same sequence of
+    // steps, so the two series measure the same workload if the simulation is deterministic across thread
+    // counts; "consistency" records state and event digests at the end of each run to check it.
+    JsonValue memory = JsonValue::makeObject();
+    JsonValue lodArr = JsonValue::makeArray();
+    JsonValue thrArr = JsonValue::makeArray();
+    JsonValue timings = JsonValue::makeObject();
+    JsonValue consistency = JsonValue::makeArray();
+    struct RunEnd
+    {
+        u64 state = 0;
+        u64 events = 0;
+        size_t eventCount = 0;
+        size_t alive = 0;
+    };
+    std::vector<RunEnd> runEnds;
+    for (size_t ti = 0; ti < threadCounts.size(); ++ti)
+    {
+        const int threads = threadCounts[ti];
+        const StepStats& baseline = baselines[ti];
         releaseFreedMemory();
         std::unique_ptr<WorldSimulation> w = std::make_unique<WorldSimulation>();
         const double rssBefore = currentRssMb();
@@ -693,6 +826,7 @@ int main(int argc, char** argv)
             return 1;
         }
         const double initMs = msSince(t0);
+        EventDigest eventDigest(*w);
         if (threads == 1)
         {
             init.set("total_ms", initMs);
@@ -761,16 +895,37 @@ int main(int argc, char** argv)
             timings.set("hourly_ms", tm.hourly);
             timings.set("daily_ms", tm.daily);
         }
+        RunEnd end;
+        end.state = worldStateDigest(*w);
+        end.events = eventDigest.value();
+        end.eventCount = eventDigest.count();
+        end.alive = w->creatures().aliveCount();
+        runEnds.push_back(end);
         JsonValue cj = JsonValue::makeObject();
         cj.set("threads", threads);
         cj.set("sim_time_s", w->clock().seconds());
         cj.set("events_emitted", static_cast<double>(w->events().totalEmitted()));
-        cj.set("alive", static_cast<double>(w->creatures().aliveCount()));
+        cj.set("events_dispatched", static_cast<double>(end.eventCount));
+        cj.set("alive", static_cast<double>(end.alive));
+        cj.set("state_digest", hex64(end.state));
+        cj.set("event_digest", hex64(end.events));
         consistency.push(cj);
-        std::printf("end of %d-thread run: %.0f events emitted, %zu alive\n", threads, static_cast<double>(w->events().totalEmitted()),
-                    w->creatures().aliveCount());
+        std::printf("end of %d-thread run: %.0f events emitted, %zu alive, state %s, events %s\n", threads,
+                    static_cast<double>(w->events().totalEmitted()), end.alive, hex64(end.state).c_str(), hex64(end.events).c_str());
+    }
+    bool consistent = true;
+    for (const RunEnd& e : runEnds)
+    {
+        consistent = consistent && e.state == runEnds.front().state && e.events == runEnds.front().events && e.eventCount == runEnds.front().eventCount;
+    }
+    if (!consistent)
+    {
+        std::printf("WARNING: the 1-thread and %d-thread runs ended in different states (see \"consistency\"): the simulation is not "
+                    "deterministic across thread counts, so the two series measured slightly different workloads\n",
+                    threadCounts.back());
     }
     report.set("consistency", consistency);
+    report.set("consistent", consistent);
     memory.set("rss_start_mb", rssStart);
     memory.set("rss_end_mb", currentRssMb());
     memory.set("peak_rss_mb", peakRssMb());

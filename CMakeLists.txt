@@ -100,10 +100,17 @@ if(NOCTIS_BUILD_TESTS)
   # them. Label "short" = default quick suite; label "long" = soak and long determinism runs,
   # skipped (exit code 77) unless NOCTIS_LONG_TESTS is set in the environment.
   set(NOCTIS_DATA_DIR ${CMAKE_SOURCE_DIR}/Data)
-  foreach(group core data world creatures research sim)
+  # Test families: a test is registered with CTest through the prefix of its name ("core.random...").
+  set(NOCTIS_TEST_GROUPS core data world creatures research sim)
+  foreach(group IN LISTS NOCTIS_TEST_GROUPS)
     add_test(NAME ${group} COMMAND noctis_tests --data ${NOCTIS_DATA_DIR} --label short ${group}.)
     set_tests_properties(${group} PROPERTIES LABELS "short" TIMEOUT 600)
   endforeach()
+  # Guard: fails when a test (short or long) has a name outside every family above, which no CTest entry
+  # (hence no CI job) would ever run.
+  string(JOIN "," NOCTIS_TEST_GROUPS_CSV ${NOCTIS_TEST_GROUPS})
+  add_test(NAME test_groups COMMAND noctis_tests --label all --check-groups ${NOCTIS_TEST_GROUPS_CSV})
+  set_tests_properties(test_groups PROPERTIES LABELS "short" TIMEOUT 60)
   set_tests_properties(sim PROPERTIES RUN_SERIAL TRUE) # multi-threaded runs: keep timings stable
   add_test(NAME long COMMAND noctis_tests --data ${NOCTIS_DATA_DIR} --label long --skip-unless-env NOCTIS_LONG_TESTS)
   set_tests_properties(long PROPERTIES LABELS "long" TIMEOUT 7200 SKIP_RETURN_CODE 77 RUN_SERIAL TRUE)
