@@ -279,7 +279,7 @@ ASSETS = {
     "horsetail_unbranched": dict(
         ue_name="SM_Horsetail_Stand_A", label_fr="Peuplement de prêles à tiges simples (avec strobiles)",
         category="horsetail", pft="horsetail", builder="horsetail", bark="horsetail_stem", seed=1616,
-        spec=dict(stems=46, radius=0.55, height=(0.8, 1.45), stem_r=(0.005, 0.008), internode=(0.05, 0.09),
+        spec=dict(stems=40, radius=0.55, height=(0.8, 1.45), stem_r=(0.006, 0.0095), internode=(0.05, 0.09),
                   branched=False, strobili=0.35),
         botany=dict(
             basis="Prêles (sphénopsides, Equisetum) : INFÉRÉ (résumé de Johnson 1993 non vérifié) ; type fonctionnel horsetail des berges, bancs de sable et marais.",

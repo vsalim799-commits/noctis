@@ -76,6 +76,16 @@ class SimData:
         if arr is None:
             return np.zeros(np.shape(x), np.float32)
         row, col = self._coords(arr, x, y, vertex=(name == "height"))
+        if name == "height" and order == 3:
+            # cubic spline without overshoot: clamp to the 2x2 surrounding samples (otherwise the 5 m step of a
+            # cutbank rings into 1-2 m pillow-shaped mounds along the bank lip)
+            z = ndimage.map_coordinates(arr, [row, col], order=3, mode="nearest")
+            n = arr.shape[0]
+            r0 = np.clip(np.floor(row).astype(int), 0, n - 1)
+            c0 = np.clip(np.floor(col).astype(int), 0, n - 1)
+            r1, c1 = np.minimum(r0 + 1, n - 1), np.minimum(c0 + 1, n - 1)
+            q = np.stack([arr[r0, c0], arr[r0, c1], arr[r1, c0], arr[r1, c1]])
+            return np.clip(z, q.min(0), q.max(0))
         if name == "water_surface":
             filled = self.water_level_field()
             return ndimage.map_coordinates(filled, [row, col], order=1, mode="nearest")

@@ -138,8 +138,9 @@ def horsetail_stem(seed, n=SIZE):
     band = np.exp(-((v - 0.115) / 0.008) ** 2)
     noise = tg.fft_noise(s, seed, beta=1.2, lo=10, hi=300, aniso=(1.0, 6.0))
     h = 0.6 * ridges + 0.3 * sheath + 0.1 * noise
-    green = np.array([0.30, 0.43, 0.18]) * (0.85 + 0.25 * noise[..., None]) * (0.85 + 0.15 * ridges[..., None])
-    sh = np.array([0.26, 0.24, 0.14])
+    # dark blue-green stem and pale ash-grey sheath with a black rim: the banded look that identifies Equisetum
+    green = np.array([0.19, 0.31, 0.16]) * (0.85 + 0.25 * noise[..., None]) * (0.85 + 0.15 * ridges[..., None])
+    sh = np.array([0.50, 0.48, 0.40])
     col = green * (1 - sheath[..., None]) + sh * sheath[..., None]
     col = col * (1 - 0.7 * band[..., None])
     tips = (v > 0.11) & (v < 0.16) & (teeth > 0.5)

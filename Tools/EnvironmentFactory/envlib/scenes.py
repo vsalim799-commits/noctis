@@ -266,7 +266,8 @@ def render_aerial(samples=None, preview=False):
 # pitch < 0 looks down. cam=None falls back to the automatic search (_find_spot).
 GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=8.0, sun_az=100.0, lens=26.0,
               eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None,
-              cam=(3851.0, 4528.0), yaw_deg=14.0, pitch_deg=-3.5, fog_density=0.0065, mist_amount=0.5, mist_depth=650.0)
+              cam=(3851.0, 4528.0), yaw_deg=14.0, pitch_deg=-3.5, fog_density=0.008, fog_height=2.5, mist_amount=0.45,
+              mist_depth=650.0)
 
 
 def _find_spot(veg, sim, cfg):
@@ -373,7 +374,7 @@ def render_ground(samples=None, preview=False):
     # low morning fog lying on the river and the banks (heterogeneous volume, height falloff from the water level)
     wl = float(sim.sample("water_surface", np.array([cam_xy[0] + view[0] * 40]), np.array([cam_xy[1] + view[1] * 40]))[0])
     _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * 150, cam_xy[1] - oy + view[1] * 150), z0=wl - 1.0, size=(560, 560, 12),
-                density=cfg.get("fog_density", 0.0065), height=4.5)
+                density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5))
     # trees, palms and shrubs kept out of the first metres of the lens axis (ferns / horsetails may grow there)
     big = {"tree", "palm", "shrub"}
     lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)
