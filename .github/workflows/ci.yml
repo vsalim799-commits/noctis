@@ -6,7 +6,9 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    # Work branches run CI only for commits whose message contains "[ci]" (see the job conditions),
+    # so frequent work-in-progress pushes do not spend Actions minutes.
+    branches: [main, master, "claude/**"]
   pull_request:
   workflow_dispatch:
     inputs:
@@ -35,6 +37,7 @@ env:
 jobs:
   build-test:
     name: ${{ matrix.name }}
+    if: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || contains(github.event.head_commit.message, '[ci]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -195,6 +198,7 @@ jobs:
   # is applied, the TSan entry is expected to fail and is allowed to: remove continue-on-error then.
   sanitizers:
     name: linux-gcc-${{ matrix.name }}
+    if: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || contains(github.event.head_commit.message, '[ci]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     continue-on-error: ${{ matrix.sanitize == 'thread' }}
