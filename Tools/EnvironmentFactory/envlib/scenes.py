@@ -266,7 +266,7 @@ def render_aerial(samples=None, preview=False):
 # pitch < 0 looks down. cam=None falls back to the automatic search (_find_spot).
 GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=8.0, sun_az=100.0, lens=26.0,
               eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None,
-              cam=(3851.0, 4528.0), yaw_deg=14.0, pitch_deg=-3.5, fog_density=0.008, fog_height=2.5, mist_amount=0.45,
+              cam=(3851.0, 4528.0), yaw_deg=5.0, pitch_deg=-3.5, fog_density=0.008, fog_height=2.5, mist_amount=0.45,
               mist_depth=650.0)
 
 
@@ -380,6 +380,7 @@ def render_ground(samples=None, preview=False):
     big = {"tree", "palm", "shrub", "deadwood"}
     lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)
                   for d, r in ((3.0, 3.5), (8.0, 4.5), (15.0, 5.5), (24.0, 6.0))]
+    lens_clear.append((float(cam_xy[0]), float(cam_xy[1]), 9.0, {"deadwood"}))  # no root plate in the lens
     # foreground art direction: a few hand-placed horsetail stands and ferns 2-7 m in front of the camera
     rng = np.random.default_rng(11)
     extra = []

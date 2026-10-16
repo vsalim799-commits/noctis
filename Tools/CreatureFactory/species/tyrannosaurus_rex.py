@@ -172,35 +172,35 @@ def mirror_shape(s):
 # down to a tall premaxilla, convex (sinuous) tooth-row margin. Soft tissue = plausible thickness.
 #  u,    v_top, v_lip, hw,    fr (widest level), nt,  nb
 HEAD_UP = [
-    (-0.10, 0.62, 0.25, 0.36, 0.34, 1.9, 2.4),
-    (0.00, 0.70, 0.20, 0.435, 0.30, 1.9, 2.7),
-    (0.12, 0.74, 0.195, 0.465, 0.28, 1.9, 3.0),
-    (0.24, 0.76, 0.195, 0.46, 0.27, 2.0, 3.1),
-    (0.36, 0.765, 0.19, 0.425, 0.27, 2.1, 3.2),
-    (0.48, 0.75, 0.175, 0.37, 0.28, 2.25, 3.3),
-    (0.60, 0.72, 0.16, 0.32, 0.29, 2.4, 3.4),
-    (0.75, 0.68, 0.145, 0.282, 0.30, 2.5, 3.5),
-    (0.90, 0.635, 0.137, 0.255, 0.31, 2.6, 3.6),
-    (1.05, 0.59, 0.135, 0.236, 0.32, 2.6, 3.6),
-    (1.20, 0.55, 0.14, 0.222, 0.33, 2.6, 3.5),
-    (1.32, 0.51, 0.15, 0.206, 0.34, 2.5, 3.3),
-    (1.42, 0.47, 0.165, 0.18, 0.36, 2.4, 3.0),
+    (-0.10, 0.64, 0.25, 0.36, 0.34, 1.9, 2.4),
+    (0.00, 0.73, 0.20, 0.435, 0.30, 1.9, 2.7),
+    (0.12, 0.775, 0.195, 0.465, 0.28, 1.9, 3.0),
+    (0.24, 0.795, 0.19, 0.46, 0.27, 2.0, 3.1),
+    (0.36, 0.80, 0.18, 0.425, 0.27, 2.1, 3.2),
+    (0.48, 0.785, 0.165, 0.37, 0.28, 2.25, 3.3),
+    (0.60, 0.755, 0.15, 0.322, 0.29, 2.4, 3.4),
+    (0.75, 0.715, 0.135, 0.285, 0.30, 2.5, 3.5),
+    (0.90, 0.67, 0.125, 0.258, 0.31, 2.6, 3.6),
+    (1.05, 0.625, 0.122, 0.238, 0.32, 2.6, 3.6),
+    (1.20, 0.58, 0.128, 0.224, 0.33, 2.6, 3.5),
+    (1.32, 0.54, 0.14, 0.208, 0.35, 2.5, 3.3),
+    (1.42, 0.495, 0.16, 0.183, 0.38, 2.3, 3.0),
 ]
 # lower jaw (dentary + surangular/angular + skin): u, v_top, v_bot, hw, nb
 HEAD_LO = [
-    (-0.16, 0.13, -0.15, 0.34, 2.1),
-    (-0.04, 0.17, -0.26, 0.41, 2.2),
-    (0.12, 0.18, -0.315, 0.425, 2.3),
-    (0.30, 0.17, -0.32, 0.395, 2.3),
-    (0.48, 0.155, -0.29, 0.345, 2.3),
-    (0.66, 0.145, -0.25, 0.292, 2.3),
-    (0.84, 0.137, -0.205, 0.255, 2.3),
-    (1.02, 0.135, -0.165, 0.228, 2.35),
-    (1.18, 0.14, -0.125, 0.208, 2.4),
-    (1.30, 0.155, -0.075, 0.18, 2.4),
-    ]
-EYE_U, EYE_V = 0.43, 0.62
-R_EYE = 0.055
+    (-0.16, 0.13, -0.16, 0.34, 2.1),
+    (-0.04, 0.17, -0.29, 0.41, 2.2),
+    (0.12, 0.18, -0.35, 0.425, 2.3),
+    (0.30, 0.17, -0.355, 0.395, 2.3),
+    (0.48, 0.15, -0.32, 0.345, 2.3),
+    (0.66, 0.135, -0.275, 0.292, 2.3),
+    (0.84, 0.125, -0.23, 0.255, 2.3),
+    (1.02, 0.122, -0.19, 0.228, 2.35),
+    (1.18, 0.128, -0.15, 0.208, 2.4),
+    (1.30, 0.14, -0.105, 0.18, 2.4),
+]
+EYE_U, EYE_V = 0.43, 0.645
+R_EYE = 0.058
 
 
 def _up_interp(u):
@@ -216,7 +216,7 @@ def head_shapes():
     for u, vt, vl, hw, fr, nt, nb in HEAD_UP:
         cy = vl + fr * (vt - vl)
         secs.append(dict(u=u, cy=cy, top=vt - cy, bot=cy - vl, hw=hw, nt=nt, nb=nb))
-    S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.14, 0.08], blend=0.2,
+    S.append(dict(bone="head", kind="loft", origin=list(JAW), rotation=HEAD_ROT, sections=secs, caps=[0.14, 0.09], blend=0.2,
                   region="head", tag="cranium"))
 
     def upper_width(u, v):
@@ -252,13 +252,13 @@ def head_shapes():
         # surangular shelf above the jaw angle
         S.append(E("jaw", "jaw", w((0.32, -0.04, 0.3)), [0.26, 0.09, 0.04], mr(HR((0, 0.3, 0.06))), 0.12, tag="surangular"))
         # antorbital region: shallow skin-covered depression in front of the orbit (design)
-        S.append(E("head", "head", w((0.8, 0.44, 0.30)), [0.2, 0.075, 0.04], mr(HR((0, 0.3, -0.05))), 0.06, sign=-1, tag="antorbital_fossa"))
+        S.append(E("head", "head", w((0.8, 0.47, 0.30)), [0.2, 0.075, 0.035], mr(HR((0, 0.3, -0.05))), 0.05, sign=-1, tag="antorbital_fossa"))
     # throat / gular skin between the rami, blending into the neck
     S.append(E("jaw", "jaw", H(0.24, -0.22), [0.48, 0.12, 0.22], HR((0, 0, 0.1)), 0.15, tag="throat", masks=["throat"]))
     # nasal ridge (paired rugose nasals) along the top of the snout
-    S.append(RC("head", "head", H(1.36, 0.43), H(0.6, 0.69), 0.05, 0.075, 0.07, scale=[1, 1, 1.35], masks=["rugose"], tag="nasal_ridge"))
+    S.append(RC("head", "head", H(1.36, 0.475), H(0.6, 0.705), 0.05, 0.075, 0.07, scale=[1, 1, 1.35], masks=["rugose"], tag="nasal_ridge"))
     # detail masks (no volume): rugose cornified skin over the nasals
-    S.append(E("head", "head", H(1.0, 0.62), [0.5, 0.12, 0.14], HR((0, 0, -0.3)), 0.05, mask_only=True, masks=["rugose"], tag="nasal_rugose"))
+    S.append(E("head", "head", H(1.0, 0.66), [0.5, 0.12, 0.14], HR((0, 0, -0.3)), 0.05, mask_only=True, masks=["rugose"], tag="nasal_rugose"))
     return S
 
 
@@ -288,7 +288,7 @@ def head_details(cast, base_shapes):
         eye_dir = HD(np.array([0.53, 0.07, 0.845 * sg]))
         eye_dir /= np.linalg.norm(eye_dir)
         surf = cast.cast_at(H(EYE_U, EYE_V, 0.25 * sg), -eye_dir, back=0.8)
-        ec = surf - eye_dir * (R_EYE - 0.024)          # eyeball ~2.4 cm proud of the smooth head surface (lids cover its rim)
+        ec = surf - eye_dir * (R_EYE - 0.014)          # eyeball ~1.4 cm proud of the smooth head surface (lids cover its rim)
         eyes.append(dict(side=side, center=list(ec), radius=R_EYE, direction=list(eye_dir), bone=f"eye_{side}"))
         fwd = HD(np.array([1.0, 0.12, 0.0]))
         bz = eye_dir
@@ -302,11 +302,11 @@ def head_details(cast, base_shapes):
         lid_rot = basis_to_euler(bx, by, bz)
         L = lambda x, y, z: ec + bx * x + by * y + bz * z
         # orbit mound (soft tissue around the eyeball)
-        S.append(E("head", "head", L(0.0, 0.0, -0.012), [0.11, 0.08, 0.036], lid_rot, 0.05, masks=["lid"], tag="orbit_mound"))
+        S.append(E("head", "head", L(0.0, -0.012, 0.035), [0.09, 0.055, 0.026], lid_rot, 0.03, sign=-1, masks=["lid"], tag="orbit_socket"))
         # pit for the eyeball (separate mesh)
         S.append(E("head", "head", ec, [R_EYE + 0.003] * 3, (0, 0, 0), 0.004, sign=-1, tag="eye_pit"))
         # lids: capsule arcs along an almond palpebral opening, hugging the eyeball
-        a_, bu, bd = 0.052, 0.03, 0.024
+        a_, bu, bd = 0.054, 0.032, 0.026
         for upper in (True, False):
             pts, rad = [], []
             r0 = 0.022 if upper else 0.017
@@ -328,9 +328,9 @@ def head_details(cast, base_shapes):
         S += _arc_chain([L(0.06, 0.04, 0.012), L(0.0, 0.068, 0.012), L(-0.064, 0.044, 0.008)], [0.006, 0.008, 0.006], 0.008, sign=-1, tag="lid_crease")
         # ---------------- brow: lacrimal horn in front, postorbital boss above-behind ----------------
         # (rugose bosses of adult T. rex; the brow shelf overhangs and shades the eye)
-        S.append(E("head", "head", L(0.0, 0.088, -0.03), [0.15, 0.038, 0.055], lid_rot, 0.07, masks=["brow"], tag="brow_ridge"))
-        S.append(E("head", "head", L(-0.12, 0.1, -0.05), [0.09, 0.065, 0.065], lid_rot, 0.05, masks=["rugose", "brow"], tag="postorbital_boss"))
-        S.append(E("head", "head", L(0.18, 0.085, -0.055), [0.085, 0.042, 0.05], lid_rot, 0.05, masks=["rugose", "brow"], tag="lacrimal_horn"))
+        S.append(E("head", "head", L(0.005, 0.08, 0.012), [0.15, 0.036, 0.05], lid_rot, 0.05, masks=["brow"], tag="brow_ridge"))
+        S.append(E("head", "head", L(-0.12, 0.095, -0.02), [0.09, 0.065, 0.06], lid_rot, 0.05, masks=["rugose", "brow"], tag="postorbital_boss"))
+        S.append(E("head", "head", L(0.18, 0.08, -0.03), [0.085, 0.042, 0.05], lid_rot, 0.05, masks=["rugose", "brow"], tag="lacrimal_horn"))
         # jugal 'horn' (cornual process) below-behind the orbit
         jh = cast.cast_at(H(0.3, 0.3, 0.3 * sg), np.array([0, 0, -sg]))
         S.append(E("head", "head", jh - cast.normal(jh) * 0.025, [0.075, 0.04, 0.045], mr(HR((0, 0.3, 0))), 0.05, masks=["rugose"], tag="jugal_horn"))
