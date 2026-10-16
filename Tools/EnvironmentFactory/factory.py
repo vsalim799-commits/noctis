@@ -11,7 +11,7 @@ Stages (each re-runnable alone, outputs cached in Build/Environment/):
   ground      tileable 2K ground texture sets -> Build/Environment/ground
   landscape   UE5 paint-layer weightmaps at heightmap resolution (from the simulation masks) -> Build/Environment/landscape
   manifest    Build/Environment/manifest.json (assets, textures, scatter rules, landscape layers) read by the UE scripts
-  sheet       Output/environment/assets_sheet.png
+  sheet       Output/environment/assets_sheet.png (--samples 0: re-compose from cached thumbnails)
   aerial      Output/environment/valley_aerial.png
   ground_shot Output/environment/valley_ground.png
 See README.md (French).
@@ -61,7 +61,7 @@ def stage_manifest(args):
 
 def stage_sheet(args):
     from envlib import sheet
-    return sheet.run(samples=args.samples or 20, ids=args.assets.split(",") if args.assets else None)
+    return sheet.run(samples=20 if args.samples is None else args.samples, ids=args.assets.split(",") if args.assets else None)
 
 
 def stage_aerial(args):

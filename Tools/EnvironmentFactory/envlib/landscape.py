@@ -108,7 +108,7 @@ def layer_info(files=None):
     return {
         "layers": [{"name": k, "ground_material": v[0], "habitats": v[1], "weightmap": files.get(k)} for k, v in LAYERS.items()],
         "masks": {"file": files.get("_masks"), "channels": {"R": "wetness (statique)", "G": "corridors prédits", "B": "risque de crue", "A": "eau"},
-                  "uv": "U = X / taille (cm), V = -Y / taille (Y Unreal négatif vers le nord) — voir Docs/ENVIRONMENT.md"},
+                  "uv": "U = X / taille, V = (Y + taille) / taille (cm ; V = 0 au bord nord, Y Unreal = -taille) — voir Docs/ENVIRONMENT.md §3.2"},
         "resolution": "2017 x 2017 (= heightmap), ligne 0 = bord nord",
         "blend": "couches pondérées (somme = 255), mélange par hauteur dans M_NoctisLandscape",
     }

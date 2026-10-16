@@ -212,11 +212,14 @@ Modules : `vocal`, `footsteps`, `foley`, `ambience`, `equipment`.
 | `ambience` | 29 | 21 couches de 60 s (dont feu couvant / front de feu et anoures de jour) + 5 mixages jour / nuit + 3 versions « géophonie seule » ; le mixage jour des dunes est un alias |
 | `weather` | 22 | 4 couches de pluie + 2 pluies entendues depuis le véhicule (60 s) + 16 tonnerres (4 distances × 4 variations) |
 | `equipment` | 68 | véhicule 24, drone 14, obturateur 8, enregistreur 8, radio 14 (machines en mono) |
-| **Total** | **2 160** | 5 348 s d'audio (~89 min), ~1,1 Go de WAV, 51 boucles ; `confidence` : 840 INFÉRÉS, 1 320 SPÉCULATIFS ; `model_confidence` : 2 160 SPÉCULATIFS ; 320 hypothèses étiquetées |
+| **Total** | **2 160** | 5 391 s d'audio (~90 min), ~1,1 Go de WAV, 51 boucles ; `confidence` : 840 INFÉRÉS, 1 320 SPÉCULATIFS ; `model_confidence` : 2 160 SPÉCULATIFS ; 320 hypothèses étiquetées |
 
-Dernier passage de `qa.py` : 2 090 / 2 090 sons conformes ; aucun fichier orphelin ; absorption conforme à la
-table 2 de l'ISO 9613-2 ; portage Python identique au cœur C++ (écart relatif max. 1·10⁻⁷) ; 411 bandes de
-fonctions de transfert de distance vérifiées (écart max. 0,01 dB) ; f0 mesurée par YIN sur 241 cris tonals.
+Dernier passage de `qa.py` (2026-10-16, générateur 1.2.0) : 2 160 / 2 160 sons conformes (33 359 contrôles) et les 12
+contrôles de bibliothèque au vert ; aucun fichier orphelin ; absorption conforme à la table 2 de l'ISO 9613-2 ; portage
+Python identique au cœur C++ (écart relatif max. 1·10⁻⁷) ; 411 bandes de fonctions de transfert de distance vérifiées
+(écart max. 0,01 dB) ; f0 mesurée sur 278 cris tonals (YIN sur 254, pic spectral de la porteuse sur les 24 grondements
+modulés) ; limiteur des boucles : réduction max. 5,9 dB sur < 0,9 % des échantillons (15 boucles sur 35 touchées) ;
+tonnerre : niveau géométrique à ± 2,4 dB du modèle linéique du cœur (écart moyen 0,0 dB) ; queue des one-shots ≤ −47,7 dB.
 
 ## Niveaux, normalisation et calibration
 

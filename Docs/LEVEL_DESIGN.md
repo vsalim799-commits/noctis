@@ -58,14 +58,14 @@ Le départ est **biaisé vers les heures et la saison actives** : jour 141 (dans
 100–200, et dans la fenêtre de reproduction simulée de plusieurs espèces), **05:00**, à l'aube. Aucune scène n'est
 scriptée : ce qui suit est le parcours que la géographie rend naturel, avec les indices diégétiques du **carnet de
 terrain** (seul canal d'aide). Les temps de marche viennent de `walk_time_from_basecamp_min` (réseau à pied, 1,25 m/s sur
-sol plat). Chaque étape est un **lieu distinct** : le point de vue est à 506 m de l'affleurement le plus proche, l'affût
-à 130 m de l'abreuvoir qu'il surveille.
+sol plat). Chaque étape est un **lieu distinct** : le point de vue est à 506 m de l'affleurement le plus proche et à
+436 m du point d'eau ou de franchissement le plus proche, l'affût à 130 m de l'abreuvoir qu'il surveille.
 
 | Temps réel | Lieu (graine 7) | Ce qui se passe | Indice du carnet |
 |---|---|---|---|
 | 0–10 min | **BC01** camp de base (3624, 4224) | contrôle radio, choix du matériel (le carnet suggère jumelles + micro omni), la carte est vide | « L'aube est le meilleur moment pour écouter. D'où voit-on l'eau ? » |
 | 10–40 min | **OV01** point de vue sur une crête de levée (15,9 min à pied ; 1,5 m de proéminence, 0,40 km² visibles) | premier balayage : l'abreuvoir WA01 au pied du bluff E, l'abreuvoir WA02 sur la rive opposée et les affleurements EX04–EX06 sont en vue ; premier enregistrement du chœur d'aube (vocalisations = **hypothèses**, spectrogramme et sous-titres) | « Noter l'heure, la distance, le nombre d'individus. » |
-| 40–75 min | **BL02** affût surélevé (12,9 min du camp, à 130 m de **WA01**) | les animaux viennent boire : 3 des 5 événements « boire » du préchauffage sont à moins de 100 m de WA01 ; à 1,2 m d'œil le sous-bois masque l'eau, d'où la plate-forme (œil à 3,5 m) | « Combien de temps restent-ils à l'eau ? Qui surveille ? » |
+| 40–75 min | **BL02** affût surélevé (12,9 min du camp, à 130 m de **WA01**) | les animaux viennent boire : 3 des 5 événements « boire » du préchauffage sont dans le carré de 160 m centré sur WA01 ; à 1,2 m d'œil le sous-bois masque l'eau, d'où la plate-forme (œil à 3,5 m) | « Combien de temps restent-ils à l'eau ? Qui surveille ? » |
 | 75–100 min | **EX05** affleurement E, par sa **banquette** (point d'accès à 160 m de l'affût, 3,5 m au-dessus de l'eau) | une fois les animaux partis : coupe de 6,3 m (talus de 2,8 m au-dessus de la banquette, berge du chenal de 3,5 m dessous) ; un os affleure ; premier spécimen | « Ces couches sont plus anciennes que le sol où je marche. De combien ? Je ne peux pas le dire ici. » |
 | 100–120 min | **FD02** point de franchissement (17,7 min du camp) puis retour | empreintes fraîches dans la boue des berges : mesurer une piste ; la rivière fait 2,3 m de fond : seul le **packraft** permet de passer (jamais à pied, même en saison sèche) ; planifier l'expédition 1 | « Longueur de pas, longueur du pied : quelle vitesse ? » |
 
@@ -125,9 +125,9 @@ Aucun POI choisi par le niveau n'est à moins de **300 m d'un bord** de la carte
 | `backswamp` | plus grandes composantes connexes d'habitat « marais arrière », point le plus humide à ≥ 300 m du bord, une par rive | BS01, BS02 | FORTEMENT ÉTAYÉ (dépôts d'étangs et de marais) |
 | `oxbow_lake` | méandres abandonnés du générateur | aucun pour la graine 7 | FORTEMENT ÉTAYÉ |
 | `ford` | **points de franchissement candidats** aux inflexions (\|courbure\| ≤ 0,0015 /m ; 1 400 sections de la rivière rejetées comme sommets de boucle), section mouillée cherchée autour de l'axe (les sections sans eau sont des « lits à sec », jamais classées), notées sur les berges, le fond, l'usure, les corridors ; position au milieu de la section mouillée. 4 sur la rivière (packraft), 2 gués sur le ruisseau | FD01–FD04 (rivière), FD05–FD06 (ruisseau) | INFÉRÉ (lieu de traversée prédit ; pas un haut-fond) |
-| `water_access` | sites d'abreuvement de la simulation **dont la station est au bord de l'eau** : sol ≤ 0,5 m au-dessus de l'eau, berge ≤ 20° sur les 10 derniers mètres (883 sites rejetés pour la graine 7) ; classés par activité animale, événements « boire » observés, présence d'herbivores, habitat, bonus de barre de méandre ; 2 max par rive, ≥ 150 m d'un point de franchissement | WA01–WA04 | INFÉRÉ |
-| `overlook` | **couverture maximale gloutonne** d'un champ de vision pondéré par l'activité animale (horizon du relief, canopée dense opaque, feuillage atténuant), à **≥ 150 m de tout affleurement** et en **retrait de 18 m** de toute arête de berge, 5 retenues espacées de ≥ 900 m | OV01–OV05 (≈ 0,33–0,43 km² visibles) | sans objet (choix méthodologique) |
-| `blind` | affût à 70–240 m des cibles les plus actives (franchissements, abreuvoirs, marais), ligne de visée dégagée, sous le vent dominant, en **retrait de 15 m** des arêtes de berge et des bluffs, **sous la ligne d'horizon** vue depuis la cible ; affût au sol (œil 1,2 m) si le sous-bois laisse voir, sinon **affût surélevé** (plate-forme portable, œil 3,5 m) ; au moins 2 sur la rive du camp | BL01–BL04 (4 surélevés pour la graine 7) | sans objet |
+| `water_access` | sites d'abreuvement de la simulation **dont la station est au bord de l'eau** : sol ≤ 0,5 m au-dessus de l'eau, berge ≤ 20° sur les 10 derniers mètres (883 sites rejetés pour la graine 7) ; classés par activité animale, événements « boire » observés (comptés dans le carré de 160 m centré sur la station, la fenêtre même du terme de score), présence d'herbivores, habitat, bonus de barre de méandre ; 2 max par rive, ≥ 150 m d'un point de franchissement | WA01–WA04 | INFÉRÉ |
+| `overlook` | **couverture maximale gloutonne** d'un champ de vision pondéré par l'activité animale (horizon du relief, canopée dense opaque, feuillage atténuant), à **≥ 150 m de tout affleurement**, à **≥ 150 m des abreuvoirs et des franchissements** (un observateur à découvert plus près que la distance d'un affût serait lui-même la perturbation), au moins 0,5 m au-dessus du plein bord (hors crues fréquentes, pas « hors zone inondable ») et en **retrait de 18 m** de toute arête de berge, 5 retenues espacées de ≥ 900 m | OV01–OV05 (≈ 0,33–0,43 km² visibles) | sans objet (choix méthodologique) |
+| `blind` | affût à 70–240 m des cibles les plus actives (franchissements, abreuvoirs, marais), ligne de visée dégagée, sous le vent dominant, en **retrait de 15 m** des arêtes de berge et des bluffs, à **≥ 150 m de tout point de vue** (pas de postes d'observation empilés), **sous la ligne d'horizon** vue depuis la cible ; affût au sol (œil 1,2 m) si le sous-bois laisse voir, sinon **affût surélevé** (plate-forme portable, œil 3,5 m) ; au moins 2 sur la rive du camp | BL01–BL04 (4 surélevés pour la graine 7) | sans objet |
 | `nesting_area` | modèle d'habitat par espèce : habitat préféré, sol hors crue de plein bord, substrat selon le type de nid, pente, distance à l'eau, faible activité de prédateurs, pontes simulées ; **aptitude ≥ 0,4** (aucune zone forcée) | NA01–NA07 ; Champsosaurus : aucune zone (aptitude 0,18) | **SPÉCULATIF**, affichage soumis au réglage de profil `nesting_grounds` |
 | `carcass_site` | carcasses présentes à l'export (état dynamique) | CA01 | ÉTABLI (décomposition et charognage, taphonomie actualiste) |
 | `camera_trap` | sur ≥ 1 corridor prédit ; près d'un franchissement ou d'un abreuvoir (≤ 200 m) **du côté atteint sans traverser** (rive du camp pour un franchissement de la rivière) ; magnitude = présence d'herbivores échantillonnée toutes les 10 min ; l'usure de végétation ne compte que comme « passage observé » ; 2 max par rive | CT01–CT04 | sans objet |
@@ -136,13 +136,15 @@ Aucun POI choisi par le niveau n'est à moins de **300 m d'un bord** de la carte
 
 Lecture rapide de la graine 7 :
 
-- **Rive du camp** : BC01, FR01, EX01/EX03/EX05/EX07, BS01, FD02, WA01/WA04, OV01/OV02/OV04/OV05, BL01/BL02/BL04,
+- **Rive du camp** : BC01, FR01, EX01/EX03/EX05/EX07, BS01, FD02, WA01/WA04, OV01/OV03/OV04/OV05, BL01/BL02/BL04,
   NA04, CT02/CT04, AR02/AR03, MA01.
 - **Rive opposée** (packraft) : EX02/EX04/EX06, BS02, FD01/FD03/FD04 (franchissements dont le POI est côté nord), gués du
-  ruisseau FD05/FD06, WA02/WA03, OV03, BL03, six des sept aires de nidification, la carcasse CA01, CT01/CT03, AR01.
-- **Points de vue** : ce sont des crêtes de levée de 1,3–1,6 m de proéminence ; la canopée limite les vues à ~0,3–0,4 km²
+  ruisseau FD05/FD06, WA02/WA03, OV02, BL03, six des sept aires de nidification, la carcasse CA01, CT01/CT03, AR01.
+- **Points de vue** : ce sont des crêtes de levée de 1,4–1,5 m de proéminence ; la canopée limite les vues à ~0,3–0,4 km²
   chacune. Les sommets des bluffs ne sont plus retenus : ils sont à moins de 150 m de leur propre affleurement (même
-  lieu) et leur hauteur vient d'une hypothèse du générateur. L'observation de longue portée passe par le drone.
+  lieu) et leur hauteur vient d'une hypothèse du générateur. Aucun point de vue n'est à moins de 150 m d'un abreuvoir ou
+  d'un franchissement (le plus proche : 436 m pour OV01), ni à moins de 150 m d'un affût. L'observation de longue portée
+  passe par le drone.
 - **Affûts** : à 1,2 m d'œil, le sous-bois simulé des levées (fougères, arbustes, plantes herbacées) masque les cibles (transmission du feuillage sous le seuil de 0,3) ; les
   quatre affûts retenus sont donc des **plates-formes** (œil 3,5 m, au-dessus du sous-bois et sous la canopée). BL01
   surveille l'abreuvoir WA02 de l'autre côté de la rivière, à 70 m.
@@ -160,8 +162,10 @@ Lecture rapide de la graine 7 :
   vaut `observed_wear` quand l'usure de végétation simulée confirme le tracé, sinon `predicted_only`. Chaque corridor
   porte `usable_by` / `not_usable_by` : les herbivores agents dont les limites permettent tout le tracé (un non-nageur
   s'arrête au-delà de ~0,95 × sa hauteur de hanche, comme dans `Locomotion.cpp` ; pente de cellule ≤ pente max de
-  l'espèce + 5°). Ankylosaurus (ne nage pas, hanche 1,4 m) ne peut pas suivre les corridors qui traversent la rivière :
-  les nageurs, eux, le peuvent. Confiance INFÉRÉE (réutilisation de pistes par les grands herbivores actuels), tracé =
+  l'espèce + 5°). La profondeur d'eau est lue **le long du tracé** (tous les 8 m), sans compter l'arrivée à l'eau d'une
+  route d'abreuvement ; `crosses_main_river` signifie que le tracé passe d'une rive à l'autre (côté de la rivière évalué
+  au point le plus proche de l'axe), pas qu'il touche le chenal. Ankylosaurus (ne nage pas, hanche 1,4 m) ne peut pas
+  suivre les corridors qui traversent la rivière : les nageurs, eux, le peuvent. Confiance INFÉRÉE (réutilisation de pistes par les grands herbivores actuels), tracé =
   prédiction du modèle.
 - **Réseau d'itinéraires** (`connections`) : liaisons entre POI voisins + arbre couvrant minimal par composante ; coût
   de marche (pente, eau ≤ 0,7 m, couvert, enfoncement) ; `mode` = `foot` ou `foot_packraft` (traversée de la rivière à un
@@ -183,7 +187,7 @@ Lecture rapide de la graine 7 :
   berges permettent la mise à l'eau (≤ 30°), sous **1,2 m/s** de courant moyen et hors alerte de crue (niveau ≤ 3,2 m) ;
   au niveau actuel (2,36 m, courant 0,67 m/s) les quatre franchissements FD01–FD04 sont utilisables. Le véhicule reste
   sur la rive du camp : la rive opposée est la zone « sans refuge proche ». Le **ruisseau** (non pérenne, débit minimal
-  5 % du débit moyen, niveau ≥ 0,25 m) se passe à gué (FD05, FD06 praticables maintenant) ou à sec (13 sections « lit à
+  5 % du débit moyen, niveau ≥ 0,25 m) se passe à gué (FD05, FD06 praticables maintenant ; FD06 n'est qu'un filet d'eau de 5 cm, le lit creusé y étant 0,46 m plus haut que le fond de référence du modèle d'eau, `metrics.bed_above_reference_m`) ou à sec (13 sections « lit à
   sec » sur 452 échantillonnées) : c'est **lui**, pas la rivière, dont la praticabilité change avec la saison.
 - **Limites** (`playable_area.edges`) : nord et sud = terrasses et plateaux de la marge de vallée. Est et ouest : le bord
   coupe la plaine et la rivière sans obstacle naturel ; c'est la **limite de la zone d'étude**, traitée de façon
@@ -338,8 +342,8 @@ force, et quels biais pèsent (distance, drone, heure, pseudo-réplication, tail
 | `world_partition`, `accessibility`, `summary` | réglages Unreal proposés, accessibilité, compteurs (composantes, POI atteignables, sites d'abreuvement rejetés, espèces sans zone de nidification) |
 
 Le fichier est **généré** : on le régénère, on ne l'édite pas (`noctis_sim export-level`). Options : `--seed`, `--profile`,
-`--env`, `--scale`, `--warmup-hours` (6 par défaut), `--json`, `--out` (défaut `Output/level`). Durée mesurée : **72 à
-150 s** selon la charge de la machine, dont 60–135 s de préchauffage.
+`--env`, `--scale`, `--warmup-hours` (6 par défaut), `--json`, `--out` (défaut `Output/level`). Durée mesurée : **~115 s
+de calcul** (72 à 225 s de temps réel selon la charge de la machine), dont la majeure partie pour le préchauffage.
 
 ## 14. Unreal Engine 5.4+
 

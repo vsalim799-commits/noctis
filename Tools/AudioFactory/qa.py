@@ -19,6 +19,7 @@ import argparse
 import json
 import math
 import multiprocessing as mp
+import re
 import subprocess
 import sys
 import time
@@ -440,9 +441,11 @@ def measure(rec):
     if rec["category"] == "vocal":
         check("vocal_is_hypothesis", rec.get("hypothesis") is True)
         # The UI label must not name the call by a function (data ids such as 'threat_rumble', 'alarm_bellow').
+        # (The supposed-context clause itself is allowed: a call whose data id is just 'contact' would otherwise fail.)
         ct = (rec.get("parameters") or {}).get("call_type") or ""
-        check("vocal_label_no_function_id", bool(ct) and ct not in (rec.get("label_fr") or "") and "contexte supposé" in (rec.get("label_fr") or ""),
-              rec.get("label_fr"))
+        lab = rec.get("label_fr") or ""
+        lab_wo_ctx = re.sub(r"contexte supposé : [^)]*", "", lab)
+        check("vocal_label_no_function_id", bool(ct) and ct not in lab_wo_ctx and "contexte supposé" in lab, lab)
     ue = rec.get("ue5", {})
     check("ue5_hints", all(k in ue for k in ("sound_class", "attenuation_preset", "looping", "concurrency")))
     if "preview_png" in rec:

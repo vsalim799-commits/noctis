@@ -71,6 +71,10 @@ void ANoctisCreatureActor::ActivateFor(uint32 InCreatureId, const FNoctisSpecies
 			Mesh->SetAnimInstanceClass(AnimClass);
 			CurrentAnimClass = AnimClass;
 		}
+		if (UNoctisCreatureAnimInstance* Anim = Cast<UNoctisCreatureAnimInstance>(Mesh->GetAnimInstance()))
+		{
+			Anim->SetSpeciesVisual(Visual);
+		}
 		for (int32 Slot = 0; Slot < Visual->MaterialOverrides.Num(); ++Slot)
 		{
 			if (UMaterialInterface* Material = Visual->MaterialOverrides[Slot].Get())

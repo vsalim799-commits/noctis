@@ -390,17 +390,21 @@ DEADWOOD_INNER = "deadwood"
 # --------------------------------------------------------------------------------------------- scatter rules
 # Densities are GAME ASSUMPTIONS (instances per hectare where the simulation density mask = 1), chosen for
 # plausible stand structure (closed riparian forest ~250-400 canopy stems/ha). Masks: Build/Environment/sim.
+# density_gamma (GAME ASSUMPTION, default 1): keep probability = mask ** gamma. The simulation's tree masks are
+# diffuse (open floodplain ~0.15, riparian forest ~0.5); with crowns 10-18 m wide a linear response closes the
+# canopy everywhere, gamma 1.6 keeps the habitat mosaic readable (open floodplain ~12 canopy trees/ha, riparian
+# forest ~100/ha).
 PFT_RULES = {
     "conifer": dict(mask="foliage_conifer", per_ha=220, min_spacing_m=5.5, slope_max_deg=30, water_buffer_m=4,
-                    cluster_m=120, cluster_amp=0.6,
+                    cluster_m=120, cluster_amp=0.6, density_gamma=1.6,
                     assets={"conifer_metasequoia": 0.40, "conifer_taxodium": 0.15, "conifer_glyptostrobus": 0.25, "conifer_young": 0.20},
                     habitat_bias={"backswamp": {"conifer_glyptostrobus": 2.0, "conifer_taxodium": 1.6}}),
     "angio_tree": dict(mask="foliage_angio_tree", per_ha=260, min_spacing_m=6.0, slope_max_deg=30, water_buffer_m=3,
-                       cluster_m=90, cluster_amp=0.5,
+                       cluster_m=90, cluster_amp=0.5, density_gamma=1.6,
                        assets={"broadleaf_canopy_a": 0.42, "broadleaf_canopy_b": 0.38, "broadleaf_riparian_c": 0.20},
                        habitat_bias={"riverbank": {"broadleaf_riparian_c": 4.0}, "levee_woodland": {"broadleaf_riparian_c": 1.5}}),
     "ginkgo": dict(mask="foliage_ginkgo", per_ha=40, min_spacing_m=8.0, slope_max_deg=30, water_buffer_m=4,
-                   cluster_m=150, cluster_amp=0.8, assets={"ginkgo_tree": 1.0}),
+                   cluster_m=150, cluster_amp=0.8, density_gamma=1.3, assets={"ginkgo_tree": 1.0}),
     "palm": dict(mask="foliage_palm", per_ha=160, min_spacing_m=3.0, slope_max_deg=30, water_buffer_m=3,
                  cluster_m=60, cluster_amp=0.9, assets={"palm_sabalites_tall": 0.45, "palm_sabalites_short": 0.55}),
     "angio_shrub": dict(mask="foliage_angio_shrub", per_ha=900, min_spacing_m=1.6, slope_max_deg=35, water_buffer_m=2,

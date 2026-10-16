@@ -51,5 +51,10 @@ stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0,
 * Lumière : voir `Tools/EnvironmentFactory/envlib/scenes.py` (ciel Nishita + soleil, brume par passe Mist, brouillard
   bas volumétrique) ; les deux rendus de référence sont `Output/environment/valley_aerial.png` et
   `valley_ground.png`.
-* Budget CPU : les cartes alpha du feuillage coûtent des rebonds de transparence ; 64–128 échantillons + débruitage
-  OIDN suffisent. Lancer avec `nice -n 10`.
+* Plans larges sous soleil rasant : les reflets spéculaires de milliers de cartes de feuilles sous-pixel
+  scintillent ; `envlib.scenes.tune_leaf_materials(roughness=0.7, specular=0.2)` (Tools/EnvironmentFactory) les
+  adoucit après `scatter()`.
+* Densité des arbres : `density_gamma` des règles (manifeste) rend la mosaïque d'habitats lisible (plaine ouverte
+  clairsemée, forêt riveraine fermée) ; `density=` reste le multiplicateur global.
+* Budget CPU : les cartes alpha du feuillage coûtent des rebonds de transparence ; 16–32 échantillons + débruitage
+  OIDN suffisent en 1920 × 1080 (64–128 pour un gros plan de peau). Lancer avec `nice -n 10`.

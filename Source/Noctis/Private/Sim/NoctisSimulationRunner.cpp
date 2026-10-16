@@ -257,13 +257,14 @@ void FNoctisSimulationRunner::BuildFrameExtras(FNoctisFrameOutput& Out, const FN
 		Extra.Substrate = static_cast<uint8>(Terrain.substrateAt(P));
 		Extra.bInWater = Water.depthAt(P, Terrain) > 0.05f;
 		Extra.DistanceM = noctis::distance(Sound.position, Listener);
-		// Same decomposition as noctis::AcousticRecorder: what the full model adds beyond spreading and f0 absorption.
+		// What the full model adds beyond the terms SignalSynth::render applies itself: the spreading law of the source
+		// type (SoundField::spreadingLossDb: 1/r for point sources, line source for thunder) and f0 absorption.
 		const bool bLoud = Sound.kind == noctis::SoundKind::Vocalization || Sound.kind == noctis::SoundKind::Thunder;
 		if (Extra.DistanceM <= (bLoud ? 6000.0f : 400.0f))
 		{
 			const float D = FMath::Max(1.0f, Extra.DistanceM);
 			Extra.ReceivedLevelDb = noctis::SoundField::receivedLevelDb(Sound, Listener, Env);
-			const float SpreadingAndF0 = Sound.levelDb - 20.0f * FMath::LogX(10.0f, D) -
+			const float SpreadingAndF0 = Sound.levelDb - noctis::SoundField::spreadingLossDb(Sound, D) -
 										 noctis::SoundField::absorptionDbPerM(Sound.f0Hz * Sound.pitchShift, Env.temperatureC, Env.humidity) * D;
 			Extra.ExtraGainDb = Extra.ReceivedLevelDb - SpreadingAndF0;
 		}

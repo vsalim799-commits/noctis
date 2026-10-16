@@ -1654,8 +1654,8 @@
     },
     "layer_role": "wind_desert",
     "crossfade_with": [
-     "dj_wind_moderate",
-     "dj_wind_strong"
+     "amb_dj_wind_moderate",
+     "amb_dj_wind_strong"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -1775,8 +1775,8 @@
     },
     "layer_role": "wind_desert",
     "crossfade_with": [
-     "dj_wind_calm",
-     "dj_wind_strong"
+     "amb_dj_wind_calm",
+     "amb_dj_wind_strong"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -1896,8 +1896,8 @@
     },
     "layer_role": "wind_desert",
     "crossfade_with": [
-     "dj_wind_calm",
-     "dj_wind_moderate"
+     "amb_dj_wind_calm",
+     "amb_dj_wind_moderate"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -2190,7 +2190,7 @@
     },
     "layer_role": "fire",
     "crossfade_with": [
-     "hc_fire_smoulder"
+     "amb_hc_fire_smoulder"
     ],
     "drive_parameter": "intensité du feu (VegetationSystem) et distance au front"
    },
@@ -2301,7 +2301,7 @@
     },
     "layer_role": "fire",
     "crossfade_with": [
-     "hc_fire_front"
+     "amb_hc_fire_front"
     ],
     "drive_parameter": "intensité du feu (VegetationSystem) et distance au front"
    },
@@ -2452,7 +2452,7 @@
     },
     "layer_role": "frogs",
     "crossfade_with": [
-     "hc_frogs_night_chorus"
+     "amb_hc_frogs_night_chorus"
     ],
     "drive_parameter": "heure / saison / profil",
     "profile_note_fr": "Couche de biophonie hypothétique : peut être coupée (option d'accessibilité / profil prudent) ; légende « hypothèse »."
@@ -2674,7 +2674,7 @@
     },
     "layer_role": "frogs",
     "crossfade_with": [
-     "hc_frogs_day_sparse"
+     "amb_hc_frogs_day_sparse"
     ],
     "drive_parameter": "heure / saison / profil",
     "profile_note_fr": "Couche de biophonie hypothétique : peut être coupée (option d'accessibilité / profil prudent) ; légende « hypothèse »."
@@ -4119,9 +4119,9 @@
     },
     "layer_role": "river",
     "crossfade_with": [
-     "hc_river_low",
-     "hc_river_mean",
-     "hc_river_flood"
+     "amb_hc_river_low",
+     "amb_hc_river_mean",
+     "amb_hc_river_flood"
     ],
     "drive_parameter": "débit (m³/s) et distance au chenal"
    },
@@ -4244,9 +4244,9 @@
     },
     "layer_role": "river",
     "crossfade_with": [
-     "hc_river_creek",
-     "hc_river_low",
-     "hc_river_mean"
+     "amb_hc_river_creek",
+     "amb_hc_river_low",
+     "amb_hc_river_mean"
     ],
     "drive_parameter": "débit (m³/s) et distance au chenal"
    },
@@ -4367,9 +4367,9 @@
     },
     "layer_role": "river",
     "crossfade_with": [
-     "hc_river_creek",
-     "hc_river_mean",
-     "hc_river_flood"
+     "amb_hc_river_creek",
+     "amb_hc_river_mean",
+     "amb_hc_river_flood"
     ],
     "drive_parameter": "débit (m³/s) et distance au chenal"
    },
@@ -4490,9 +4490,9 @@
     },
     "layer_role": "river",
     "crossfade_with": [
-     "hc_river_creek",
-     "hc_river_low",
-     "hc_river_flood"
+     "amb_hc_river_creek",
+     "amb_hc_river_low",
+     "amb_hc_river_flood"
     ],
     "drive_parameter": "débit (m³/s) et distance au chenal"
    },
@@ -4615,8 +4615,8 @@
     },
     "layer_role": "wind_broadleaf",
     "crossfade_with": [
-     "hc_wind_broadleaf_moderate",
-     "hc_wind_broadleaf_strong"
+     "amb_hc_wind_broadleaf_moderate",
+     "amb_hc_wind_broadleaf_strong"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -4734,8 +4734,8 @@
     },
     "layer_role": "wind_broadleaf",
     "crossfade_with": [
-     "hc_wind_broadleaf_calm",
-     "hc_wind_broadleaf_strong"
+     "amb_hc_wind_broadleaf_calm",
+     "amb_hc_wind_broadleaf_strong"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -4853,8 +4853,8 @@
     },
     "layer_role": "wind_broadleaf",
     "crossfade_with": [
-     "hc_wind_broadleaf_calm",
-     "hc_wind_broadleaf_moderate"
+     "amb_hc_wind_broadleaf_calm",
+     "amb_hc_wind_broadleaf_moderate"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -4985,8 +4985,8 @@
     },
     "layer_role": "wind_conifer",
     "crossfade_with": [
-     "hc_wind_conifer_moderate",
-     "hc_wind_conifer_strong"
+     "amb_hc_wind_conifer_moderate",
+     "amb_hc_wind_conifer_strong"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -5121,8 +5121,8 @@
     },
     "layer_role": "wind_conifer",
     "crossfade_with": [
-     "hc_wind_conifer_calm",
-     "hc_wind_conifer_strong"
+     "amb_hc_wind_conifer_calm",
+     "amb_hc_wind_conifer_strong"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -5257,8 +5257,8 @@
     },
     "layer_role": "wind_conifer",
     "crossfade_with": [
-     "hc_wind_conifer_calm",
-     "hc_wind_conifer_moderate"
+     "amb_hc_wind_conifer_calm",
+     "amb_hc_wind_conifer_moderate"
     ],
     "drive_parameter": "vent (m/s)"
    },
@@ -250552,9 +250552,9 @@
     },
     "layer_role": "rain",
     "crossfade_with": [
-     "hc_rain_light_forest",
-     "hc_rain_light_water",
-     "hc_rain_heavy_water"
+     "amb_hc_rain_light_forest",
+     "amb_hc_rain_light_water",
+     "amb_hc_rain_heavy_water"
     ],
     "drive_parameter": "intensité (mm/h)"
    },
@@ -250673,7 +250673,7 @@
     },
     "layer_role": "rain_interior",
     "crossfade_with": [
-     "hc_rain_light_rover_interior"
+     "amb_hc_rain_light_rover_interior"
     ],
     "drive_parameter": "intensité (mm/h), joueur dans le véhicule",
     "usage_fr": "Remplace les lits de pluie extérieurs quand le joueur est dans le véhicule-refuge (fondu enchaîné à l'ouverture / fermeture de la porte)."
@@ -250795,9 +250795,9 @@
     },
     "layer_role": "rain",
     "crossfade_with": [
-     "hc_rain_light_forest",
-     "hc_rain_heavy_forest",
-     "hc_rain_light_water"
+     "amb_hc_rain_light_forest",
+     "amb_hc_rain_heavy_forest",
+     "amb_hc_rain_light_water"
     ],
     "drive_parameter": "intensité (mm/h)"
    },
@@ -250921,9 +250921,9 @@
     },
     "layer_role": "rain",
     "crossfade_with": [
-     "hc_rain_heavy_forest",
-     "hc_rain_light_water",
-     "hc_rain_heavy_water"
+     "amb_hc_rain_heavy_forest",
+     "amb_hc_rain_light_water",
+     "amb_hc_rain_heavy_water"
     ],
     "drive_parameter": "intensité (mm/h)"
    },
@@ -251042,7 +251042,7 @@
     },
     "layer_role": "rain_interior",
     "crossfade_with": [
-     "hc_rain_heavy_rover_interior"
+     "amb_hc_rain_heavy_rover_interior"
     ],
     "drive_parameter": "intensité (mm/h), joueur dans le véhicule",
     "usage_fr": "Remplace les lits de pluie extérieurs quand le joueur est dans le véhicule-refuge (fondu enchaîné à l'ouverture / fermeture de la porte)."
@@ -251164,9 +251164,9 @@
     },
     "layer_role": "rain",
     "crossfade_with": [
-     "hc_rain_light_forest",
-     "hc_rain_heavy_forest",
-     "hc_rain_heavy_water"
+     "amb_hc_rain_light_forest",
+     "amb_hc_rain_heavy_forest",
+     "amb_hc_rain_heavy_water"
     ],
     "drive_parameter": "intensité (mm/h)"
    },

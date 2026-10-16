@@ -88,6 +88,11 @@ constexpr float kDrinkMaxDropM = 0.5f;          // a drinking site stands at mos
 constexpr float kDrinkMaxBankSlopeDeg = 20.0f;  // steepest bank (10 m transect to the water) an animal walks down to drink
 constexpr float kNestSuitabilityMin = 0.4f;     // below this the habitat model proposes no nesting zone for the species
 constexpr float kWearPassage = 0.05f;           // trail wear above this = at least one recent passage (wear saturates fast)
+constexpr int kDrinkWindowCells = 2;            // drink-event window around a watering point: (2k+1)^2 analysis cells
+// An overlook is an exposed observer on a crest: it stays farther from the animal targets (watering points, crossings)
+// than the closest hide distance, and a hide is a separate place from any overlook (no stacked observation posts).
+constexpr float kOverlookTargetMinM = 150.0f;
+constexpr float kBlindOverlookMinM = 150.0f;
 
 struct Options
 {
@@ -1086,7 +1091,7 @@ private:
         pres.blur(2);
         pres.normalize();
         Field drink = drinkEv_;
-        drink.blur(2);
+        drink.blur(kDrinkWindowCells);
         drink.normalize();
         Field suit = suitability_;
         suit.normalize();
@@ -1856,7 +1861,7 @@ private:
         float bankDeg = 0.0f; // steepest 2 m segment of the 10 m transect ending at the water edge
         float surfaceZ = 0.0f;
         bool pointBar = false;
-        float drinks = 0.0f;  // Drink events observed within ~100 m during the warm-up
+        float drinks = 0.0f;  // Drink events in the 5 x 5 analysis cells around the stance (footprint of drinkTerm)
         float activity = 0.0f;
         float drinkTerm = 0.0f;
         float herb = 0.0f;
@@ -1940,9 +1945,11 @@ private:
             int cx = 0;
             int cy = 0;
             drinkEv_.cellOf(wi.stand, cx, cy);
-            for (int dy = -1; dy <= 1; ++dy)
+            // Same 5 x 5 window as the box blur behind drinkTerm (Field::blur(2)), so the reported count and the score
+            // term always agree: drinkTerm > 0 if and only if drinks > 0.
+            for (int dy = -kDrinkWindowCells; dy <= kDrinkWindowCells; ++dy)
             {
-                for (int dx = -1; dx <= 1; ++dx)
+                for (int dx = -kDrinkWindowCells; dx <= kDrinkWindowCells; ++dx)
                 {
                     if (cx + dx >= 0 && cy + dy >= 0 && cx + dx < n_ && cy + dy < n_)
                     {
@@ -2135,21 +2142,54 @@ private:
         std::set<size_t> cells;
         float wearSum = 0.0f;
         float presSum = 0.0f;
-        for (const Vec2& p : fine)
+        // Water depth and river side are read at the path points themselves (8 m), not from the 32 m analysis cells:
+        // a cell at the water's edge holds the channel depth, which made every drinking route look like a deep crossing.
+        // A drinking route ends AT the water: its trailing wet points are the drink, not part of the walk.
+        const Terrain& t = w_.terrain();
+        std::vector<float> depth(fine.size(), 0.0f);
+        for (size_t k = 0; k < fine.size(); ++k)
         {
+            const WaterQuery wq = w_.water().query(fine[k], t);
+            depth[k] = wq.isWater ? wq.depth : 0.0f;
+        }
+        size_t walkEnd = fine.size();
+        if (tr.kind == "drinking_route")
+        {
+            while (walkEnd > 1 && depth[walkEnd - 1] > 0.0f)
+            {
+                --walkEnd;
+            }
+        }
+        int sidesSeen = 0; // bit 0: left of the main river, bit 1: right
+        for (size_t k = 0; k < fine.size(); ++k)
+        {
+            const Vec2& p = fine[k];
             const float wv = w_.vegetation().trail(p);
             wearSum += wv;
             tr.wearMax = std::max(tr.wearMax, wv);
             const size_t c = height_.indexOf(p);
             presSum += herbPresBlur_.v[c];
-            tr.maxWaterM = std::max(tr.maxWaterM, water_.v[c]);
-            tr.maxSlopeDeg = std::max(tr.maxSlopeDeg, slope_.v[c]);
-            if (static_cast<Habitat>(habitat_[c]) == Habitat::Channel && riverDist_.v[c] < 30.0f)
+            if (k < walkEnd)
             {
-                tr.crossesRiver = true;
+                tr.maxWaterM = std::max(tr.maxWaterM, depth[k]);
+            }
+            tr.maxSlopeDeg = std::max(tr.maxSlopeDeg, slope_.v[c]);
+            // Side of the main river from the nearest centreline point: the segment from p to its nearest point
+            // crosses no other part of the channel, so the local side is the global side of the valley.
+            int ri = -1;
+            int pi = -1;
+            float d = 0.0f;
+            if (!w_.layout().rivers.empty() && rivers_.nearest(p, 0, ri, pi, d))
+            {
+                const RiverPoint& rp = w_.layout().rivers[0].points[static_cast<size_t>(pi)];
+                if (d > 0.5f * rp.width + 4.0f)
+                {
+                    sidesSeen |= dot(p - rp.position, rp.tangent.perp()) > 0.0f ? 1 : 2;
+                }
             }
             cells.insert(c);
         }
+        tr.crossesRiver = sidesSeen == 3;
         tr.wearMean = wearSum / static_cast<float>(fine.size());
         tr.presence = presSum / static_cast<float>(fine.size());
         // The cost model uses one generic 3000 kg herbivore; tag the corridor with the agent herbivores whose own
@@ -2436,6 +2476,19 @@ private:
                               100.0f * base, stageMin, kWadeLimitM, kWadeBankSlopeMaxDeg, footTxt.c_str(), fordingDepthM_, kRoverBankSlopeMaxDeg,
                               roverTxt.c_str(), pack);
                 p.rationaleFr = buf;
+                // Water level = bankfull reference - reference depth + stage. Where the carved bed (4 m height grid) sits
+                // above the reference bottom, the water is much shallower than the stage: say so instead of leaving a
+                // "0.05 m deep at a 0.5 m stage" that reads like a bug.
+                const float bedAboveRef = stage - fc.maxDepth;
+                if (bedAboveRef > 0.5f * stage)
+                {
+                    char note[400];
+                    std::snprintf(note, sizeof(note),
+                                  " Filet d'eau : ici le lit creusé (grille de hauteurs de 4 m) est %.2f m plus haut que le fond de référence du "
+                                  "modèle d'eau, d'où une profondeur bien inférieure au niveau du cours d'eau.",
+                                  bedAboveRef);
+                    p.rationaleFr += note;
+                }
                 p.metrics.set("river", ri == 0 ? "main" : "creek");
                 p.metrics.set("crossing_kind", "candidate_crossing");
                 p.metrics.set("river_point", static_cast<int>(fc.point));
@@ -2476,6 +2529,7 @@ private:
                     p.metrics.set("packraft_ok_now", packNow);
                     p.metrics.set("packraft_stage_max_m", rnd(stagePack, 2));
                 }
+                p.metrics.set("bed_above_reference_m", rnd(std::max(0.0f, stage - fc.maxDepth), 2));
                 p.metrics.set("bank_a", polylineJson({fc.bankA}));
                 p.metrics.set("bank_b", polylineJson({fc.bankB}));
                 p.score = fc.score;
@@ -2598,15 +2652,16 @@ private:
             p.confidenceSubject = "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation";
             p.placement = "simulation_state";
             const DrinkSite& ds = w_.water().drinkSites()[static_cast<size_t>(wa.ref)];
-            char buf[1200];
+            char buf[1600];
             std::snprintf(buf, sizeof(buf),
                           "Point d'abreuvement à la lisière de l'eau%s : sol à %.2f m au-dessus de l'eau, berge à %.0f° au plus sur les 10 derniers "
                           "mètres (sites de la simulation rejetés au-delà de %.1f m ou de %.0f° : %d). Classement (score %.2f) = activité animale "
-                          "%.2f + événements « boire » %.2f + présence d'herbivores %.2f + habitat favorable %.2f%s. Événements « boire » observés à "
-                          "moins de ~100 m pendant le préchauffage : %.0f (sur %d dans toute la carte)%s. Cible pour affûts, pièges photographiques "
-                          "et relevés d'empreintes.",
+                          "%.2f + événements « boire » %.2f + présence d'herbivores %.2f + habitat favorable %.2f%s. Événements « boire » observés "
+                          "pendant le préchauffage dans le carré de %.0f m centré sur la station (la fenêtre du terme « boire ») : %.0f (sur %d "
+                          "dans toute la carte)%s. Cible pour affûts, pièges photographiques et relevés d'empreintes.",
                           wi.pointBar ? " sur une barre de méandre" : "", wi.dropM, wi.bankDeg, kDrinkMaxDropM, kDrinkMaxBankSlopeDeg, drinkRejected_, wa.score,
-                          wi.activity, wi.drinkTerm, wi.herb, wi.suit, wi.pointBar ? " + barre de méandre 0,30" : "", wi.drinks, totalDrinks,
+                          wi.activity, wi.drinkTerm, wi.herb, wi.suit, wi.pointBar ? " + barre de méandre 0,30" : "",
+                          static_cast<float>(2 * kDrinkWindowCells + 1) * kCellM, wi.drinks, totalDrinks,
                           wi.drinks < 0.5f ? " : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés" : "");
             p.rationaleFr = buf;
             p.metrics.set("drink_body", ds.bodyId >= 1000 ? "lake" : (ds.bodyId == 0 ? "main_river" : "creek"));
@@ -2633,6 +2688,14 @@ private:
     }
 
     // ------------------------------------------------------------------ overlooks and blinds
+    // An overlook is a separate place from the exposures it may overlook, and an exposed observer on a crest keeps
+    // farther from watering points and crossings than the closest hide distance.
+    bool overlookSpacingOk(const Vec2& q) const
+    {
+        return farFromPois(q, "exposure_site", kOverlookExposureMinM) && farFromPois(q, "water_access", kOverlookTargetMinM) &&
+               farFromPois(q, "ford", kOverlookTargetMinM);
+    }
+
     void addOverlooks()
     {
         std::vector<Candidate> cand;
@@ -2643,7 +2706,7 @@ private:
                 const size_t i = height_.idx(x, y);
                 const Vec2 p = height_.center(x, y);
                 if (water_.v[i] > 0.0f || har_.v[i] < 0.5f || slope_.v[i] > 25.0f || canopy_.v[i] > 0.55f || !insideMargin(p, kEdgeMarginM) ||
-                    !farFromPois(p, "exposure_site", kOverlookExposureMinM))
+                    !overlookSpacingOk(p))
                 {
                     continue;
                 }
@@ -2673,7 +2736,7 @@ private:
                         {
                             const Vec2 q = p + Vec2{static_cast<float>(sx) * 10.0f, static_cast<float>(sy) * 10.0f};
                             if (terrainZ(q) > bz && w_.water().depthAt(q, w_.terrain()) <= 0.0f && edgeSetbackOk(q, kEdgeSetbackM) &&
-                                farFromPois(q, "exposure_site", kOverlookExposureMinM))
+                                overlookSpacingOk(q))
                             {
                                 bz = terrainZ(q);
                                 best = q;
@@ -2757,13 +2820,14 @@ private:
             p.confidence = Confidence::Unknown;
             p.confidenceSubject = "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique";
             p.placement = "model_prediction";
-            char buf[800];
+            char buf[1200];
             std::snprintf(buf, sizeof(buf),
-                          "Sélection gloutonne par couverture maximale : parmi %zu hauteurs candidates (proéminence locale, hors forêt dense, hors "
-                          "zone inondable, à %.0f m au moins de tout affleurement et en retrait de %.0f m de toute arête de berge), ce point ajoute "
+                          "Sélection gloutonne par couverture maximale : parmi %zu hauteurs candidates (proéminence locale, hors forêt dense, au moins "
+                          "0,5 m au-dessus du plein bord (hors crues fréquentes), à %.0f m au moins de tout affleurement, à %.0f m au moins des "
+                          "abreuvoirs et des franchissements (observateur à découvert) et en retrait de %.0f m de toute arête de berge), ce point ajoute "
                           "le plus d'« activité animale visible » non encore couverte (gain %.1f). Champ de vision calculé à 1,7 m d'œil sur %.0f m "
                           "(horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : %.2f km² visibles. Proéminence %.1f m, %s.",
-                          pool.size(), kOverlookExposureMinM, kEdgeSetbackM, bestGain, kOverlookRadiusM, sheds[best].areaKm2, prominence_.v[cell],
+                          pool.size(), kOverlookExposureMinM, kOverlookTargetMinM, kEdgeSetbackM, bestGain, kOverlookRadiusM, sheds[best].areaKm2, prominence_.v[cell],
                           habitatFr(cell));
             p.rationaleFr = buf;
             p.metrics.set("eye_height_m", 1.7);
@@ -2774,16 +2838,25 @@ private:
             p.metrics.set("prominence_m", rnd(prominence_.v[cell], 2));
             p.metrics.set("height_above_river_m", rnd(harAt(pos), 2));
             float nearestEx = kInf;
+            float nearestTarget = kInf;
             for (const Poi& q : pois_)
             {
                 if (q.type == "exposure_site")
                 {
                     nearestEx = std::min(nearestEx, distance(q.pos, pos));
                 }
+                if (q.type == "water_access" || q.type == "ford")
+                {
+                    nearestTarget = std::min(nearestTarget, distance(q.pos, pos));
+                }
             }
             if (std::isfinite(nearestEx))
             {
                 p.metrics.set("nearest_exposure_m", rnd(nearestEx, 0));
+            }
+            if (std::isfinite(nearestTarget))
+            {
+                p.metrics.set("nearest_watering_or_crossing_m", rnd(nearestTarget, 0));
             }
             p.metrics.set("edge_setback_min_m", kEdgeSetbackM);
             p.score = bestGain;
@@ -2864,6 +2937,11 @@ private:
                         ++blindReject_["edge_setback"];
                         continue;
                     }
+                    if (!farFromPois(b, "overlook", kBlindOverlookMinM))
+                    {
+                        ++blindReject_["near_overlook"];
+                        continue;
+                    }
                     const float cov = veg.cover(b);
                     const Vec2 toT = (target.pos - b).normalized();
                     // Ground hide (seated, eye 1.2 m) when the view clears the understorey; otherwise a raised hide
@@ -2936,12 +3014,13 @@ private:
             p.confidenceSubject = "installation d'observation (choix méthodologique) — sans objet paléontologique";
             p.placement = "model_prediction";
             p.links.push_back(target.id);
-            char buf[1200];
+            char buf[1600];
             std::snprintf(buf, sizeof(buf),
                           "%s pour %s (%s), à %.0f m : %s (couvert végétal %.2f), ligne de visée dégagée par le relief à %.1f m d'œil, "
                           "transmission du feuillage %.2f, sous le vent dominant (alignement %.2f) pour limiter la détection olfactive par les "
-                          "animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff et sous la ligne d'horizon vue depuis "
-                          "la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez "
+                          "animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff, à 150 m au moins de tout point de vue, "
+                          "et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). "
+                          "Distance choisie dans 70–240 m : assez "
                           "près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de "
                           "tolérance est une question de recherche du jeu).%s",
                           bestRaised ? "Affût surélevé" : "Affût au sol", target.id.c_str(), target.nameFr.c_str(), distance(best, target.pos),
@@ -4143,10 +4222,21 @@ private:
                 drawText(cv.img, x0, y, "...", Rgb{200, 200, 200}, 2);
                 break;
             }
-            std::string label = p.id + " " + p.nameFr;
+            std::string name = p.nameFr;
+            const std::string longCrossing = "Point de franchissement candidat";
+            if (name.compare(0, longCrossing.size(), longCrossing) == 0)
+            {
+                name = "Franchissement candidat" + name.substr(longCrossing.size()); // keeps "(rivière)" within the panel
+            }
+            std::string label = p.id + " " + name;
             if (label.size() > 46)
             {
-                label = label.substr(0, 46);
+                size_t cut = 46;
+                while (cut > 0 && (static_cast<unsigned char>(label[cut]) & 0xC0) == 0x80)
+                {
+                    --cut; // never split a UTF-8 sequence
+                }
+                label = label.substr(0, cut);
             }
             drawText(cv.img, x0, y, label, poiColor(p.type), 2);
             y += 19;

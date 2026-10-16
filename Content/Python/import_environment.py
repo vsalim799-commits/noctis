@@ -521,19 +521,21 @@ def stage_foliage(args, man, meshes):
 # ----------------------------------------------------------------------------------------------- PCG
 PCG_NOTE = """PCG_Noctis_Foliage (une branche par type fonctionnel, voir Docs/ENVIRONMENT.md §4) :
   Get Landscape Data -> Surface Sampler (points/m² = per_ha/10000 de la règle, Looseness 1) ->
-  Get Texture Data T_Foliage<Pft> (bornes du paysage) -> Attribute Op Density *= R (masque de densité) ->
+  Get Texture Data T_Foliage<Pft> (bornes du paysage) -> Attribute Op Density *= R (masque de densité) -> Density ^ gamma ->
   Density Noise (taille = cluster_m, amplitude = cluster_amp) -> Density Filter (0.5..1) ->
   Normal To Density / Filter by slope (pente < slope_max_deg) -> Difference avec T_WeightChannel > 0.3 dilaté de water_buffer_m ->
   Self Pruning (rayon = min_spacing_m) -> Transform Points (lacet 0-360°, échelle 0.82-1.15) ->
-  Static Mesh Spawner (sélecteur pondéré : assets[] et parts de la règle)."""
+  Static Mesh Spawner (sélecteur pondéré : assets[] et parts de la règle).
+Bois mort (§4.2) : une chaîne par (asset, habitat) : Surface Sampler (inst./ha de l'habitat) x T_Weight<Habitat>
+  -> Self Pruning (espacement de la règle) -> Transform Points -> Static Mesh Spawner SM_Deadwood_*."""
 
 
 @guarded("5. Graphe PCG")
 def stage_pcg(args, man):
     rules = man["scatter"]["pft_rules"]
     for pft, r in rules.items():
-        log("PCG %s : masque %s, %s inst./ha, espacement %s m, pente < %s°, tampon eau %s m, assets %s" % (
-            pft, r["mask"], r["per_ha"], r["min_spacing_m"], r["slope_max_deg"], r["water_buffer_m"], r["assets"]))
+        log("PCG %s : masque %s (gamma %s), %s inst./ha, espacement %s m, pente < %s°, tampon eau %s m, assets %s" % (
+            pft, r["mask"], r.get("density_gamma", 1.0), r["per_ha"], r["min_spacing_m"], r["slope_max_deg"], r["water_buffer_m"], r["assets"]))
     for a, r in man["scatter"]["deadwood_rules"].items():
         log("PCG bois mort %s : densités par habitat %s (près des rivières : berges, bancs, forêts riveraines)" % (a, r["habitats"]))
     if args.dry_run:
@@ -554,26 +556,36 @@ def stage_pcg(args, man):
         log("Graphe PCG non créé automatiquement (%s). Construction manuelle :\n%s" % (exc, PCG_NOTE), "WARN")
 
 
+def _mask_texture_path(mask):
+    """weight_sandbar -> /Game/Noctis/Level/Textures/Terrain/T_WeightSandbar (asset names of build_level.py)."""
+    return "%s/T_%s" % (LEVEL_TEX_ROOT, "".join(p.capitalize() for p in mask.split("_")))
+
+
 def build_pcg_graph(graph, man):
-    """Best effort: one chain per plant functional type. VERIFY every node class / pin name on 5.4."""
+    """Best effort: one chain per plant functional type, plus one chain per (deadwood asset, habitat).
+    VERIFY every node class / pin name on 5.4."""
     def add(cls):
         res = graph.add_node_of_type(cls)  # VERIFY: returns (node, settings) in Python
         return res if isinstance(res, tuple) else (res, res.get_settings())
 
     out_node = graph.get_output_node()
     land, _ = add(unreal.PCGGetLandscapeSettings)  # VERIFY class name ("Get Landscape Data")
-    for pft, r in man["scatter"]["pft_rules"].items():
+
+    def chain(label, per_ha, mask, spacing_m, assets, scale=(0.82, 1.15)):
+        """Surface Sampler -> x density mask -> Density Filter -> Self Pruning -> Transform -> weighted Spawner."""
         samp, ss = add(unreal.PCGSurfaceSamplerSettings)
-        set_props(ss, points_per_squared_meter=float(r["per_ha"]) / 10000.0, looseness=1.0)
+        set_props(ss, points_per_squared_meter=float(per_ha) / 10000.0, looseness=1.0)
         graph.add_edge(land, "Out", samp, "Surface")
         tex, ts = add(unreal.PCGGetTextureDataSettings)  # VERIFY ("Get Texture Data")
-        tpath = "%s/T_%s" % (LEVEL_TEX_ROOT, "".join(p.capitalize() for p in r["mask"].split("_")))
+        tpath = _mask_texture_path(mask)
         if eal().does_asset_exist(tpath):
             set_props(ts, texture=eal().load_asset(tpath))
+        else:
+            log("%s : texture %s absente (build_level.py l'importe)" % (label, tpath), "WARN")
         # Point density *= mask value: intersection of the sampled points with the texture data (VERIFY class / pins)
         cls = next(getattr(unreal, c) for c in ("PCGInnerIntersectionSettings", "PCGIntersectionSettings", "PCGProjectionSettings")
                    if hasattr(unreal, c))
-        sm, sms = add(cls)
+        sm, _ = add(cls)
         graph.add_edge(samp, "Out", sm, "In")
         graph.add_edge(tex, "Out", sm, "In")
         flt, fs = add(unreal.PCGDensityFilterSettings)
@@ -583,15 +595,16 @@ def build_pcg_graph(graph, man):
         set_props(ps, radius_similarity_factor=0.25)
         graph.add_edge(flt, "Out", prune, "In")
         tr, trs = add(unreal.PCGTransformPointsSettings)
-        set_props(trs, rotation_min=unreal.Rotator(0, 0, 0), rotation_max=unreal.Rotator(0, 0, 360), scale_min=unreal.Vector(0.82, 0.82, 0.82),
-                  scale_max=unreal.Vector(1.15, 1.15, 1.15), uniform_scale=True)
+        set_props(trs, rotation_min=unreal.Rotator(0, 0, 0), rotation_max=unreal.Rotator(0, 0, 360),
+                  scale_min=unreal.Vector(scale[0], scale[0], scale[0]), scale_max=unreal.Vector(scale[1], scale[1], scale[1]),
+                  uniform_scale=True)
         graph.add_edge(prune, "Out", tr, "In")
         sp, sps = add(unreal.PCGStaticMeshSpawnerSettings)
         try:
             sps.set_editor_property("mesh_selector_type", unreal.PCGMeshSelectorWeighted)  # VERIFY
             sel = sps.get_editor_property("mesh_selector_parameters")
             entries = []
-            for aid, w in r["assets"].items():
+            for aid, w in assets.items():
                 a = man["assets"].get(aid)
                 if not a:
                     continue
@@ -605,9 +618,17 @@ def build_pcg_graph(graph, man):
                 entries.append(e)
             sel.set_editor_property("mesh_entries", entries)
         except Exception as exc:
-            log("Spawner %s : maillages à choisir à la main (%s)" % (pft, exc), "WARN")
+            log("Spawner %s : maillages à choisir à la main (%s)" % (label, exc), "WARN")
         graph.add_edge(tr, "Out", sp, "In")
         graph.add_edge(sp, "Out", out_node, "In")
+
+    for pft, r in man["scatter"]["pft_rules"].items():
+        chain(pft, r["per_ha"], r["mask"], r["min_spacing_m"], r["assets"])
+    # Deadwood (not a simulated plant type): one chain per habitat weight map, denser near the channel
+    # (riverbank, sandbar, cutbank, riparian forest). Docs/ENVIRONMENT.md section 4.2.
+    for aid, r in man["scatter"]["deadwood_rules"].items():
+        for hab, per_ha in r["habitats"].items():
+            chain("%s/%s" % (aid, hab), per_ha, "weight_" + hab, r["min_spacing_m"], {aid: 1.0}, scale=(0.8, 1.2))
 
 
 # ----------------------------------------------------------------------------------------------- main

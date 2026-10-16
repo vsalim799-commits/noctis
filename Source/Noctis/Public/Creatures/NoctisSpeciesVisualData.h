@@ -12,6 +12,7 @@
 #include "NoctisSpeciesVisualData.generated.h"
 
 class UAnimInstance;
+class UAnimSequenceBase;
 class UMaterialInterface;
 class USkeletalMesh;
 class USoundBase;
@@ -29,6 +30,35 @@ struct NOCTIS_API FNoctisCallSound
 	/** Optional authored/baked sound (Tools/AudioFactory). Empty = synthesised live by the core's SignalSynth. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis")
 	TSoftObjectPtr<USoundBase> Sound;
+};
+
+/** One authored animation clip of the species (Tools/CreatureFactory metadata "clips"; filled by import_creatures.py). */
+USTRUCT(BlueprintType)
+struct NOCTIS_API FNoctisAnimClip
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis")
+	TSoftObjectPtr<UAnimSequenceBase> Sequence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis")
+	bool bLoop = false;
+
+	/** Ground speed the cycle was authored for (m/s; 0 = in place). Locomotion play rate = simulated speed / SpeedMs. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis", meta = (ClampMin = "0.0"))
+	float SpeedMs = 0.0f;
+
+	/** Duration of one full stride of a locomotion cycle (s); 0 for non-cyclic clips. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis", meta = (ClampMin = "0.0"))
+	float CycleSeconds = 0.0f;
+
+	/** Stride length of the authored cycle (m). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis", meta = (ClampMin = "0.0"))
+	float StrideM = 0.0f;
+
+	/** Duty factor of the authored cycle (fraction of the stride a foot is planted). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Noctis", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float DutyFactor = 0.0f;
 };
 
 UCLASS(BlueprintType)
@@ -64,7 +94,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (ClampMin = "0.01"))
 	float MeshBodyLengthM = 1.0f;
 
-	/** Extra yaw (degrees) when the mesh's forward axis is not +X. */
+	/** Extra yaw (degrees) when the mesh's forward axis is not +X. Tools/CreatureFactory meshes face +Y like the UE
+	 *  Mannequin: -90 (set by import_creatures.py). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh")
 	float MeshYawOffsetDeg = 0.0f;
 
@@ -75,6 +106,12 @@ public:
 	/** Low-cost stand-in for distant animals (instanced static mesh). Optional. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> FarImpostorMesh;
+
+	/** Authored clips by name (idle, walk, walk_fast, run, turn_left_90, look_around, sniff, bite, alert, vocal_closed_mouth,
+	 *  lie_down, rest_loop, get_up ...). The simulation owns the root: clips are imported with root motion enabled (root
+	 *  locked) and UNoctisCreatureAnimInstance ignores the extracted motion. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	TMap<FName, FNoctisAnimClip> Clips;
 
 	// ------------------------------------------------------------------ Skeleton map (defaults = Tools/CreatureFactory rig:
 	// root, pelvis, spine_01..03, neck_01..03, head, jaw, tail_01..10, thigh/shin/metatarsus/toes_l|r, upperarm/forearm/hand_l|r)
@@ -123,4 +160,10 @@ public:
 	bool bUpdateRateOptimizations = true;
 
 	const FNoctisCallSound* FindCall(FName CallId) const;
+	const FNoctisAnimClip* FindClip(FName ClipName) const { return Clips.Find(ClipName); }
+
+	/** Name of the locomotion clip for a simulated gait (Walk: "walk"; FastWalk: "walk_fast", else "walk"; Run: "run", else
+	 *  "walk_fast", else "walk"; Swim: "swim"; Fly: "fly"; Stand: "idle"), or NAME_None when the species has none. */
+	FName FindLocomotionClipName(ENoctisGait Gait) const;
+	const FNoctisAnimClip* FindLocomotionClip(ENoctisGait Gait) const { return Clips.Find(FindLocomotionClipName(Gait)); }
 };

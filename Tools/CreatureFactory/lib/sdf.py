@@ -68,16 +68,33 @@ def _loft_table(sections, nsamp=160, caps=None):
     """Resample loft key sections (dicts) to a dense uniform-u table with monotone cubic interp."""
     from scipy.interpolate import PchipInterpolator
     keys = _cap_sections(sections, caps) if caps else sorted(sections, key=lambda s: s["u"])
+    # flat ends: duplicate the end sections 2 cm outward so the PCHIP slope is zero where the
+    # analytic end caps start (no normal discontinuity / visible seam at the loft ends)
+    if len(keys) >= 2:
+        k0 = dict(keys[0])
+        k0["u"] = keys[0]["u"] - 0.02
+        k1 = dict(keys[-1])
+        k1["u"] = keys[-1]["u"] + 0.02
+        keys = [k0] + list(keys) + [k1]
     u = np.array([s["u"] for s in keys], dtype=np.float64)
-    cols = ["cy", "top", "bot", "hw", "nt", "nb"]
-    vals = np.array([[s.get(c, s.get("n", 2.0)) if c in ("nt", "nb") else s[c] for c in cols] for s in keys])
+    cols = ["cy", "top", "bot", "hw", "nt", "nb", "tw", "bw"]
+    dflt = {"nt": None, "nb": None, "tw": 1.0, "bw": 1.0}
+    def get(s, c):
+        if c in ("nt", "nb"):
+            return s.get(c, s.get("n", 2.0))
+        if c in ("tw", "bw"):
+            return s.get(c, 1.0)
+        return s[c]
+    vals = np.array([[get(s, c) for c in cols] for s in keys])
     uu = np.linspace(u[0], u[-1], nsamp)
+    nc = len(cols)
     if len(u) >= 3:
-        tab = np.stack([PchipInterpolator(u, vals[:, j])(uu) for j in range(6)], axis=1)
+        tab = np.stack([PchipInterpolator(u, vals[:, j])(uu) for j in range(nc)], axis=1)
     else:
-        tab = np.stack([np.interp(uu, u, vals[:, j]) for j in range(6)], axis=1)
+        tab = np.stack([np.interp(uu, u, vals[:, j]) for j in range(nc)], axis=1)
     tab[:, 1:4] = np.maximum(tab[:, 1:4], 1e-3)
     tab[:, 4:6] = np.clip(tab[:, 4:6], 1.2, 8.0)
+    tab[:, 6:8] = np.clip(tab[:, 6:8], 0.15, 1.5)
     return u[0], (u[-1] - u[0]) / (nsamp - 1), tab
 
 
@@ -88,7 +105,19 @@ def sweep_table(shape, bone_index, spacing=0.03):
     """Dense samples of a sweep: centre-line (PCHIP through the key points, resampled by arc length),
     parallel frames (T forward, U up-ish, S = T x U = animal right) and section parameters."""
     from scipy.interpolate import PchipInterpolator
-    keys = shape["points"]
+    keys = list(shape["points"])
+    # flat ends: extend the centre line 2 cm beyond both ends with the end sections (zero section
+    # slope where the rounded caps start -> no crease at the cap junction)
+    for end in (0, -1):
+        k = dict(keys[end])
+        nb_ = keys[1] if end == 0 else keys[-2]
+        d = np.asarray(k["p"], float) - np.asarray(nb_["p"], float)
+        d /= np.linalg.norm(d) + 1e-12
+        k["p"] = list(np.asarray(k["p"], float) + 0.02 * d)
+        if end == 0:
+            keys.insert(0, k)
+        else:
+            keys.append(k)
     P = np.array([k["p"] for k in keys], np.float64)
     seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
     s = np.concatenate([[0], np.cumsum(seg)])
@@ -249,13 +278,14 @@ class Compiled:
                 toff += len(tab)
                 # conservative box: union of the section boxes in local space, rotated
                 us = u0 + du * np.arange(len(tab))
-                lo = np.array([us.min() - P[16], (tab[:, 0] - tab[:, 2]).min(), -tab[:, 3].max()])
-                hi = np.array([us.max() + P[17], (tab[:, 0] + tab[:, 1]).max(), tab[:, 3].max()])
+                wmax = (tab[:, 3] * np.maximum(1.0, tab[:, 6:8].max(1))).max()
+                lo = np.array([us.min() - P[16], (tab[:, 0] - tab[:, 2]).min(), -wmax])
+                hi = np.array([us.max() + P[17], (tab[:, 0] + tab[:, 1]).max(), wmax])
                 corners = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
                 wc = corners @ R.T + o
                 self.box[i, :3] = wc.min(0)
                 self.box[i, 3:] = wc.max(0)
-        self.LT = np.concatenate(tables, 0) if tables else np.zeros((1, 6))
+        self.LT = np.concatenate(tables, 0) if tables else np.zeros((1, 8))
         self.SW = np.ascontiguousarray(np.concatenate(swt, 0)) if swt else np.zeros((2, SW_COLS))
         self.band = band
         self.build_cells(cell)
@@ -532,8 +562,31 @@ def _loft_sec(LT, toff, n, u0, du, u, v, w):
     hw = LT[r0, 3] * (1 - f) + LT[r0 + 1, 3] * f
     nt = LT[r0, 4] * (1 - f) + LT[r0 + 1, 4] * f
     nbt = LT[r0, 5] * (1 - f) + LT[r0 + 1, 5] * f
-    r, gy, gx = _se_r(v - cy, w, top, bot, hw, nt, nbt)
-    return r, gy, gx, min(hw, min(top, bot))
+    tw = LT[r0, 6] * (1 - f) + LT[r0 + 1, 6] * f
+    bw = LT[r0, 7] * (1 - f) + LT[r0 + 1, 7] * f
+    # taper: the half-width shrinks linearly from hw at the widest level to hw*tw at the top
+    # (hw*bw at the bottom) -> trapezoidal / 'gothic arch' sections (tyrannosaur snout)
+    yy = v - cy
+    dh = 0.0
+    if yy > 0:
+        t = yy / top
+        if t < 1.0:
+            hwe = hw * (1.0 - (1.0 - tw) * t)
+            dh = -hw * (1.0 - tw) / top
+        else:
+            hwe = hw * tw
+    else:
+        t = -yy / bot
+        if t < 1.0:
+            hwe = hw * (1.0 - (1.0 - bw) * t)
+            dh = hw * (1.0 - bw) / bot
+        else:
+            hwe = hw * bw
+    r, gy, gx = _se_r(yy, w, top, bot, hwe, nt, nbt)
+    if dh != 0.0 and r > 1e-9:
+        X = abs(w) / hwe
+        gy -= abs(gx) * X * dh
+    return r, gy, gx, min(hwe, min(top, bot))
 
 
 @njit(cache=True, fastmath=True)

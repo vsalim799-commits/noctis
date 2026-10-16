@@ -358,7 +358,7 @@ def scatter(terrain, camera=None, asset_ids=None, seed=7, density=1.0, lod_dista
         y = rng.uniform(y0, y1, n)
         inr = np.hypot(x - cx_sim, y - cy_sim) < rmax
         x, y = x[inr], y[inr]
-        mask = sim.sample(rule["mask"], x, y)
+        mask = np.clip(sim.sample(rule["mask"], x, y), 0.0, 1.0) ** rule.get("density_gamma", 1.0)
         clu = _cluster_noise(x, y, rule.get("cluster_m", 50), seed + len(pft))
         amp = rule.get("cluster_amp", 0.5)
         p = mask * ((1 - amp) + amp * clu)

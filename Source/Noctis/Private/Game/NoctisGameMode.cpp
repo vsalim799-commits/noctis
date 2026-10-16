@@ -16,6 +16,10 @@ void ANoctisGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	APlayerController* PC = GetWorld() ? GetWorld()->GetFirstPlayerController() : nullptr;
+	if (!PC)
+	{
+		return; // CreateWidget dereferences its owner (dedicated server, or no local player yet)
+	}
 	if (UClass* WidgetClass = HudWidgetClass.LoadSynchronous())
 	{
 		if (UUserWidget* Hud = CreateWidget<UUserWidget>(PC, WidgetClass))

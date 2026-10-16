@@ -141,7 +141,9 @@ def compose(thumbs, metas, ground_names, path, cols=7):
         m = metas.get(aid, {})
         tris = [l["triangles"] for l in m.get("lods", [])]
         h = m.get("bounds_m", {}).get("height")
-        tiles.append((im, catalog.ASSETS[aid]["ue_name"].replace("SM_", ""), "%s tris · %.1f m" % ("/".join("%dk" % round(t / 1000) if t >= 1000 else str(t) for t in tris), h or 0)))
+        b = m.get("bounds_m", {})
+        size = ("%.1f m" % h) if (h or 0) >= 0.05 else ("Ø %.1f m (flottant)" % b.get("width", 0))
+        tiles.append((im, catalog.ASSETS[aid]["ue_name"].replace("SM_", ""), "%s tris · %s" % ("/".join("%dk" % round(t / 1000) if t >= 1000 else str(t) for t in tris), size)))
     for g in ground_names:
         im = ground_swatch(g)
         if im is not None:
@@ -168,9 +170,10 @@ def compose(thumbs, metas, ground_names, path, cols=7):
 
 
 def run(samples=20, ids=None):
+    """samples <= 0: no rendering, re-compose the sheet from the cached thumbnails (labels / layout changes)."""
     t0 = time.time()
-    thumbs = render_thumbs(ids=ids, samples=samples)
-    if ids:  # partial refresh: keep the cached thumbnails of the other assets
+    thumbs = render_thumbs(ids=ids, samples=samples) if samples > 0 else {}
+    if ids or samples <= 0:  # partial refresh: keep the cached thumbnails of the other assets
         d = os.path.join(common.BUILD, "sheet")
         thumbs = {a: thumbs.get(a) or os.path.join(d, "%s_lod0.png" % a) for a in catalog.ASSETS
                   if a in thumbs or os.path.exists(os.path.join(d, "%s_lod0.png" % a))}

@@ -299,7 +299,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["EX03", "BS01", "OV05"],
+      "links": ["EX03", "BS01", "OV04"],
       "metrics": {
         "section_height_m": 6.4,
         "bluff_face_height_m": 2.8,
@@ -361,7 +361,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["OV03", "NA03", "CA01"],
+      "links": ["OV02", "NA03", "CA01"],
       "metrics": {
         "section_height_m": 6.3,
         "bluff_face_height_m": 2.6,
@@ -415,7 +415,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["BC01", "EX01", "BS01", "FD02", "OV05", "BL01"],
+      "links": ["BC01", "EX01", "BS01", "FD02", "OV04", "BL01"],
       "metrics": {
         "section_height_m": 6.4,
         "bluff_face_height_m": 2.8,
@@ -477,7 +477,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["FD02", "WA02", "OV03", "NA03", "CA01"],
+      "links": ["FD02", "WA02", "OV02", "NA03", "CA01"],
       "metrics": {
         "section_height_m": 6.2,
         "bluff_face_height_m": 2.8,
@@ -531,7 +531,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["BC01", "FD03", "WA01", "OV01", "BL02"],
+      "links": ["BC01", "FD03", "WA01", "OV01", "OV05", "BL02"],
       "metrics": {
         "section_height_m": 6.3,
         "bluff_face_height_m": 2.8,
@@ -647,7 +647,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["WA04", "OV02", "OV04", "BL04", "NA04"],
+      "links": ["WA04", "OV03", "BL04", "NA04"],
       "metrics": {
         "section_height_m": 6.3,
         "bluff_face_height_m": 2.6,
@@ -707,7 +707,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["FR01", "EX01", "EX03", "OV05", "MA01"],
+      "links": ["FR01", "EX01", "EX03", "OV04", "MA01"],
       "metrics": {
         "area_km2": 1.988,
         "height_above_bankfull_m": -1.17,
@@ -795,7 +795,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["OV02", "BL04", "CT03"],
+      "links": ["FD04", "OV03", "BL04", "CT03"],
       "metrics": {
         "river": "main",
         "crossing_kind": "candidate_crossing",
@@ -824,6 +824,7 @@
         "packraft_usable": true,
         "packraft_ok_now": true,
         "packraft_stage_max_m": 3.2,
+        "bed_above_reference_m": 0.05,
         "bank_a": [
           [6735, 4101.5]
         ],
@@ -904,6 +905,7 @@
         "packraft_usable": true,
         "packraft_ok_now": true,
         "packraft_stage_max_m": 3.2,
+        "bed_above_reference_m": 0.05,
         "bank_a": [
           [3250.7, 4700.2]
         ],
@@ -984,6 +986,7 @@
         "packraft_usable": true,
         "packraft_ok_now": true,
         "packraft_stage_max_m": 3.2,
+        "bed_above_reference_m": 0.1,
         "bank_a": [
           [4199.6, 4715.7]
         ],
@@ -1035,7 +1038,7 @@
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["OV02", "BL04", "CT03", "AR03"],
+      "links": ["FD01", "BL04", "CT03", "AR03"],
       "metrics": {
         "river": "main",
         "crossing_kind": "candidate_crossing",
@@ -1064,6 +1067,7 @@
         "packraft_usable": true,
         "packraft_ok_now": true,
         "packraft_stage_max_m": 3.2,
+        "bed_above_reference_m": 0.05,
         "bank_a": [
           [7776.2, 3736.7]
         ],
@@ -1145,6 +1149,7 @@
         "discharge_fraction_on_foot": 0.703,
         "stage_max_rover_m": 1.03,
         "discharge_fraction_rover": 1.663,
+        "bed_above_reference_m": 0.03,
         "bank_a": [
           [5767.1, 7181.8]
         ],
@@ -1183,7 +1188,7 @@
       "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
       "confidence_subject_fr": "lieu de traversée préférentiel prédit par le modèle (berges, fond, pistes, corridors) à une inflexion entre deux boucles ; le chenal généré n'a ni seuils ni mouilles (profondeur quasi uniforme) : point de franchissement candidat, pas un haut-fond",
       "placement": "model_prediction",
-      "rationale_fr": "Section transversale la mieux notée sur le ruisseau affluent, à une inflexion entre deux boucles (courbure 0.0012 /m ; les sections de |courbure| > 0.0015 /m sont exclues) : chenal mouillé de 1 m, profondeur max 0.05 m au niveau actuel (0.50 m), berges à 11° et 12°, fond Sable, aucun passage observé sur les berges, 0 corridor(s) prédit(s) à moins de 80 m. Le chenal généré n'a pas de contraste seuil/mouille (profondeur presque uniforme) : franchissement candidat, pas un haut-fond. Débit minimal simulé 5 % du débit moyen (niveau jamais sous 0.25 m). À pied (≤ 0.7 m d'eau, berges ≤ 30°) : praticable maintenant. Véhicule (gué 1.0 m, berges ≤ 25°) : praticable maintenant.",
+      "rationale_fr": "Section transversale la mieux notée sur le ruisseau affluent, à une inflexion entre deux boucles (courbure 0.0012 /m ; les sections de |courbure| > 0.0015 /m sont exclues) : chenal mouillé de 1 m, profondeur max 0.05 m au niveau actuel (0.50 m), berges à 11° et 12°, fond Sable, aucun passage observé sur les berges, 0 corridor(s) prédit(s) à moins de 80 m. Le chenal généré n'a pas de contraste seuil/mouille (profondeur presque uniforme) : franchissement candidat, pas un haut-fond. Débit minimal simulé 5 % du débit moyen (niveau jamais sous 0.25 m). À pied (≤ 0.7 m d'eau, berges ≤ 30°) : praticable maintenant. Véhicule (gué 1.0 m, berges ≤ 25°) : praticable maintenant. Filet d'eau : ici le lit creusé (grille de hauteurs de 4 m) est 0.46 m plus haut que le fond de référence du modèle d'eau, d'où une profondeur bien inférieure au niveau du cours d'eau.",
       "sources": ["leopold1953_hydraulic_geometry", "langbein1966_meanders"],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1218,6 +1223,7 @@
         "discharge_fraction_on_foot": 2.221,
         "stage_max_rover_m": 1.46,
         "discharge_fraction_rover": 3.954,
+        "bed_above_reference_m": 0.46,
         "bank_a": [
           [5769.6, 5720.9]
         ],
@@ -1254,7 +1260,7 @@
       "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
       "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
       "placement": "simulation_state",
-      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.05 m au-dessus de l'eau, berge à 18° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 1.26) = activité animale 0.24 + événements « boire » 1.00 + présence d'herbivores 0.01 + habitat favorable 0.01. Événements « boire » observés à moins de ~100 m pendant le préchauffage : 3 (sur 5 dans toute la carte). Cible pour affûts, pièges photographiques et relevés d'empreintes.",
+      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.05 m au-dessus de l'eau, berge à 18° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 1.26) = activité animale 0.24 + événements « boire » 1.00 + présence d'herbivores 0.01 + habitat favorable 0.01. Événements « boire » observés pendant le préchauffage dans le carré de 160 m centré sur la station (la fenêtre du terme « boire ») : 3 (sur 5 dans toute la carte). Cible pour affûts, pièges photographiques et relevés d'empreintes.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1316,15 +1322,15 @@
       "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
       "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
       "placement": "simulation_state",
-      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.00 m au-dessus de l'eau, berge à 11° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 0.88) = activité animale 0.21 + événements « boire » 0.67 + présence d'herbivores 0.00 + habitat favorable 0.01. Événements « boire » observés à moins de ~100 m pendant le préchauffage : 0 (sur 5 dans toute la carte) : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés. Cible pour affûts, pièges photographiques et relevés d'empreintes.",
+      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.00 m au-dessus de l'eau, berge à 11° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 0.88) = activité animale 0.21 + événements « boire » 0.67 + présence d'herbivores 0.00 + habitat favorable 0.01. Événements « boire » observés pendant le préchauffage dans le carré de 160 m centré sur la station (la fenêtre du terme « boire ») : 2 (sur 5 dans toute la carte). Cible pour affûts, pièges photographiques et relevés d'empreintes.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["EX04", "OV03", "NA03"],
+      "links": ["EX04", "OV02", "NA03"],
       "metrics": {
         "drink_body": "main_river",
-        "drink_events_warmup": 0,
+        "drink_events_warmup": 2,
         "drink_events_warmup_total": 5,
         "height_above_water_m": 0,
         "bank_slope_10m_deg": 10.6,
@@ -1370,7 +1376,7 @@
       "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
       "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
       "placement": "simulation_state",
-      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.07 m au-dessus de l'eau, berge à 16° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 0.84) = activité animale 0.54 + événements « boire » 0.00 + présence d'herbivores 0.00 + habitat favorable 0.29. Événements « boire » observés à moins de ~100 m pendant le préchauffage : 0 (sur 5 dans toute la carte) : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés. Cible pour affûts, pièges photographiques et relevés d'empreintes.",
+      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.07 m au-dessus de l'eau, berge à 16° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 0.84) = activité animale 0.54 + événements « boire » 0.00 + présence d'herbivores 0.00 + habitat favorable 0.29. Événements « boire » observés pendant le préchauffage dans le carré de 160 m centré sur la station (la fenêtre du terme « boire ») : 0 (sur 5 dans toute la carte) : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés. Cible pour affûts, pièges photographiques et relevés d'empreintes.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1424,12 +1430,12 @@
       "confidence_label_fr": "INFÉRÉ / PLAUSIBLE",
       "confidence_subject_fr": "les grands herbivores doivent boire régulièrement (besoin physiologique) ; le point exact est un résultat de la simulation",
       "placement": "simulation_state",
-      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.09 m au-dessus de l'eau, berge à 19° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 0.55) = activité animale 0.30 + événements « boire » 0.00 + présence d'herbivores 0.00 + habitat favorable 0.25. Événements « boire » observés à moins de ~100 m pendant le préchauffage : 0 (sur 5 dans toute la carte) : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés. Cible pour affûts, pièges photographiques et relevés d'empreintes.",
+      "rationale_fr": "Point d'abreuvement à la lisière de l'eau : sol à 0.09 m au-dessus de l'eau, berge à 19° au plus sur les 10 derniers mètres (sites de la simulation rejetés au-delà de 0.5 m ou de 20° : 883). Classement (score 0.55) = activité animale 0.30 + événements « boire » 0.00 + présence d'herbivores 0.00 + habitat favorable 0.25. Événements « boire » observés pendant le préchauffage dans le carré de 160 m centré sur la station (la fenêtre du terme « boire ») : 0 (sur 5 dans toute la carte) : le classement repose donc sur la présence et l'habitat, pas sur des abreuvements observés. Cible pour affûts, pièges photographiques et relevés d'empreintes.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["EX07", "OV04", "NA04"],
+      "links": ["EX07", "OV03", "OV05", "NA04"],
       "metrics": {
         "drink_body": "main_river",
         "drink_events_warmup": 0,
@@ -1486,7 +1492,7 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable, à 150 m au moins de tout affleurement et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 43.8). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.40 km² visibles. Proéminence 1.5 m, Boisement de levée.",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, au moins 0,5 m au-dessus du plein bord (hors crues fréquentes), à 150 m au moins de tout affleurement, à 150 m au moins des abreuvoirs et des franchissements (observateur à découvert) et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 43.8). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.40 km² visibles. Proéminence 1.5 m, Boisement de levée.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1502,6 +1508,7 @@
         "prominence_m": 1.53,
         "height_above_river_m": 0.95,
         "nearest_exposure_m": 506,
+        "nearest_watering_or_crossing_m": 436,
         "edge_setback_min_m": 18,
         "foot_component": 0,
         "reachable_on_foot_from_basecamp": true,
@@ -1535,62 +1542,6 @@
         "fr": "Point de vue 2",
         "en": "Overlook 2"
       },
-      "position_m": [6768, 4102, 22.05],
-      "ue_location_cm": [676800, -410200, 2205],
-      "radius_m": 20,
-      "confidence": "unknown",
-      "confidence_label_fr": "INCONNU",
-      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
-      "placement": "model_prediction",
-      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable, à 150 m au moins de tout affleurement et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 38.0). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.36 km² visibles. Proéminence 1.6 m, Berge.",
-      "sources": [],
-      "visible_at_start": false,
-      "dynamic_state": false,
-      "designer_only": false,
-      "links": ["EX07", "FD01", "FD04", "BL04"],
-      "sightlines": ["EX07", "FD01", "BL04"],
-      "metrics": {
-        "eye_height_m": 1.7,
-        "viewshed_radius_m": 1500,
-        "visible_area_km2": 0.364,
-        "activity_value": 37.98,
-        "marginal_gain": 37.98,
-        "prominence_m": 1.6,
-        "height_above_river_m": 1.47,
-        "nearest_exposure_m": 971,
-        "edge_setback_min_m": 18,
-        "foot_component": 0,
-        "reachable_on_foot_from_basecamp": true,
-        "reachable_from_basecamp": true,
-        "needs_packraft": false,
-        "bank": "camp_bank",
-        "walk_time_from_basecamp_min": 80.2,
-        "rover_access": {
-          "reachable": true,
-          "drop_off": [
-            [6768, 4112]
-          ],
-          "walk_cost_m": 0,
-          "walk_time_min": 0,
-          "drive_cost_m": 6576,
-          "drive_time_min": 27.4,
-          "via_packraft": false
-        },
-        "radio_coverage": true,
-        "height_above_bankfull_m": 1.47,
-        "flood_risk": 0.37,
-        "flood_class": "occasional",
-        "distance_to_map_edge_m": 1424,
-        "trails_in_view": ["TR02"]
-      }
-    },
-    {
-      "id": "OV03",
-      "type": "overlook",
-      "name": {
-        "fr": "Point de vue 3",
-        "en": "Overlook 3"
-      },
       "position_m": [2330, 4410, 23.26],
       "ue_location_cm": [233000, -441000, 2326],
       "radius_m": 20,
@@ -1598,7 +1549,7 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable, à 150 m au moins de tout affleurement et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 37.3). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.43 km² visibles. Proéminence 1.5 m, Boisement de levée.",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, au moins 0,5 m au-dessus du plein bord (hors crues fréquentes), à 150 m au moins de tout affleurement, à 150 m au moins des abreuvoirs et des franchissements (observateur à découvert) et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 37.3). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.43 km² visibles. Proéminence 1.5 m, Boisement de levée.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1614,6 +1565,7 @@
         "prominence_m": 1.53,
         "height_above_river_m": 0.95,
         "nearest_exposure_m": 164,
+        "nearest_watering_or_crossing_m": 675,
         "edge_setback_min_m": 18,
         "foot_component": 1,
         "reachable_on_foot_from_basecamp": false,
@@ -1633,67 +1585,68 @@
       }
     },
     {
-      "id": "OV04",
+      "id": "OV03",
       "type": "overlook",
       "name": {
-        "fr": "Point de vue 4",
-        "en": "Overlook 4"
+        "fr": "Point de vue 3",
+        "en": "Overlook 3"
       },
-      "position_m": [5190, 4262, 22.56],
-      "ue_location_cm": [519000, -426200, 2256],
+      "position_m": [6096, 4326, 21.98],
+      "ue_location_cm": [609600, -432600, 2198],
       "radius_m": 20,
       "confidence": "unknown",
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable, à 150 m au moins de tout affleurement et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 22.4). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.38 km² visibles. Proéminence 1.3 m, Berge.",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, au moins 0,5 m au-dessus du plein bord (hors crues fréquentes), à 150 m au moins de tout affleurement, à 150 m au moins des abreuvoirs et des franchissements (observateur à découvert) et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 36.0). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.38 km² visibles. Proéminence 1.4 m, Berge.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["EX07", "WA04", "NA04"],
-      "sightlines": ["EX06", "EX07"],
+      "links": ["EX07", "FD01", "WA04", "BL04"],
+      "sightlines": ["EX06", "EX07", "WA04"],
       "metrics": {
         "eye_height_m": 1.7,
         "viewshed_radius_m": 1500,
-        "visible_area_km2": 0.377,
-        "activity_value": 38.02,
-        "marginal_gain": 22.43,
-        "prominence_m": 1.34,
-        "height_above_river_m": 1.37,
-        "nearest_exposure_m": 629,
+        "visible_area_km2": 0.378,
+        "activity_value": 38.29,
+        "marginal_gain": 35.95,
+        "prominence_m": 1.37,
+        "height_above_river_m": 1.13,
+        "nearest_exposure_m": 378,
+        "nearest_watering_or_crossing_m": 657,
         "edge_setback_min_m": 18,
         "foot_component": 0,
         "reachable_on_foot_from_basecamp": true,
         "reachable_from_basecamp": true,
         "needs_packraft": false,
         "bank": "camp_bank",
-        "walk_time_from_basecamp_min": 39.6,
+        "walk_time_from_basecamp_min": 60.8,
         "rover_access": {
           "reachable": true,
           "drop_off": [
-            [5200, 4272]
+            [6128, 4304]
           ],
-          "walk_cost_m": 0,
-          "walk_time_min": 0,
-          "drive_cost_m": 3345,
-          "drive_time_min": 13.9,
+          "walk_cost_m": 95,
+          "walk_time_min": 1.3,
+          "drive_cost_m": 5160,
+          "drive_time_min": 21.5,
           "via_packraft": false
         },
         "radio_coverage": true,
-        "height_above_bankfull_m": 1.37,
-        "flood_risk": 0.43,
+        "height_above_bankfull_m": 1.13,
+        "flood_risk": 0.57,
         "flood_class": "occasional",
-        "distance_to_map_edge_m": 3002,
-        "trails_in_view": []
+        "distance_to_map_edge_m": 2096,
+        "trails_in_view": ["TR02"]
       }
     },
     {
-      "id": "OV05",
+      "id": "OV04",
       "type": "overlook",
       "name": {
-        "fr": "Point de vue 5",
-        "en": "Overlook 5"
+        "fr": "Point de vue 4",
+        "en": "Overlook 4"
       },
       "position_m": [848, 4166, 24.09],
       "ue_location_cm": [84800, -416600, 2409],
@@ -1702,7 +1655,7 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, hors zone inondable, à 150 m au moins de tout affleurement et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 20.0). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.33 km² visibles. Proéminence 1.4 m, Berge.",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, au moins 0,5 m au-dessus du plein bord (hors crues fréquentes), à 150 m au moins de tout affleurement, à 150 m au moins des abreuvoirs et des franchissements (observateur à découvert) et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 20.0). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.33 km² visibles. Proéminence 1.4 m, Berge.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1718,6 +1671,7 @@
         "prominence_m": 1.38,
         "height_above_river_m": 1.17,
         "nearest_exposure_m": 600,
+        "nearest_watering_or_crossing_m": 2176,
         "edge_setback_min_m": 18,
         "foot_component": 0,
         "reachable_on_foot_from_basecamp": true,
@@ -1745,6 +1699,63 @@
       }
     },
     {
+      "id": "OV05",
+      "type": "overlook",
+      "name": {
+        "fr": "Point de vue 5",
+        "en": "Overlook 5"
+      },
+      "position_m": [4688, 4390, 22.81],
+      "ue_location_cm": [468800, -439000, 2281],
+      "radius_m": 20,
+      "confidence": "unknown",
+      "confidence_label_fr": "INCONNU",
+      "confidence_subject_fr": "emplacement d'observation (choix méthodologique du joueur) — sans objet paléontologique",
+      "placement": "model_prediction",
+      "rationale_fr": "Sélection gloutonne par couverture maximale : parmi 120 hauteurs candidates (proéminence locale, hors forêt dense, au moins 0,5 m au-dessus du plein bord (hors crues fréquentes), à 150 m au moins de tout affleurement, à 150 m au moins des abreuvoirs et des franchissements (observateur à découvert) et en retrait de 18 m de toute arête de berge), ce point ajoute le plus d'« activité animale visible » non encore couverte (gain 15.2). Champ de vision calculé à 1,7 m d'œil sur 1500 m (horizon du relief, canopée dense opaque, feuillage atténuant près de la cible) : 0.38 km² visibles. Proéminence 1.4 m, Berge.",
+      "sources": [],
+      "visible_at_start": false,
+      "dynamic_state": false,
+      "designer_only": false,
+      "links": ["EX05", "WA04", "BL02", "NA04"],
+      "sightlines": ["EX05", "EX06", "EX07", "WA01"],
+      "metrics": {
+        "eye_height_m": 1.7,
+        "viewshed_radius_m": 1500,
+        "visible_area_km2": 0.381,
+        "activity_value": 39.69,
+        "marginal_gain": 15.15,
+        "prominence_m": 1.38,
+        "height_above_river_m": 1.4,
+        "nearest_exposure_m": 595,
+        "nearest_watering_or_crossing_m": 562,
+        "edge_setback_min_m": 18,
+        "foot_component": 0,
+        "reachable_on_foot_from_basecamp": true,
+        "reachable_from_basecamp": true,
+        "needs_packraft": false,
+        "bank": "camp_bank",
+        "walk_time_from_basecamp_min": 26.6,
+        "rover_access": {
+          "reachable": true,
+          "drop_off": [
+            [4688, 4400]
+          ],
+          "walk_cost_m": 0,
+          "walk_time_min": 0,
+          "drive_cost_m": 2327,
+          "drive_time_min": 9.7,
+          "via_packraft": false
+        },
+        "radio_coverage": true,
+        "height_above_bankfull_m": 1.4,
+        "flood_risk": 0.41,
+        "flood_class": "occasional",
+        "distance_to_map_edge_m": 3504,
+        "trails_in_view": []
+      }
+    },
+    {
       "id": "BL01",
       "type": "blind",
       "name": {
@@ -1760,7 +1771,7 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Affût surélevé pour WA02 (Abreuvoir 2), à 70 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 0.85), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.86, sous le vent dominant (alignement 1.00) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "rationale_fr": "Affût surélevé pour WA02 (Abreuvoir 2), à 70 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 0.85), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.86, sous le vent dominant (alignement 1.00) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff, à 150 m au moins de tout point de vue, et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1816,12 +1827,12 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Affût surélevé pour WA01 (Abreuvoir 1), à 130 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 0.77), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.71, sous le vent dominant (alignement 0.99) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "rationale_fr": "Affût surélevé pour WA01 (Abreuvoir 1), à 130 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 0.77), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.71, sous le vent dominant (alignement 0.99) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff, à 150 m au moins de tout point de vue, et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["WA01", "BC01", "EX05", "FD03", "NA04"],
+      "links": ["WA01", "BC01", "EX05", "FD03", "OV05"],
       "metrics": {
         "target": "WA01",
         "distance_to_target_m": 130,
@@ -1872,7 +1883,7 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Affût surélevé pour FD05 (Gué candidat 5 (ruisseau)), à 70 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 1.00), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.86, sous le vent dominant (alignement 0.92) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu). Sur la rive opposée : accès en packraft.",
+      "rationale_fr": "Affût surélevé pour FD05 (Gué candidat 5 (ruisseau)), à 70 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 1.00), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.86, sous le vent dominant (alignement 0.92) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff, à 150 m au moins de tout point de vue, et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu). Sur la rive opposée : accès en packraft.",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
@@ -1920,12 +1931,12 @@
       "confidence_label_fr": "INCONNU",
       "confidence_subject_fr": "installation d'observation (choix méthodologique) — sans objet paléontologique",
       "placement": "model_prediction",
-      "rationale_fr": "Affût surélevé pour FD01 (Point de franchissement candidat 1 (rivière)), à 70 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 0.68), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.84, sous le vent dominant (alignement 0.96) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
+      "rationale_fr": "Affût surélevé pour FD01 (Point de franchissement candidat 1 (rivière)), à 70 m : plate-forme portable au-dessus des fougères et arbustes (à 1,2 m d'œil, le sous-bois masque la cible) (couvert végétal 0.68), ligne de visée dégagée par le relief à 3.5 m d'œil, transmission du feuillage 0.84, sous le vent dominant (alignement 0.96) pour limiter la détection olfactive par les animaux observés. En retrait de 15 m au moins de toute arête de berge ou de bluff, à 150 m au moins de tout point de vue, et sous la ligne d'horizon vue depuis la cible (relief ou boisement derrière l'affût : pas de silhouette sur le ciel). Distance choisie dans 70–240 m : assez près pour la photo-identification au téléobjectif, assez loin pour ne pas provoquer de fuite (la distance réelle de tolérance est une question de recherche du jeu).",
       "sources": [],
       "visible_at_start": false,
       "dynamic_state": false,
       "designer_only": false,
-      "links": ["FD01", "EX07", "FD04", "OV02"],
+      "links": ["FD01", "EX07", "FD04", "OV03"],
       "metrics": {
         "target": "FD01",
         "distance_to_target_m": 70,
@@ -2086,7 +2097,7 @@
       "dynamic_state": false,
       "designer_only": false,
       "profile_toggle": "nesting_grounds",
-      "links": ["EX02", "EX04", "WA02", "OV03", "CA01"],
+      "links": ["EX02", "EX04", "WA02", "OV02", "CA01"],
       "metrics": {
         "species": "borealosuchus_sternbergii",
         "nest_type": "mound",
@@ -2139,7 +2150,7 @@
       "dynamic_state": false,
       "designer_only": false,
       "profile_toggle": "nesting_grounds",
-      "links": ["EX07", "WA04", "OV04", "BL02"],
+      "links": ["EX07", "WA04", "OV05"],
       "metrics": {
         "species": "thescelosaurus_neglectus",
         "nest_type": "buried",
@@ -2358,7 +2369,7 @@
       "visible_at_start": false,
       "dynamic_state": true,
       "designer_only": false,
-      "links": ["EX02", "EX04", "OV03", "NA03"],
+      "links": ["EX02", "EX04", "OV02", "NA03"],
       "metrics": {
         "truth_species_designer_only": "triceratops_horridus",
         "days_since_death": 120,
@@ -2774,8 +2785,8 @@
       "observed_wear_mean": 0.007,
       "observed_wear_max": 0.152,
       "herbivore_presence": 0.034,
-      "max_water_depth_m": 2.3,
-      "crosses_main_river": true,
+      "max_water_depth_m": 0,
+      "crosses_main_river": false,
       "max_cell_slope_deg": 28.5,
       "usable_by": ["edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus", "triceratops_horridus"],
       "not_usable_by": ["ankylosaurus_magniventris"],
@@ -2859,7 +2870,7 @@
       "observed_wear_mean": 0.099,
       "observed_wear_max": 0.297,
       "herbivore_presence": 0.631,
-      "max_water_depth_m": 0.55,
+      "max_water_depth_m": 0,
       "crosses_main_river": false,
       "max_cell_slope_deg": 2.3,
       "usable_by": ["ankylosaurus_magniventris", "edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus", "triceratops_horridus"],
@@ -2937,7 +2948,7 @@
       "observed_wear_mean": 0.034,
       "observed_wear_max": 0.297,
       "herbivore_presence": 0.165,
-      "max_water_depth_m": 0.55,
+      "max_water_depth_m": 0,
       "crosses_main_river": false,
       "max_cell_slope_deg": 2.3,
       "usable_by": ["ankylosaurus_magniventris", "edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus", "triceratops_horridus"],
@@ -2974,7 +2985,7 @@
       "observed_wear_mean": 0.001,
       "observed_wear_max": 0.064,
       "herbivore_presence": 0.006,
-      "max_water_depth_m": 0.33,
+      "max_water_depth_m": 0,
       "crosses_main_river": false,
       "max_cell_slope_deg": 31.8,
       "usable_by": ["edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus"],
@@ -3004,7 +3015,7 @@
       "observed_wear_mean": 0,
       "observed_wear_max": 0.03,
       "herbivore_presence": 0.033,
-      "max_water_depth_m": 0.28,
+      "max_water_depth_m": 0.21,
       "crosses_main_river": false,
       "max_cell_slope_deg": 8.8,
       "usable_by": ["ankylosaurus_magniventris", "edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus", "triceratops_horridus"],
@@ -3044,7 +3055,7 @@
       "observed_wear_max": 0.019,
       "herbivore_presence": 0.032,
       "max_water_depth_m": 0,
-      "crosses_main_river": true,
+      "crosses_main_river": false,
       "max_cell_slope_deg": 17.1,
       "usable_by": ["ankylosaurus_magniventris", "edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus", "triceratops_horridus"],
       "not_usable_by": [],
@@ -3314,7 +3325,7 @@
       "observed_wear_mean": 0.004,
       "observed_wear_max": 0.224,
       "herbivore_presence": 0.078,
-      "max_water_depth_m": 0.51,
+      "max_water_depth_m": 0.12,
       "crosses_main_river": false,
       "max_cell_slope_deg": 9.8,
       "usable_by": ["ankylosaurus_magniventris", "edmontosaurus_annectens", "pachycephalosaurus_wyomingensis", "thescelosaurus_neglectus", "triceratops_horridus"],
@@ -3697,7 +3708,7 @@
     },
     {
       "from": "EX01",
-      "to": "OV05",
+      "to": "OV04",
       "mode": "foot",
       "length_m": 704,
       "time_min": 15.5,
@@ -3713,7 +3724,7 @@
     },
     {
       "from": "EX02",
-      "to": "OV03",
+      "to": "OV02",
       "mode": "foot",
       "length_m": 1310,
       "time_min": 29.4,
@@ -3815,7 +3826,7 @@
     },
     {
       "from": "EX03",
-      "to": "OV05",
+      "to": "OV04",
       "mode": "foot",
       "length_m": 1783,
       "time_min": 41,
@@ -3890,7 +3901,7 @@
     },
     {
       "from": "EX04",
-      "to": "OV03",
+      "to": "OV02",
       "mode": "foot",
       "length_m": 1277,
       "time_min": 28.2,
@@ -3994,6 +4005,23 @@
     },
     {
       "from": "EX05",
+      "to": "OV05",
+      "mode": "foot",
+      "length_m": 733,
+      "time_min": 17.1,
+      "max_slope_deg": 12.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [4002, 4420.6],
+        [4016, 4400],
+        [4368, 4400],
+        [4400, 4368],
+        [4656, 4368],
+        [4688, 4390]
+      ]
+    },
+    {
+      "from": "EX05",
       "to": "BL02",
       "mode": "foot",
       "length_m": 195,
@@ -4092,37 +4120,18 @@
     },
     {
       "from": "EX07",
-      "to": "OV02",
+      "to": "OV03",
       "mode": "foot",
-      "length_m": 1243,
-      "time_min": 30.9,
-      "max_slope_deg": 19.7,
-      "max_water_depth_m": 0,
-      "path": [
-        [5796.7, 4094.4],
-        [5872, 4016],
-        [5968, 4016],
-        [6160, 3856],
-        [6608, 3856],
-        [6736, 3984],
-        [6768, 4102]
-      ]
-    },
-    {
-      "from": "EX07",
-      "to": "OV04",
-      "mode": "foot",
-      "length_m": 720,
-      "time_min": 16.5,
+      "length_m": 524,
+      "time_min": 11.6,
       "max_slope_deg": 18,
       "max_water_depth_m": 0,
       "path": [
         [5796.7, 4094.4],
-        [5808, 4080],
-        [5520, 4080],
-        [5360, 4208],
-        [5296, 4208],
-        [5190, 4262]
+        [5840, 4048],
+        [5936, 4048],
+        [6096, 4208],
+        [6096, 4326]
       ]
     },
     {
@@ -4160,7 +4169,7 @@
     },
     {
       "from": "BS01",
-      "to": "OV05",
+      "to": "OV04",
       "mode": "foot",
       "length_m": 2425,
       "time_min": 53.5,
@@ -4263,16 +4272,41 @@
     },
     {
       "from": "FD01",
-      "to": "OV02",
+      "to": "FD04",
       "mode": "foot_packraft",
-      "length_m": 87,
-      "time_min": 9.3,
-      "max_slope_deg": 19.7,
+      "length_m": 1385,
+      "time_min": 44.1,
+      "max_slope_deg": 4.3,
       "max_water_depth_m": 0,
       "note_fr": "traversée de la rivière principale en packraft (max_water_depth_m = parties à pied)",
       "path": [
         [6717, 4110.1],
-        [6768, 4102]
+        [6992, 3856],
+        [6992, 3792],
+        [7152, 3632],
+        [7536, 3632],
+        [7664, 3728],
+        [7796.1, 3734.7]
+      ]
+    },
+    {
+      "from": "FD01",
+      "to": "OV03",
+      "mode": "foot_packraft",
+      "length_m": 1176,
+      "time_min": 38.3,
+      "max_slope_deg": 15,
+      "max_water_depth_m": 0,
+      "note_fr": "traversée de la rivière principale en packraft (max_water_depth_m = parties à pied)",
+      "path": [
+        [6717, 4110.1],
+        [6768, 4080],
+        [6768, 4048],
+        [6736, 3984],
+        [6608, 3856],
+        [6448, 3856],
+        [6096, 4208],
+        [6096, 4326]
       ]
     },
     {
@@ -4359,25 +4393,6 @@
         [4240, 4720],
         [4240, 4592],
         [4159.1, 4460.9]
-      ]
-    },
-    {
-      "from": "FD04",
-      "to": "OV02",
-      "mode": "foot_packraft",
-      "length_m": 1337,
-      "time_min": 35,
-      "max_slope_deg": 19.7,
-      "max_water_depth_m": 0,
-      "note_fr": "traversée de la rivière principale en packraft (max_water_depth_m = parties à pied)",
-      "path": [
-        [7796.1, 3734.7],
-        [7664, 3728],
-        [7536, 3632],
-        [7152, 3632],
-        [6992, 3792],
-        [6992, 3856],
-        [6768, 4102]
       ]
     },
     {
@@ -4575,7 +4590,7 @@
     },
     {
       "from": "WA02",
-      "to": "OV03",
+      "to": "OV02",
       "mode": "foot",
       "length_m": 1332,
       "time_min": 30.7,
@@ -4639,15 +4654,38 @@
     },
     {
       "from": "WA04",
-      "to": "OV04",
+      "to": "OV03",
       "mode": "foot",
-      "length_m": 55,
-      "time_min": 0,
-      "max_slope_deg": 3.8,
+      "length_m": 1233,
+      "time_min": 27.3,
+      "max_slope_deg": 15,
       "max_water_depth_m": 0,
       "path": [
         [5239.4, 4281.2],
-        [5190, 4262]
+        [5200, 4272],
+        [5296, 4208],
+        [5360, 4208],
+        [5520, 4080],
+        [5776, 4080],
+        [5808, 4048],
+        [5936, 4048],
+        [6096, 4208],
+        [6096, 4326]
+      ]
+    },
+    {
+      "from": "WA04",
+      "to": "OV05",
+      "mode": "foot",
+      "length_m": 615,
+      "time_min": 19.8,
+      "max_slope_deg": 12.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [5239.4, 4281.2],
+        [4912, 4272],
+        [4816, 4368],
+        [4688, 4390]
       ]
     },
     {
@@ -4667,19 +4705,6 @@
     },
     {
       "from": "OV02",
-      "to": "BL04",
-      "mode": "foot",
-      "length_m": 56,
-      "time_min": 1.4,
-      "max_slope_deg": 19.7,
-      "max_water_depth_m": 0,
-      "path": [
-        [6768, 4102],
-        [6781.7, 4083.3]
-      ]
-    },
-    {
-      "from": "OV03",
       "to": "NA03",
       "mode": "foot",
       "length_m": 457,
@@ -4693,7 +4718,7 @@
       ]
     },
     {
-      "from": "OV03",
+      "from": "OV02",
       "to": "CA01",
       "mode": "foot",
       "length_m": 1283,
@@ -4711,35 +4736,50 @@
       ]
     },
     {
-      "from": "OV04",
-      "to": "NA04",
+      "from": "OV03",
+      "to": "BL04",
       "mode": "foot",
-      "length_m": 187,
-      "time_min": 6.1,
-      "max_slope_deg": 3.8,
+      "length_m": 1100,
+      "time_min": 27.8,
+      "max_slope_deg": 15,
       "max_water_depth_m": 0,
       "path": [
-        [5190, 4262],
-        [5136, 4304],
-        [5040, 4304]
+        [6096, 4326],
+        [6096, 4208],
+        [6448, 3856],
+        [6608, 3856],
+        [6736, 3984],
+        [6781.7, 4083.3]
       ]
     },
     {
-      "from": "BL02",
-      "to": "NA04",
+      "from": "OV05",
+      "to": "BL02",
       "mode": "foot",
-      "length_m": 1031,
-      "time_min": 24.8,
-      "max_slope_deg": 0.6,
+      "length_m": 622,
+      "time_min": 15.1,
+      "max_slope_deg": 12.7,
       "max_water_depth_m": 0,
       "path": [
-        [4159.1, 4460.9],
+        [4688, 4390],
+        [4656, 4368],
+        [4400, 4368],
         [4304, 4464],
-        [4496, 4272],
-        [4592, 4272],
-        [4624, 4240],
-        [4880, 4240],
-        [4944, 4304],
+        [4159.1, 4460.9]
+      ]
+    },
+    {
+      "from": "OV05",
+      "to": "NA04",
+      "mode": "foot",
+      "length_m": 402,
+      "time_min": 14,
+      "max_slope_deg": 12.7,
+      "max_water_depth_m": 0,
+      "path": [
+        [4688, 4390],
+        [4912, 4368],
+        [4976, 4304],
         [5040, 4304]
       ]
     },
@@ -5627,7 +5667,7 @@
       "water_access": 4
     },
     "trails": 19,
-    "connections": 95,
+    "connections": 96,
     "foot_components": 2,
     "components_with_packraft": 1,
     "reachable_from_basecamp_pois": 46,

@@ -13,7 +13,9 @@
 //   * throughput in simulated seconds per wall-clock second at 1 thread and N threads, for three
 //     regimes: real time at 10 Hz, the CLI "run" regime (1 s steps, full detail near the observer),
 //     and accelerated time (x100: no full detail, 10 s steps);
-//   * resident memory after initialisation and peak.
+//   * resident memory after initialisation and peak;
+//   * fixed cost of one parallelFor on the standalone thread pool (dispatch + wake-up + join) at 1 and
+//     N threads, the floor under every multi-threaded step.
 // The 1-thread and N-thread worlds run the identical step sequence (the simulation is deterministic
 // across thread counts), so both series measure the same workload; "consistency" in the report holds
 // the event count and census at the end of each run as a check. Every timed section also records
@@ -22,6 +24,7 @@
 // Timings are wall-clock (steady_clock) on whatever machine runs the benchmark: compare runs from
 // the same runner only.
 #include "Noctis/Core/FileSystem.h"
+#include "Noctis/Core/Jobs.h"
 #include "Noctis/Core/Json.h"
 #include "Noctis/Core/Log.h"
 #include "Noctis/Science/EvidenceDatabase.h"
@@ -35,6 +38,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
 #include <memory>
 #include <string>
 #include <thread>
@@ -435,6 +439,58 @@ JsonValue throughputJson(const Throughput& t)
     return j;
 }
 
+// Fixed cost of one JobScheduler::parallelFor on the standalone thread pool: dispatch + wake-up + join,
+// measured on a trivial body (one store per index) over as many indices as creatures, with the batch
+// size CreatureSystem::step uses. CreatureSystem::step issues 3 such calls per simulation step, so at
+// N threads this is a floor under the step cost whatever the level of detail.
+JsonValue measureSchedulerOverhead(int threads, size_t count, int calls)
+{
+    std::unique_ptr<JobScheduler> jobs = makeThreadPoolScheduler(threads);
+    std::vector<u32> sink(count, 0u);
+    const std::function<void(size_t)> body = [&](size_t i) { sink[i] += static_cast<u32>(i) + 1u; };
+    for (int k = 0; k < 50; ++k) // warm-up: threads started and parked
+    {
+        jobs->parallelFor(count, body, 8);
+    }
+    std::vector<double> us;
+    us.reserve(static_cast<size_t>(calls));
+    const double cpu0 = processCpuSeconds();
+    const auto wall0 = Clock::now();
+    for (int k = 0; k < calls; ++k)
+    {
+        const auto t0 = Clock::now();
+        jobs->parallelFor(count, body, 8);
+        us.push_back(msSince(t0) * 1000.0);
+    }
+    const double wallS = msSince(wall0) / 1000.0;
+    const double cpuPerWall = wallS > 0.0 ? (processCpuSeconds() - cpu0) / wallS : 0.0;
+    double sum = 0.0;
+    for (const double u : us)
+    {
+        sum += u;
+    }
+    std::sort(us.begin(), us.end());
+    u64 check = 0;
+    for (const u32 v : sink)
+    {
+        check += v;
+    }
+    JsonValue j = JsonValue::makeObject();
+    j.set("threads", jobs->workerCount());
+    j.set("count", static_cast<double>(count));
+    j.set("min_batch", 8);
+    j.set("calls", calls);
+    j.set("us_mean", sum / static_cast<double>(us.size()));
+    j.set("us_p50", us[us.size() / 2]);
+    j.set("us_p95", us[std::min(us.size() - 1, static_cast<size_t>(0.95 * static_cast<double>(us.size())))]);
+    j.set("cpu_per_wall", cpuPerWall);
+    j.set("checksum_ok", check == static_cast<u64>(calls + 50) * (static_cast<u64>(count) * (count + 1) / 2));
+    std::printf("parallelFor(%zu, batch 8), %d thread(s): %.1f us mean, p50 %.1f, p95 %.1f (CPU/wall %.2f)\n", count, jobs->workerCount(),
+                sum / static_cast<double>(us.size()), us[us.size() / 2], us[std::min(us.size() - 1, static_cast<size_t>(0.95 * static_cast<double>(us.size())))],
+                cpuPerWall);
+    return j;
+}
+
 // Profiling driver: initialise, then advance D simulated days in one regime. Nothing else runs, so a
 // profiler attached to the whole process (or toggled on WorldSimulation::advance) sees the simulation only.
 int runDays(const Options& opt)
@@ -548,6 +604,17 @@ int main(int argc, char** argv)
         c.set("material_cells", sc.materialCells);
         c.set("vegetation_cell_m", sc.vegetationCellM);
         report.set("config", c);
+    }
+    {
+        // Before any world exists, so the measurement sees an idle process.
+        JsonValue sched = JsonValue::makeArray();
+        const int calls = opt.quick ? 2000 : 10000;
+        sched.push(measureSchedulerOverhead(1, 254, calls));
+        if (opt.threads > 1)
+        {
+            sched.push(measureSchedulerOverhead(opt.threads, 254, calls));
+        }
+        report.set("scheduler_parallel_for", sched);
     }
     const double lodSimS = opt.quick ? 8.0 : 30.0;
     const double realtimeSimS = opt.quick ? 20.0 : 60.0;

@@ -187,6 +187,24 @@ def far_terrain(sim, exclude_center, exclude_size, res=16.0, canopy=True, name="
     return ob
 
 
+def tune_leaf_materials(roughness=None, specular=None):
+    """Scene-level tweak of the appended leaf materials (M_Leaf_*): at aerial distances the glossy highlights of
+    millions of sub-pixel cards read as glitter under a grazing sun, so the aerial shot uses rougher leaves."""
+    import bpy
+    n = 0
+    for m in bpy.data.materials:
+        if not m.name.startswith("M_Leaf_") or not m.use_nodes:
+            continue
+        for node in m.node_tree.nodes:
+            if node.type == "BSDF_PRINCIPLED":
+                if roughness is not None:
+                    node.inputs["Roughness"].default_value = roughness
+                if specular is not None:
+                    node.inputs["Specular IOR Level"].default_value = specular
+                n += 1
+    return n
+
+
 def _camera(sc, loc, target, lens=35.0, name="Camera", dof=None):
     import bpy
     from mathutils import Vector
@@ -208,11 +226,21 @@ def _camera(sc, loc, target, lens=35.0, name="Camera", dof=None):
 
 def _finish(sc, path, t_setup, extra):
     import bpy
+    import resource
     sc.render.filepath = path
     t0 = time.time()
+    r0 = resource.getrusage(resource.RUSAGE_SELF)
     bpy.ops.render.render(write_still=True)
     dt = time.time() - t0
+    r1 = resource.getrusage(resource.RUSAGE_SELF)
+    cpu = (r1.ru_utime - r0.ru_utime) + (r1.ru_stime - r0.ru_stime)
+    try:
+        load = os.getloadavg()[0]
+    except OSError:
+        load = None
+    # wall-clock time depends on the other jobs sharing the 4 CPUs: the CPU time and the load average are logged too
     info = dict(file=os.path.relpath(path, common.ROOT), render_seconds=round(dt, 1), setup_seconds=round(t_setup, 1),
+                render_cpu_seconds=round(cpu, 1), load_average_at_end=load, threads=sc.render.threads,
                 resolution=[sc.render.resolution_x * sc.render.resolution_percentage // 100,
                             sc.render.resolution_y * sc.render.resolution_percentage // 100],
                 samples=sc.cycles.samples, **extra)
@@ -224,7 +252,8 @@ def _finish(sc, path, t_setup, extra):
 # ----------------------------------------------------------------------------------------------- aerial
 AERIAL = dict(center=(3600.0, 4800.0), size=3200.0, res=2.5,
               cam=(4420.0, 4300.0, 135.0), target=(3520.0, 4800.0, 0.0), lens=30.0,
-              sun_elev=7.0, sun_az=245.0, exposure=-0.6)
+              sun_elev=6.0, sun_az=250.0, exposure=-0.3, sun_strength=6.0, sky_strength=0.28, sun_color=(1.0, 0.64, 0.34),
+              mist_color=(0.84, 0.58, 0.36), mist_amount=0.45, leaf_roughness=0.7)
 
 
 def render_aerial(samples=None, preview=False):
@@ -250,10 +279,13 @@ def render_aerial(samples=None, preview=False):
     cz = float(T.height_at(sim, np.array([cfg["cam"][0]]), np.array([cfg["cam"][1]]), 0)[0]) + cfg["cam"][2]
     tz = float(T.height_at(sim, np.array([cfg["target"][0]]), np.array([cfg["target"][1]]), 0)[0])
     cam = _camera(sc, (cfg["cam"][0] - ox, cfg["cam"][1] - oy, cz), (cfg["target"][0] - ox, cfg["target"][1] - oy, tz), lens=cfg["lens"])
-    sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=5.0, sky_strength=0.32, air=1.3, dust=3.5, sun_color=(1.0, 0.70, 0.42))
-    mist_compositor(sc, color=(0.80, 0.56, 0.36), amount=0.42, start=200, depth=3800)
+    sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=cfg.get("sun_strength", 6.0), sky_strength=cfg.get("sky_strength", 0.28),
+        air=1.3, dust=3.5, sun_color=cfg.get("sun_color", (1.0, 0.64, 0.34)))
+    mist_compositor(sc, color=cfg.get("mist_color", (0.84, 0.58, 0.36)), amount=cfg.get("mist_amount", 0.45), start=200, depth=3800)
     stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0,
                         lod_distances={"tree": (90, 320)}, budget=300000)
+    # rough leaves: no sub-pixel specular glitter under the grazing sun
+    tune_leaf_materials(roughness=cfg.get("leaf_roughness", 0.7), specular=0.2)
     sc.cycles.transparent_max_bounces = 16
     _cloud_layer(sc, altitude=1900.0, coverage=0.42)
     path = os.path.join(common.OUT_DIR, "valley_aerial%s.png" % ("_preview" if preview else ""))
@@ -266,8 +298,12 @@ def render_aerial(samples=None, preview=False):
 # pitch < 0 looks down. cam=None falls back to the automatic search (_find_spot).
 GROUND = dict(crop_size=900.0, res=1.5, detail_size=90.0, detail_res=0.1, sun_elev=8.0, sun_az=100.0, lens=26.0,
               eye=1.6, search_center=(3760.0, 4600.0), search_radius=450.0, spot=None,
-              cam=(3851.0, 4528.0), yaw_deg=5.0, pitch_deg=-3.5, fog_density=0.008, fog_height=2.5, mist_amount=0.45,
-              mist_depth=650.0)
+              cam=(3851.0, 4528.0), yaw_deg=5.0, pitch_deg=-3.5, fog_density=0.0065, fog_height=2.5, mist_amount=0.45,
+              mist_depth=650.0, fog_size=(420.0, 420.0, 8.0), volume_step_rate=8.0, volume_max_steps=64,
+              # visible lateral half-width at distance d is ~0.69 d (26 mm lens); the frame bottom meets the ground at ~3.5 m
+              fern_bed=((2.8, 1.3, "fern_tufted"), (3.5, 2.1, "fern_lace"), (4.5, 2.7, "fern_marsh"), (5.5, 3.3, "fern_tufted"),
+                        (6.5, 2.2, "fern_lace"), (7.5, 4.4, "fern_tufted"), (4.0, 0.9, "fern_lace"), (9.0, 5.2, "fern_marsh"),
+                        (3.2, -1.0, "fern_lace")))
 
 
 def _find_spot(veg, sim, cfg):
@@ -341,7 +377,7 @@ def render_ground(samples=None, preview=False):
     t0 = time.time()
     common.reset_blender()
     sc = bpy.context.scene
-    setup_render(sc, samples or (16 if preview else 128), preview=preview)
+    setup_render(sc, samples or (16 if preview else 20), preview=preview, threads=4)
     cfg = GROUND
     sim = veg.sim_data()
     if cfg.get("cam"):
@@ -370,12 +406,16 @@ def render_ground(samples=None, preview=False):
     tz = cz + 60 * math.sin(pitch)
     cam = _camera(sc, (cam_xy[0] - ox, cam_xy[1] - oy, cz), (tgt[0] - ox, tgt[1] - oy, tz), lens=cfg["lens"],
                   dof=(14.0, 8.0))
-    sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=3.4, sky_strength=0.55, air=1.0, dust=4.0, sun_color=(1.0, 0.84, 0.66))
-    mist_compositor(sc, color=(0.82, 0.82, 0.80), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650), glare=True)
+    sky(sc, cfg["sun_elev"], cfg["sun_az"], sun_strength=3.8, sky_strength=0.5, air=1.0, dust=4.0, sun_color=(1.0, 0.80, 0.58))
+    mist_compositor(sc, color=(0.85, 0.82, 0.77), amount=cfg.get("mist_amount", 0.5), start=8, depth=cfg.get("mist_depth", 650), glare=True)
     # low morning fog lying on the river and the banks (heterogeneous volume, height falloff from the water level)
     wl = float(sim.sample("water_surface", np.array([cam_xy[0] + view[0] * 40]), np.array([cam_xy[1] + view[1] * 40]))[0])
-    _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * 150, cam_xy[1] - oy + view[1] * 150), z0=wl - 1.0, size=(560, 560, 12),
-                density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5))
+    fsx, fsy, fsz = cfg.get("fog_size", (560.0, 560.0, 12.0))
+    _ground_fog(sc, center=(cam_xy[0] - ox + view[0] * (fsy / 2 - 30), cam_xy[1] - oy + view[1] * (fsy / 2 - 30)), z0=wl - 1.0,
+                size=(fsx, fsy, fsz), density=cfg.get("fog_density", 0.0065), height=cfg.get("fog_height", 2.5))
+    # coarse volume marching: the fog is soft, the cost is in the long grazing rays through the layer
+    sc.cycles.volume_step_rate = cfg.get("volume_step_rate", 4.0)
+    sc.cycles.volume_max_steps = cfg.get("volume_max_steps", 128)
     # trees, palms and shrubs kept out of the first metres of the lens axis (ferns / horsetails may grow there)
     big = {"tree", "palm", "shrub", "deadwood"}
     lens_clear = [(float((cam_xy + view * d)[0]), float((cam_xy + view * d)[1]), r, big)
@@ -394,12 +434,18 @@ def render_ground(samples=None, preview=False):
             continue  # not in the water
         extra.append(dict(asset=["horsetail_unbranched", "horsetail_branched", "fern_tufted", "fern_marsh"][k % 4],
                           x=float(p[0]), y=float(p[1]), scale=rng.uniform(0.9, 1.15)))
+    # fern bed on the inland (left) side of the frame: (distance m, lateral m to the left, asset)
+    for d, lat, aid in cfg.get("fern_bed", ()):
+        p = cam_xy + view * d + side * lat
+        if float(T.height_at(sim, p[:1], p[1:])[0]) < wl_here + 0.3:
+            continue
+        extra.append(dict(asset=aid, x=float(p[0]), y=float(p[1]), scale=rng.uniform(0.95, 1.25)))
     stats = veg.scatter(terrain, camera=cam, seed=7, density=1.0, range_scale=1.0, keep_clear=[(cam_xy[0], cam_xy[1], 1.2)] + lens_clear,
                         extra=extra, lod_distances={"tree": (80, 300), "fern": (25, 70), "horsetail": (25, 80)}, budget=250000)
     path = os.path.join(common.OUT_DIR, "valley_ground%s.png" % ("_preview" if preview else ""))
     return _finish(sc, path, time.time() - t0, dict(scene="ground", config={k: v for k, v in cfg.items()}, camera_sim_m=[float(cam_xy[0]), float(cam_xy[1])],
                                                     view_dir=[float(view[0]), float(view[1])], instances=stats,
-                                                    note="9 touffes de premier plan placées à la main (direction artistique) ; le reste suit les masques."))
+                                                    note="%d plantes de premier plan placées à la main (direction artistique) ; le reste suit les masques." % len(extra)))
 
 
 def _cloud_layer(sc, altitude=1900.0, coverage=0.4, size=40000.0):

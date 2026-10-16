@@ -117,6 +117,10 @@ void ANoctisCreatureManager::OnVisualDataLoaded()
 		{
 			AddPath(Call.Sound.ToSoftObjectPath());
 		}
+		for (const TPair<FName, FNoctisAnimClip>& Clip : Visual->Clips)
+		{
+			AddPath(Clip.Value.Sequence.ToSoftObjectPath());
+		}
 	}
 	if (Paths.Num() == 0)
 	{
@@ -418,7 +422,10 @@ void ANoctisCreatureManager::UpdateImpostors(const FNoctisFrameOutput& Front, co
 		const FNoctisSpeciesInfo* Info = Sub->GetSpeciesInfo(C.speciesIndex);
 		const UNoctisSpeciesVisualData* Visual = VisualsBySpecies[C.speciesIndex];
 		const float Scale = (Info && Visual) ? Info->AdultLengthM * C.scale / FMath::Max(0.01f, Visual->MeshBodyLengthM) : 1.0f;
-		const FRotator Rotation = FNoctisSpace::AttitudeToUE(C.heading, C.pitch, C.roll) + FRotator(0.0, Visual ? Visual->MeshYawOffsetDeg : 0.0f, 0.0);
+		// Same composition as the full actor: body attitude, then the mesh's local yaw offset (not a rotator sum, which
+		// would apply the slope pitch about the wrong axis when the offset is not zero).
+		const FQuat Rotation = FNoctisSpace::AttitudeToUE(C.heading, C.pitch, C.roll).Quaternion() *
+							   FRotator(0.0, Visual ? double(Visual->MeshYawOffsetDeg) : 0.0, 0.0).Quaternion();
 		PerSpecies[C.speciesIndex].Add(FTransform(Rotation, Location, FVector(Scale)));
 	}
 	(void)ActorRadiusCm;
