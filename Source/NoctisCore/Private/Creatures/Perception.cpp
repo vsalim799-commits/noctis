@@ -366,8 +366,12 @@ void perceive(Creature& c, const SpeciesRuntime& sp, const CreatureSystem& world
             // tail club) was as attractive to an adult T. rex as a 500 kg juvenile hadrosaur (0.37 vs 0.38). With these
             // terms it falls to ~0.07, an adult Triceratops to ~0.15-0.2, while juveniles and adult hadrosaurs keep
             // most of their value. Game assumptions (form and coefficients).
+            // An injured predator weighs the risk more: its own wounds add up over encounters (one adult T. rex died
+            // of ten horn and tail-club wounds collected in four attacks on adult Triceratops and an Ankylosaurus within
+            // 18 h). Game assumption: the risk weight grows by 3 x the predator's lost health.
             const float armour = 1.0f - 0.75f * saturate(os.defense.armor);
-            a.opportunity = saturate(energy * (0.5f + vulnerability) * armour / (0.4f + risk + risk * risk));
+            const float r = risk * (1.0f + 3.0f * saturate(1.0f - c.injuries.healthIndex));
+            a.opportunity = saturate(energy * (0.5f + vulnerability) * armour / (0.4f + r + r * r));
             // Dangerous prey threatens the predator only when it turns on it at close range (defends, displays,
             // fights); a resting or feeding animal does not. A non-hunting T. rex used to "defend" itself against
             // an adult Triceratops resting next to it, strike first and start a fight that killed both. A prey animal
